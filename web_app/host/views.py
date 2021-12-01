@@ -1,33 +1,28 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .forms import TransientForm
-
+from astropy.coordinates import SkyCoord
+from .host_utils import download_image_data, survey_list, construct_all_apertures
 from bokeh.plotting import figure, output_file, show
 from bokeh.embed import components
+import numpy as np
+from bokeh.models import LinearColorMapper
+from.plotting_utils import plot_image_grid
 
 def submit_transient(request):
 
     if request.method == 'POST':
         form = TransientForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['name']
-
-            x = [1, 3, 5, 7, 9, 11, 13]
-            y = [1, 2, 3, 4, 5, 6, 7]
-            title = 'y = f(x)'
-
-            plot = figure(title=title,
-                          x_axis_label='X-Axis',
-                          y_axis_label='Y-Axis',
-                          plot_width=400,
-                          plot_height=400)
-
-            plot.line(x, y, legend='f(x)', line_width=2)
-            # Store components
-            script, div = components(plot)
-
-
-            return render(request, 'results.html', {'script': script, 'div': div})
+            ra, dec = form.cleaned_data['ra'], form.cleaned_data['dec']
+            survey = survey_list('host/survey_metadata.yml')
+            images = download_image_data(SkyCoord(ra=ra, dec=dec, unit='deg'), survey)
+            apertures = construct_all_apertures(SkyCoord(ra=ra, dec=dec, unit='deg'), images)
+            bokeh_cutout_dict = plot_image_grid(images, apertures)
+            all_surveys = [sur.name for sur in survey]
+            missing_surveys = list(set(all_surveys) - images.keys())
+            bokeh_cutout_dict.update({'missing_data': missing_surveys})
+            return render(request, 'results.html', bokeh_cutout_dict)
 
 
     form = TransientForm()
