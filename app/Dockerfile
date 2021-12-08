@@ -18,7 +18,7 @@ COPY . /app
 FROM src as test
 COPY requirements.txt /app
 RUN pip3 install -r requirements.txt
-RUN python3 manage.py test.host
+RUN python3 manage.py test host.tests -v 2
 
 FROM src as prod
 ENTRYPOINT ["python3"]
