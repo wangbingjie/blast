@@ -8,15 +8,15 @@
 #CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
 
 FROM python:3.8-slim-buster AS base
-WORKDIR /app
-COPY requirements.txt /app
+WORKDIR app/
+COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
 FROM base as src
-COPY . /app
+COPY . .
 
 FROM src as test
-COPY requirements.txt /app
+COPY requirements.txt app/
 RUN pip3 install -r requirements.txt
 RUN python3 manage.py test host.tests
 
