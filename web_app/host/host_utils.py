@@ -12,6 +12,7 @@ import os
 import glob
 from photutils.background import Background2D
 from astropy.wcs import WCS
+import time
 
 def survey_list(survey_metadata_path):
     """
@@ -114,7 +115,11 @@ def download_image_data(position, survey_list, fov=Quantity(0.2, unit='deg')):
         Dictionary of images with the survey names as keys and fits images
         as values.
     """
-    images = [cutout(position, survey, fov=fov) for survey in survey_list]
+    images = []
+
+    for survey in survey_list:
+        images.append(cutout(position, survey, fov=fov))
+
     return {survey.name: image for survey, image in zip(survey_list, images)
               if image is not None and image_contains_data(image)}
 

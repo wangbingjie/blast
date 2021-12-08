@@ -1,12 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 from .forms import TransientForm
 from astropy.coordinates import SkyCoord
 from .host_utils import download_image_data, survey_list, construct_all_apertures
-from bokeh.plotting import figure, output_file, show
-from bokeh.embed import components
-import numpy as np
-from bokeh.models import LinearColorMapper
 from.plotting_utils import plot_image_grid
 
 def submit_transient(request):
