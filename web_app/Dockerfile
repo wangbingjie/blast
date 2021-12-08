@@ -16,7 +16,7 @@ FROM base as src
 COPY . /app
 
 FROM src as test
-COPY requirements.dev.txt /app
+COPY requirements.txt /app
 RUN pip3 install -r requirements.txt
 RUN python3 manage.py test host.tests
 
