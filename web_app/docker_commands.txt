@@ -1,0 +1,3 @@
+pip3 list --format=freeze > requirements.txt
+docker build --tag python-django-blast .
+docker run --publish 8000:8000 python-django-blast

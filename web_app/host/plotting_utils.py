@@ -1,13 +1,16 @@
-from bokeh.models import Ellipse, LinearColorMapper,ColumnDataSource
+from bokeh.models import Ellipse, LogColorMapper,ColumnDataSource
 from bokeh.layouts import gridplot
 from bokeh.plotting import figure
 from bokeh.embed import components
 from astropy.wcs import WCS
+import numpy as np
+
 
 def plot_image(figure, fits_image):
     image_data = fits_image[0].data
+    image_data = image_data + abs(np.amin(image_data)) + 0.1
     figure.image(image=[image_data])
-    color_mapper = LinearColorMapper(palette='Greys256')
+    color_mapper = LogColorMapper(palette='Greys256')
     figure.image(image=[image_data], x=0, y=0, dw=10, dh=10,
                color_mapper=color_mapper, level="image")
     figure.axis.visible = False
