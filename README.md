@@ -1,6 +1,8 @@
 # blast
 Django web app for the automatic characterization of supernova hosts
 
+![Main Branch CI](https://github.com/astrophpeter/blast/workflows/Main%20Branch%20CI/badge.svg?branch=main) 
+
 ## Running locally
 1. Install the [Docker desktop app](https://www.docker.com/products/docker-desktop)
 2. Open up the command line and pull the Docker image of the lastest commit on main:
