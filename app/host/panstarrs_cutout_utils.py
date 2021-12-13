@@ -3,13 +3,17 @@ from astropy.coordinates import SkyCoord
 from astropy.io import fits
 
 def panstarrs_image_filename(position ,image_size=None, filter=None):
+    """Query panstarrs service to get a list of image names
 
-    """Query ps1filenames.py service to get a list of images
-
-    ra, dec = position in degrees
-    size = image size in pixels (0.25 arcsec/pixel)
-    filters = string with filters to include
-    Returns a string with with filename
+    Parameters
+    ----------
+    :position : :class:`~astropy.coordinates.SkyCoord`
+        Target centre position of the cutout image to be downloaded.
+    :size : int: cutout image size in pixels.
+    :filter: str: Panstarrs filter (g r i z y)
+    Returns
+    -------
+    :filename: str: file name of the cutout
     """
 
     service = 'https://ps1images.stsci.edu/cgi-bin/ps1filenames.py'
@@ -21,7 +25,15 @@ def panstarrs_cutout(position, image_size=None, filter=None):
     """
     Download Panstarrs cutout from their own service
 
-    Return HDU list
+    Parameters
+    ----------
+    :position : :class:`~astropy.coordinates.SkyCoord`
+        Target centre position of the cutout image to be downloaded.
+    :image_size: int: size of cutout image in pixels
+    :filter: str: Panstarrs filter (g r i z y)
+    Returns
+    -------
+    :cutout : :class:`~astropy.io.fits.HDUList` or None
     """
     filename = panstarrs_image_filename(position,
                                         image_size=image_size,
@@ -29,7 +41,6 @@ def panstarrs_cutout(position, image_size=None, filter=None):
     service = 'https://ps1images.stsci.edu/cgi-bin/fitscut.cgi?'
     fits_url = (f'{service}ra={position.ra.degree}&dec={position.dec.degree}'
            f'&size={image_size}&format=fits&red={filename}')
-
     return fits.open(fits_url)
 
 
