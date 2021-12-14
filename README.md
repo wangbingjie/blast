@@ -9,7 +9,7 @@ Django web app for the automatic characterization of supernova hosts
 
 `$ docker pull ghcr.io/astrophpeter/blast:edge`
 
-3. Run the image a make blast visible to your machine on port 8000:
+3. Run the image and make blast visible to your machine on port 8000:
 
 `$ docker run --publish 8000:8000 image_ID`
 
