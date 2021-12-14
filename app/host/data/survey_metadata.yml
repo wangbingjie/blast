@@ -75,40 +75,40 @@ PanSTARRS_g:
   pixel_size_arcsec: 0.26
   magnitude_zero_point: 25.0
   image_pixel_units: 'counts'
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 283.396237
+  test_dec_deg: 33.029134
   download_method: 'custom'
 PanSTARRS_r:
   hips_id: 'CDS/P/PanSTARRS/DR1/r'
   pixel_size_arcsec: 0.26
   magnitude_zero_point: 25.0
   image_pixel_units: 'counts'
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 283.396237
+  test_dec_deg: 33.029134
   download_method: 'custom'
 PanSTARRS_i:
   hips_id: 'CDS/P/PanSTARRS/DR1/i'
   pixel_size_arcsec: 0.26
   magnitude_zero_point: 25.0
   image_pixel_units: 'counts'
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 283.396237
+  test_dec_deg: 33.029134
   download_method: 'custom'
 PanSTARRS_z:
   hips_id: 'CDS/P/PanSTARRS/DR1/z'
   pixel_size_arcsec: 0.26
   magnitude_zero_point: 25.0
   image_pixel_units: 'counts'
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 283.396237
+  test_dec_deg: 33.029134
   download_method: 'custom'
 PanSTARRS_y:
   hips_id: 'CDS/P/PanSTARRS/DR1/y'
   pixel_size_arcsec: 0.26
   magnitude_zero_point: 25.0
   image_pixel_units: 'counts'
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 283.396237
+  test_dec_deg: 33.029134
   download_method: 'custom'
 SDSS_i:
   hips_id: 'CDS/P/SDSS9/i'
