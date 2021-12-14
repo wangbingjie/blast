@@ -10,7 +10,7 @@ class CutoutDownloadTest(TestCase):
 
     def test_cutout_download(self):
         """
-        Test that cutout data can be downloaded \n
+        Test that cutout data can be downloaded.
         """
         for survey in self.surveys:
             position = SkyCoord(ra=survey.test_ra_deg,

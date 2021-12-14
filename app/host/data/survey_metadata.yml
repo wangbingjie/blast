@@ -115,70 +115,70 @@ SDSS_i:
   pixel_size_arcsec: 0.29296875
   magnitude_zero_point: 22.5
   image_pixel_units: ''
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 210.0
+  test_dec_deg: 30.0
   download_method: 'hips'
 SDSS_r:
   hips_id: 'CDS/P/SDSS9/r'
   pixel_size_arcsec: 0.29296875
   magnitude_zero_point: 22.5
   image_pixel_units: ''
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 210.0
+  test_dec_deg: 30.0
   download_method: 'hips'
 SDSS_u:
   hips_id: 'CDS/P/SDSS9/u'
   pixel_size_arcsec: 0.29296875
   magnitude_zero_point: 22.5
   image_pixel_units: ''
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 210.0
+  test_dec_deg: 30.0
   download_method: 'hips'
 SDSS_z:
   hips_id: 'CDS/P/SDSS9/z'
   pixel_size_arcsec: 0.29296875
   magnitude_zero_point: 22.5
   image_pixel_units: ''
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 210.0
+  test_dec_deg: 30.0
   download_method: 'hips'
 DES_Y:
   hips_id: 'CDS/P/DES-DR1/Y'
   pixel_size_arcsec: 0.2637
   magnitude_zero_point:
   image_pixel_units: ''
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 60.0
+  test_dec_deg: -30.0
   download_method: 'hips'
 DES_g:
   hips_id: 'CDS/P/DES-DR1/g'
   pixel_size_arcsec: 0.2637
   magnitude_zero_point: 22.5
   image_pixel_units: ''
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 60.0
+  test_dec_deg: -30.0
   download_method: 'hips'
 DES_r:
   hips_id: 'CDS/P/DES-DR1/r'
   pixel_size_arcsec: 0.2637
   magnitude_zero_point: 22.5
   image_pixel_units: ''
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 60.0
+  test_dec_deg: -30.0
   download_method: 'hips'
 DES_i:
   hips_id: 'CDS/P/DES-DR1/i'
   pixel_size_arcsec: 0.2637
   magnitude_zero_point: 22.5
   image_pixel_units: ''
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 60.0
+  test_dec_deg: -30.0
   download_method: 'hips'
 DES_z:
   hips_id: 'CDS/P/DES-DR1/z'
   pixel_size_arcsec: 0.2637
   magnitude_zero_point: 22.5
   image_pixel_units: ''
-  test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_ra_deg: 60.0
+  test_dec_deg: -30.0
   download_method: 'hips'
