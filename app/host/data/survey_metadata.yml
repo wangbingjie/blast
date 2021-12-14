@@ -60,7 +60,7 @@ GALEX_FUV:
   magnitude_zero_point: 18.82
   image_pixel_units: 'counts/sec'
   test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_dec_deg: 0.0
   download_method: 'hips'
 GALEX_NUV:
   hips_id: 'CDS/P/GALEXGR6/AIS/NUV'
@@ -68,7 +68,7 @@ GALEX_NUV:
   magnitude_zero_point: 20.08
   image_pixel_units: 'counts/sec'
   test_ra_deg: 120.0
-  test_dec_deg: -60.0
+  test_dec_deg: 0.0
   download_method: 'hips'
 PanSTARRS_g:
   hips_id: 'CDS/P/PanSTARRS/DR1/g'
