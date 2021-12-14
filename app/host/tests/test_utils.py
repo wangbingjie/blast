@@ -6,7 +6,7 @@ from astropy.coordinates import SkyCoord
 class CutoutDownloadTest(TestCase):
 
     def setUp(self):
-        self.surveys = survey_list('host/data/survey_metadata.yml')[:7]
+        self.surveys = survey_list('host/data/survey_metadata.yml')
 
     def test_cutout_download(self):
         """
@@ -18,5 +18,4 @@ class CutoutDownloadTest(TestCase):
                                 unit='deg')
             cutout_data = cutout(position, survey)
             with self.subTest(survey=survey.name):
-                print(survey.name)
                 self.assertTrue(cutout_data != None)
