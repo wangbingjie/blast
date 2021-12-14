@@ -1,5 +1,6 @@
 from django.test import TestCase
-from ..host_utils import cutout, survey_list
+from ..host_utils import survey_list
+from ..cutouts import cutout
 from astropy.coordinates import SkyCoord
 
 class CutoutDownloadTest(TestCase):
