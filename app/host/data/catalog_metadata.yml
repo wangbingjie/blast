@@ -1,0 +1,161 @@
+2MASS_H_extended_source:
+  vizier_id: VII/233
+  mag: H.e
+  mag_error: e_H.e
+  ra: RAJ2000
+  dec: DEJ2000
+  id: 2MASX
+2MASS_J_extended_source:
+  vizier_id: VII/233
+  mag: J.e
+  mag_error: e_J.e
+  ra: RAJ2000
+  dec: DEJ2000
+  id: 2MASX
+2MASS_K_extended_source:
+  vizier_id: VII/233
+  mag: K.e
+  mag_error: e_K.e
+  ra: RAJ2000
+  dec: DEJ2000
+  id: 2MASX
+WISE_W1_ALLWISE:
+  vizier_id: II/328
+  mag: W1mag
+  mag_error: e_W1mag
+  ra: RAJ2000
+  dec: DEJ2000
+  id: AllWISE
+WISE_W2_ALLWISE:
+  vizier_id: II/328
+  mag: W2mag
+  mag_error: e_W2mag
+  ra: RAJ2000
+  dec: DEJ2000
+  id: AllWISE
+WISE_W3_ALLWISE:
+  vizier_id: II/328
+  mag: W3mag
+  mag_error: e_W3mag
+  ra: RAJ2000
+  dec: DEJ2000
+  id: AllWISE
+WISE_W4_ALLWISE:
+  vizier_id: II/328
+  mag: W4mag
+  mag_error: e_W4mag
+  ra: RAJ2000
+  dec: DEJ2000
+  id: AllWISE
+GALEX_FUV_source:
+  vizier_id: II/335
+  mag: FUV.a
+  mag_error: e_FUV.a
+  ra: RAJ2000
+  dec: DEJ2000
+  id: objid
+GALEX_NUV_source:
+  vizier_id: II/335
+  mag: NUV.a
+  mag_error: e_NUV.a
+  ra: RAJ2000
+  dec: DEJ2000
+  id: objid
+Panstarrs_g_dr1:
+  vizier_id: II/349
+  mag: gKmag
+  mag_error: e_gKmag
+  ra: RAJ2000
+  dec: DEJ2000
+  id: objID
+Panstarrs_r_dr1:
+  vizier_id: II/349
+  mag: rKmag
+  mag_error: e_rKmag
+  ra: RAJ2000
+  dec: DEJ2000
+  id: objID
+Panstarrs_i_dr1:
+  vizier_id: II/349
+  mag: iKmag
+  mag_error: i_rKmag
+  ra: RAJ2000
+  dec: DEJ2000
+  id: objID
+Panstarrs_z_dr1:
+  vizier_id: II/349
+  mag: zKmag
+  mag_error: z_rKmag
+  ra: RAJ2000
+  dec: DEJ2000
+  id: objID
+Panstarrs_y_dr1:
+  vizier_id: II/349
+  mag: yKmag
+  mag_error: y_rKmag
+  ra: RAJ2000
+  dec: DEJ2000
+  id: objID
+SDSSS_i_dr12:
+  vizier_id: V/147
+  mag: iPmag
+  mag_error: e_IPmag
+  ra: RA_ICRS
+  dec: DE_ICRC
+  id: objID
+SDSSS_r_dr12:
+  vizier_id: V/147
+  mag: rPmag
+  mag_error: e_rPmag
+  ra: RA_ICRS
+  dec: DE_ICRC
+  id: objID
+SDSSS_u_dr12:
+  vizier_id: V/147
+  mag: uPmag
+  mag_error: e_uPmag
+  ra: RA_ICRS
+  dec: DE_ICRC
+  id: objID
+SDSSS_z_dr12:
+  vizier_id: V/147
+  mag: izmag
+  mag_error: e_zPmag
+  ra: RA_ICRS
+  dec: DE_ICRC
+  id: objID
+DES_g_dr1:
+  vizier_id: II/357
+  mag: gmag
+  mag_error: e_gmag
+  ra: RA_ICRS
+  dec: DE_ICRC
+  id: DES
+DES_r_dr1:
+  vizier_id: II/357
+  mag: rmag
+  mag_error: r_gmag
+  ra: RA_ICRS
+  dec: DE_ICRC
+  id: DES
+DES_i_dr1:
+  vizier_id: II/357
+  mag: imag
+  mag_error: i_gmag
+  ra: RA_ICRS
+  dec: DE_ICRC
+  id: DES
+DES_z_dr1:
+  vizier_id: II/357
+  mag: zmag
+  mag_error: z_gmag
+  ra: RA_ICRS
+  dec: DE_ICRC
+  id: DES
+DES_y_dr1:
+  vizier_id: II/357
+  mag: ymag
+  mag_error: y_gmag
+  ra: RA_ICRS
+  dec: DE_ICRC
+  id: DES
