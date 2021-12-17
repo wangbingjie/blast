@@ -1,6 +1,7 @@
 from django.test import TestCase
 from ..host_utils import survey_list
 from ..cutouts import cutout
+from ..catalog_photometry import catalog_photometry
 from astropy.coordinates import SkyCoord
 
 class CutoutDownloadTest(TestCase):
@@ -9,7 +10,7 @@ class CutoutDownloadTest(TestCase):
         self.surveys = survey_list('host/data/survey_metadata.yml')
 
     def test_cutout_download(self):
-        """
+        """"
         Test that cutout data can be downloaded.
         """
         for survey in self.surveys:
@@ -19,3 +20,20 @@ class CutoutDownloadTest(TestCase):
             cutout_data = cutout(position, survey)
             with self.subTest(survey=survey.name):
                 self.assertTrue(cutout_data != None)
+
+class CatalogDownloadTest(TestCase):
+
+    def setUp(self):
+        self.catalogs = survey_list('host/data/catalog_metadata.yml')
+
+    def test_catalog_download(self):
+        """
+        Test that catalog data can be downloaded.
+        """
+        for catalog in self.catalogs:
+            position = SkyCoord(ra=catalog.test_ra_deg,
+                                dec=catalog.test_dec_deg,
+                                unit='deg')
+            catagog_data = catalog_photometry(position, catalog)
+            with self.subTest(catalog=catalog.name):
+                self.assertTrue(catagog_data != None)

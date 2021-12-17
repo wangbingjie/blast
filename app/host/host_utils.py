@@ -71,7 +71,8 @@ def build_source_catalog(image, background, threshhold_sigma=1.0, npixels=10):
     threshold = threshhold_sigma * background.background_rms
     segmentation = detect_sources(background_subtracted_data, threshold, npixels=npixels)
     deblended_segmentation = deblend_sources(background_subtracted_data, segmentation, npixels=npixels)
-    return SourceCatalog(background_subtracted_data, deblended_segmentation)
+    print(segmentation)
+    return SourceCatalog(background_subtracted_data,segmentation)
 
 def match_source(position, source_catalog, wcs):
     """
@@ -121,6 +122,7 @@ def elliptical_sky_aperture(source_catalog, wcs, aperture_scale=3.0):
     orientation_angle = source_catalog.orientation.to(u.rad).value
     pixel_aperture = EllipticalAperture(center, semi_major_axis,
                                         semi_minor_axis, theta=orientation_angle)
+    pixel_aperture = source_catalog.kron_aperture
     return pixel_aperture.to_sky(wcs)
 
 
