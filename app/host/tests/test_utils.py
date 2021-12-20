@@ -1,7 +1,7 @@
 from django.test import TestCase
 from ..host_utils import survey_list
 from ..cutouts import cutout
-from ..catalog_photometry import catalog_photometry
+from ..catalog_photometry import catalog_photometry, filter_information
 from astropy.coordinates import SkyCoord
 
 class CutoutDownloadTest(TestCase):
@@ -37,3 +37,12 @@ class CatalogDownloadTest(TestCase):
             catagog_data = catalog_photometry(position, catalog)
             with self.subTest(catalog=catalog.name):
                 self.assertTrue(catagog_data != None)
+
+    def test_filter_information_download(self):
+        """
+        Test that catalog filter data can be downloaded.
+        """
+        for catalog in self.catalogs:
+            filter_data = filter_information(catalog)
+            with self.subTest(catalog=catalog.name):
+                self.assertTrue(filter_data != None)

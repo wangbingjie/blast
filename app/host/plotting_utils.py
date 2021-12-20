@@ -1,8 +1,10 @@
-from bokeh.models import Ellipse, LogColorMapper,ColumnDataSource
+from bokeh.models import Ellipse, LogColorMapper,ColumnDataSource, Plot, Scatter, LinearAxis,Grid
 from bokeh.layouts import gridplot
 from bokeh.plotting import figure
 from bokeh.embed import components
 from astropy.wcs import WCS
+from .host_utils import survey_list
+from .catalog_photometry import filter_information
 import numpy as np
 
 
@@ -39,20 +41,54 @@ def plot_image_grid(image_dict, apertures=None):
                         y_axis_label='',
                         plot_width=400,
                         plot_height=400)
-
-
         fig = plot_image(fig, image)
-
-
         if apertures is not None:
             aperture = apertures.get(survey)
             if aperture is not None:
                 wcs = WCS(image[0].header)
                 aperture = apertures[survey].to_pixel(wcs)
                 fig = plot_aperture(fig, aperture)
-
         figures.append(fig)
 
     plot = gridplot(figures, ncols=3, width=400, height=400)
     script, div = components(plot)
     return {'bokeh_cutout_script': script, 'bokeh_cutout_div': div}
+
+
+def plot_catalog_sed(catalog_dict):
+    """
+    Plot SED from available catalog data
+    """
+    catalogs = survey_list('host/data/catalog_metadata.yml')
+    filter_info = [filter_information(catalog) for catalog in catalogs]
+
+    plot = Plot(title='Catalog SED', width=600, height=300,
+        min_border=0, toolbar_location=None)
+
+    wavelengths = []
+    magnitudes = []
+
+    for catalog, data in catalog_dict.items():
+        filter_data = [filter for filter in filter_info if filter['name'] == catalog][0]
+        wavelengths.append(filter_data['WavelengthEff'])
+        magnitudes.append(data['mag'])
+        print(data)
+
+    print(wavelengths, magnitudes)
+    source = ColumnDataSource(dict(x=wavelengths, y=magnitudes))
+    glyph = Scatter(x="x", y="y", size=20, fill_color="#74add1",
+                    marker="circle")
+    plot.add_glyph(source, glyph)
+
+    xaxis = LinearAxis()
+    plot.add_layout(xaxis, 'below')
+
+    yaxis = LinearAxis()
+    plot.add_layout(yaxis, 'left')
+
+    plot.add_layout(Grid(dimension=0, ticker=xaxis.ticker))
+    plot.add_layout(Grid(dimension=1, ticker=yaxis.ticker))
+
+    script, div = components(plot)
+    return {'bokeh_cutout_script': script, 'bokeh_cutout_div': div}
+
