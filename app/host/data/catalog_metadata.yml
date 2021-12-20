@@ -1,30 +1,33 @@
 2MASS_H_extended_source:
   vizier_id: VII/233
-  mag: H.e
-  mag_error: e_H.e
+  mag: H.K20e
+  mag_error: e_H.K20e
   ra: RAJ2000
   dec: DEJ2000
   id: 2MASX
   test_ra_deg: 3.2348333
   test_dec_deg: 22.1002750
+  vosa_filter_id: 2MASS/2MASS.H
 2MASS_J_extended_source:
   vizier_id: VII/233
-  mag: J.e
-  mag_error: e_J.e
+  mag: J.K20e
+  mag_error: e_J.K20e
   ra: RAJ2000
   dec: DEJ2000
   id: 2MASX
   test_ra_deg: 3.2348333
   test_dec_deg: 22.1002750
+  vosa_filter_id: 2MASS/2MASS.J
 2MASS_K_extended_source:
   vizier_id: VII/233
-  mag: K.e
-  mag_error: e_K.e
+  mag: K.K20e
+  mag_error: e_K.K20e
   ra: RAJ2000
   dec: DEJ2000
   id: 2MASX
   test_ra_deg: 3.2348333
   test_dec_deg: 22.1002750
+  vosa_filter_id: 2MASS/2MASS.Ks
 WISE_W1_ALLWISE:
   vizier_id: II/328
   mag: W1mag
@@ -34,6 +37,7 @@ WISE_W1_ALLWISE:
   id: AllWISE
   test_ra_deg: 114.6055417
   test_dec_deg: 21.5771667
+  vosa_filter_id: WISE/WISE.W1
 WISE_W2_ALLWISE:
   vizier_id: II/328
   mag: W2mag
@@ -43,6 +47,7 @@ WISE_W2_ALLWISE:
   id: AllWISE
   test_ra_deg: 114.6055417
   test_dec_deg: 21.5771667
+  vosa_filter_id: WISE/WISE.W2
 WISE_W3_ALLWISE:
   vizier_id: II/328
   mag: W3mag
@@ -52,6 +57,7 @@ WISE_W3_ALLWISE:
   id: AllWISE
   test_ra_deg: 114.6055417
   test_dec_deg: 21.5771667
+  vosa_filter_id: WISE/WISE.W3
 WISE_W4_ALLWISE:
   vizier_id: II/328
   mag: W4mag
@@ -61,6 +67,7 @@ WISE_W4_ALLWISE:
   id: AllWISE
   test_ra_deg: 114.6055417
   test_dec_deg: 21.5771667
+  vosa_filter_id: WISE/WISE.W4
 GALEX_FUV_source:
   vizier_id: II/335
   mag: FUV.a
@@ -70,6 +77,7 @@ GALEX_FUV_source:
   id: objid
   test_ra_deg: 114.6055417
   test_dec_deg: 21.5751472
+  vosa_filter_id: GALEX/GALEX.FUV
 GALEX_NUV_source:
   vizier_id: II/335
   mag: NUV.a
@@ -79,6 +87,7 @@ GALEX_NUV_source:
   id: objid
   test_ra_deg: 114.6055417
   test_dec_deg: 21.5751472
+  vosa_filter_id: GALEX/GALEX.NUV
 Panstarrs_g_dr1:
   vizier_id: II/349
   mag: gKmag
@@ -88,6 +97,7 @@ Panstarrs_g_dr1:
   id: objID
   test_ra_deg: 271.087458
   test_dec_deg: -29.519139
+  vosa_filter_id: PAN-STARRS/PS1.g
 Panstarrs_r_dr1:
   vizier_id: II/349
   mag: rKmag
@@ -97,6 +107,7 @@ Panstarrs_r_dr1:
   id: objID
   test_ra_deg: 271.087458
   test_dec_deg: -29.519139
+  vosa_filter_id: PAN-STARRS/PS1.r
 Panstarrs_i_dr1:
   vizier_id: II/349
   mag: iKmag
@@ -106,6 +117,7 @@ Panstarrs_i_dr1:
   id: objID
   test_ra_deg: 271.087458
   test_dec_deg: -29.519139
+  vosa_filter_id: PAN-STARRS/PS1.i
 Panstarrs_z_dr1:
   vizier_id: II/349
   mag: zKmag
@@ -115,6 +127,7 @@ Panstarrs_z_dr1:
   id: objID
   test_ra_deg: 271.087458
   test_dec_deg: -29.519139
+  vosa_filter_id: PAN-STARRS/PS1.z
 Panstarrs_y_dr1:
   vizier_id: II/349
   mag: yKmag
@@ -124,6 +137,7 @@ Panstarrs_y_dr1:
   id: objID
   test_ra_deg: 271.087458
   test_dec_deg: -29.519139
+  vosa_filter_id: PAN-STARRS/PS1.y
 SDSSS_i_dr12:
   vizier_id: V/147
   mag: iPmag
@@ -133,6 +147,7 @@ SDSSS_i_dr12:
   id: objID
   test_ra_deg: 114.6184167
   test_dec_deg: 21.5542611
+  vosa_filter_id: SLOAN/SDSS.i
 SDSSS_r_dr12:
   vizier_id: V/147
   mag: rPmag
@@ -142,6 +157,7 @@ SDSSS_r_dr12:
   id: objID
   test_ra_deg: 114.6184167
   test_dec_deg: 21.5542611
+  vosa_filter_id: SLOAN/SDSS.r
 SDSSS_u_dr12:
   vizier_id: V/147
   mag: uPmag
@@ -151,6 +167,7 @@ SDSSS_u_dr12:
   id: objID
   test_ra_deg: 114.6184167
   test_dec_deg: 21.5542611
+  vosa_filter_id: SLOAN/SDSS.u
 SDSSS_z_dr12:
   vizier_id: V/147
   mag: zPmag
@@ -160,6 +177,7 @@ SDSSS_z_dr12:
   id: objID
   test_ra_deg: 114.6184167
   test_dec_deg: 21.5542611
+  vosa_filter_id: SLOAN/SDSS.z
 DES_g_dr1:
   vizier_id: II/357
   mag: gmag
@@ -169,6 +187,7 @@ DES_g_dr1:
   id: DES
   test_ra_deg: 13.2022917
   test_dec_deg: -26.5824528
+  vosa_filter_id: CTIO/DECam.g
 DES_r_dr1:
   vizier_id: II/357
   mag: rmag
@@ -178,6 +197,7 @@ DES_r_dr1:
   id: DES
   test_ra_deg: 13.1889583
   test_dec_deg: -26.5816889
+  vosa_filter_id: CTIO/DECam.r
 DES_i_dr1:
   vizier_id: II/357
   mag: imag
@@ -187,6 +207,7 @@ DES_i_dr1:
   id: DES
   test_ra_deg: 13.1889583
   test_dec_deg: -26.5816889
+  vosa_filter_id: CTIO/DECam.i
 DES_z_dr1:
   vizier_id: II/357
   mag: zmag
@@ -196,6 +217,7 @@ DES_z_dr1:
   id: DES
   test_ra_deg: 13.1889583
   test_dec_deg: -26.5816889
+  vosa_filter_id: CTIO/DECam.z
 DES_y_dr1:
   vizier_id: II/357
   mag: Ymag
@@ -205,3 +227,4 @@ DES_y_dr1:
   id: DES
   test_ra_deg: 13.1889583
   test_dec_deg: -26.5816889
+  vosa_filter_id: CTIO/DECam.y
