@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Results</title>
-   <link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-2.4.2.min.css" type="text/css" />
- </head>
-  <h1>Results</h1>
- <body>
+{% extends 'host/base.html %}
+
+{% block title %} Results {% endblock %}
+
+{% block body %}
+    <h1>Results</h1>
     <h2>Download Report</h2>
     Imaging data could not be downloaded for the following surveys:
     <ul>
@@ -17,7 +15,4 @@
      {{ bokeh_cutout_div | safe }}
     <h2>Catalog photometry</h2>
      {{ bokeh_catalog_div | safe }}
-</body>
-    <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-2.4.2.min.js"></script>
-    {{ bokeh_cutout_script | safe }}
-</html>
+{% endblock %}
