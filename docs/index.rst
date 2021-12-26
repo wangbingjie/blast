@@ -8,13 +8,13 @@ Welcome to blast's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :hidden:
+   :caption: Installation
 
+   installation/blast
 
+.. image:: https://github.com/astrophpeter/blast/workflows/Main%20Branch%20CI/badge.svg?branch=main
+.. image:: https://readthedocs.org/projects/blast/badge/?version=latest
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+Blast is a Django web app for the automatic characterization of supernova hosts.
+Blast is developed on `github <https://github.com/astrophpeter/blast>`_
