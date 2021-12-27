@@ -39,7 +39,7 @@ Run the image and make blast visible to your machine on port 8000
     docker run --publish 8000:8000 image_ID
 
 You can find image_ID in the Docker Desktop app or by running ``docker images``.
-Then got to `localhost:8000/host/ <localhost:8000/host/>`_ in your web browser
+Then go to `localhost:8000/host/ <localhost:8000/host/>`_ in your web browser
 and blast should be running.
 
 Native install
@@ -55,6 +55,19 @@ Conda
 .. code:: none
 
     git clone https://github.com/astrophpeter/blast.git
+
+Create a conda environment called blast using the ``blast/environment.yml`` file.
+Assuming that you are in the top level blast directory:
+
+.. code:: none
+
+    conda env create -f environment.yml blast
+
+Then pip install all required packages using the ``blast/app/requirements.txt``
+file
+
+.. code: none
+
 
 
 
