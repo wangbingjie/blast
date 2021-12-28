@@ -19,4 +19,5 @@ jobs:
           $CONDA/bin/conda env update --file environment.yml --name base
           python -m pip install --upgrade pip
           pip install -r app/requirements.txt
+          cd app/
           python3 manage.py test host.tests -v 2
