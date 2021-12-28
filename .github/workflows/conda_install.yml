@@ -11,16 +11,16 @@ jobs:
       strategy:
         matrix:
           os: [ubuntu-latest, macos-latest]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-      - name: Display Python version
-        run: |
-          $CONDA/bin/conda env update --file environment.yml --name base
-          python -m pip install --upgrade pip
-          pip install -r app/requirements.txt
-          cd app/
-          python3 manage.py test host.tests -v 2
+      steps:
+        - uses: actions/checkout@v2
+        - name: Set up Python
+          uses: actions/setup-python@v2
+          with:
+            python-version: '3.8'
+        - name: Display Python version
+          run: |
+            $CONDA/bin/conda env update --file environment.yml --name base
+            python -m pip install --upgrade pip
+            pip install -r app/requirements.txt
+            cd app/
+            python3 manage.py test host.tests -v 2
