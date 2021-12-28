@@ -17,4 +17,5 @@ jobs:
       - name: Display Python version
         run: |
           $CONDA/bin/conda env update --file environment.yml --name base
+          conda init bash
           conda activate base
