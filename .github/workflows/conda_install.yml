@@ -19,4 +19,4 @@ jobs:
           python-version: '3.8'
       - name: Display Python version
         run: |
-        conda env create -f environment.yml
+          conda env create -f environment.yml
