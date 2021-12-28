@@ -18,4 +18,5 @@ jobs:
         with:
           python-version: '3.8'
       - name: Display Python version
-        run: python -c "import sys; print(sys.version)"
+        run: |
+        conda env create -f environment.yml
