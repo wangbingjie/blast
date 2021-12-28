@@ -19,4 +19,4 @@ jobs:
           python-version: '3.8'
       - name: Display Python version
         run: |
-          conda env create -f environment.yml
+          $CONDA/bin/conda env update --file environment.yml --name base
