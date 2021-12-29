@@ -7,9 +7,9 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-      strategy:
-        matrix:
-          os: [ubuntu-latest, macos-latest]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
