@@ -8,6 +8,7 @@
   test_ra_deg: 3.2348333
   test_dec_deg: 22.1002750
   vosa_filter_id: 2MASS/2MASS.H
+
 2MASS_J_extended_source:
   vizier_id: VII/233
   mag: J.K20e
@@ -69,7 +70,7 @@ WISE_W4_ALLWISE:
   test_dec_deg: 21.5771667
   vosa_filter_id: WISE/WISE.W4
 GALEX_FUV_source:
-  vizier_id: II/335
+  vizier_id: II/335/galex_ais
   mag: FUV.a
   mag_error: e_FUV.a
   ra: RAJ2000
@@ -79,7 +80,7 @@ GALEX_FUV_source:
   test_dec_deg: 21.5751472
   vosa_filter_id: GALEX/GALEX.FUV
 GALEX_NUV_source:
-  vizier_id: II/335
+  vizier_id: II/335/galex_ais
   mag: NUV.a
   mag_error: e_NUV.a
   ra: RAJ2000

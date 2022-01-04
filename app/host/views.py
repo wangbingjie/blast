@@ -12,19 +12,11 @@ def submit_transient(request):
         form = TransientForm(request.POST)
         if form.is_valid():
             ra, dec = form.cleaned_data['ra'], form.cleaned_data['dec']
-            #survey = survey_list('host/data/survey_metadata.yml')
             catalog = survey_list('host/data/catalog_metadata.yml')
             position = SkyCoord(ra=ra, dec=dec, unit='deg')
             catalog_data = download_catalog_data(position, catalog)
-            #images = download_image_data(SkyCoord(ra=ra, dec=dec, unit='deg'), survey)
-            #apertures = construct_all_apertures(SkyCoord(ra=ra, dec=dec, unit='deg'), images)
-            #bokeh_cutout_dict = plot_image_grid(images, apertures=apertures)
             bokeh_cutout_dict = plot_catalog_sed(catalog_data)
-
-            #all_surveys = [sur.name for sur in survey]
-            #missing_surveys = list(set(all_surveys) - images.keys())
-
-            #bokeh_cutout_dict.update({'missing_data': missing_surveys})
+            bokeh_cutout_dict['transient_name'] = form.cleaned_data['name']
             return render(request, 'results.html', bokeh_cutout_dict)
 
 
@@ -32,3 +24,10 @@ def submit_transient(request):
     return render(request, 'form.html', {'form': form})
 
 
+# survey = survey_list('host/data/survey_metadata.yml')
+# images = download_image_data(SkyCoord(ra=ra, dec=dec, unit='deg'), survey)
+# apertures = construct_all_apertures(SkyCoord(ra=ra, dec=dec, unit='deg'), images)
+# bokeh_cutout_dict = plot_image_grid(images, apertures=apertures)
+# all_surveys = [sur.name for sur in survey]
+# missing_surveys = list(set(all_surveys) - images.keys())
+# bokeh_cutout_dict.update({'missing_data': missing_surveys})
