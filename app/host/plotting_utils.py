@@ -24,7 +24,6 @@ def plot_image(figure, fits_image):
 
 def plot_aperture(figure, aperture):
     x, y = aperture.positions
-    print(aperture.a)
     source = ColumnDataSource(dict(x=[x], y=[y], w=[aperture.a], h=[aperture.b], theta=[aperture.theta]))
     glyph = Ellipse(x="x", y="y", width="w", height="h", angle="theta",
                     fill_color="#cab2d6",fill_alpha=0.1, line_color='red')
@@ -62,33 +61,60 @@ def plot_catalog_sed(catalog_dict):
     catalogs = survey_list('host/data/catalog_metadata.yml')
     filter_info = [filter_information(catalog) for catalog in catalogs]
 
-    plot = Plot(title='Catalog SED', width=600, height=300,
-        min_border=0, toolbar_location=None)
+    fig = figure(title='Spectral energy distribution', width=1200, height=400,
+                 min_border=0, toolbar_location=None, x_axis_type="log",
+                 x_axis_label="Wavelength [micro-m]", y_axis_label="Magnitude")
 
-    wavelengths = []
-    magnitudes = []
+    wavelengths, mags, mag_errors = [], [], []
 
     for catalog, data in catalog_dict.items():
-        filter_data = [filter for filter in filter_info if filter['name'] == catalog][0]
-        wavelengths.append(filter_data['WavelengthEff'])
-        magnitudes.append(data['mag'])
-        print(data)
+        filter_data = [filter for filter in filter_info
+                       if filter['name'] == catalog][0]
+        wavelengths.append(filter_data['WavelengthEff'] * 0.0001)
+        mags.append(data['mag'])
+        mag_errors.append((data['mag_error']))
 
-    print(wavelengths, magnitudes)
-    source = ColumnDataSource(dict(x=wavelengths, y=magnitudes))
-    glyph = Scatter(x="x", y="y", size=20, fill_color="#74add1",
-                    marker="circle")
-    plot.add_glyph(source, glyph)
 
-    xaxis = LinearAxis()
-    plot.add_layout(xaxis, 'below')
+    fig = plot_errorbar(fig, wavelengths, mags, yerr=mag_errors)
 
-    yaxis = LinearAxis()
-    plot.add_layout(yaxis, 'left')
+    #xaxis = LinearAxis()
+    #figure.add_layout(xaxis, 'below')
 
-    plot.add_layout(Grid(dimension=0, ticker=xaxis.ticker))
-    plot.add_layout(Grid(dimension=1, ticker=yaxis.ticker))
+    #yaxis = LinearAxis()
+    #fig.add_layout(yaxis, 'left')
 
-    script, div = components(plot)
-    return {'bokeh_cutout_script': script, 'bokeh_cutout_div': div}
+    #fig.add_layout(Grid(dimension=0, ticker=xaxis.ticker))
+    #fig.add_layout(Grid(dimension=1, ticker=yaxis.ticker))
+    script, div = components(fig)
+    return {'bokeh_sed_script': script, 'bokeh_sed_div': div}
+
+
+def plot_errorbar(figure, x, y, xerr=None, yerr=None, color='red',
+             point_kwargs={}, error_kwargs={}):
+    """
+    Plot data points with error bars on a bokeh plot
+    """
+    figure.circle(x, y, color=color, **point_kwargs)
+
+    if xerr:
+        x_err_x = []
+        x_err_y = []
+        for px, py, err in zip(x, y, xerr):
+            x_err_x.append((px - err, px + err))
+            x_err_y.append((py, py))
+        figure.multi_line(x_err_x, x_err_y, color=color, **error_kwargs)
+
+    if yerr:
+        y_err_x = []
+        y_err_y = []
+        for px, py, err in zip(x, y, yerr):
+            y_err_x.append((px, px))
+            y_err_y.append((py - err, py + err))
+        figure.multi_line(y_err_x, y_err_y, color=color, **error_kwargs)
+    return figure
+
+def plot_sed(figure, photometry_dict):
+    """
+    Plot photometry on SED
+    """
 
