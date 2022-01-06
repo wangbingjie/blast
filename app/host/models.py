@@ -49,17 +49,35 @@ class Filter(models.Model):
     image_download_method = models.CharField(max_length=20)
     pixel_size_arcsec = models.FloatField()
 
-
     objects = FilterManager()
 
 
-#class Catalog(models.Model):
-#    """
-#    Model to represent a pre produced photometric catalog
-#    """
-#    name = models.CharField(max_length=20)
-#    filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
-#    vizeir_id = models.CharField(max_length=20)
+class CatalogManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
+class Catalog(models.Model):
+    """
+    Model to represent a photometric catalog
+    """
+    name = models.CharField(max_length=20, unique=True)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
+    vizier_id = models.CharField(max_length=20)
+    id_column = models.CharField(max_length=20)
+    ra_column = models.CharField(max_length=20)
+    dec_column = models.CharField(max_length=20)
+
+    objects = CatalogManager()
+
+
+class CatalogPhotometry(models.Model):
+    name = models.CharField(max_length=20, unique=True)
+    mag_column = models.CharField(max_length=20)
+    mag_error_column = models.CharField(max_length=20)
+    filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
+    catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE)
+
 
 
 #class Image(models.Model):

@@ -1,0 +1,207 @@
+- model: host.Filter
+  fields:
+    name: 2MASS_H
+    survey: [2MASS]
+    sedpy_id: twomass_H
+    hips_id: CDS/P/2MASS/H
+    pixel_size_arcsec: 1.0
+    vosa_id: 2MASS/2MASS.H
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: 2MASS_J
+    survey: [2MASS]
+    sedpy_id: twomass_j
+    hips_id: CDS/P/2MASS/J
+    pixel_size_arcsec: 1.0
+    vosa_id: 2MASS/2MASS.J
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: 2MASS_K
+    survey: [2MASS]
+    sedpy_id: twomass_k
+    hips_id: CDS/P/2MASS/K
+    pixel_size_arcsec: 1.0
+    vosa_id: 2MASS/2MASS.K
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: WISE_W1
+    survey: [WISE]
+    sedpy_id: wise_w1
+    hips_id: CDS/P/WISE/W1
+    pixel_size_arcsec: 2.75
+    vosa_id: WISE/WISE.W1
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: WISE_W2
+    survey: [WISE]
+    sedpy_id: wise_w2
+    hips_id: CDS/P/WISE/W2
+    pixel_size_arcsec: 2.75
+    vosa_id: WISE/WISE.W2
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: WISE_W3
+    survey: [WISE]
+    sedpy_id: wise_w3
+    hips_id: CDS/P/WISE/W3
+    pixel_size_arcsec: 2.75
+    vosa_id: WISE/WISE.W3
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: WISE_W4
+    survey: [WISE]
+    sedpy_id: wise_w4
+    hips_id: CDS/P/WISE/W4
+    pixel_size_arcsec: 5.5
+    vosa_id: WISE/WISE.W4
+    image_download_method: hips
+- model: host.filter
+  fields:
+    name: GALEX_NUV
+    survey: [GALEX]
+    sedpy_id: galex_nuv
+    hips_id: CDS/P/GALEXGR6/AIS/NUV
+    pixel_size_arcsec: 1.5
+    vosa_id: GALEX/GALEX.NUV
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: GALEX_FUV
+    survey: [GALEX]
+    sedpy_id: galex_fuv
+    hips_id: CDS/P/GALEXGR6/AIS/FUV
+    pixel_size_arcsec: 1.5
+    vosa_id: GALEX/GALEX.FUV
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: PanSTARRS_g
+    survey: [PanSTARRS]
+    sedpy_id: panstarrs_g
+    hips_id: CDS/P/PanSTARRS/DR1/g
+    pixel_size_arcsec: 0.26
+    vosa_id: PAN-STARRS/PS1.g
+    image_download_method: custom
+- model: host.Filter
+  fields:
+    name: PanSTARRS_r
+    survey: [PanSTARRS]
+    sedpy_id: panstarrs_r
+    hips_id: CDS/P/PanSTARRS/DR1/r
+    pixel_size_arcsec: 0.26
+    vosa_id: PAN-STARRS/PS1.r
+    image_download_method: custom
+- model: host.Filter
+  fields:
+    name: PanSTARRS_i
+    survey: [PanSTARRS]
+    sedpy_id: panstarrs_i
+    hips_id: CDS/P/PanSTARRS/DR1/i
+    pixel_size_arcsec: 0.26
+    vosa_id: PAN-STARRS/PS1.i
+    image_download_method: custom
+- model: host.Filter
+  fields:
+    name: PanSTARRS_z
+    survey: [PanSTARRS]
+    sedpy_id: panstarrs_z
+    hips_id: CDS/P/PanSTARRS/DR1/z
+    pixel_size_arcsec: 0.26
+    vosa_id: PAN-STARRS/PS1.z
+    image_download_method: custom
+- model: host.Filter
+  fields:
+    name: PanSTARRS_y
+    survey: [PanSTARRS]
+    sedpy_id: panstarrs_y
+    hips_id: CDS/P/PanSTARRS/DR1/y
+    pixel_size_arcsec: 0.26
+    vosa_id: PAN-STARRS/PS1.y
+    image_download_method: custom
+- model: host.Filter
+  fields:
+    name: SDSS_i
+    survey: [SDSS]
+    sedpy_id: sdss_i
+    hips_id: CDS/P/SDSS9/i
+    pixel_size_arcsec: 0.29296875
+    vosa_id: SLOAN/SDSS.i
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: SDSS_r
+    survey: [SDSS]
+    sedpy_id: sdss_r
+    hips_id: CDS/P/SDSS9/r
+    pixel_size_arcsec: 0.29296875
+    vosa_id: SLOAN/SDSS.r
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: SDSS_u
+    survey: [SDSS]
+    sedpy_id: sdss_u
+    hips_id: CDS/P/SDSS9/u
+    pixel_size_arcsec: 0.29296875
+    vosa_id: SLOAN/SDSS.u
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: SDSS_z
+    survey: [SDSS]
+    sedpy_id: sdss_z
+    hips_id: CDS/P/SDSS9/z
+    pixel_size_arcsec: 0.29296875
+    vosa_id: SLOAN/SDSS.z
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: DES_g
+    survey: [DES]
+    sedpy_id: des_g
+    hips_id: CDS/P/DES-DR1/g
+    pixel_size_arcsec: 0.2637
+    vosa_id: CTIO/DECam.g
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: DES_r
+    survey: [DES]
+    sedpy_id: des_r
+    hips_id: CDS/P/DES-DR1/r
+    pixel_size_arcsec: 0.2637
+    vosa_id: CTIO/DECam.r
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: DES_i
+    survey: [DES]
+    sedpy_id: des_i
+    hips_id: CDS/P/DES-DR1/i
+    pixel_size_arcsec: 0.2637
+    vosa_id: CTIO/DECam.i
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: DES_z
+    survey: [DES]
+    sedpy_id: des_z
+    hips_id: CDS/P/DES-DR1/z
+    pixel_size_arcsec: 0.2637
+    vosa_id: CTIO/DECam.z
+    image_download_method: hips
+- model: host.Filter
+  fields:
+    name: DES_Y
+    survey: [DES]
+    sedpy_id: des_y
+    hips_id: CDS/P/DES-DR1/Y
+    pixel_size_arcsec: 0.2637
+    vosa_id: CTIO/DECam.y
+    image_download_method: hips
