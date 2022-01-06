@@ -6,7 +6,6 @@
   test_ra_deg: 120.0
   test_dec_deg: -60.0
   download_method: 'hips'
-
 2MASS_J:
   hips_id: 'CDS/P/2MASS/J'
   pixel_size_arcsec: 1.0
