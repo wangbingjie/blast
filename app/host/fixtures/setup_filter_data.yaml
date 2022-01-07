@@ -7,6 +7,10 @@
     pixel_size_arcsec: 1.0
     vosa_id: 2MASS/2MASS.H
     image_download_method: hips
+    wavelength_eff_angstrom: 16620.00
+    wavelength_min_angstrom: 14787.38
+    wavelength_max_angstrom: 18231.02
+    vega_zero_point_jansky: 1024.00
 - model: host.Filter
   fields:
     name: 2MASS_J
@@ -16,6 +20,10 @@
     pixel_size_arcsec: 1.0
     vosa_id: 2MASS/2MASS.J
     image_download_method: hips
+    wavelength_eff_angstrom: 12350.00
+    wavelength_min_angstrom: 10806.47
+    wavelength_max_angstrom: 14067.97
+    vega_zero_point_jansky: 1594.00
 - model: host.Filter
   fields:
     name: 2MASS_K
@@ -23,8 +31,12 @@
     sedpy_id: twomass_k
     hips_id: CDS/P/2MASS/K
     pixel_size_arcsec: 1.0
-    vosa_id: 2MASS/2MASS.K
+    vosa_id: 2MASS/2MASS.Ks
     image_download_method: hips
+    wavelength_eff_angstrom: 21590.00
+    wavelength_min_angstrom: 19543.69
+    wavelength_max_angstrom: 23552.40
+    vega_zero_point_jansky: 666.80
 - model: host.Filter
   fields:
     name: WISE_W1
@@ -34,6 +46,10 @@
     pixel_size_arcsec: 2.75
     vosa_id: WISE/WISE.W1
     image_download_method: hips
+    wavelength_eff_angstrom: 33526.00
+    wavelength_min_angstrom: 27540.97
+    wavelength_max_angstrom: 38723.88
+    vega_zero_point_jansky: 309.54
 - model: host.Filter
   fields:
     name: WISE_W2
@@ -43,6 +59,10 @@
     pixel_size_arcsec: 2.75
     vosa_id: WISE/WISE.W2
     image_download_method: hips
+    wavelength_eff_angstrom: 46028.00
+    wavelength_min_angstrom: 39633.26
+    wavelength_max_angstrom: 53413.60
+    vega_zero_point_jansky: 171.79
 - model: host.Filter
   fields:
     name: WISE_W3
@@ -52,6 +72,10 @@
     pixel_size_arcsec: 2.75
     vosa_id: WISE/WISE.W3
     image_download_method: hips
+    wavelength_eff_angstrom: 115608.00
+    wavelength_min_angstrom: 74430.44
+    wavelength_max_angstrom: 172613.43
+    vega_zero_point_jansky: 31.67
 - model: host.Filter
   fields:
     name: WISE_W4
@@ -61,6 +85,10 @@
     pixel_size_arcsec: 5.5
     vosa_id: WISE/WISE.W4
     image_download_method: hips
+    wavelength_eff_angstrom: 220883.00
+    wavelength_min_angstrom: 195200.83
+    wavelength_max_angstrom: 279107.24
+    vega_zero_point_jansky: 8.36
 - model: host.filter
   fields:
     name: GALEX_NUV
@@ -70,6 +98,10 @@
     pixel_size_arcsec: 1.5
     vosa_id: GALEX/GALEX.NUV
     image_download_method: hips
+    wavelength_eff_angstrom: 2304.74
+    wavelength_min_angstrom: 1692.52
+    wavelength_max_angstrom: 3006.67
+    vega_zero_point_jansky: 788.55
 - model: host.Filter
   fields:
     name: GALEX_FUV
@@ -79,6 +111,10 @@
     pixel_size_arcsec: 1.5
     vosa_id: GALEX/GALEX.FUV
     image_download_method: hips
+    wavelength_eff_angstrom: 1549.02
+    wavelength_min_angstrom: 1340.32
+    wavelength_max_angstrom: 1806.43
+    vega_zero_point_jansky: 520.73
 - model: host.Filter
   fields:
     name: PanSTARRS_g
@@ -88,6 +124,10 @@
     pixel_size_arcsec: 0.26
     vosa_id: PAN-STARRS/PS1.g
     image_download_method: custom
+    wavelength_eff_angstrom: 4810.88
+    wavelength_min_angstrom: 3943.40
+    wavelength_max_angstrom: 5593.27
+    vega_zero_point_jansky: 3893.00
 - model: host.Filter
   fields:
     name: PanSTARRS_r
@@ -97,6 +137,10 @@
     pixel_size_arcsec: 0.26
     vosa_id: PAN-STARRS/PS1.r
     image_download_method: custom
+    wavelength_eff_angstrom: 6156.36
+    wavelength_min_angstrom: 5386.23
+    wavelength_max_angstrom: 7035.65
+    vega_zero_point_jansky: 3135.50
 - model: host.Filter
   fields:
     name: PanSTARRS_i
@@ -106,6 +150,10 @@
     pixel_size_arcsec: 0.26
     vosa_id: PAN-STARRS/PS1.i
     image_download_method: custom
+    wavelength_eff_angstrom: 7503.68
+    wavelength_min_angstrom: 6778.45
+    wavelength_max_angstrom: 8304.37
+    vega_zero_point_jansky: 2577.03
 - model: host.Filter
   fields:
     name: PanSTARRS_z
@@ -115,6 +163,10 @@
     pixel_size_arcsec: 0.26
     vosa_id: PAN-STARRS/PS1.z
     image_download_method: custom
+    wavelength_eff_angstrom: 8668.56
+    wavelength_min_angstrom: 8028.00
+    wavelength_max_angstrom: 9346.00
+    vega_zero_point_jansky: 2273.05
 - model: host.Filter
   fields:
     name: PanSTARRS_y
@@ -124,6 +176,10 @@
     pixel_size_arcsec: 0.26
     vosa_id: PAN-STARRS/PS1.y
     image_download_method: custom
+    wavelength_eff_angstrom: 9613.45
+    wavelength_min_angstrom: 9100.50
+    wavelength_max_angstrom: 10838.50
+    vega_zero_point_jansky: 2203.66
 - model: host.Filter
   fields:
     name: SDSS_i
@@ -133,6 +189,10 @@
     pixel_size_arcsec: 0.29296875
     vosa_id: SLOAN/SDSS.i
     image_download_method: hips
+    wavelength_eff_angstrom: 4671.78
+    wavelength_min_angstrom: 3782.54
+    wavelength_max_angstrom: 5549.26
+    vega_zero_point_jansky: 3971.19
 - model: host.Filter
   fields:
     name: SDSS_r
@@ -142,6 +202,10 @@
     pixel_size_arcsec: 0.29296875
     vosa_id: SLOAN/SDSS.r
     image_download_method: hips
+    wavelength_eff_angstrom: 6141.12
+    wavelength_min_angstrom: 5415.34
+    wavelength_max_angstrom: 6989.14
+    vega_zero_point_jansky: 3142.02
 - model: host.Filter
   fields:
     name: SDSS_u
@@ -151,6 +215,10 @@
     pixel_size_arcsec: 0.29296875
     vosa_id: SLOAN/SDSS.u
     image_download_method: hips
+    wavelength_eff_angstrom: 3608.04
+    wavelength_min_angstrom: 3048.28
+    wavelength_max_angstrom: 4028.23
+    vega_zero_point_jansky: 1628.72
 - model: host.Filter
   fields:
     name: SDSS_z
@@ -160,6 +228,10 @@
     pixel_size_arcsec: 0.29296875
     vosa_id: SLOAN/SDSS.z
     image_download_method: hips
+    wavelength_eff_angstrom: 8922.78
+    wavelength_min_angstrom: 7960.44
+    wavelength_max_angstrom: 10833.25
+    vega_zero_point_jansky: 2227.03
 - model: host.Filter
   fields:
     name: DES_g
@@ -169,6 +241,10 @@
     pixel_size_arcsec: 0.2637
     vosa_id: CTIO/DECam.g
     image_download_method: hips
+    wavelength_eff_angstrom: 4770.83
+    wavelength_min_angstrom: 3925.42
+    wavelength_max_angstrom: 5529.96
+    vega_zero_point_jansky: 3905.01
 - model: host.Filter
   fields:
     name: DES_r
@@ -178,6 +254,10 @@
     pixel_size_arcsec: 0.2637
     vosa_id: CTIO/DECam.r
     image_download_method: hips
+    wavelength_eff_angstrom: 6371.33
+    wavelength_min_angstrom: 5519.97
+    wavelength_max_angstrom: 7233.72
+    vega_zero_point_jansky: 3027.32
 - model: host.Filter
   fields:
     name: DES_i
@@ -187,6 +267,10 @@
     pixel_size_arcsec: 0.2637
     vosa_id: CTIO/DECam.i
     image_download_method: hips
+    wavelength_eff_angstrom: 7774.19
+    wavelength_min_angstrom: 6948.18
+    wavelength_max_angstrom: 8645.68
+    vega_zero_point_jansky: 2467.82
 - model: host.Filter
   fields:
     name: DES_z
@@ -196,6 +280,10 @@
     pixel_size_arcsec: 0.2637
     vosa_id: CTIO/DECam.z
     image_download_method: hips
+    wavelength_eff_angstrom: 9157.90
+    wavelength_min_angstrom: 8341.20
+    wavelength_max_angstrom: 10074.26
+    vega_zero_point_jansky: 2247.33
 - model: host.Filter
   fields:
     name: DES_Y
@@ -205,3 +293,7 @@
     pixel_size_arcsec: 0.2637
     vosa_id: CTIO/DECam.y
     image_download_method: hips
+    wavelength_eff_angstrom: 9886.35
+    wavelength_min_angstrom: 9364.77
+    wavelength_max_angstrom: 10685.78
+    vega_zero_point_jansky: 2146.18

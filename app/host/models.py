@@ -48,6 +48,10 @@ class Filter(models.Model):
     vosa_id = models.CharField(max_length=20)
     image_download_method = models.CharField(max_length=20)
     pixel_size_arcsec = models.FloatField()
+    wavelength_eff_angstrom = models.FloatField()
+    wavelength_min_angstrom = models.FloatField()
+    wavelength_max_angstrom = models.FloatField()
+    vega_zero_point_jansky = models.FloatField()
 
     objects = FilterManager()
 
