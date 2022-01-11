@@ -38,7 +38,12 @@ Run the image and make blast visible to your machine on port 8000
 
     docker run --publish 8000:8000 image_ID
 
-You can find image_ID in the Docker Desktop app or by running ``docker images``.
+You can find image_ID in the Docker Desktop app or by running
+
+.. code:: none
+
+    docker images
+
 Then go to `localhost:8000/host/ <localhost:8000/host/>`_ in your web browser
 and blast should be running.
 

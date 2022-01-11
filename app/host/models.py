@@ -1,6 +1,5 @@
 from django.db import models
 
-
 #class Transient(models.Model):
 #    """
 #    Model to represent a transient
@@ -10,13 +9,13 @@ from django.db import models
 #    dec_deg = models.FloatField()
 
 
-#class Host(models.Model):
-#    """
-#    Model to represent a Host Galaxy
-#    """
-#    name = models.CharField(max_length=20)
-#    ra_deg = models.FloatField()
-#    dec_deg = models.FloatField()
+class Host(models.Model):
+    """
+    Model to represent a Host Galaxy
+    """
+    name = models.CharField(max_length=20)
+    ra_deg = models.FloatField()
+    dec_deg = models.FloatField()
 
 
 class SurveyManager(models.Manager):
@@ -55,6 +54,9 @@ class Filter(models.Model):
 
     objects = FilterManager()
 
+    def __str__(self):
+        return self.name
+
 
 class CatalogManager(models.Manager):
     def get_by_natural_key(self, name):
@@ -81,6 +83,23 @@ class CatalogPhotometry(models.Model):
     mag_error_column = models.CharField(max_length=20)
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
     catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE)
+
+
+def fits_file_path(instance, filename):
+    """
+    Constructs a file path for a fits image
+    """
+    return f'{instance.host}/{instance.filter.survey}/{instance.filter}.fits'
+
+
+
+class Cutout(models.Model):
+    """
+    Model to represent a cutout image of a host galaxy
+    """
+    filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
+    host = models.ForeignKey(Host, on_delete=models.CASCADE)
+    fits = models.FileField(upload_to=fits_file_path, null=True, blank=True)
 
 
 

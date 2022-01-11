@@ -3,15 +3,23 @@ from .forms import TransientForm
 from astropy.coordinates import SkyCoord
 from .host_utils import survey_list, construct_all_apertures
 from .catalog_photometry import download_catalog_data
-from .cutouts import download_image_data
+from .cutouts import download_and_save_cutouts
 from.plotting_utils import plot_image_grid, plot_catalog_sed
+from .models import Filter, Host
 
 def submit_transient(request):
 
     if request.method == 'POST':
         form = TransientForm(request.POST)
         if form.is_valid():
+            name = form.cleaned_data['name']
             ra, dec = form.cleaned_data['ra'], form.cleaned_data['dec']
+
+            host = Host(name=name, ra_deg=ra, dec_deg=dec)
+            host.save()
+
+            download_and_save_cutouts(host)
+
             catalog = survey_list('host/data/catalog_metadata.yml')
             position = SkyCoord(ra=ra, dec=dec, unit='deg')
             catalog_data = download_catalog_data(position, catalog)
