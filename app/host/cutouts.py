@@ -5,9 +5,12 @@ from astroquery.hips2fits import hips2fits
 import pandas as pd
 from astropy.io import fits
 from astropy.coordinates import SkyCoord
+from .models import Filter, Cutout
+from django.conf import settings
+import os
 
-
-def download_image_data(position, survey_list, fov=Quantity(0.1, unit='deg')):
+def download_and_save_cutouts(host, fov=Quantity(0.1, unit='deg'),
+                              media_root=settings.MEDIA_ROOT):
     """
     Download all available imaging from a list of surveys
     Parameters
@@ -27,13 +30,30 @@ def download_image_data(position, survey_list, fov=Quantity(0.1, unit='deg')):
         Dictionary of images with the survey names as keys and fits images
         as values.
     """
-    images = []
+    position = SkyCoord(host.ra_deg, host.dec_deg, unit='deg')
 
-    for survey in survey_list:
-        images.append(cutout(position, survey, fov=fov))
+    for filter in Filter.objects.all():
+        fits = cutout(position, filter, fov=fov)
+        if fits:
+            save_dir = f'{media_root}/{host.name}/{filter.survey.name}/'
+            os.makedirs(save_dir, exist_ok=True)
+            path_to_fits = save_dir + f'{filter.name}.fits'
+            fits.writeto(path_to_fits, overwrite=True)
 
-    return {survey.name: image for survey, image in zip(survey_list, images)
-              if image is not None}
+            cutout_object = Cutout(filter=filter, host=host)
+            cutout_object.fits.name = path_to_fits
+            cutout_object.save()
+
+
+
+
+
+
+    #for survey in survey_list:
+    #    images.append(cutout(position, survey, fov=fov))
+
+    #return {survey.name: image for survey, image in zip(survey_list, images)
+    #          if image is not None}
 
 def panstarrs_image_filename(position ,image_size=None, filter=None):
     """Query panstarrs service to get a list of image names
@@ -55,6 +75,7 @@ def panstarrs_image_filename(position ,image_size=None, filter=None):
 
     filename_table = pd.read_csv(url, delim_whitespace=True)['filename']
     return filename_table[0] if len(filename_table) > 0 else None
+
 
 def hips_cutout(position, survey, image_size=None):
     """
@@ -136,7 +157,7 @@ def cutout(position, survey, fov=Quantity(0.1, unit='deg')):
     """
     num_pixels = int(fov.to(u.arcsec).value / survey.pixel_size_arcsec)
 
-    if survey.download_method == 'hips':
+    if survey.image_download_method == 'hips':
         try:
             fits = hips_cutout(position, survey, image_size=num_pixels)
         except:
