@@ -1,5 +1,6 @@
 alabaster==0.7.12
 asgiref==3.4.1
+astro-ghost==0.1.22
 astro-prospector==1.0.0
 astropy==5.0
 astroquery==0.4.4

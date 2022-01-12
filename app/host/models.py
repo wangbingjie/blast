@@ -1,13 +1,5 @@
 from django.db import models
 
-#class Transient(models.Model):
-#    """
-#    Model to represent a transient
-#    """
-#    name = models.CharField(max_length=20)
-#    ra_deg = models.FloatField()
-#    dec_deg = models.FloatField()
-
 
 class Host(models.Model):
     """
@@ -16,6 +8,18 @@ class Host(models.Model):
     name = models.CharField(max_length=20)
     ra_deg = models.FloatField()
     dec_deg = models.FloatField()
+
+class Transient(models.Model):
+    """
+    Model to represent a transient
+    """
+    name = models.CharField(max_length=20)
+    ra_deg = models.FloatField()
+    dec_deg = models.FloatField()
+    host = models.ForeignKey(Host,
+                             on_delete=models.CASCADE,
+                             null=True,
+                             blank=True)
 
 
 class SurveyManager(models.Manager):
