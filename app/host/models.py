@@ -20,7 +20,8 @@ class Transient(models.Model):
                              on_delete=models.CASCADE,
                              null=True,
                              blank=True)
-
+    processing_status = models.CharField(max_length=20,
+                                         default='not processed')
 
 class SurveyManager(models.Manager):
     def get_by_natural_key(self, name):

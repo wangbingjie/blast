@@ -5,7 +5,8 @@ from .host_utils import survey_list, construct_all_apertures
 from .catalog_photometry import download_catalog_data
 from .cutouts import download_and_save_cutouts
 from.plotting_utils import plot_image_grid, plot_catalog_sed
-from .models import Filter, Host
+from .models import Filter, Host, Transient
+from .ghost import find_and_save_host
 
 def submit_transient(request):
 
@@ -14,11 +15,11 @@ def submit_transient(request):
         if form.is_valid():
             name = form.cleaned_data['name']
             ra, dec = form.cleaned_data['ra'], form.cleaned_data['dec']
-
-            host = Host(name=name, ra_deg=ra, dec_deg=dec)
-            host.save()
-
+            transient = Transient(name=name, ra_deg=ra, dec_deg=dec)
+            host = find_and_save_host(transient)
             download_and_save_cutouts(host)
+
+
 
             catalog = survey_list('host/data/catalog_metadata.yml')
             position = SkyCoord(ra=ra, dec=dec, unit='deg')
@@ -30,6 +31,11 @@ def submit_transient(request):
 
     form = TransientForm()
     return render(request, 'form.html', {'form': form})
+
+
+def transient_list(request):
+    transients = Transient.objects.all()
+    return render(request, 'transient_list.html', {'transients': transients})
 
 
 # survey = survey_list('host/data/survey_metadata.yml')

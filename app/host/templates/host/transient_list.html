@@ -1,0 +1,28 @@
+{% extends 'host/base.html' %}
+
+{% block title %} Transients {% endblock %}
+
+{% block body %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Transient</th>
+      <th scope="col">Right Ascension</th>
+      <th scope="col">Declination</th>
+      <th scope="col">Processing Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for transient in transients %}
+    <tr>
+      <th scope="row">{{transient.name}}</th>
+      <td>{{transient.ra_deg}}</td>
+      <td>{{transient.dec_deg}}</td>
+      <td>{{transient.processing_status}}</td>
+    </tr>
+   {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
