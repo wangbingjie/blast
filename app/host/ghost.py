@@ -1,4 +1,4 @@
-from astro_ghost.ghostHelperFunctions import getTransientHosts
+from astro_ghost.ghostHelperFunctions import getTransientHosts, getGHOST
 from astropy.coordinates import SkyCoord
 import glob
 import os
@@ -41,7 +41,7 @@ def run_ghost(transient):
     else:
         host = Host(ra_deg=host_data['raMean'][0],
                     dec_deg=host_data['raMean'][0],
-                    name=host_data['Name'][0])
+                    name='test')
 
     return host
 
@@ -50,15 +50,12 @@ def find_and_save_host(transient):
     """
     Runs matching algorthim to find host save it to the database.
     """
+    getGHOST(real=False, verbose=1)
     host = run_ghost(transient)
-
     if host is not None:
         host.save()
         transient.host = host
         transient.save()
-        match_status = True
-    else:
-        match_status = False
+    return host
 
-    return match_status
 
