@@ -51,9 +51,9 @@ def ingest_new_transients(sandbox=False):
 
     config = {'tns_marker': tns_marker, 'tns_bot_api_key': TNS_BOT_API_KEY,
               'tns_api_url': tns_api_url}
-    search_results = search_tns(date(2022, 1, 1), config)
+    search_results = search_tns(date(2022, 1, 19), config)
 
-    print(type(search_results.text))
+    print(search_results.text)
 
     return None
 
