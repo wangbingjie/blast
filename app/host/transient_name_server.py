@@ -4,6 +4,8 @@ from collections import OrderedDict
 import json
 import requests
 from datetime import date
+import time
+from .models import Transient
 
 def get_tns_credentials():
     """
@@ -19,21 +21,62 @@ def get_tns_credentials():
 
     return {credential: os.environ[credential] for credential in credentials}
 
-def search_tns(time_after, tns_config):
+def query_tns_api(url_endpoint, data_obj, tns_config):
     """
-    Queries TNS for transients with public timestamp > time_after.
+    Query TNS API
     """
-    search_obj = [("ra", ""), ("dec", ""), ("radius", ""), ("units", ""),
-                  ("objname", ""), ("internal_name", ""),
-                  ("public_timestamp", time_after.isoformat())]
-    search_url = tns_config['tns_api_url'] + "/search"
     headers = {'User-Agent': tns_config['tns_marker']}
-    json_file = OrderedDict(search_obj)
+    json_file = OrderedDict(data_obj)
     search_data = {'api_key': tns_config['tns_bot_api_key'],
                    'data': json.dumps(json_file)}
-    return requests.post(search_url, headers=headers, data=search_data)
+    search_url = tns_config['tns_api_url'] + url_endpoint
+    response = requests.post(search_url, headers=headers, data=search_data)
+    response = json.loads(response.text)
 
-def ingest_new_transients(sandbox=False):
+    # if we've made too many requests to the api wait and then try again
+    if response['id_code'] == 429:
+        time_util_rest = int(response['data']['total']['reset'])
+        time.sleep(time_util_rest + 1)
+        response = requests.post(search_url, headers=headers, data=search_data)
+        response = json.loads(response.text)
+
+    if response['id_code'] == 200:
+        response_data = response['data']['reply']
+    else:
+        response_data = None
+    return response_data
+
+def get_transients_from_tns(time_after, tns_config):
+    """
+    Gets transient data from TNS for all transients with public
+    timestamp > time_after.
+    """
+    search_obj = [("public_timestamp", time_after.isoformat())]
+    transients = query_tns_api('/Search', search_obj, tns_config)
+
+    blast_transients = []
+    for transient in transients:
+        get_obj = [("objname", transient['objname']),
+                   ("objid", transient['objid']),
+                   ("photometry", "0"),
+                   ("spectra", "0")]
+        tns_data = query_tns_api('/object', get_obj, tns_config)
+        blast_transients.append(tns_to_blast_transient(tns_data))
+
+    return blast_transients
+
+
+def tns_to_blast_transient(tns_transient):
+    """Convert TNS transient into blast transient data model"""
+    blast_transient = Transient(tns_name=tns_transient['objname'],
+                                tns_id=tns_transient['objid'],
+                                ra_deg= tns_transient['radeg'],
+                                dec_deg=tns_transient['decdeg'],
+                                tns_prefix=tns_transient['name_prefix'])
+    return blast_transient
+
+
+def ingest_new_transients(date_after, sandbox=False):
     """
     Ingest new transients from the transient name server
     """
@@ -51,10 +94,9 @@ def ingest_new_transients(sandbox=False):
 
     config = {'tns_marker': tns_marker, 'tns_bot_api_key': TNS_BOT_API_KEY,
               'tns_api_url': tns_api_url}
-    search_results = search_tns(date(2022, 1, 1), config)
+    transients = get_transients_from_tns(date_after, config)
 
-    print(type(search_results.text))
+    for transient in transients: transient.save()
 
     return None
 
-ingest_new_transients()
