@@ -7,6 +7,8 @@ from .cutouts import download_and_save_cutouts
 from.plotting_utils import plot_image_grid, plot_catalog_sed
 from .models import Filter, Host, Transient
 from .ghost import find_and_save_host
+from .transient_name_server import ingest_new_transients
+from datetime import date
 
 def submit_transient(request):
 
@@ -34,6 +36,7 @@ def submit_transient(request):
 
 
 def transient_list(request):
+    ingest_new_transients(date(2022, 1, 18))
     transients = Transient.objects.all()
     return render(request, 'transient_list.html', {'transients': transients})
 
