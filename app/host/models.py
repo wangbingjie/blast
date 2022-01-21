@@ -13,7 +13,9 @@ class Transient(models.Model):
     """
     Model to represent a transient
     """
-    name = models.CharField(max_length=20)
+    tns_name = models.CharField(max_length=20, blank=True, null=True)
+    tns_id = models.CharField(max_length=20, blank=True, null=True)
+    tns_prefix = models.CharField(max_length=20, blank=True, null=True)
     ra_deg = models.FloatField()
     dec_deg = models.FloatField()
     host = models.ForeignKey(Host,
