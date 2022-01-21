@@ -1,4 +1,5 @@
 alabaster==0.7.12
+amqp==5.0.9
 asgiref==3.4.1
 astro-ghost==0.1.22
 astro-prospector==1.0.0
@@ -6,9 +7,15 @@ astropy==5.0
 astroquery==0.4.4
 Babel==2.9.1
 beautifulsoup4==4.10.0
+billiard==3.6.4.0
 bokeh==2.4.2
+celery==5.2.3
 certifi==2021.10.8
 charset-normalizer==2.0.8
+click==8.0.3
+click-didyoumean==0.3.0
+click-plugins==1.1.1
+click-repl==0.2.0
 cycler==0.11.0
 DateTime==4.3
 Django==3.2.9
@@ -28,6 +35,7 @@ joblib==1.1.0
 joypy==0.2.5
 keyring==23.4.0
 kiwisolver==1.3.2
+kombu==5.2.3
 MarkupSafe==2.0.1
 matplotlib==3.5.0
 mimeparse==0.1.3
@@ -37,6 +45,7 @@ pandas==1.3.4
 photutils==1.2.0
 Pillow==8.4.0
 pip==21.3.1
+prompt-toolkit==3.0.24
 pyerfa==2.0.0.1
 Pygments==2.10.0
 pyparsing==3.0.6
@@ -69,6 +78,8 @@ tomli==1.2.2
 tornado==6.1
 typing_extensions==4.0.0
 urllib3==1.26.7
+vine==5.0.0
+wcwidth==0.2.5
 webencodings==0.5.1
 wheel==0.37.0
 zipp==3.6.0
