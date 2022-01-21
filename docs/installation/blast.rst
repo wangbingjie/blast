@@ -68,13 +68,31 @@ Assuming that you are in the top level blast directory:
 
     conda env create -f environment.yml
 
-Acitivate the conda environment and then pip install all required packages
+Activate the conda environment and then pip install all required packages
 using the ``blast/app/requirements.txt`` file
 
 .. code:: none
 
     conda activate blast
-    pip3 install -r app/requirements.txt
+
+Install pip in the environment
+
+.. code:: none
+
+    conda install pip
+
+Locate the pip for the conda environment by running
+
+.. code:: none
+
+    which -a pip
+
+which will produce a few paths, find the path with ``blast/`` in it and pip
+install the rest of the requirements
+
+.. code:: none
+
+    your_pip_path install -r app/requirements.txt
 
 
 
