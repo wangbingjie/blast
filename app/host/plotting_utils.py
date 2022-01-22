@@ -3,8 +3,8 @@ from bokeh.layouts import gridplot
 from bokeh.plotting import figure
 from bokeh.embed import components
 from astropy.wcs import WCS
-from .host_utils import survey_list
-from .catalog_photometry import filter_information
+from host.host_utils import survey_list
+from host.catalog_photometry import filter_information
 import numpy as np
 
 
