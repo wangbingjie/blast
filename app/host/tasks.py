@@ -5,7 +5,7 @@ import datetime
 
 @shared_task()
 def ingest_recent_tns_data():
-    time_after = datetime.datetime.now() - datetime.timedelta(hours=3)
+    time_after = datetime.datetime.now() - datetime.timedelta(days=1)
     ingest_new_transients(time_after)
 
 
