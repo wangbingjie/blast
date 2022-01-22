@@ -44,7 +44,7 @@ You can find image_ID in the Docker Desktop app or by running
 
     docker images
 
-Then go to `localhost:8000/host/ <localhost:8000/host/>`_ in your web browser
+Then go to `localhost:8000/<localhost:8000/>`_ in your web browser
 and blast should be running.
 
 Native install
@@ -54,8 +54,8 @@ The other option to install blast is a native install. The recommended way to do
 this is to create an isolated python environment and then install all the required
 packages within that environment.
 
-Conda
------
+Install the Django app with Conda
+---------------------------------
 
 .. code:: none
 
@@ -93,6 +93,34 @@ install the rest of the requirements
 .. code:: none
 
     your_pip_path install -r app/requirements.txt
+
+Set up the transient name server bot
+------------------------------------
+
+For blast to ingest live data from the
+`transient name server (TNS) <https://www.wis-tns.org/>`_ you need to
+credentials for a TNS bot. To set up a TNS bot go
+`here <https://www.wis-tns.org/user/register>`_ and create a TNS user account.
+To avoid exposing these credentials blast looks for them in your environment.
+Specifically, in your environment you need the following variables set:
+
+.. code:: none
+
+    export TNS_BOT_API_KEY=your_api_key
+    export TNS_BOT_ID=your_bot_id
+    export TNS_BOT_USERNAME=your_bot_user_name
+
+
+Populate the database
+---------------------
+
+In order for blast to run you need to populate the backend databases with meta
+information about surveys and external services blast uses. To do this run the
+commands in the ``blast/app/populate_database_commands..txt``
+
+.. code:: none
+
+    bash populate_database_commands.txt
 
 
 
