@@ -19,6 +19,8 @@ click-repl==0.2.0
 cycler==0.11.0
 DateTime==4.3
 Django==3.2.9
+django-celery-beat==2.2.1
+django-timezone-field==4.2.3
 docutils==0.17.1
 fonttools==4.28.2
 furo==2021.11.23
@@ -49,6 +51,7 @@ prompt-toolkit==3.0.24
 pyerfa==2.0.0.1
 Pygments==2.10.0
 pyparsing==3.0.6
+python-crontab==2.6.0
 python-dateutil==2.8.2
 pytz==2021.3
 pyvo==1.1
