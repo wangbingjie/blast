@@ -32,7 +32,7 @@ def query_tns_api(url_endpoint, data_obj, tns_config):
     search_url = tns_config['tns_api_url'] + url_endpoint
     response = requests.post(search_url, headers=headers, data=search_data)
     response = json.loads(response.text)
-    print(search_data)
+
     # if we've made too many requests to the api wait and then try again
     if response['id_code'] == 429:
         time_util_rest = int(response['data']['total']['reset'])
@@ -43,7 +43,7 @@ def query_tns_api(url_endpoint, data_obj, tns_config):
     if response['id_code'] == 200:
         response_data = response['data']['reply']
     else:
-        response_data = None
+        response_data = []
     return response_data
 
 def get_transients_from_tns(time_after, tns_config):
@@ -99,7 +99,3 @@ def ingest_new_transients(date_after, sandbox=False):
     for transient in transients: transient.save()
 
     return None
-
-import datetime
-time = datetime.datetime.now() - datetime.timedelta(hours=3)
-ingest_new_transients(time)
