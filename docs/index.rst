@@ -8,10 +8,10 @@ Welcome to blast's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :hidden:
-   :caption: Installation
 
    installation/blast
+   develop/models
+
 
 .. image:: https://github.com/astrophpeter/blast/workflows/Main%20Branch%20CI/badge.svg?branch=main
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
