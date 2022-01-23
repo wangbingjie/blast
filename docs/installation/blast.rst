@@ -44,7 +44,7 @@ You can find image_ID in the Docker Desktop app or by running
 
     docker images
 
-Then go to `localhost:8000/<localhost:8000/>`_ in your web browser
+Then go to `localhost:8000/ <https://localhost:8000/>`_ in your web browser
 and blast should be running.
 
 Native install

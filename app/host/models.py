@@ -4,14 +4,37 @@ from django.db import models
 class Host(models.Model):
     """
     Model to represent a Host Galaxy
+
+    Attributes:
+        name (django.db.model.CharField(max_length=20)): name of the host galaxy
+        ra_deg (django.db.model.FloatField): Right Ascension (ICRS) in decimal
+            degrees of the host
+        deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
+            of the host
     """
     name = models.CharField(max_length=20)
+
     ra_deg = models.FloatField()
     dec_deg = models.FloatField()
 
 class Transient(models.Model):
     """
     Model to represent a transient
+
+    Attributes:
+        tns_name (django.db.model.CharField(max_length=20)): Transient Name
+            Server name of the transient
+        tns_id (models.CharField(max_length=20)): Transient Name Server ID
+        tns_prefix (models.CharField(max_length=20)): Transient Name Server name
+            prefix.
+        ra_deg (django.db.model.FloatField): Right Ascension (ICRS) in decimal
+            degrees of the transient
+        deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
+            of the transient
+        host (django.db.model.ForeignKey(Host, on_delete=models.CASCADE, null=True,blank=True):
+            ForeignKey pointing to a :class:Host representing a transients host galaxy
+        processing_status (models.CharField(max_length=20) : Current processing
+            status on the blast web app
     """
     tns_name = models.CharField(max_length=20, blank=True, null=True)
     tns_id = models.CharField(max_length=20, blank=True, null=True)
