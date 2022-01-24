@@ -2,3 +2,4 @@ furo
 sphinx-copybutton
 django
 celery
+django_celery_beat
