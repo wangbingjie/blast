@@ -6,6 +6,7 @@ import requests
 from datetime import date
 import time
 from host.models import Transient
+from .decorators import save_external_resource_call
 
 def get_tns_credentials():
     """
@@ -21,6 +22,7 @@ def get_tns_credentials():
 
     return {credential: os.environ[credential] for credential in credentials}
 
+@save_external_resource_call(resource_name='Transient Name Server')
 def query_tns_api(url_endpoint, data_obj, tns_config):
     """
     Query TNS API
@@ -32,13 +34,20 @@ def query_tns_api(url_endpoint, data_obj, tns_config):
     search_url = tns_config['tns_api_url'] + url_endpoint
     response = requests.post(search_url, headers=headers, data=search_data)
     response = json.loads(response.text)
+    reponse_status = response['id_code']
+    return {'response_status': reponse_status, 'response': response}
 
+
+def rate_limit_query_tns_api(url_endpoint, data_obj, tns_config):
+    """
+    Query TNS API but sleep when the api call rate is reached.
+    """
+    response = query_tns_api(url_endpoint, data_obj, tns_config)['response']
     # if we've made too many requests to the api wait and then try again
     if response['id_code'] == 429:
         time_util_rest = int(response['data']['total']['reset'])
         time.sleep(time_util_rest + 1)
-        response = requests.post(search_url, headers=headers, data=search_data)
-        response = json.loads(response.text)
+        response = query_tns_api(url_endpoint, data_obj, tns_config)['response']
 
     if response['id_code'] == 200:
         response_data = response['data']['reply']
@@ -60,7 +69,7 @@ def get_transients_from_tns(time_after, tns_config):
                    ("objid", transient['objid']),
                    ("photometry", "0"),
                    ("spectra", "0")]
-        tns_data = query_tns_api('/object', get_obj, tns_config)
+        tns_data = rate_limit_query_tns_api('/object', get_obj, tns_config)
         blast_transients.append(tns_to_blast_transient(tns_data))
 
     return blast_transients
