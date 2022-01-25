@@ -19,34 +19,36 @@ class Host(models.Model):
 
 class Transient(models.Model):
     """
-    Model to represent a transient
+    Model to represent a transient.
 
     Attributes:
-        tns_name (django.db.model.CharField(max_length=20)): Transient Name
-            Server name of the transient
-        tns_id (models.CharField(max_length=20)): Transient Name Server ID
-        tns_prefix (models.CharField(max_length=20)): Transient Name Server name
-            prefix.
+        tns_name (django.db.model.CharField): Transient Name
+            Server name of the transient, character limit = 20.
+        tns_id (models.CharField): Transient Name Server ID,
+            character limit = 20.
+        tns_prefix (models.CharField): Transient Name Server name
+            prefix, character limit = 20.
         ra_deg (django.db.model.FloatField): Right Ascension (ICRS) in decimal
-            degrees of the transient
-        deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
-            of the transient
-        host (django.db.model.ForeignKey(Host, on_delete=models.CASCADE, null=True,blank=True):
-            ForeignKey pointing to a :class:Host representing a transients host galaxy
-        processing_status (models.CharField(max_length=20) : Current processing
-            status on the blast web app
+            degrees of the transient.
+        deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal
+            degrees of the transient.
+        host (django.db.model.ForeignKey): ForeignKey pointing to a :class:Host
+            representing a transient's host galaxy.
+        public_timestamp (django.db.model.DateTimeField): Transient name server
+            public timestamp for the transient. Field can be null or blank. On
+            Delete is set to cascade.
+        host_match_status (models.CharField): Processing host match status for
+            house keeping on the blast web app, character limit = 20. Field can
+            be null or blank.
     """
-    tns_name = models.CharField(max_length=20, blank=True, null=True)
-    tns_id = models.CharField(max_length=20, blank=True, null=True)
-    tns_prefix = models.CharField(max_length=20, blank=True, null=True)
+    tns_name = models.CharField(max_length=20)
+    tns_id = models.CharField(max_length=20)
+    tns_prefix = models.CharField(max_length=20)
     ra_deg = models.FloatField()
     dec_deg = models.FloatField()
-    host = models.ForeignKey(Host,
-                             on_delete=models.CASCADE,
-                             null=True,
-                             blank=True)
-    processing_status = models.CharField(max_length=20,
-                                         default='not processed')
+    public_timestamp = models.DateTimeField()
+    host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
+    host_match_status = models.CharField(max_length=20, null=True, blank=True)
 
 class SurveyManager(models.Manager):
     def get_by_natural_key(self, name):
