@@ -67,18 +67,32 @@ def get_transients_from_tns(time_after, tns_config):
 
 
 def tns_to_blast_transient(tns_transient):
-    """Convert TNS transient into blast transient data model"""
+    """Convert transient name server transient into blast transient data model.
+
+    Args:
+        tns_transient (Dict): Dictionary containing transient name server
+            transient information.
+        blast_transient (Transient): Transient object to be updated with the
+            tns_transient data.
+    Returns:
+        blast_transient (Transient): Transient object with the
+            tns_transient data.
+    """
     blast_transient = Transient(tns_name=tns_transient['objname'],
                                 tns_id=tns_transient['objid'],
-                                ra_deg= tns_transient['radeg'],
+                                ra_deg=tns_transient['radeg'],
                                 dec_deg=tns_transient['decdeg'],
-                                tns_prefix=tns_transient['name_prefix'])
+                                tns_prefix=tns_transient['name_prefix'],
+                                public_timestamp=tns_transient['public_timestamp'])
     return blast_transient
 
-
-def ingest_new_transients(date_after, sandbox=False):
+def get_recent_transients(date_after, sandbox=False):
     """
-    Ingest new transients from the transient name server
+    Get new transients from the transient name server.
+
+    Args:
+        data_after (datetime.datetime):
+
     """
     bot = get_tns_credentials()
     TNS_BOT_ID, TNS_BOT_NAME = bot['TNS_BOT_ID'], bot['TNS_BOT_NAME']
@@ -94,8 +108,4 @@ def ingest_new_transients(date_after, sandbox=False):
 
     config = {'tns_marker': tns_marker, 'tns_bot_api_key': TNS_BOT_API_KEY,
               'tns_api_url': tns_api_url}
-    transients = get_transients_from_tns(date_after, config)
-
-    for transient in transients: transient.save()
-
-    return None
+    return get_transients_from_tns(date_after, config)
