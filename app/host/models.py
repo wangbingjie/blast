@@ -3,17 +3,17 @@ from django.db import models
 
 class Host(models.Model):
     """
-    Model to represent a Host Galaxy
+    Model to represent a host galaxy
 
     Attributes:
-        name (django.db.model.CharField(max_length=20)): name of the host galaxy
+        name (django.db.model.CharField): Name of the host galaxy, character
+            limit = 20.
         ra_deg (django.db.model.FloatField): Right Ascension (ICRS) in decimal
             degrees of the host
         deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
             of the host
     """
     name = models.CharField(max_length=20)
-
     ra_deg = models.FloatField()
     dec_deg = models.FloatField()
 
@@ -49,6 +49,21 @@ class Transient(models.Model):
     public_timestamp = models.DateTimeField()
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
     host_match_status = models.CharField(max_length=20, null=True, blank=True)
+
+class ExternalResourceCall(models.Model):
+    """
+    A model to represent a call to a call to an external resource.
+
+    Attributes:
+        resource_name (models.CharField): Name of the external resource.
+        times_called (models.models.DateTimeField) Time the external resource
+            was called.
+        response_status (models.CharField): Response status returned when the
+            external resource was requested.
+    """
+    resource_name = models.CharField(max_length=20)
+    time_called = models.DateTimeField()
+    response_status = models.CharField(max_length=20)
 
 class SurveyManager(models.Manager):
     def get_by_natural_key(self, name):
