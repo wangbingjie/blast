@@ -24,8 +24,7 @@ class Transient(models.Model):
     Attributes:
         tns_name (django.db.model.CharField): Transient Name
             Server name of the transient, character limit = 20.
-        tns_id (models.CharField): Transient Name Server ID,
-            character limit = 20.
+        tns_id (models.IntegerField): Transient Name Server ID.
         tns_prefix (models.CharField): Transient Name Server name
             prefix, character limit = 20.
         ra_deg (django.db.model.FloatField): Right Ascension (ICRS) in decimal
@@ -42,13 +41,14 @@ class Transient(models.Model):
             be null or blank.
     """
     tns_name = models.CharField(max_length=20)
-    tns_id = models.CharField(max_length=20)
+    tns_id = models.IntegerField()
     tns_prefix = models.CharField(max_length=20)
     ra_deg = models.FloatField()
     dec_deg = models.FloatField()
-    public_timestamp = models.DateTimeField()
+    public_timestamp = models.DateTimeField(null=True, blank=True)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
-    host_match_status = models.CharField(max_length=20, null=True, blank=True)
+    host_match_status = models.CharField(max_length=20, default='not processed')
+
 
 class ExternalResourceCall(models.Model):
     """
@@ -56,14 +56,13 @@ class ExternalResourceCall(models.Model):
 
     Attributes:
         resource_name (models.CharField): Name of the external resource.
-        times_called (models.models.DateTimeField) Time the external resource
-            was called.
         response_status (models.CharField): Response status returned when the
             external resource was requested.
+        request_time (models.DateTimeField): Time of request to the resource.
     """
     resource_name = models.CharField(max_length=20)
-    time_called = models.DateTimeField()
     response_status = models.CharField(max_length=20)
+    request_time = models.DateTimeField(null=True, blank=True)
 
 class SurveyManager(models.Manager):
     def get_by_natural_key(self, name):

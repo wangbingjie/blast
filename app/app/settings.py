@@ -129,15 +129,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/cutouts/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "cutout_cdn")
-
+CELERY_TIMEZONE = 'UTC'
 CELERY_IMPORTS = ('host.tasks',)
 CELERY_BEAT_SCHEDULE = {
     "scheduled_task": {
         "task": "host.tasks.ingest_recent_tns_data",
-        "schedule": 100.0,
+        "schedule": 600,
     },
+#    "scheduled_task": {
+#        "task": "host.tasks.print_env",
+#        "schedule": 10.0,
+#    },
 }
 
-CELERY_TNS_BOT_API_KEY = os.environ['TNS_BOT_API_KEY']
-CELERY_TNS_BOT_ID = os.environ['TNS_BOT_ID']
-CELERY_TNS_BOT_NAME = os.environ['TNS_BOT_NAME']
+#CELERY_TNS_BOT_API_KEY = os.environ['TNS_BOT_API_KEY']
+#CELERY_TNS_BOT_ID = os.environ['TNS_BOT_ID']
+#CELERY_TNS_BOT_NAME = os.environ['TNS_BOT_NAME']
+
+
+
