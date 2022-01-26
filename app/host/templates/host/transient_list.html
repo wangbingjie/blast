@@ -8,18 +8,22 @@
   <thead>
     <tr>
       <th scope="col">Transient</th>
+      <th scope="col">Prefix</th>
       <th scope="col">Right Ascension</th>
       <th scope="col">Declination</th>
-      <th scope="col">Processing Status</th>
+      <th scope="col">Discover Date</th>
+      <th scope="col">Host Match Status</th>
     </tr>
   </thead>
   <tbody>
     {% for transient in transients %}
     <tr>
-      <th scope="row">{{transient.tns_name}}</th>
+      <th>{{transient.tns_name}}</th>
+      <th>{{transient.tns_prefix}}</th>
       <td>{{transient.ra_deg}}</td>
       <td>{{transient.dec_deg}}</td>
-      <td>{{transient.processing_status}}</td>
+      <td>{{transient.public_timestamp}}</td>
+      <td>{{transient.host_match_status}}</td>
     </tr>
    {% endfor %}
   </tbody>

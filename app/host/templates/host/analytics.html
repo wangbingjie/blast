@@ -1,0 +1,26 @@
+{% extends 'host/base.html' %}
+
+{% block title %} Analytics {% endblock %}
+
+{% block body %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Resource Name</th>
+      <th scope="col">Request Time</th>
+      <th scope="col">Response Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for call in resource_calls %}
+    <tr>
+      <th>{{call.resource_name}}</th>
+      <th>{{call.request_time}}</th>
+      <th>{{call.response_status}}</th>
+    </tr>
+   {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

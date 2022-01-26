@@ -5,8 +5,8 @@ import json
 import requests
 from datetime import date
 import time
-from host.models import Transient
-from .decorators import save_external_resource_call
+from .models import Transient
+from .decorators import log_resource_call
 
 def get_tns_credentials():
     """
@@ -22,7 +22,7 @@ def get_tns_credentials():
 
     return {credential: os.environ[credential] for credential in credentials}
 
-@save_external_resource_call(resource_name='Transient Name Server')
+@log_resource_call(resource_name='Transient Name Server')
 def query_tns_api(url_endpoint, data_obj, tns_config):
     """
     Query TNS API
@@ -34,7 +34,7 @@ def query_tns_api(url_endpoint, data_obj, tns_config):
     search_url = tns_config['tns_api_url'] + url_endpoint
     response = requests.post(search_url, headers=headers, data=search_data)
     response = json.loads(response.text)
-    reponse_status = response['id_code']
+    reponse_status = response['id_message']
     return {'response_status': reponse_status, 'response': response}
 
 
@@ -44,10 +44,18 @@ def rate_limit_query_tns_api(url_endpoint, data_obj, tns_config):
     """
     response = query_tns_api(url_endpoint, data_obj, tns_config)['response']
     # if we've made too many requests to the api wait and then try again
+
     if response['id_code'] == 429:
+        timed_out = True
+    else:
+        timed_out = False
+
+    while timed_out:
         time_util_rest = int(response['data']['total']['reset'])
         time.sleep(time_util_rest + 1)
         response = query_tns_api(url_endpoint, data_obj, tns_config)['response']
+        if response['id_code'] != 429:
+            timed_out = False
 
     if response['id_code'] == 200:
         response_data = response['data']['reply']
@@ -61,8 +69,7 @@ def get_transients_from_tns(time_after, tns_config):
     timestamp > time_after.
     """
     search_obj = [("public_timestamp", time_after.isoformat())]
-    transients = query_tns_api('/Search', search_obj, tns_config)
-
+    transients = rate_limit_query_tns_api('/Search', search_obj, tns_config)
     blast_transients = []
     for transient in transients:
         get_obj = [("objname", transient['objname']),
@@ -81,8 +88,6 @@ def tns_to_blast_transient(tns_transient):
     Args:
         tns_transient (Dict): Dictionary containing transient name server
             transient information.
-        blast_transient (Transient): Transient object to be updated with the
-            tns_transient data.
     Returns:
         blast_transient (Transient): Transient object with the
             tns_transient data.
@@ -92,7 +97,7 @@ def tns_to_blast_transient(tns_transient):
                                 ra_deg=tns_transient['radeg'],
                                 dec_deg=tns_transient['decdeg'],
                                 tns_prefix=tns_transient['name_prefix'],
-                                public_timestamp=tns_transient['public_timestamp'])
+                                public_timestamp=tns_transient['discoverydate'])
     return blast_transient
 
 def get_recent_transients(date_after, sandbox=False):
@@ -112,7 +117,7 @@ def get_recent_transients(date_after, sandbox=False):
     else:
         tns_api_url = 'https://www.wis-tns.org/api/get'
 
-    tns_marker = (f'tns_marker{{\"tns_id\": {TNS_BOT_ID},'
+    tns_marker = (f'tns_marker{{\"tns_id\": {int(TNS_BOT_ID)},'
                   f'\"type\": \"bot\", \"name\": \"{TNS_BOT_NAME}\"}}')
 
     config = {'tns_marker': tns_marker, 'tns_bot_api_key': TNS_BOT_API_KEY,

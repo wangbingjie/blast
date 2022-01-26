@@ -1,13 +1,13 @@
 from django.shortcuts import render
-from host.forms import TransientForm
+from .forms import TransientForm
 from astropy.coordinates import SkyCoord
-from host.host_utils import survey_list, construct_all_apertures
-from host.catalog_photometry import download_catalog_data
-from host.cutouts import download_and_save_cutouts
-from host.plotting_utils import plot_image_grid, plot_catalog_sed
-from host.models import Filter, Host, Transient
-from host.ghost import find_and_save_host
-from .transient_name_server import ingest_new_transients
+from .host_utils import survey_list, construct_all_apertures
+from .catalog_photometry import download_catalog_data
+from .cutouts import download_and_save_cutouts
+from .plotting_utils import plot_image_grid, plot_catalog_sed
+from .models import Filter, Host, Transient, ExternalResourceCall
+from .ghost import find_and_save_host
+
 from datetime import date
 
 def submit_transient(request):
@@ -39,6 +39,9 @@ def transient_list(request):
     transients = Transient.objects.all()
     return render(request, 'transient_list.html', {'transients': transients})
 
+def analytics(request):
+    calls = ExternalResourceCall.objects.all()
+    return render(request, 'analytics.html', {'resource_calls': calls})
 
 # survey = survey_list('host/data/survey_metadata.yml')
 # images = download_image_data(SkyCoord(ra=ra, dec=dec, unit='deg'), survey)
