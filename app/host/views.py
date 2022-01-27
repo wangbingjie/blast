@@ -1,60 +1,25 @@
 from django.shortcuts import render
 from .forms import TransientSearchForm
-from astropy.coordinates import SkyCoord
-from .host_utils import survey_list, construct_all_apertures
-from .catalog_photometry import download_catalog_data
-from .cutouts import download_and_save_cutouts
-from .plotting_utils import plot_image_grid, plot_catalog_sed
-from .models import Filter, Host, Transient, ExternalResourceCall
-from .ghost import find_and_save_host
-
-
-from datetime import date
-
-def submit_transient(request):
-
-    if request.method == 'POST':
-        form = TransientForm(request.POST)
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            ra, dec = form.cleaned_data['ra'], form.cleaned_data['dec']
-            transient = Transient(name=name, ra_deg=ra, dec_deg=dec)
-            host = find_and_save_host(transient)
-            download_and_save_cutouts(host)
-
-
-
-            catalog = survey_list('host/data/catalog_metadata.yml')
-            position = SkyCoord(ra=ra, dec=dec, unit='deg')
-            catalog_data = download_catalog_data(position, catalog)
-            bokeh_cutout_dict = plot_catalog_sed(catalog_data)
-            bokeh_cutout_dict['transient_name'] = form.cleaned_data['name']
-            return render(request, 'results.html', bokeh_cutout_dict)
-
-
-    form = TransientForm()
-    return render(request, 'form.html', {'form': form})
+from .models import Transient, ExternalResourceCall
 
 
 def transient_list(request):
+    transients = Transient.objects.all()
 
     if request.method == 'POST':
         form = TransientSearchForm(request.POST)
+
         if form.is_valid():
             name = form.cleaned_data['name']
-            transients = Transient.objects.all()
             if name != 'all':
                 transients = Transient.objects.filter(tns_name__contains=name)
+    else:
+        form = TransientSearchForm()
 
-            transients = transients.order_by('-public_timestamp')
+    transients = transients.order_by('-public_timestamp')[:100]
+    context = {'transients': transients, 'form': form}
+    return render(request, 'transient_list.html', context)
 
-            return render(request, 'transient_list.html', {'transients': transients,
-                                                    'form': form})
-    form = TransientSearchForm()
-    transients = Transient.objects.all().order_by('-public_timestamp')
-
-    return render(request, 'transient_list.html', {'transients': transients,
-                                                   'form': form})
 
 def analytics(request):
     calls = ExternalResourceCall.objects.all()
