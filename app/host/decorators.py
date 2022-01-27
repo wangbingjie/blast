@@ -1,6 +1,7 @@
 import functools
 from .models import ExternalResourceCall
 import datetime
+import time
 
 
 def log_resource_call(resource_name):
@@ -16,7 +17,7 @@ def log_resource_call(resource_name):
         @functools.wraps(func)
         def wrapper_save(*args, **kwargs):
             value = func(*args, **kwargs)
-            status = value['response_status']
+            status = value['response_status_message']
             call = ExternalResourceCall(resource_name=resource_name,
                                         response_status=status,
                                         request_time=datetime.datetime.now())
@@ -24,6 +25,7 @@ def log_resource_call(resource_name):
             return value
         return wrapper_save
     return decorator_save
+
 
 def log_process_time(process_name):
     """

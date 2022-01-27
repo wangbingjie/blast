@@ -1,7 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 from .models import Transient
-from .transient_name_server import get_recent_transients
+from .transient_name_server import get_transients_from_tns
+from .transient_name_server import get_tns_credentials
 import datetime
 import os
 
@@ -15,11 +16,13 @@ def ingest_recent_tns_data(interval_minutes=10):
         interval_minutes (int) : Minutes in the past from when the function is
             called to search the transient name server for new transients.
     Returns:
-        None: Transients are saved to the database backend.
+        (None): Transients are saved to the database backend.
     """
     now = datetime.datetime.now()
     time_delta = datetime.timedelta(minutes=interval_minutes)
-    recent_transients = get_recent_transients(now-time_delta)
+    tns_credentials = get_tns_credentials()
+    recent_transients = get_transients_from_tns(now-time_delta,
+                                                tns_credentials=tns_credentials)
     saved_transients = Transient.objects.all()
 
     for transient in recent_transients:

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'host',
+    'crispy_forms',
     'django_celery_beat'
 ]
 
