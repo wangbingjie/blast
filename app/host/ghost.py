@@ -19,11 +19,12 @@ def run_ghost(transient):
     :host_information : ~astropy.coordinates.SkyCoord`
         Host position
     """
+    getGHOST(real=False, verbose=1)
     transient_position = SkyCoord(ra=transient.ra_deg,
                                   dec=transient.dec_deg,
                                   unit='deg')
     host_data = getTransientHosts(snCoord=[transient_position],
-                                  snName=[transient.name],
+                                  snName=[transient.tns_name],
                                   verbose=1,
                                   starcut='gentle',
                                   ascentMatch=True)
@@ -40,9 +41,8 @@ def run_ghost(transient):
         host = None
     else:
         host = Host(ra_deg=host_data['raMean'][0],
-                    dec_deg=host_data['raMean'][0],
-                    name='test')
-
+                    dec_deg=host_data['decMean'][0],
+                    name=host_data['objName'][0])
     return host
 
 

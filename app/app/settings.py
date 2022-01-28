@@ -147,5 +147,5 @@ CELERY_BEAT_SCHEDULE = {
 #CELERY_TNS_BOT_ID = os.environ['TNS_BOT_ID']
 #CELERY_TNS_BOT_NAME = os.environ['TNS_BOT_NAME']
 
-
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
