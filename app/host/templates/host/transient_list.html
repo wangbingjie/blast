@@ -7,23 +7,26 @@
 {% load crispy_forms_tags %}
 
 <h2>Transients</h2>
-  <form align="left", method="POST", class="form-inline">
+
+<form class="form", method="POST">
     {% csrf_token %}
-    {{ form.name | as_crispy_field }}
-    <button type="submit", class="btn btn-success">Search</button>
-  </form>
+    <div class="input-group mb-10">
+      {{ form.name | as_crispy_field }}
+    <div class="input-group-append">
+    <button type="submit", class="btn btn-outline-success" type="button">Search <i class="bi bi-search"></i></button>
+     </div>
+  </div>
+</form>
 
-
-
-<table class="table">
+<table class="table table-striped">
   <thead>
     <tr>
       <th scope="col">Transient</th>
       <th scope="col">Prefix</th>
       <th scope="col">Right Ascension</th>
       <th scope="col">Declination</th>
-      <th scope="col">Discover Date</th>
-      <th scope="col">Host Match Status</th>
+      <th scope="col">Discovery Date</th>
+      <th scope="col">Host Match</th>
     </tr>
   </thead>
   <tbody>

@@ -3,8 +3,8 @@ from celery import shared_task
 from .models import Transient
 from .transient_name_server import get_transients_from_tns
 from .transient_name_server import get_tns_credentials
+from .ghost import run_ghost
 import datetime
-import os
 
 
 @shared_task
@@ -35,8 +35,29 @@ def ingest_recent_tns_data(interval_minutes=10):
 def match_transient_to_host():
     """
     Match a single transient in the database to a host galaxy.
+
+    Returns:
+        (None): Matches host to transient
     """
-    return None
+    unmatched = Transient.objects.filter(host_match_status__exact='not processed')
+
+    if unmatched.exists():
+        transient = unmatched.order_by('public_timestamp')[0]
+        transient.host_match_status = 'processing'
+        transient.save()
+        host = run_ghost(transient)
+
+        if host is not None:
+            host.save()
+            transient.host = host
+            transient.host_match_status = 'processed'
+            transient.save()
+        else:
+            transient.host_match_status = 'no match'
+            transient.save()
+
+
+
 
 
 
