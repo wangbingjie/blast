@@ -25,10 +25,9 @@ def analytics(request):
     calls = ExternalResourceCall.objects.all()
     return render(request, 'analytics.html', {'resource_calls': calls})
 
-# survey = survey_list('host/data/survey_metadata.yml')
-# images = download_image_data(SkyCoord(ra=ra, dec=dec, unit='deg'), survey)
-# apertures = construct_all_apertures(SkyCoord(ra=ra, dec=dec, unit='deg'), images)
-# bokeh_cutout_dict = plot_image_grid(images, apertures=apertures)
-# all_surveys = [sur.name for sur in survey]
-# missing_surveys = list(set(all_surveys) - images.keys())
-# bokeh_cutout_dict.update({'missing_data': missing_surveys})
+
+def results(request, slug):
+    transients = Transient.objects.all()
+    transient = transients.get(tns_name__exact=slug)
+
+    return render(request, 'results.html', {'transient': transient})

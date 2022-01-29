@@ -9,7 +9,7 @@ from .models import Filter, Cutout
 from django.conf import settings
 import os
 
-def download_and_save_cutouts(host, fov=Quantity(0.1, unit='deg'),
+def download_and_save_cutouts(transient, fov=Quantity(0.1, unit='deg'),
                               media_root=settings.MEDIA_ROOT):
     """
     Download all available imaging from a list of surveys
@@ -30,17 +30,18 @@ def download_and_save_cutouts(host, fov=Quantity(0.1, unit='deg'),
         Dictionary of images with the survey names as keys and fits images
         as values.
     """
-    position = SkyCoord(host.ra_deg, host.dec_deg, unit='deg')
+    position = SkyCoord(transient.ra_deg, transient.dec_deg, unit='deg')
 
     for filter in Filter.objects.all():
         fits = cutout(position, filter, fov=fov)
         if fits:
-            save_dir = f'{media_root}/{host.name}/{filter.survey.name}/'
+            save_dir = f'{media_root}/{transient.tns_name}/{filter.survey.name}/'
+            print(save_dir)
             os.makedirs(save_dir, exist_ok=True)
             path_to_fits = save_dir + f'{filter.name}.fits'
             fits.writeto(path_to_fits, overwrite=True)
 
-            cutout_object = Cutout(filter=filter, host=host)
+            cutout_object = Cutout(filter=filter, transient=transient)
             cutout_object.fits.name = path_to_fits
             cutout_object.save()
 
@@ -134,7 +135,7 @@ def panstarrs_cutout(position, image_size=None, filter=None):
 
 download_function_dict = {'PanSTARRS' : panstarrs_cutout}
 
-def cutout(position, survey, fov=Quantity(0.1, unit='deg')):
+def cutout(transient, survey, fov=Quantity(0.1, unit='deg')):
     """
     Download image cutout data from a survey.
     Parameters
@@ -159,13 +160,13 @@ def cutout(position, survey, fov=Quantity(0.1, unit='deg')):
 
     if survey.image_download_method == 'hips':
         try:
-            fits = hips_cutout(position, survey, image_size=num_pixels)
+            fits = hips_cutout(transient, survey, image_size=num_pixels)
         except:
             print(f'Conection timed out, could not download {survey.name} data')
             fits = None
     else:
         survey_name, filter = survey.name.split('_')
-        fits = download_function_dict[survey_name](position,
+        fits = download_function_dict[survey_name](transient,
                                                    filter=filter,
                                                     image_size=num_pixels)
 

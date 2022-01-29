@@ -4,6 +4,7 @@ from .models import Transient
 from .transient_name_server import get_transients_from_tns
 from .transient_name_server import get_tns_credentials
 from .ghost import run_ghost
+from .cutouts import download_and_save_cutouts
 import datetime
 
 
@@ -39,7 +40,8 @@ def match_transient_to_host():
     Returns:
         (None): Matches host to transient
     """
-    unmatched = Transient.objects.filter(host_match_status__exact='not processed')
+    unmatched = Transient.objects.filter(
+        host_match_status__exact='not processed')
 
     if unmatched.exists():
         transient = unmatched.order_by('public_timestamp')[0]
@@ -55,6 +57,29 @@ def match_transient_to_host():
         else:
             transient.host_match_status = 'no match'
             transient.save()
+
+@shared_task
+def download_cutouts():
+    """
+    Downloads cutout data for a single transient
+    """
+    no_images = Transient.objects.filter(
+        image_download_status__exact='not processed')
+
+    if no_images.exists():
+        transient = no_images.order_by('public_timestamp')[0]
+        transient.image_download_status = 'processing'
+        transient.save()
+        download_and_save_cutouts(transient)
+        transient.image_download_status = 'processed'
+        transient.save()
+
+
+
+
+
+
+
 
 
 
