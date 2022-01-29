@@ -39,6 +39,9 @@ class Transient(models.Model):
         host_match_status (models.CharField): Processing host match status for
             house keeping on the blast web app, character limit = 20. Field can
             be null or blank.
+        image_download_status (models.CharField): Processing image_download
+            status for house keeping on the blast web app, character limit = 20.
+            Field can be null or blank.
     """
     tns_name = models.CharField(max_length=20)
     tns_id = models.IntegerField()
@@ -48,6 +51,7 @@ class Transient(models.Model):
     public_timestamp = models.DateTimeField(null=True, blank=True)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
     host_match_status = models.CharField(max_length=20, default='not processed')
+    image_download_status = models.CharField(max_length=20, default='not processed')
 
 
 class ExternalResourceCall(models.Model):
@@ -144,7 +148,7 @@ class Cutout(models.Model):
     Model to represent a cutout image of a host galaxy
     """
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
-    host = models.ForeignKey(Host, on_delete=models.CASCADE)
+    transient = models.ForeignKey(Transient, on_delete=models.CASCADE, null=True, blank=True)
     fits = models.FileField(upload_to=fits_file_path, null=True, blank=True)
 
 

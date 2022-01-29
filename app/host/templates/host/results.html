@@ -4,7 +4,7 @@
 {% block script %} {{ bokeh_sed_script | safe }} {% endblock %}
 
 {% block body %}
-    <h2>{{ transient_name }}</h2>
+    <h2>{{ transient.tns_name }}</h2>
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active"
@@ -38,7 +38,8 @@
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="overview" role="tabpanel"
              aria-labelledby="overview-tab">
-            Nothing to see here, yet.
+            Transient: {{ transient.tns_name }}
+
         </div>
         <div class="tab-pane fade" id="sed" role="tabpanel"
              aria-labelledby="sed-tab">
