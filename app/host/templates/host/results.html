@@ -38,7 +38,19 @@
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="overview" role="tabpanel"
              aria-labelledby="overview-tab">
-            Transient: {{ transient.tns_name }}
+            <div class="col-sm-6">
+            <div class="card">
+              <h5 class="card-header">TNS Information</h5>
+              <div class="card-body">
+              <h5 class="card-title">{{transient.tns_name}}</h5>
+                  <p class="card-text">Prefix: {{transient.tns_prefix}}</p>
+                  <p class="card-text">Right ascension [deg]: {{transient.ra_deg}}</p>
+                  <p class="card-text">Declination [deg]: {{transient.dec_deg}}</p>
+                  <p class="card-text">Discovery Date: {{transient.public_timestamp}}</p>
+                  <a class="link" href="https://www.wis-tns.org/object/{{transient.tns_name}}/">TNS link</a>
+  </div>
+</div>
+            </div>
 
         </div>
         <div class="tab-pane fade" id="sed" role="tabpanel"
