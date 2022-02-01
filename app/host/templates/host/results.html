@@ -1,66 +1,50 @@
 {% extends 'host/base.html' %}
 
 {% block title %} Results {% endblock %}
-{% block script %} {{ bokeh_sed_script | safe }} {% endblock %}
+{% block script %} {{ bokeh_cutout_script | safe }} {% endblock %}
+
+{% load crispy_forms_tags %}
 
 {% block body %}
-    <h2>{{ transient.tns_name }}</h2>
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active"
-                    id="overview-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#overview"
-                    type="button" role="tab"
-                    aria-controls="home"
-                    aria-selected="true">Overview</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link"
-                    id="sed-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#sed"
-                    type="button" role="tab"
-                    aria-controls="profile"
-                    aria-selected="false">Host SED</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link"
-                    id="image-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#image"
-                    type="button" role="tab"
-                    aria-controls="contact"
-                    aria-selected="false">Images</button>
-        </li>
-    </ul>
+<h2>{{ transient.tns_name }}</h2>
 
-    <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="overview" role="tabpanel"
-             aria-labelledby="overview-tab">
-            <div class="col-sm-6">
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
             <div class="card">
-              <h5 class="card-header">TNS Information</h5>
-              <div class="card-body">
-              <h5 class="card-title">{{transient.tns_name}}</h5>
-                  <p class="card-text">Prefix: {{transient.tns_prefix}}</p>
-                  <p class="card-text">Right ascension [deg]: {{transient.ra_deg}}</p>
-                  <p class="card-text">Declination [deg]: {{transient.dec_deg}}</p>
-                  <p class="card-text">Discovery Date: {{transient.public_timestamp}}</p>
-                  <a class="link" href="https://www.wis-tns.org/object/{{transient.tns_name}}/">TNS link</a>
-  </div>
-</div>
+                <h5 class="card-header">TNS Information</h5>
+                <div class="card-body">
+                    <h5 class="card-title">{{transient.tns_name}}</h5>
+                    <p class="card-text">Prefix: {{transient.tns_prefix}}</p>
+                    <p class="card-text">Right ascension [deg]: {{transient.ra_deg}}</p>
+                    <p class="card-text">Declination [deg]: {{transient.dec_deg}}</p>
+                    <p class="card-text">Discovery Date: {{transient.public_timestamp}}</p>
+                <a class="link" href="https://www.wis-tns.org/object/{{transient.tns_name}}/">TNS link</a>
+                </div>
             </div>
+        </div>
 
+        <div class="col-sm-6">
+            <div class="card">
+                <h5 class="card-header">Host Match information</h5>
+                <div class="card-body">
+                    {{ bokeh_cutout_div | safe }}
+                    <form class="form", method="POST">
+                        {% csrf_token %}
+                        <div class="input-group mb-10">
+                            {{ form.filters }}
+                            <div class="input-group-append">
+                                 <button type="submit",
+                                    class="btn btn-outline-success"
+                                    type="button">Get Cutout</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="tab-pane fade" id="sed" role="tabpanel"
-             aria-labelledby="sed-tab">
-            {{ bokeh_sed_div | safe }}
-        </div>
-        <div class="tab-pane fade" id="image" role="tabpanel"
-             aria-labelledby="image-tab">
-            Nothing to see here, yet.
-        </div>
+
     </div>
+</div>
 
 {% endblock %}
