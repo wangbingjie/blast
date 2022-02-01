@@ -36,7 +36,6 @@ def download_and_save_cutouts(transient, fov=Quantity(0.1, unit='deg'),
         fits = cutout(position, filter, fov=fov)
         if fits:
             save_dir = f'{media_root}/{transient.tns_name}/{filter.survey.name}/'
-            print(save_dir)
             os.makedirs(save_dir, exist_ok=True)
             path_to_fits = save_dir + f'{filter.name}.fits'
             fits.writeto(path_to_fits, overwrite=True)

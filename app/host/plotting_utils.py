@@ -6,10 +6,10 @@ from astropy.wcs import WCS
 from host.host_utils import survey_list
 from host.catalog_photometry import filter_information
 import numpy as np
+from astropy.io import fits
 
+def plot_image(image_data, figure):
 
-def plot_image(figure, fits_image):
-    image_data = fits_image[0].data
     image_data = np.nan_to_num(image_data, nan=0)#)=np.amin(image_data))
     image_data = image_data + abs(np.amin(image_data)) + 0.1
     figure.image(image=[image_data])
@@ -21,6 +21,12 @@ def plot_image(figure, fits_image):
     figure.ygrid.visible = False
 
     return figure
+
+def plot_position(position, image_wcs, figure):
+    """
+
+    """
+    return None
 
 def plot_aperture(figure, aperture):
     x, y = aperture.positions
@@ -38,8 +44,8 @@ def plot_image_grid(image_dict, apertures=None):
         fig = figure(title=survey,
                         x_axis_label='',
                         y_axis_label='',
-                        plot_width=400,
-                        plot_height=400)
+                        plot_width=1000,
+                        plot_height=1000)
         fig = plot_image(fig, image)
         if apertures is not None:
             aperture = apertures.get(survey)
@@ -51,6 +57,23 @@ def plot_image_grid(image_dict, apertures=None):
 
     plot = gridplot(figures, ncols=3, width=400, height=400)
     script, div = components(plot)
+    return {'bokeh_cutout_script': script, 'bokeh_cutout_div': div}
+
+def plot_cutout_image(cutout, transient=None):
+
+    fig = figure(title=f'Cutout {cutout.filter}',
+                 x_axis_label='',
+                 y_axis_label='',
+                 plot_width=600,
+                 plot_height=600)
+
+    with fits.open(cutout.fits.name) as fits_file:
+        image_data = fits_file[0].data
+
+    fig = plot_image(image_data, fig)
+
+
+    script, div = components(fig)
     return {'bokeh_cutout_script': script, 'bokeh_cutout_div': div}
 
 

@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from .forms import TransientSearchForm
+from .forms import TransientSearchForm, ImageGetForm
 from .models import Transient, ExternalResourceCall
-
+from .models import Cutout
+from .plotting_utils import plot_cutout_image
 
 def transient_list(request):
     transients = Transient.objects.all()
@@ -30,4 +31,23 @@ def results(request, slug):
     transients = Transient.objects.all()
     transient = transients.get(tns_name__exact=slug)
 
-    return render(request, 'results.html', {'transient': transient})
+    if transient.image_download_status != 'processed':
+        context = {'transient': transient}
+    else:
+
+        all_cutouts = Cutout.objects.filter(transient__tns_name__exact=slug)
+        filters = [cutout.filter.name for cutout in all_cutouts]
+
+        if request.method == 'POST':
+            form = ImageGetForm(request.POST, filter_choices=filters)
+            if form.is_valid():
+                filter = form.cleaned_data['filters']
+                cutout = all_cutouts.filter(filter__name__exact=filter)[0]
+        else:
+            cutout = all_cutouts.filter(filter__name__exact='PanSTARRS_g')[0]
+            form = ImageGetForm(filter_choices=filters)
+
+        bokeh_context = plot_cutout_image(cutout)
+
+        context = {**{'transient': transient, 'form' : form}, **bokeh_context}
+    return render(request, 'results.html', context)
