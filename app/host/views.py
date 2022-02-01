@@ -31,23 +31,19 @@ def results(request, slug):
     transients = Transient.objects.all()
     transient = transients.get(tns_name__exact=slug)
 
-    if transient.image_download_status != 'processed':
-        context = {'transient': transient}
+    all_cutouts = Cutout.objects.filter(transient__tns_name__exact=slug)
+    filters = [cutout.filter.name for cutout in all_cutouts]
+
+    if request.method == 'POST':
+        form = ImageGetForm(request.POST, filter_choices=filters)
+        if form.is_valid():
+            filter = form.cleaned_data['filters']
+            cutout = all_cutouts.filter(filter__name__exact=filter)[0]
     else:
+        cutout = all_cutouts.filter(filter__name__exact='PanSTARRS_g')[0]
+        form = ImageGetForm(filter_choices=filters)
 
-        all_cutouts = Cutout.objects.filter(transient__tns_name__exact=slug)
-        filters = [cutout.filter.name for cutout in all_cutouts]
+    bokeh_context = plot_cutout_image(cutout)
 
-        if request.method == 'POST':
-            form = ImageGetForm(request.POST, filter_choices=filters)
-            if form.is_valid():
-                filter = form.cleaned_data['filters']
-                cutout = all_cutouts.filter(filter__name__exact=filter)[0]
-        else:
-            cutout = all_cutouts.filter(filter__name__exact='PanSTARRS_g')[0]
-            form = ImageGetForm(filter_choices=filters)
-
-        bokeh_context = plot_cutout_image(cutout)
-
-        context = {**{'transient': transient, 'form' : form}, **bokeh_context}
+    context = {**{'transient': transient, 'form' : form}, **bokeh_context}
     return render(request, 'results.html', context)
