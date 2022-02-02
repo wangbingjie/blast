@@ -21,7 +21,7 @@ def get_tns_credentials():
 
     return {credential: os.environ[credential] for credential in credentials}
 
-@log_resource_call(resource_name='Transient name server')
+#@log_resource_call(resource_name='Transient name server')
 def query_tns(data, headers, search_url):
     """
     Query the TNS server

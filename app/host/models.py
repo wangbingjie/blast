@@ -42,6 +42,9 @@ class Transient(models.Model):
         image_download_status (models.CharField): Processing image_download
             status for house keeping on the blast web app, character limit = 20.
             Field can be null or blank.
+        catalog_photometry_status (models.CharField): Processing image_download
+            status for house keeping on the blast web app, character limit = 20.
+            Field can be null or blank.
     """
     tns_name = models.CharField(max_length=20)
     tns_id = models.IntegerField()
@@ -52,6 +55,7 @@ class Transient(models.Model):
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
     host_match_status = models.CharField(max_length=20, default='not processed')
     image_download_status = models.CharField(max_length=20, default='not processed')
+    catalog_photometry_status = models.CharField(max_length=20,default='not processed')
 
 
 class ExternalResourceCall(models.Model):

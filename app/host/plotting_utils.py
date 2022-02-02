@@ -3,10 +3,12 @@ from bokeh.layouts import gridplot
 from bokeh.plotting import figure
 from bokeh.embed import components
 from astropy.wcs import WCS
+from astropy.coordinates import SkyCoord
 from host.host_utils import survey_list
 from host.catalog_photometry import filter_information
 import numpy as np
 from astropy.io import fits
+from bokeh.models import Circle, ColumnDataSource, Cross
 
 def plot_image(image_data, figure):
 
@@ -16,16 +18,16 @@ def plot_image(image_data, figure):
     color_mapper = LogColorMapper(palette='Greys256')
     figure.image(image=[image_data], x=0, y=0, dw=len(image_data), dh=len(image_data),
                color_mapper=color_mapper, level="image")
-    figure.axis.visible = False
-    figure.xgrid.visible = False
-    figure.ygrid.visible = False
 
-    return figure
 
-def plot_position(position, image_wcs, figure):
+def plot_position(object, wcs, plotting_kwargs=None, plotting_func=None):
     """
-
+    Plot position of object on a cutout.
     """
+    obj_ra, obj_dec = object.ra_deg, object.dec_deg
+    sky_position = SkyCoord(ra=obj_ra, dec=obj_dec, unit='deg')
+    x_pixel, y_pixel = wcs.world_to_pixel(sky_position)
+    plotting_func([x_pixel], [y_pixel], **plotting_kwargs)
     return None
 
 def plot_aperture(figure, aperture):
@@ -59,19 +61,38 @@ def plot_image_grid(image_dict, apertures=None):
     script, div = components(plot)
     return {'bokeh_cutout_script': script, 'bokeh_cutout_div': div}
 
-def plot_cutout_image(cutout, transient=None):
+def plot_cutout_image(cutout=None, transient=None):
 
-    fig = figure(title=f'Cutout {cutout.filter}',
+    title = cutout.filter if cutout is not None else 'No cutout selected'
+    fig = figure(title=f'{title}',
                  x_axis_label='',
                  y_axis_label='',
                  plot_width=600,
                  plot_height=600)
 
-    with fits.open(cutout.fits.name) as fits_file:
-        image_data = fits_file[0].data
+    fig.axis.visible = False
+    fig.xgrid.visible = False
+    fig.ygrid.visible = False
 
-    fig = plot_image(image_data, fig)
+    if cutout is not None:
+        with fits.open(cutout.fits.name) as fits_file:
+            image_data = fits_file[0].data
+            wcs = WCS(fits_file[0].header)
 
+        transient_kwargs = {'legend_label': f'{transient.tns_name}', 'size': 30,
+                            'line_width': 2}
+        plot_position(transient, wcs, plotting_kwargs=transient_kwargs,
+                      plotting_func=fig.cross)
+        host_kwargs = {'legend_label': f'Host: {transient.host.name}', 'size': 40,
+                            'line_width': 2}
+        plot_position(transient, wcs, plotting_kwargs=host_kwargs,
+                      plotting_func=fig.circle)
+
+    else:
+        image_data = np.zeros((500,500))
+
+
+    plot_image(image_data, fig)
 
     script, div = components(fig)
     return {'bokeh_cutout_script': script, 'bokeh_cutout_div': div}

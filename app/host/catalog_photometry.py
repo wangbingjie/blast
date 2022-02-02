@@ -24,7 +24,7 @@ def catalog_photometry(position, catalog, search_radius=Angle(1.0, unit='arcsec'
                catalog.mag_error]
 
     # _r is the separation between matches, + sorts the table by closest match
-    # hence why we index at 0 below to get the cloeset match
+    # hence why we index at 0 below to get the closet match
     vizier = Vizier(columns=columns + ["+_r"])
     results = vizier.query_region(position,
                                   radius=search_radius,
