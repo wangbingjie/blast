@@ -132,10 +132,11 @@ MEDIA_URL = '/cutouts/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "cutout_cdn")
 CELERY_TIMEZONE = 'UTC'
 CELERY_IMPORTS = ('host.tasks',)
+CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672//'
 CELERY_BEAT_SCHEDULE = {
     "scheduled_task": {
         "task": "host.tasks.ingest_recent_tns_data",
-        "schedule": 600,
+        "schedule": 60,
     },
 #    "scheduled_task": {
 #        "task": "host.tasks.print_env",

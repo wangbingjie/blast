@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py loaddata setup_survey_data.yaml &&
+             python manage.py loaddata setup_filter_data.yaml &&
+             python manage.py loaddata setup_catalog_data.yaml &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    env_file:
+      - ./.env
+  celery:
+    restart: always
+    build:
+      context: .
+    command: celery -A app worker -l info
+    volumes:
+      - ./app:/app
+    depends_on:
+      - app
+      - rabbitmq
+    env_file:
+      - ./.env
+  rabbitmq:
+    image: rabbitmq:3.9-alpine
+    ports:
+      - "5672:5672"
+    env_file:
+      - ./.env
+  celery_beat:
+    restart: always
+    build:
+      context: .
+    command: celery -A app beat -l info
+    volumes:
+      - ./app:/app
+    depends_on:
+      - app
+      - rabbitmq
+      - celery
+    env_file:
+      - ./.env
+

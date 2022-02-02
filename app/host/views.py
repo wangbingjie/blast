@@ -40,10 +40,10 @@ def results(request, slug):
             filter = form.cleaned_data['filters']
             cutout = all_cutouts.filter(filter__name__exact=filter)[0]
     else:
-        cutout = all_cutouts.filter(filter__name__exact='PanSTARRS_g')[0]
+        cutout = None
         form = ImageGetForm(filter_choices=filters)
 
-    bokeh_context = plot_cutout_image(cutout)
+    bokeh_context = plot_cutout_image(cutout=cutout, transient=transient)
 
     context = {**{'transient': transient, 'form' : form}, **bokeh_context}
     return render(request, 'results.html', context)

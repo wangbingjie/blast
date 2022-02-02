@@ -9,7 +9,7 @@ import datetime
 
 
 @shared_task
-def ingest_recent_tns_data(interval_minutes=10):
+def ingest_recent_tns_data(interval_minutes=1000):
     """
     Download and save recent transients from the transient name server.
 
@@ -58,6 +58,7 @@ def match_transient_to_host():
             transient.host_match_status = 'no match'
             transient.save()
 
+
 @shared_task
 def download_cutouts():
     """
@@ -75,7 +76,20 @@ def download_cutouts():
         transient.save()
 
 
+@shared_task
+def download_host_catalog_photometry():
+    """
+    Downloads host catalog photometry
+    """
+    matched_transients = Transient.objects.filter(
+        host_match_status__exact='processed',
+        catalog_photometry_status__exact=' not processed'
+        )
 
+    if matched_transients.exists():
+        transient = matched_transients.order_by('public_timestamp')[0]
+        transient.image_download_status = 'processing'
+        transient.save()
 
 
 

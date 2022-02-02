@@ -46,15 +46,6 @@ def download_and_save_cutouts(transient, fov=Quantity(0.1, unit='deg'),
 
 
 
-
-
-
-    #for survey in survey_list:
-    #    images.append(cutout(position, survey, fov=fov))
-
-    #return {survey.name: image for survey, image in zip(survey_list, images)
-    #          if image is not None}
-
 def panstarrs_image_filename(position ,image_size=None, filter=None):
     """Query panstarrs service to get a list of image names
 
