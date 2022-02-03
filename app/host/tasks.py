@@ -6,7 +6,9 @@ from .transient_name_server import get_tns_credentials
 from .ghost import run_ghost
 from .cutouts import download_and_save_cutouts
 import datetime
-
+from django.utils import timezone
+import glob
+import os
 
 @shared_task
 def ingest_recent_tns_data(interval_minutes=1000):
@@ -19,7 +21,7 @@ def ingest_recent_tns_data(interval_minutes=1000):
     Returns:
         (None): Transients are saved to the database backend.
     """
-    now = datetime.datetime.now()
+    now = timezone.now()
     time_delta = datetime.timedelta(minutes=interval_minutes)
     tns_credentials = get_tns_credentials()
     recent_transients = get_transients_from_tns(now-time_delta,
@@ -28,7 +30,7 @@ def ingest_recent_tns_data(interval_minutes=1000):
 
     for transient in recent_transients:
         try:
-            saved_transients.get(tns_id__exact=transient.tns_id)
+            saved_transients.get(tns_name__exact=transient.tns_name)
         except Transient.DoesNotExist:
             transient.save()
 
@@ -91,9 +93,26 @@ def download_host_catalog_photometry():
         transient.image_download_status = 'processing'
         transient.save()
 
+@shared_task
+def delete_ghost_file_logs():
+    """
+    Removes GHOST files
+    """
+    dir_list = glob.glob('transients_*/*/*')
+    for dir in dir_list: os.remove(dir)
 
+    dir_list = glob.glob('quiverMaps/*')
+    for dir in dir_list:
+        os.remove(dir)
 
+    if os.path.isdir('quiverMaps/'):
+        os.rmdir('quiverMaps/')
 
+    for level in ['*/*/', '*/']:
+        dir_list = glob.glob('transients_' + level)
+        for dir in dir_list:
+            if os.path.isdir(dir):
+                os.rmdir(dir)
 
 
 

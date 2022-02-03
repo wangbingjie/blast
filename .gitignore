@@ -132,3 +132,7 @@ dmypy.json
 
 #fits files
 *.fits
+
+transients_*/
+quiverMaps/
+cutout_cdn/

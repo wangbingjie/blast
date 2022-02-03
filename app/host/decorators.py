@@ -1,6 +1,6 @@
 import functools
 from .models import ExternalResourceCall
-import datetime
+from django.utils import timezone
 import time
 
 
@@ -20,7 +20,7 @@ def log_resource_call(resource_name):
             status = value['response_message']
             call = ExternalResourceCall(resource_name=resource_name,
                                         response_status=status,
-                                        request_time=datetime.datetime.now())
+                                        request_time=timezone.now())
             call.save()
             return value
         return wrapper_save
