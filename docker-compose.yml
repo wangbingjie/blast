@@ -5,7 +5,8 @@ services:
     build:
       context: .
     command: >
-      sh -c "python manage.py makemigrations &&
+      sh -c "rm db.sqlite3
+             python manage.py makemigrations &&
              python manage.py migrate &&
              python manage.py loaddata setup_survey_data.yaml &&
              python manage.py loaddata setup_filter_data.yaml &&
@@ -21,7 +22,7 @@ services:
     restart: always
     build:
       context: .
-    command: celery -A app worker -l info
+    command: celery -A app worker -l ERROR
     volumes:
       - ./app:/app
     depends_on:
@@ -39,7 +40,7 @@ services:
     restart: always
     build:
       context: .
-    command: celery -A app beat -l info
+    command: celery -A app beat -l INFO
     volumes:
       - ./app:/app
     depends_on:

@@ -129,24 +129,31 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 MEDIA_URL = '/cutouts/'
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "cutout_cdn")
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "app/cutout_cdn")
 CELERY_TIMEZONE = 'UTC'
 CELERY_IMPORTS = ('host.tasks',)
 CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672//'
 CELERY_BEAT_SCHEDULE = {
-    "scheduled_task": {
+    "ingest_data_task": {
         "task": "host.tasks.ingest_recent_tns_data",
-        "schedule": 60,
+        "schedule": 600,
     },
-#    "scheduled_task": {
-#        "task": "host.tasks.print_env",
-#        "schedule": 10.0,
-#    },
+    "download_cutouts_task": {
+        "task": "host.tasks.download_cutouts",
+        "schedule": 60.0,
+    },
+    "matching_task": {
+        "task": "host.tasks.match_transient_to_host",
+        "schedule": 60.0,
+    },
+    "cleaning_task": {
+        "task": "host.tasks.delete_ghost_file_logs",
+        "schedule": 30.0,
+    }
 }
 
-#CELERY_TNS_BOT_API_KEY = os.environ['TNS_BOT_API_KEY']
-#CELERY_TNS_BOT_ID = os.environ['TNS_BOT_ID']
-#CELERY_TNS_BOT_NAME = os.environ['TNS_BOT_NAME']
+CELERYD_REDIRECT_STDOUTS_LEVEL = 'INFO'
+
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 

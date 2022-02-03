@@ -30,12 +30,12 @@ def run_ghost(transient):
                                   ascentMatch=True)
 
     # clean up after GHOST...
-    dir_list = glob.glob('transients_*/*/*')
-    for dir in dir_list: os.remove(dir)
+    #dir_list = glob.glob('transients_*/*/*')
+    #for dir in dir_list: os.remove(dir)
 
-    for level in ['*/*/', '*/']:
-        dir_list = glob.glob('transients_' + level)
-        for dir in dir_list: os.rmdir(dir)
+    #for level in ['*/*/', '*/']:
+    #    dir_list = glob.glob('transients_' + level)
+    #    for dir in dir_list: os.rmdir(dir)
 
     if len(host_data) == 0:
         host = None
