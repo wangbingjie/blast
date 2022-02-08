@@ -57,6 +57,32 @@ class Transient(models.Model):
     image_download_status = models.CharField(max_length=20, default='not processed')
     catalog_photometry_status = models.CharField(max_length=20,default='not processed')
 
+    def _status_badge_class(self, status):
+        default_button_class = 'badge badge-secondary'
+        warn_status = ['not processed', 'no match', 'processing']
+        bad_status = ['failed']
+        good_status = ['processed']
+
+        if status in bad_status:
+            badge_class = 'badge badge-danger'
+        elif status in warn_status:
+            badge_class = 'badge badge-warning'
+        elif status in good_status:
+            badge_class = 'badge badge-success'
+        else:
+            badge_class = default_button_class
+
+        return badge_class
+
+    @property
+    def host_match_status_badge_class(self):
+        return self._status_badge_class(self.host_match_status)
+
+    @property
+    def image_download_status_badge_class(self):
+        return self._status_badge_class(self.image_download_status)
+
+
 
 class ExternalResourceCall(models.Model):
     """

@@ -8,7 +8,7 @@ from .cutouts import download_and_save_cutouts
 import datetime
 from django.utils import timezone
 import glob
-import os
+import shutil
 
 @shared_task
 def ingest_recent_tns_data(interval_minutes=1000):
@@ -49,7 +49,13 @@ def match_transient_to_host():
         transient = unmatched.order_by('public_timestamp')[0]
         transient.host_match_status = 'processing'
         transient.save()
-        host = run_ghost(transient)
+
+        try:
+            host = run_ghost(transient)
+        except:
+            host = None
+            transient.host_match_status = 'failed'
+            transient.save()
 
         if host is not None:
             host.save()
@@ -73,7 +79,13 @@ def download_cutouts():
         transient = no_images.order_by('public_timestamp')[0]
         transient.image_download_status = 'processing'
         transient.save()
-        download_and_save_cutouts(transient)
+
+        try:
+            download_and_save_cutouts(transient)
+        except:
+            transient.image_download_status = 'failed'
+            transient.save()
+
         transient.image_download_status = 'processed'
         transient.save()
 
@@ -98,21 +110,21 @@ def delete_ghost_file_logs():
     """
     Removes GHOST files
     """
-    dir_list = glob.glob('transients_*/*/*')
-    for dir in dir_list: os.remove(dir)
+    dir_list = glob.glob('transients_*/')
 
-    dir_list = glob.glob('quiverMaps/*')
     for dir in dir_list:
-        os.remove(dir)
+        try:
+            shutil.rmtree(dir)
+        except OSError as e:
+            print("Error: %s : %s" % (dir, e.strerror))
 
-    if os.path.isdir('quiverMaps/'):
-        os.rmdir('quiverMaps/')
+    dir_list = glob.glob('quiverMaps/')
 
-    for level in ['*/*/', '*/']:
-        dir_list = glob.glob('transients_' + level)
-        for dir in dir_list:
-            if os.path.isdir(dir):
-                os.rmdir(dir)
+    for dir in dir_list:
+        try:
+            shutil.rmtree(dir)
+        except OSError as e:
+            print("Error: %s : %s" % (dir, e.strerror))
 
 
 
