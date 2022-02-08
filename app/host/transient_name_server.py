@@ -29,14 +29,14 @@ def query_tns(data, headers, search_url):
     response = requests.post(search_url, headers=headers, data=data)
     response = json.loads(response.text)
 
-    reponse_message = response.get('id_message')
+    response_message = response.get('id_message')
     response_id_code = response.get('id_code')
 
     response_status_good = response_id_code == 200
     data = response.get('data', {}).get('reply') if response_status_good else []
     response_reset_time = response.get('data', {}).get('total', {}).get('reset')
 
-    response_return = {'response_message': reponse_message, 'response_id_code':
+    response_return = {'response_message': response_message, 'response_id_code':
                         response_id_code, 'data': data,
                        'response_reset_time':  response_reset_time}
     return response_return
@@ -52,7 +52,7 @@ def rate_limit_query_tns(data, headers, search_url):
         time_util_rest = response['response_reset_time']
         time.sleep(time_util_rest + 1)
         response = query_tns(data, headers, search_url)
-        too_many_requests = response['response_id_code'] != 429
+        too_many_requests = response['response_id_code'] == 429
     return response['data']
 
 

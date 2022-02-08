@@ -3,8 +3,10 @@ from .forms import TransientSearchForm, ImageGetForm
 from .models import Transient, ExternalResourceCall
 from .models import Cutout
 from .plotting_utils import plot_cutout_image
+from .tasks import ingest_recent_tns_data
 
 def transient_list(request):
+
     transients = Transient.objects.all()
 
     if request.method == 'POST':

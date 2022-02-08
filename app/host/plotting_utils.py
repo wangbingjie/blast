@@ -86,7 +86,7 @@ def plot_cutout_image(cutout=None, transient=None):
 
         if transient.host is not None:
             host_kwargs = {'legend_label': f'Host: {transient.host.name}', 'size': 40,
-                            'line_width': 2, 'fill_color': 'none', 'line_color': 'red'}
+                            'line_width': 2, 'line_color': 'red'}
             plot_position(transient.host, wcs, plotting_kwargs=host_kwargs,
                           plotting_func=fig.circle)
 

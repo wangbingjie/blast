@@ -17,7 +17,7 @@ def log_resource_call(resource_name):
         @functools.wraps(func)
         def wrapper_save(*args, **kwargs):
             value = func(*args, **kwargs)
-            status = value['response_message']
+            status = value.get('response_message')
             call = ExternalResourceCall(resource_name=resource_name,
                                         response_status=status,
                                         request_time=timezone.now())
