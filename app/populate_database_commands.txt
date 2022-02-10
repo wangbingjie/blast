@@ -1,3 +1,0 @@
-python manage.py loaddata setup_survey_data.yaml
-python manage.py loaddata setup_filter_data.yaml
-python manage.py loaddata setup_catalog_data.yaml
