@@ -19,7 +19,7 @@ services:
     volumes:
       - ./app:/app
     env_file:
-      - ./.env
+      - ./env/.env.dev
   celery:
     restart: always
     build:
@@ -31,13 +31,13 @@ services:
       - app
       - rabbitmq
     env_file:
-      - ./.env
+      - ./env/.env.dev
   rabbitmq:
     image: rabbitmq:3.9-alpine
     ports:
       - "5672:5672"
     env_file:
-      - ./.env
+      - ./env/.env.dev
   celery_beat:
     restart: always
     build:
@@ -50,5 +50,7 @@ services:
       - rabbitmq
       - celery
     env_file:
-      - ./.env
+      - ./env/.env.dev
+
+
 
