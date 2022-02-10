@@ -58,17 +58,17 @@ class Transient(models.Model):
     catalog_photometry_status = models.CharField(max_length=20,default='not processed')
 
     def _status_badge_class(self, status):
-        default_button_class = 'badge badge-secondary'
-        warn_status = ['not processed', 'no match', 'processing']
-        bad_status = ['failed']
+        default_button_class = 'badge bg-secondary'
+        warn_status = ['processing']
+        bad_status = ['failed','no match' ]
         good_status = ['processed']
 
         if status in bad_status:
-            badge_class = 'badge badge-danger'
+            badge_class = 'badge bg-danger'
         elif status in warn_status:
-            badge_class = 'badge badge-warning'
+            badge_class = 'badge bg-warning'
         elif status in good_status:
-            badge_class = 'badge badge-success'
+            badge_class = 'badge bg-success'
         else:
             badge_class = default_button_class
 

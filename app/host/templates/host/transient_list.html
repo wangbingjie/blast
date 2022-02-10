@@ -39,8 +39,8 @@
       <td>{{transient.ra_deg}}</td>
       <td>{{transient.dec_deg}}</td>
       <td>{{transient.public_timestamp}}</td>
-      <td>{{transient.host_match_status}}</div></td>
-      <td>{{transient.image_download_status}}</div></td>
+      <td><span class="{{transient.host_match_status_badge_class}}">{{transient.host_match_status}}</span></td>
+      <td><span class="{{transient.image_download_status_badge_class}}">{{transient.image_download_status}}</span></td>
     <td><a class="nav-link" href="{{transient.tns_name}}/">{{transient.tns_name}}</a></td>
     </tr>
    {% endfor %}
