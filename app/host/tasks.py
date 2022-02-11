@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
-from .models import Transient
+from .models import Transient, Task, TransientProcessingStatus, Status
 from .transient_name_server import get_transients_from_tns
 from .transient_name_server import get_tns_credentials
 from .ghost import run_ghost
@@ -9,6 +9,17 @@ import datetime
 from django.utils import timezone
 import glob
 import shutil
+
+
+def set_transient_processing_status(transient):
+    tasks = Task.objects.all()
+    not_processed = Status.objects.get(message__exact='not processed')
+
+    for task in tasks:
+        processing_status = TransientProcessingStatus(task=task,
+                                                      transient=transient,
+                                                      status=not_processed)
+        processing_status.save()
 
 @shared_task
 def ingest_recent_tns_data(interval_minutes=1000):
@@ -33,6 +44,10 @@ def ingest_recent_tns_data(interval_minutes=1000):
             saved_transients.get(tns_name__exact=transient.tns_name)
         except Transient.DoesNotExist:
             transient.save()
+            set_transient_processing_status(transient)
+
+
+
 
 @shared_task
 def match_transient_to_host():

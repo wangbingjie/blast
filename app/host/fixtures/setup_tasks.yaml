@@ -1,0 +1,6 @@
+- model: host.Task
+  fields:
+    name: Host match
+- model: host.Task
+  fields:
+    name: Cutout Download
