@@ -92,3 +92,4 @@ webencodings==0.5.1
 wheel==0.37.0
 zipp==3.6.0
 zope.interface==5.4.0
+pymysql==1.0.2

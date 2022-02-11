@@ -1,9 +1,50 @@
 from django.db import models
+from astropy.coordinates import SkyCoord
+from astropy import units as u
 
-
-class Host(models.Model):
+class SkyObject(models.Model):
     """
-    Model to represent a host galaxy
+    Abstract base model to represent an astrophysical object.
+
+    Attributes:
+        name (django.db.model.CharField): Name of the sky object, character
+            limit = 20.
+        ra_deg (django.db.model.FloatField): Right Ascension (ICRS) in decimal
+            degrees of the host
+        deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
+            of the host
+    """
+    name = models.CharField(max_length=20, blank=True, null=True)
+    ra_deg = models.FloatField()
+    dec_deg = models.FloatField()
+
+    class Meta:
+        abstract = True
+
+    @property
+    def sky_coord(self):
+        """
+        SkyCoordinate of the object's position.
+        """
+        return SkyCoord(ra=self.ra_deg, dec=self.dec_deg, unit='deg')
+
+    @property
+    def ra(self):
+        """
+        String representation of Right ascension.
+        """
+        return self.sky_coord.ra.to_string(unit=u.hour, precision=2)
+
+    @property
+    def dec(self):
+        """
+        String representation of Declination.
+        """
+        return self.sky_coord.dec.to_string(precision=2)
+
+class Host(SkyObject):
+    """
+    Model to represent a host galaxy.
 
     Attributes:
         name (django.db.model.CharField): Name of the host galaxy, character
@@ -13,11 +54,8 @@ class Host(models.Model):
         deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
             of the host
     """
-    name = models.CharField(max_length=20)
-    ra_deg = models.FloatField()
-    dec_deg = models.FloatField()
 
-class Transient(models.Model):
+class Transient(SkyObject):
     """
     Model to represent a transient.
 
@@ -49,8 +87,6 @@ class Transient(models.Model):
     tns_name = models.CharField(max_length=20)
     tns_id = models.IntegerField()
     tns_prefix = models.CharField(max_length=20)
-    ra_deg = models.FloatField()
-    dec_deg = models.FloatField()
     public_timestamp = models.DateTimeField(null=True, blank=True)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
     host_match_status = models.CharField(max_length=20, default='not processed')
@@ -82,7 +118,47 @@ class Transient(models.Model):
     def image_download_status_badge_class(self):
         return self._status_badge_class(self.image_download_status)
 
+class Status(models.Model):
+    """
+    Status of a given processing task
+    """
+    message = models.CharField(max_length=20)
+    type = models.CharFeild(max_length=20)
 
+    @property
+    def badge(self):
+        """
+        Returns the Boostrap badge class of the status
+        """
+        if self.type == 'error':
+            badge_class = 'badge bg-danger'
+        elif self.type == 'warning':
+            badge_class = 'badge bg-warning'
+        elif self.type == 'success':
+            badge_class = 'badge bg-success'
+        elif self.type == 'blank':
+            badge_class = 'badge bg-secondary'
+        else:
+            badge_class = 'badge bg-secondary'
+
+        return badge_class
+
+class Task(models.Model):
+    """
+    A proceesing task that needs to be completed for a transient.
+    """
+    name = models.CharField(max_length=20)
+
+class TransientProcessingStatus(models.Model):
+    """
+    Keep track of the the various processing status of a transient.
+    """
+    name = models.ForeignKey(Task, on_delete=models.CASCADE, null=True,
+                             blank=True)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, null=True,
+                             blank=True)
+    transient = models.ForeignKey(Transient, on_delete=models.CASCADE, null=True,
+                             blank=True)
 
 class ExternalResourceCall(models.Model):
     """
