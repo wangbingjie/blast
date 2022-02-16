@@ -14,7 +14,7 @@ class SkyObject(models.Model):
         deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
             of the host
     """
-    name = models.CharField(max_length=20, blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
     ra_deg = models.FloatField()
     dec_deg = models.FloatField()
 
@@ -123,7 +123,7 @@ class Status(models.Model):
     Status of a given processing task
     """
     message = models.CharField(max_length=20)
-    type = models.CharFeild(max_length=20)
+    type = models.CharField(max_length=20)
 
     @property
     def badge(self):
@@ -199,7 +199,7 @@ class Filter(models.Model):
     name = models.CharField(max_length=20, unique=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     sedpy_id = models.CharField(max_length=20)
-    hips_id = models.CharField(max_length=20)
+    hips_id = models.CharField(max_length=250)
     vosa_id = models.CharField(max_length=20)
     image_download_method = models.CharField(max_length=20)
     pixel_size_arcsec = models.FloatField()
@@ -223,7 +223,7 @@ class Catalog(models.Model):
     """
     Model to represent a photometric catalog
     """
-    name = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=100, unique=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     vizier_id = models.CharField(max_length=20)
     id_column = models.CharField(max_length=20)
@@ -234,7 +234,7 @@ class Catalog(models.Model):
 
 
 class CatalogPhotometry(models.Model):
-    name = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=100, unique=True)
     mag_column = models.CharField(max_length=20)
     mag_error_column = models.CharField(max_length=20)
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
