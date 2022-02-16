@@ -1,0 +1,16 @@
+name: Documentation Build
+
+on:
+  push:
+    branches: main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: pip install -r app/requirments.txt
+      - run: cd docs/
+      - run: make html
+
+
