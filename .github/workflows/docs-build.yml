@@ -10,7 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: pip install -r app/requirements.txt
-      - run: cd docs/
-      - run: make html
+      - run: |
+        cd docs/
+        make html
 
 
