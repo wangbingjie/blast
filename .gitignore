@@ -138,3 +138,5 @@ quiverMaps/
 cutout_cdn/
 
 .dbdata/
+
+static/

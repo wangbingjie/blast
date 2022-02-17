@@ -10,6 +10,7 @@ services:
       - "8000:8000"
     volumes:
       - ./app:/app
+      - ./static:/static
     env_file:
       - ./env/.env.dev
   celery:
@@ -53,7 +54,15 @@ services:
       - .dbdata:/var/lib/mysql/
     ports:
       - "3306:3306"
-
+  nginx:
+    restart: always
+    build: ./nginx
+    volumes:
+      - ./static:/static
+    ports:
+      - "80:80"
+    depends_on:
+      - app
 
 
 
