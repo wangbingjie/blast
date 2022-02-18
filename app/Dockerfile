@@ -9,6 +9,7 @@ COPY ./requirements.txt /requirements.txt
 #RUN apt-get -y install default-libmysqlclient-dev
 RUN pip install -r /requirements.txt
 RUN mkdir /app
+RUN mkdir /cutout_cdn
 COPY . /app
 WORKDIR /app
 
