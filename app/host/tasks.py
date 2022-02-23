@@ -11,7 +11,7 @@ import glob
 import shutil
 
 
-def set_transient_processing_status(transient):
+def initial_transient_processing_status(transient):
     tasks = Task.objects.all()
     not_processed = Status.objects.get(message__exact='not processed')
 
@@ -41,7 +41,7 @@ def ingest_recent_tns_data(interval_minutes=1000):
 
     for transient in recent_transients:
         try:
-            saved_transients.get(tns_name__exact=transient.tns_name)
+            saved_transients.get(name__exact=transient.name)
         except Transient.DoesNotExist:
             transient.save()
             set_transient_processing_status(transient)

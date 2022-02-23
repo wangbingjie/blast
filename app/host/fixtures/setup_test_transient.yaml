@@ -1,6 +1,6 @@
 - model: host.Transient
   fields:
-    tns_name: 2022bov
+    name: 2022bov
     tns_id: 9999
     public_timestamp: 2022-02-04 07:29:02.112
     tns_prefix: AT
