@@ -55,6 +55,10 @@ class Host(SkyObject):
             of the host
     """
 
+class TransientManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
 class Transient(SkyObject):
     """
     Model to represent a transient.
@@ -84,7 +88,7 @@ class Transient(SkyObject):
             status for house keeping on the blast web app, character limit = 20.
             Field can be null or blank.
     """
-    tns_name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20)
     tns_id = models.IntegerField()
     tns_prefix = models.CharField(max_length=20)
     public_timestamp = models.DateTimeField(null=True, blank=True)
@@ -92,6 +96,7 @@ class Transient(SkyObject):
     host_match_status = models.CharField(max_length=20, default='not processed')
     image_download_status = models.CharField(max_length=20, default='not processed')
     catalog_photometry_status = models.CharField(max_length=20,default='not processed')
+    objects = TransientManager()
 
     def _status_badge_class(self, status):
         default_button_class = 'badge bg-secondary'
@@ -118,12 +123,17 @@ class Transient(SkyObject):
     def image_download_status_badge_class(self):
         return self._status_badge_class(self.image_download_status)
 
+class StatusManager(models.Manager):
+    def get_by_natural_key(self, message):
+        return self.get(message=message)
+
 class Status(models.Model):
     """
     Status of a given processing task
     """
     message = models.CharField(max_length=20)
     type = models.CharField(max_length=20)
+    objects = StatusManager()
 
     @property
     def badge(self):
@@ -143,22 +153,25 @@ class Status(models.Model):
 
         return badge_class
 
+class TaskManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
 class Task(models.Model):
     """
-    A proceesing task that needs to be completed for a transient.
+    A processing task that needs to be completed for a transient.
     """
     name = models.CharField(max_length=20)
+    objects = TaskManager()
 
 class TransientProcessingStatus(models.Model):
     """
     Keep track of the the various processing status of a transient.
     """
-    name = models.ForeignKey(Task, on_delete=models.CASCADE, null=True,
-                             blank=True)
-    status = models.ForeignKey(Status, on_delete=models.CASCADE, null=True,
-                             blank=True)
-    transient = models.ForeignKey(Transient, on_delete=models.CASCADE, null=True,
-                             blank=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
+    last_modified = models.DateTimeField(blank=True, null=True)
 
 class ExternalResourceCall(models.Model):
     """
