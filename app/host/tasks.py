@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
-from .models import Transient, Task, TransientProcessingStatus, Status
+from .models import Transient, Task, TaskProcessingStatus, Status
 from .transient_name_server import get_transients_from_tns
 from .transient_name_server import get_tns_credentials
 from .ghost import run_ghost
@@ -9,17 +9,9 @@ import datetime
 from django.utils import timezone
 import glob
 import shutil
+from processing import update_status, initialise_all_tasks_status
+from processing import oldest_transient_with_task_status
 
-
-def initial_transient_processing_status(transient):
-    tasks = Task.objects.all()
-    not_processed = Status.objects.get(message__exact='not processed')
-
-    for task in tasks:
-        processing_status = TransientProcessingStatus(task=task,
-                                                      transient=transient,
-                                                      status=not_processed)
-        processing_status.save()
 
 @shared_task
 def ingest_recent_tns_data(interval_minutes=1000):
@@ -44,9 +36,7 @@ def ingest_recent_tns_data(interval_minutes=1000):
             saved_transients.get(name__exact=transient.name)
         except Transient.DoesNotExist:
             transient.save()
-            set_transient_processing_status(transient)
-
-
+            initialise_all_tasks_status(transient)
 
 
 @shared_task
@@ -57,29 +47,34 @@ def match_transient_to_host():
     Returns:
         (None): Matches host to transient
     """
-    unmatched = Transient.objects.filter(
-        host_match_status__exact='not processed')
+    matching_task = Task.objects.get(name__exact='Host match')
+    not_processed = Status.objects.get(message__exaxt='not processed')
+    transient = oldest_transient_with_task_status(matching_task, not_processed)
 
-    if unmatched.exists():
-        transient = unmatched.order_by('public_timestamp')[0]
-        transient.host_match_status = 'processing'
-        transient.save()
+    if transient is not None:
+        processing_status = TaskProcessingStatus.objects.get(transient=transient,
+                                                         task=matching_task)
+
+        processing = Status.objects.get(message__exact='processing')
+        update_status(processing_status, processing)
 
         try:
             host = run_ghost(transient)
         except:
             host = None
-            transient.host_match_status = 'failed'
-            transient.save()
+            failed = Status.objects.get(message__exact='failed')
+            update_status(processing_status, failed)
 
         if host is not None:
             host.save()
             transient.host = host
-            transient.host_match_status = 'processed'
-            transient.save()
+            processed = Status.objects.get(message__exact='processed')
+            update_status(processing_status, processed)
         else:
-            transient.host_match_status = 'no match'
-            transient.save()
+            no_ghost_match = Status.objects.get(message__exact='no ghost match')
+            update_status(processing_status, no_ghost_match)
+
+        transient.save()
 
 
 @shared_task
@@ -87,6 +82,7 @@ def download_cutouts():
     """
     Downloads cutout data for a single transient
     """
+
     no_images = Transient.objects.filter(
         image_download_status__exact='not processed')
 
