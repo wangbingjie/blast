@@ -4,6 +4,10 @@
     type: blank
 - model: host.Status
   fields:
+    message: no ghost match
+    type: error
+- model: host.Status
+  fields:
     message: processed
     type: success
 - model: host.Status
@@ -14,12 +18,12 @@
   fields:
     message: no match
     type: error
-- model: host.TransientProcessingStatus
+- model: host.TaskProcessingStatus
   fields:
     task: [Host match]
     transient: [2022bov]
     status: [not processed]
-- model: host.TransientProcessingStatus
+- model: host.TaskProcessingStatus
   fields:
     task: [Cutout Download]
     transient: [2022bov]
