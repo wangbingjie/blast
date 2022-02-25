@@ -18,12 +18,12 @@
   fields:
     message: no match
     type: error
-- model: host.TaskProcessingStatus
+- model: host.TaskRegister
   fields:
     task: [Host match]
     transient: [2022bov]
     status: [not processed]
-- model: host.TaskProcessingStatus
+- model: host.TaskRegister
   fields:
     task: [Cutout Download]
     transient: [2022bov]

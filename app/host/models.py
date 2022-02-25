@@ -164,7 +164,7 @@ class Task(models.Model):
     name = models.CharField(max_length=20)
     objects = TaskManager()
 
-class TaskProcessingStatus(models.Model):
+class TaskRegister(models.Model):
     """
     Keep track of the the various processing status of a transient.
     """

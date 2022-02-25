@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
-from .models import Transient, Task, TaskProcessingStatus, Status
+from .models import Transient, Task, TaskRegister, Status
 from .transient_name_server import get_transients_from_tns
 from .transient_name_server import get_tns_credentials
 from .ghost import run_ghost
@@ -9,8 +9,8 @@ import datetime
 from django.utils import timezone
 import glob
 import shutil
-from processing import update_status, initialise_all_tasks_status
-from processing import oldest_transient_with_task_status
+from .processing import update_status, initialise_all_tasks_status
+from .processing import oldest_transient_with_task_status
 
 
 @shared_task
