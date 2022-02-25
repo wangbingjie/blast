@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
-
+import sys
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -83,10 +83,12 @@ WSGI_APPLICATION = 'app.wsgi.application'
 #    }
 #}
 
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('MYSQL_DATABASE'),
+        'NAME': os.environ.get('MYSQL_DATABASE', ''),
         'USER': 'root',
         'PASSWORD': 'password',
         'HOST': 'database',
@@ -94,6 +96,8 @@ DATABASES = {
     }
 }
 
+#if 'test' in sys.argv:
+#    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
 
 
 # Password validation
