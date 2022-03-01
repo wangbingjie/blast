@@ -10,7 +10,6 @@ from django.utils import timezone
 import glob
 import shutil
 from .processing import update_status, initialise_all_tasks_status
-from .processing import oldest_transient_with_task_status
 
 
 @shared_task

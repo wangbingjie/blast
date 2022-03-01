@@ -4,61 +4,61 @@ services:
   app:
     restart: always
     build:
-      context: ./app/
+      context: ../app/
     command: bash docker-entrypoint.sh
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app
-      - ./cutout_cdn:/cutout_cdn
+      - ../app:/app
+      - ../cutout_cdn:/cutout_cdn
     env_file:
-      - ./env/.env.dev
+      - ../env/.env.dev
   celery:
     restart: always
     build:
-      context: ./app/
+      context: ../app/
     command: celery -A app worker -l INFO --max-memory-per-child 12000
     volumes:
-      - ./app:/app
+      - ../app:/app
     depends_on:
       - app
       - rabbitmq
     env_file:
-      - ./env/.env.dev
+      - ../env/.env.dev
   rabbitmq:
     image: rabbitmq:3.9-alpine
     ports:
       - "5672:5672"
     env_file:
-      - ./env/.env.dev
+      - ../env/.env.dev
   celery_beat:
     restart: always
     build:
-      context: ./app/
+      context: ../app/
     command: celery -A app beat -l INFO
     volumes:
-      - ./app:/app
+      - ../app:/app
     depends_on:
       - app
       - rabbitmq
       - celery
     env_file:
-      - ./env/.env.dev
+      - ../env/.env.dev
   database:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     env_file:
-      - ./env/.env.dev
+      - ../env/.env.dev
     volumes:
-      - .data/database/:/var/lib/mysql/
+      - ..data/database/:/var/lib/mysql/
     ports:
       - "3306:3306"
   nginx:
     restart: always
-    build: ./nginx
+    build: ../nginx
     volumes:
-      - ./static:/static
+      - ../static:/static
     ports:
       - "80:80"
     depends_on:
