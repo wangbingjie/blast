@@ -3,4 +3,4 @@
     name: Host match
 - model: host.Task
   fields:
-    name: Cutout Download
+    name: Cutout download

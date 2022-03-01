@@ -4,10 +4,6 @@
     type: blank
 - model: host.Status
   fields:
-    message: no ghost match
-    type: error
-- model: host.Status
-  fields:
     message: processed
     type: success
 - model: host.Status
@@ -16,18 +12,11 @@
     type: warning
 - model: host.Status
   fields:
-    message: no match
+    message: no GHOST match
     type: error
-- model: host.TaskRegister
+- model: host.Status
   fields:
-    task: [Host match]
-    transient: [2022bov]
-    status: [not processed]
-- model: host.TaskRegister
-  fields:
-    task: [Cutout Download]
-    transient: [2022bov]
-    status: [not processed]
-
+    message: failed
+    type: error
 
 
