@@ -6,9 +6,9 @@ from .ghost import run_ghost
 
 class TaskRunner(ABC):
 
-    def __init__(self, task_register, failed_status):
+    def __init__(self, failed_status):
         self.processing_status = Status.objects.get(message__exact='processing')
-        self.task_register = task_register
+        self.task_register = TaskRegister.objects.all()
         self.failed_status = failed_status
         self.prerequsits = self._prerequisites()
 
@@ -18,7 +18,7 @@ class TaskRunner(ABC):
 
         for task_name, status_message in self.prerequsits.items():
             task = Task.objects.get(name__exact=task_name)
-            status = Status.objects.get(message_exact=status_message)
+            status = Status.objects.get(message__exact=status_message)
             current_register = current_register.filter(task=task, status=status)
 
         return current_register
@@ -27,19 +27,22 @@ class TaskRunner(ABC):
         return register.order_by('transient__public_timestamp')[0]
 
     def select_register_item(self):
-        register = self.find_register_items_meeting_prerequsites()
-        return self._select_highest_priority(register)
+        register = self.find_register_items_meeting_prerequisites()
+        return self._select_highest_priority(register) if register.exists() else None
+
 
     def run_process(self):
-        task_register_item = self.select_task_register_item()
-        update_status(task_register_item, self.processing_status)
-        transient = task_register_item.transient
+        task_register_item = self.select_register_item()
 
-        try:
-            status = self._run_process(transient)
-            update_status(task_register_item, status)
-        except:
-            update_status(task_register_item, self.failed_status)
+        if task_register_item is not None:
+            update_status(task_register_item, self.processing_status)
+            transient = task_register_item.transient
+
+            try:
+                status = self._run_process(transient)
+                update_status(task_register_item, status)
+            except:
+                update_status(task_register_item, self.failed_status)
 
     @abstractmethod
     def _run_process(self, transient):
@@ -51,9 +54,12 @@ class TaskRunner(ABC):
 
 class GhostRunner(TaskRunner):
 
+    def __init__(self):
+        super(GhostRunner, self).__init__(
+            Status.objects.get(message__exact='no GHOST match'))
+
     def _prerequisites(self):
         return {'Host Match': 'not processed'}
-
 
     def _run_process(self, transient):
         host = run_ghost(transient)
@@ -99,24 +105,3 @@ def initialise_all_tasks_status(transient):
     for task in tasks:
         task_status = TaskRegister(task=task, transient=transient)
         update_status(task_status, not_processed)
-
-def oldest_transient_with_task_status(task, status):
-    """
-    Get the transient with the oldest timestamp with task with a particular
-    processing status.
-
-    Parameters:
-        task (models.Task): task of interest
-        status (models.Status): status of the task of interest
-    Returns:
-        transient (models.Transient) or None.
-    """
-    task_processing = TaskRegister.obejcts.filter(task=task, status=status)
-
-    if task_processing.exists():
-        oldest_task = task_processing.order_by('transient__public_timestamp')[0]
-        transient = oldest_task.transient
-    else:
-        transient = None
-
-    return transient
