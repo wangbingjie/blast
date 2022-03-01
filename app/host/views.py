@@ -31,9 +31,9 @@ def analytics(request):
 
 def results(request, slug):
     transients = Transient.objects.all()
-    transient = transients.get(tns_name__exact=slug)
+    transient = transients.get(name__exact=slug)
 
-    all_cutouts = Cutout.objects.filter(transient__tns_name__exact=slug)
+    all_cutouts = Cutout.objects.filter(transient__name__exact=slug)
     filters = [cutout.filter.name for cutout in all_cutouts]
 
     if request.method == 'POST':

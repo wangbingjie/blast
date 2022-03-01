@@ -1,5 +1,5 @@
-Installing blast locally
-++++++++++++++++++++++++
+Running blast locally
++++++++++++++++++++++
 
 There are several ways to install and run blast locally. You might want to
 do this if you want to contribute to the development of blast, or if you don't
@@ -9,7 +9,7 @@ and get it running on your machine in a couple of different ways.
 Docker
 ======
 
-The first (and recomended) option for installing and running blast locally is to
+The first recommended option for installing and running blast locally is to
 use docker.
 
 Install the Docker desktop app
@@ -19,108 +19,44 @@ The first step is to install the docker desktop application, which can be found
 `here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux based
 systems.
 
-Pull the docker image
----------------------------------
+Run the blast app locally
+-------------------------
 
-Open up the command line and pull the most recent Docker image of the lastest
-commit on main
-
-.. code:: none
-
-    docker pull ghcr.io/astrophpeter/blast:edge
-
-Run the docker image
---------------------
-
-Run the image and make blast visible to your machine on port 8000
-
-.. code:: none
-
-    docker run --publish 8000:8000 image_ID
-
-You can find image_ID in the Docker Desktop app or by running
-
-.. code:: none
-
-    docker images
-
-Then go to `localhost:8000/ <https://localhost:8000/>`_ in your web browser
-and blast should be running.
-
-Native install
-==============
-
-The other option to install blast is a native install. The recommended way to do
-this is to create an isolated python environment and then install all the required
-packages within that environment.
-
-Install the Django app with Conda
----------------------------------
+Clone the bast repository.
 
 .. code:: none
 
     git clone https://github.com/astrophpeter/blast.git
 
-Create a conda environment called blast using the ``blast/environment.yml`` file.
-Assuming that you are in the top level blast directory:
+Once in the blast directory, start the docker container.
 
 .. code:: none
 
-    conda env create -f environment.yml
+    bash run_blast.sh
 
-Activate the conda environment and then pip install all required packages
-using the ``blast/app/requirements.txt`` file
+.. note::
+    The web app container may fail a couple of times while it waits for the
+    database to be setup. Do not worry, this is normal. The web app container
+    will restart automatically until it successfully connects to the database.
 
-.. code:: none
+Then go to `localhost:8000/ <https://0.0.0.0/transients>`_ in your web browser
+and blast should be running.
 
-    conda activate blast
+.. warning::
+    Stating the web app via the `run_blast.sh` script deletes your local copy of
+    the database in `data/database/` and the app runs with an empty database.
 
-Install pip in the environment
-
-.. code:: none
-
-    conda install pip
-
-Locate the pip for the conda environment by running
-
-.. code:: none
-
-    which -a pip
-
-which will produce a few paths, find the path with ``blast/`` in it and pip
-install the rest of the requirements
+To stop blast from running, open a new terminal window and run.
 
 .. code:: none
 
-    your_pip_path install -r app/requirements.txt
+    docker compose down
 
-Set up the transient name server bot
-------------------------------------
-
-For blast to ingest live data from the
-`transient name server (TNS) <https://www.wis-tns.org/>`_ you need to
-credentials for a TNS bot. To set up a TNS bot go
-`here <https://www.wis-tns.org/user/register>`_ and create a TNS user account.
-To avoid exposing these credentials blast looks for them in your environment.
-Specifically, in your environment you need the following variables set:
+To run tests with the blast app, run
 
 .. code:: none
 
-    export TNS_BOT_API_KEY=your_api_key
-    export TNS_BOT_ID=your_bot_id
-    export TNS_BOT_USERNAME=your_bot_user_name
-
-
-Populate the database
----------------------
-
-In order for blast to run you need to populate the backend databases with meta
-information about surveys and external services blast uses. To do this run the
-commands in the ``blast/app/populate_database_commands..txt``
-
-.. code:: none
-
-    bash populate_database_commands.txt
+    bash run_blast_tests.sh
 
 
 
