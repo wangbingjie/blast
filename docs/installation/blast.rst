@@ -9,8 +9,9 @@ and get it running on your machine in a couple of different ways.
 Docker
 ======
 
-The first recommended option for installing and running blast locally is to
-use docker.
+The recommended option for installing and running blast locally is to
+use docker. It so strongly recommended in fact, that I'm not going to write
+documentation on how to install and run blast any other way.
 
 Install the Docker desktop app
 -------------------------------
