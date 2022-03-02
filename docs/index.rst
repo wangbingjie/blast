@@ -11,6 +11,7 @@ Welcome to blast's documentation!
 
    installation/blast
    develop/models
+   contributing
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
 

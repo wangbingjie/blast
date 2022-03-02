@@ -1,20 +1,20 @@
 from django.db import models
 from astropy.coordinates import SkyCoord
 from astropy import units as u
+from .managers import TransientManager, StatusManager, TaskManager
+from .managers import SurveyManager, CatalogManager, FilterManager
 
 class SkyObject(models.Model):
     """
-    Abstract base model to represent an astrophysical object.
+    Abstract base model to represent an astrophysical object with an on-sky
+    position.
 
     Attributes:
-        name (django.db.model.CharField): Name of the sky object, character
-            limit = 20.
         ra_deg (django.db.model.FloatField): Right Ascension (ICRS) in decimal
             degrees of the host
         deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
             of the host
     """
-    name = models.CharField(max_length=100, blank=True, null=True)
     ra_deg = models.FloatField()
     dec_deg = models.FloatField()
 
@@ -42,6 +42,7 @@ class SkyObject(models.Model):
         """
         return self.sky_coord.dec.to_string(precision=2)
 
+
 class Host(SkyObject):
     """
     Model to represent a host galaxy.
@@ -54,17 +55,15 @@ class Host(SkyObject):
         deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
             of the host
     """
+    name = models.CharField(max_length=100, blank=True, null=True)
 
-class TransientManager(models.Manager):
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
 
 class Transient(SkyObject):
     """
     Model to represent a transient.
 
     Attributes:
-        tns_name (django.db.model.CharField): Transient Name
+        name (django.db.model.CharField): Transient Name
             Server name of the transient, character limit = 20.
         tns_id (models.IntegerField): Transient Name Server ID.
         tns_prefix (models.CharField): Transient Name Server name
@@ -78,42 +77,30 @@ class Transient(SkyObject):
         public_timestamp (django.db.model.DateTimeField): Transient name server
             public timestamp for the transient. Field can be null or blank. On
             Delete is set to cascade.
-        host_match_status (models.CharField): Processing host match status for
-            house keeping on the blast web app, character limit = 20. Field can
-            be null or blank.
-        image_download_status (models.CharField): Processing image_download
-            status for house keeping on the blast web app, character limit = 20.
-            Field can be null or blank.
-        catalog_photometry_status (models.CharField): Processing image_download
-            status for house keeping on the blast web app, character limit = 20.
-            Field can be null or blank.
     """
     name = models.CharField(max_length=20)
     tns_id = models.IntegerField()
     tns_prefix = models.CharField(max_length=20)
     public_timestamp = models.DateTimeField(null=True, blank=True)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
-    host_match_status = models.CharField(max_length=20, default='not processed')
-    image_download_status = models.CharField(max_length=20, default='not processed')
-    catalog_photometry_status = models.CharField(max_length=20,default='not processed')
     objects = TransientManager()
 
-    def _status_badge_class(self, status):
-        default_button_class = 'badge bg-secondary'
-        warn_status = ['processing']
-        bad_status = ['failed','no match' ]
-        good_status = ['processed']
+    #def _status_badge_class(self, status):
+    #    default_button_class = 'badge bg-secondary'
+    #    warn_status = ['processing']
+    #    bad_status = ['failed','no match' ]
+    #    good_status = ['processed']
 
-        if status in bad_status:
-            badge_class = 'badge bg-danger'
-        elif status in warn_status:
-            badge_class = 'badge bg-warning'
-        elif status in good_status:
-            badge_class = 'badge bg-success'
-        else:
-            badge_class = default_button_class
+    #    if status in bad_status:
+    #        badge_class = 'badge bg-danger'
+    #    elif status in warn_status:
+    #        badge_class = 'badge bg-warning'
+    #    elif status in good_status:
+    #        badge_class = 'badge bg-success'
+    #    else:
+    #        badge_class = default_button_class
 
-        return badge_class
+    #   return badge_class
 
     @property
     def host_match_status_badge_class(self):
@@ -123,9 +110,6 @@ class Transient(SkyObject):
     def image_download_status_badge_class(self):
         return self._status_badge_class(self.image_download_status)
 
-class StatusManager(models.Manager):
-    def get_by_natural_key(self, message):
-        return self.get(message=message)
 
 class Status(models.Model):
     """
@@ -153,9 +137,6 @@ class Status(models.Model):
 
         return badge_class
 
-class TaskManager(models.Manager):
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
 
 class Task(models.Model):
     """
@@ -187,10 +168,6 @@ class ExternalResourceCall(models.Model):
     response_status = models.CharField(max_length=20)
     request_time = models.DateTimeField(null=True, blank=True)
 
-class SurveyManager(models.Manager):
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
-
 
 class Survey(models.Model):
     """
@@ -198,11 +175,6 @@ class Survey(models.Model):
     """
     name = models.CharField(max_length=20, unique=True)
     objects = SurveyManager()
-
-
-class FilterManager(models.Manager):
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
 
 
 class Filter(models.Model):
@@ -225,11 +197,6 @@ class Filter(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class CatalogManager(models.Manager):
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
 
 
 class Catalog(models.Model):
@@ -259,7 +226,6 @@ def fits_file_path(instance, filename):
     Constructs a file path for a fits image
     """
     return f'{instance.host}/{instance.filter.survey}/{instance.filter}.fits'
-
 
 
 class Cutout(models.Model):
