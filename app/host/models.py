@@ -1,8 +1,14 @@
-from django.db import models
-from astropy.coordinates import SkyCoord
 from astropy import units as u
-from .managers import TransientManager, StatusManager, TaskManager
-from .managers import SurveyManager, CatalogManager, FilterManager
+from astropy.coordinates import SkyCoord
+from django.db import models
+
+from .managers import CatalogManager
+from .managers import FilterManager
+from .managers import StatusManager
+from .managers import SurveyManager
+from .managers import TaskManager
+from .managers import TransientManager
+
 
 class SkyObject(models.Model):
     """
@@ -15,6 +21,7 @@ class SkyObject(models.Model):
         deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
             of the host
     """
+
     ra_deg = models.FloatField()
     dec_deg = models.FloatField()
 
@@ -26,7 +33,7 @@ class SkyObject(models.Model):
         """
         SkyCoordinate of the object's position.
         """
-        return SkyCoord(ra=self.ra_deg, dec=self.dec_deg, unit='deg')
+        return SkyCoord(ra=self.ra_deg, dec=self.dec_deg, unit="deg")
 
     @property
     def ra(self):
@@ -55,6 +62,7 @@ class Host(SkyObject):
         deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
             of the host
     """
+
     name = models.CharField(max_length=100, blank=True, null=True)
 
 
@@ -78,6 +86,7 @@ class Transient(SkyObject):
             public timestamp for the transient. Field can be null or blank. On
             Delete is set to cascade.
     """
+
     name = models.CharField(max_length=20)
     tns_id = models.IntegerField()
     tns_prefix = models.CharField(max_length=20)
@@ -85,7 +94,7 @@ class Transient(SkyObject):
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
     objects = TransientManager()
 
-    #def _status_badge_class(self, status):
+    # def _status_badge_class(self, status):
     #    default_button_class = 'badge bg-secondary'
     #    warn_status = ['processing']
     #    bad_status = ['failed','no match' ]
@@ -115,6 +124,7 @@ class Status(models.Model):
     """
     Status of a given processing task
     """
+
     message = models.CharField(max_length=20)
     type = models.CharField(max_length=20)
     objects = StatusManager()
@@ -124,16 +134,16 @@ class Status(models.Model):
         """
         Returns the Boostrap badge class of the status
         """
-        if self.type == 'error':
-            badge_class = 'badge bg-danger'
-        elif self.type == 'warning':
-            badge_class = 'badge bg-warning'
-        elif self.type == 'success':
-            badge_class = 'badge bg-success'
-        elif self.type == 'blank':
-            badge_class = 'badge bg-secondary'
+        if self.type == "error":
+            badge_class = "badge bg-danger"
+        elif self.type == "warning":
+            badge_class = "badge bg-warning"
+        elif self.type == "success":
+            badge_class = "badge bg-success"
+        elif self.type == "blank":
+            badge_class = "badge bg-secondary"
         else:
-            badge_class = 'badge bg-secondary'
+            badge_class = "badge bg-secondary"
 
         return badge_class
 
@@ -142,17 +152,21 @@ class Task(models.Model):
     """
     A processing task that needs to be completed for a transient.
     """
+
     name = models.CharField(max_length=20)
     objects = TaskManager()
+
 
 class TaskRegister(models.Model):
     """
     Keep track of the the various processing status of a transient.
     """
+
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(blank=True, null=True)
+
 
 class ExternalResourceCall(models.Model):
     """
@@ -164,6 +178,7 @@ class ExternalResourceCall(models.Model):
             external resource was requested.
         request_time (models.DateTimeField): Time of request to the resource.
     """
+
     resource_name = models.CharField(max_length=20)
     response_status = models.CharField(max_length=20)
     request_time = models.DateTimeField(null=True, blank=True)
@@ -173,6 +188,7 @@ class Survey(models.Model):
     """
     Model to represent a survey
     """
+
     name = models.CharField(max_length=20, unique=True)
     objects = SurveyManager()
 
@@ -181,6 +197,7 @@ class Filter(models.Model):
     """
     Model to represent a survey filter
     """
+
     name = models.CharField(max_length=20, unique=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     sedpy_id = models.CharField(max_length=20)
@@ -203,6 +220,7 @@ class Catalog(models.Model):
     """
     Model to represent a photometric catalog
     """
+
     name = models.CharField(max_length=100, unique=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     vizier_id = models.CharField(max_length=20)
@@ -225,20 +243,22 @@ def fits_file_path(instance, filename):
     """
     Constructs a file path for a fits image
     """
-    return f'{instance.host}/{instance.filter.survey}/{instance.filter}.fits'
+    return f"{instance.host}/{instance.filter.survey}/{instance.filter}.fits"
 
 
 class Cutout(models.Model):
     """
     Model to represent a cutout image of a host galaxy
     """
+
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
-    transient = models.ForeignKey(Transient, on_delete=models.CASCADE, null=True, blank=True)
+    transient = models.ForeignKey(
+        Transient, on_delete=models.CASCADE, null=True, blank=True
+    )
     fits = models.FileField(upload_to=fits_file_path, null=True, blank=True)
 
 
-
-#class Image(models.Model):
+# class Image(models.Model):
 #    """
 #    Model to represent an image
 #    """
@@ -247,54 +267,20 @@ class Cutout(models.Model):
 #    file_path = models.CharField()
 
 
-
-
-#class Match(models.Model):
+# class Match(models.Model):
 #    """
 #    Model to track the matches between and host and transient
 #    """
 
-#class HostApeturePhotometry(models.Model):
+# class HostApeturePhotometry(models.Model):
 #    """
 #    Model to represent forced apeture host photometry
 #    """
 #    pass
 
 
-#class HostCatalogPhotometry(models.Model):
+# class HostCatalogPhotometry(models.Model):
 #    """
 #    Model to represent catalog photometry of a known host
 #    """
 #    pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

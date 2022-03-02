@@ -1,7 +1,10 @@
-from astro_ghost.ghostHelperFunctions import getTransientHosts, getGHOST
-from astropy.coordinates import SkyCoord
 import glob
 import os
+
+from astro_ghost.ghostHelperFunctions import getGHOST
+from astro_ghost.ghostHelperFunctions import getTransientHosts
+from astropy.coordinates import SkyCoord
+
 from .models import Host
 
 
@@ -20,29 +23,31 @@ def run_ghost(transient):
         Host position
     """
     getGHOST(real=False, verbose=1)
-    transient_position = SkyCoord(ra=transient.ra_deg,
-                                  dec=transient.dec_deg,
-                                  unit='deg')
-    host_data = getTransientHosts(snCoord=[transient_position],
-                                  snName=[transient.tns_name],
-                                  verbose=1,
-                                  starcut='gentle',
-                                  ascentMatch=True)
+    transient_position = SkyCoord(
+        ra=transient.ra_deg, dec=transient.dec_deg, unit="deg"
+    )
+    host_data = getTransientHosts(
+        snCoord=[transient_position],
+        snName=[transient.tns_name],
+        verbose=1,
+        starcut="gentle",
+        ascentMatch=True,
+    )
 
     # clean up after GHOST...
-    #dir_list = glob.glob('transients_*/*/*')
-    #for dir in dir_list: os.remove(dir)
+    # dir_list = glob.glob('transients_*/*/*')
+    # for dir in dir_list: os.remove(dir)
 
-    #for level in ['*/*/', '*/']:
+    # for level in ['*/*/', '*/']:
     #    dir_list = glob.glob('transients_' + level)
     #    for dir in dir_list: os.rmdir(dir)
 
     if len(host_data) == 0:
         host = None
     else:
-        host = Host(ra_deg=host_data['raMean'][0],
-                    dec_deg=host_data['decMean'][0],
-                    name=host_data['objName'][0])
+        host = Host(
+            ra_deg=host_data["raMean"][0],
+            dec_deg=host_data["decMean"][0],
+            name=host_data["objName"][0],
+        )
     return host
-
-

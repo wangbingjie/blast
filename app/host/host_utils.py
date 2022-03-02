@@ -1,18 +1,23 @@
-from collections import namedtuple
-import yaml
-import numpy as np
-from astropy.units import Quantity
-import astropy.units as u
-from astroquery.hips2fits import hips2fits
-from photutils.segmentation import detect_threshold, detect_sources,deblend_sources,SourceCatalog
-from photutils.aperture import EllipticalAperture
-from astropy.coordinates import SkyCoord
-#from astro_ghost.ghostHelperFunctions import getTransientHosts
-import os
 import glob
-from photutils.background import Background2D
-from astropy.wcs import WCS
+import os
 import time
+from collections import namedtuple
+
+import astropy.units as u
+import numpy as np
+import yaml
+from astropy.coordinates import SkyCoord
+from astropy.units import Quantity
+from astropy.wcs import WCS
+from astroquery.hips2fits import hips2fits
+from photutils.aperture import EllipticalAperture
+from photutils.background import Background2D
+from photutils.segmentation import deblend_sources
+from photutils.segmentation import detect_sources
+from photutils.segmentation import detect_threshold
+from photutils.segmentation import SourceCatalog
+# from astro_ghost.ghostHelperFunctions import getTransientHosts
+
 
 def survey_list(survey_metadata_path):
     """
@@ -35,15 +40,16 @@ def survey_list(survey_metadata_path):
 
     # create a named tuple class with all the survey data fields as attributes
     # including the survey name
-    Survey = namedtuple('Survey', ['name'] + data_fields)
+    Survey = namedtuple("Survey", ["name"] + data_fields)
 
     survey_list = []
     for name in survey_metadata:
         field_dict = {field: survey_metadata[name][field] for field in data_fields}
-        field_dict['name'] = name
+        field_dict["name"] = name
         survey_list.append(Survey(**field_dict))
 
     return survey_list
+
 
 def build_source_catalog(image, background, threshhold_sigma=1.0, npixels=10):
     """
@@ -69,10 +75,15 @@ def build_source_catalog(image, background, threshhold_sigma=1.0, npixels=10):
     image_data = image[0].data
     background_subtracted_data = image_data - background.background
     threshold = threshhold_sigma * background.background_rms
-    segmentation = detect_sources(background_subtracted_data, threshold, npixels=npixels)
-    deblended_segmentation = deblend_sources(background_subtracted_data, segmentation, npixels=npixels)
+    segmentation = detect_sources(
+        background_subtracted_data, threshold, npixels=npixels
+    )
+    deblended_segmentation = deblend_sources(
+        background_subtracted_data, segmentation, npixels=npixels
+    )
     print(segmentation)
-    return SourceCatalog(background_subtracted_data,segmentation)
+    return SourceCatalog(background_subtracted_data, segmentation)
+
 
 def match_source(position, source_catalog, wcs):
     """
@@ -93,9 +104,13 @@ def match_source(position, source_catalog, wcs):
     """
 
     host_x_pixel, host_y_pixel = wcs.world_to_pixel(position)
-    source_x_pixels, source_y_pixels = source_catalog.xcentroid, source_catalog.ycentroid
-    closest_source_index = np.argmin(np.hypot(host_x_pixel - source_x_pixels,
-                                              host_y_pixel - source_y_pixels))
+    source_x_pixels, source_y_pixels = (
+        source_catalog.xcentroid,
+        source_catalog.ycentroid,
+    )
+    closest_source_index = np.argmin(
+        np.hypot(host_x_pixel - source_x_pixels, host_y_pixel - source_y_pixels)
+    )
 
     return source_catalog[closest_source_index]
 
@@ -120,13 +135,14 @@ def elliptical_sky_aperture(source_catalog, wcs, aperture_scale=3.0):
     semi_major_axis = source_catalog.semimajor_sigma.value * aperture_scale
     semi_minor_axis = source_catalog.semiminor_sigma.value * aperture_scale
     orientation_angle = source_catalog.orientation.to(u.rad).value
-    pixel_aperture = EllipticalAperture(center, semi_major_axis,
-                                        semi_minor_axis, theta=orientation_angle)
+    pixel_aperture = EllipticalAperture(
+        center, semi_major_axis, semi_minor_axis, theta=orientation_angle
+    )
     pixel_aperture = source_catalog.kron_aperture
     return pixel_aperture.to_sky(wcs)
 
 
-#def find_host_data(position, name='No name'):
+# def find_host_data(position, name='No name'):
 #    """
 #    Finds the information about the host galaxy given the position of the supernova.
 #    Parameters
@@ -145,7 +161,7 @@ def elliptical_sky_aperture(source_catalog, wcs, aperture_scale=3.0):
 #                                         snName=[name],
 #                                         verbose=1, starcut='gentle', ascentMatch=True)
 
-    # clean up after GHOST...
+# clean up after GHOST...
 #    dir_list = glob.glob('transients_*/*/*')
 #    for dir in dir_list: os.remove(dir)
 
@@ -163,6 +179,7 @@ def elliptical_sky_aperture(source_catalog, wcs, aperture_scale=3.0):
 
 
 #    return host_position
+
 
 def estimate_background(image):
     """
@@ -196,6 +213,7 @@ def construct_aperture(image, position):
     source_data = match_source(position, catalog, wcs)
     return elliptical_sky_aperture(source_data, wcs)
 
+
 def construct_all_apertures(position, image_dict):
     apertures = {}
 
@@ -204,7 +222,7 @@ def construct_all_apertures(position, image_dict):
             aperture = construct_aperture(image, position)
             apertures[name] = aperture
         except:
-            print(f'Could not fit aperture to {name} imaging data')
+            print(f"Could not fit aperture to {name} imaging data")
 
     return apertures
 
@@ -232,8 +250,7 @@ def pick_largest_aperture(position, image_dict):
             aperture = construct_aperture(image, position)
             apertures[name] = aperture
         except:
-            print(f'Could not fit aperture to {name} imaging data')
-
+            print(f"Could not fit aperture to {name} imaging data")
 
     aperture_areas = {}
     for image_name in image_dict:
@@ -242,5 +259,5 @@ def pick_largest_aperture(position, image_dict):
         aperture_area = np.pi * aperture_semi_minor_axis * aperture_semi_major_axis
         aperture_areas[image_name] = aperture_area
 
-    max_size_name = max(aperture_areas, key = aperture_areas.get)
-    return {max_size_name : apertures[max_size_name]}
+    max_size_name = max(aperture_areas, key=aperture_areas.get)
+    return {max_size_name: apertures[max_size_name]}
