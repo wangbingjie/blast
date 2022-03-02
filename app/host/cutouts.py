@@ -1,16 +1,21 @@
-import numpy as np
-from astropy.units import Quantity
-import astropy.units as u
-from astroquery.hips2fits import hips2fits
-import pandas as pd
-from astropy.io import fits
-from astropy.coordinates import SkyCoord
-from .models import Filter, Cutout
-from django.conf import settings
 import os
 
-def download_and_save_cutouts(transient, fov=Quantity(0.1, unit='deg'),
-                              media_root=settings.MEDIA_ROOT):
+import astropy.units as u
+import numpy as np
+import pandas as pd
+from astropy.coordinates import SkyCoord
+from astropy.io import fits
+from astropy.units import Quantity
+from astroquery.hips2fits import hips2fits
+from django.conf import settings
+
+from .models import Cutout
+from .models import Filter
+
+
+def download_and_save_cutouts(
+    transient, fov=Quantity(0.1, unit="deg"), media_root=settings.MEDIA_ROOT
+):
     """
     Download all available imaging from a list of surveys
     Parameters
@@ -30,14 +35,14 @@ def download_and_save_cutouts(transient, fov=Quantity(0.1, unit='deg'),
         Dictionary of images with the survey names as keys and fits images
         as values.
     """
-    position = SkyCoord(transient.ra_deg, transient.dec_deg, unit='deg')
+    position = SkyCoord(transient.ra_deg, transient.dec_deg, unit="deg")
 
     for filter in Filter.objects.all():
         fits = cutout(position, filter, fov=fov)
         if fits:
-            save_dir = f'{media_root}/{transient.tns_name}/{filter.survey.name}/'
+            save_dir = f"{media_root}/{transient.tns_name}/{filter.survey.name}/"
             os.makedirs(save_dir, exist_ok=True)
-            path_to_fits = save_dir + f'{filter.name}.fits'
+            path_to_fits = save_dir + f"{filter.name}.fits"
             fits.writeto(path_to_fits, overwrite=True)
 
             cutout_object = Cutout(filter=filter, transient=transient)
@@ -45,8 +50,7 @@ def download_and_save_cutouts(transient, fov=Quantity(0.1, unit='deg'),
             cutout_object.save()
 
 
-
-def panstarrs_image_filename(position ,image_size=None, filter=None):
+def panstarrs_image_filename(position, image_size=None, filter=None):
     """Query panstarrs service to get a list of image names
 
     Parameters
@@ -60,11 +64,13 @@ def panstarrs_image_filename(position ,image_size=None, filter=None):
     :filename: str: file name of the cutout
     """
 
-    service = 'https://ps1images.stsci.edu/cgi-bin/ps1filenames.py'
-    url = (f'{service}?ra={position.ra.degree}&dec={position.dec.degree}'
-           f'&size={image_size}&format=fits&filters={filter}')
+    service = "https://ps1images.stsci.edu/cgi-bin/ps1filenames.py"
+    url = (
+        f"{service}?ra={position.ra.degree}&dec={position.dec.degree}"
+        f"&size={image_size}&format=fits&filters={filter}"
+    )
 
-    filename_table = pd.read_csv(url, delim_whitespace=True)['filename']
+    filename_table = pd.read_csv(url, delim_whitespace=True)["filename"]
     return filename_table[0] if len(filename_table) > 0 else None
 
 
@@ -81,19 +87,23 @@ def hips_cutout(position, survey, image_size=None):
     -------
     :cutout : :class:`~astropy.io.fits.HDUList` or None
     """
-    fov = Quantity(survey.pixel_size_arcsec * image_size, unit='arcsec')
+    fov = Quantity(survey.pixel_size_arcsec * image_size, unit="arcsec")
 
-    fits_image = hips2fits.query(hips=survey.hips_id, ra=position.ra,
-                           dec=position.dec, width=image_size,
-                           height=image_size, fov=fov,
-                           projection='TAN', format='fits')
+    fits_image = hips2fits.query(
+        hips=survey.hips_id,
+        ra=position.ra,
+        dec=position.dec,
+        width=image_size,
+        height=image_size,
+        fov=fov,
+        projection="TAN",
+        format="fits",
+    )
 
     # if the position is outside of the survey footprint
     if np.all(np.isnan(fits_image[0].data)):
         fits_image = None
     return fits_image
-
-
 
 
 def panstarrs_cutout(position, image_size=None, filter=None):
@@ -110,22 +120,24 @@ def panstarrs_cutout(position, image_size=None, filter=None):
     -------
     :cutout : :class:`~astropy.io.fits.HDUList` or None
     """
-    filename = panstarrs_image_filename(position,
-                                        image_size=image_size,
-                                        filter=filter)
+    filename = panstarrs_image_filename(position, image_size=image_size, filter=filter)
     if filename is not None:
-        service = 'https://ps1images.stsci.edu/cgi-bin/fitscut.cgi?'
-        fits_url = (f'{service}ra={position.ra.degree}&dec={position.dec.degree}'
-                    f'&size={image_size}&format=fits&red={filename}')
+        service = "https://ps1images.stsci.edu/cgi-bin/fitscut.cgi?"
+        fits_url = (
+            f"{service}ra={position.ra.degree}&dec={position.dec.degree}"
+            f"&size={image_size}&format=fits&red={filename}"
+        )
         fits_image = fits.open(fits_url)
     else:
         fits_image = None
 
     return fits_image
 
-download_function_dict = {'PanSTARRS' : panstarrs_cutout}
 
-def cutout(transient, survey, fov=Quantity(0.1, unit='deg')):
+download_function_dict = {"PanSTARRS": panstarrs_cutout}
+
+
+def cutout(transient, survey, fov=Quantity(0.1, unit="deg")):
     """
     Download image cutout data from a survey.
     Parameters
@@ -148,17 +160,16 @@ def cutout(transient, survey, fov=Quantity(0.1, unit='deg')):
     """
     num_pixels = int(fov.to(u.arcsec).value / survey.pixel_size_arcsec)
 
-    if survey.image_download_method == 'hips':
+    if survey.image_download_method == "hips":
         try:
             fits = hips_cutout(transient, survey, image_size=num_pixels)
         except:
-            print(f'Conection timed out, could not download {survey.name} data')
+            print(f"Conection timed out, could not download {survey.name} data")
             fits = None
     else:
-        survey_name, filter = survey.name.split('_')
-        fits = download_function_dict[survey_name](transient,
-                                                   filter=filter,
-                                                    image_size=num_pixels)
+        survey_name, filter = survey.name.split("_")
+        fits = download_function_dict[survey_name](
+            transient, filter=filter, image_size=num_pixels
+        )
 
     return fits
-
