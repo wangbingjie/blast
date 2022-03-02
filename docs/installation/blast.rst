@@ -61,8 +61,3 @@ To run tests with the blast app, run
 .. code:: none
 
     bash run_blast_tests.sh
-
-
-
-
-
