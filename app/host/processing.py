@@ -6,11 +6,12 @@ from .ghost import run_ghost
 
 class TaskRunner(ABC):
 
-    def __init__(self, failed_status):
+    def __init__(self, failed_status, task):
         self.processing_status = Status.objects.get(message__exact='processing')
         self.task_register = TaskRegister.objects.all()
         self.failed_status = failed_status
         self.prerequsits = self._prerequisites()
+        self.task = task
 
     def find_register_items_meeting_prerequisites(self):
 
