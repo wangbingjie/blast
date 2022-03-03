@@ -26,9 +26,12 @@ class TaskRunnerTest(TestCase):
             def _prerequisites(self):
                 return {"Cutout download": "not processed"}
 
-        self.processed_runner = TestRunnerProcessed(
-            Status.objects.get(message__exact="failed")
-        )
+            def _task_name(self):
+                return "Cutout download"
+
+            def _failed_status_message(self):
+                return "failed"
+        self.processed_runner = TestRunnerProcessed()
 
         class TestRunnerFailed(TaskRunner):
             def _run_process(self, transient):
@@ -37,9 +40,13 @@ class TaskRunnerTest(TestCase):
             def _prerequisites(self):
                 return {"Cutout download": "not processed"}
 
-        self.failed_runner = TestRunnerFailed(
-            Status.objects.get(message__exact="failed")
-        )
+            def _task_name(self):
+                return "Cutout download"
+
+            def _failed_status_message(self):
+                return "failed"
+
+        self.failed_runner = TestRunnerFailed()
 
         class TestRunnerNotProcessed(TaskRunner):
             def _run_process(self, transient):
@@ -48,20 +55,45 @@ class TaskRunnerTest(TestCase):
             def _prerequisites(self):
                 return {"Cutout download": "not processed"}
 
-        self.not_processed_runner = TestRunnerNotProcessed(
-            Status.objects.get(message__exact="failed")
-        )
+            def _task_name(self):
+                return "Cutout download"
+
+            def _failed_status_message(self):
+                return "failed"
+
+        self.not_processed_runner = TestRunnerNotProcessed()
 
         class TestRunnerTwoPrereqs(TaskRunner):
             def _run_process(self, transient):
                 return Status.objects.get(message__exact="not processed")
 
             def _prerequisites(self):
-                return {"Cutout download": "not processed", "Host match": "processed"}
+                return {"Cutout download": "not processed",
+                        "Host match": "processed"}
 
-        self.two_prereqs_runner = TestRunnerTwoPrereqs(
-            Status.objects.get(message__exact="failed")
-        )
+            def _task_name(self):
+                return "Cutout download"
+
+            def _failed_status_message(self):
+                return "failed"
+
+        self.two_prereqs_runner = TestRunnerTwoPrereqs()
+
+        class TestRunnerTwoPrereqsSuc(TaskRunner):
+            def _run_process(self, transient):
+                return Status.objects.get(message__exact="not processed")
+
+            def _prerequisites(self):
+                return {"Cutout download": "not processed",
+                        "Host match": "not processed"}
+
+            def _task_name(self):
+                return "Cutout download"
+
+            def _failed_status_message(self):
+                return "failed"
+
+        self.two_prereqs_suc_runner = TestRunnerTwoPrereqsSuc()
 
     def test_run_process(self):
 
@@ -117,6 +149,7 @@ class TaskRunnerTest(TestCase):
         transient = Transient.objects.get(name__exact="2022testtwo")
         task = Task.objects.get(name__exact="Cutout download")
         task_register = TaskRegister.objects.get(transient=transient, task=task)
+        print(task_register.status.message)
         self.assertTrue(task_register.status.message == "processed")
 
         transient = Transient.objects.get(name__exact="2022testone")
@@ -148,8 +181,12 @@ class TaskRunnerTest(TestCase):
         self.assertTrue(len(items) == 2)
 
         # there should be no tasks that meet the prereqs
-        items = self.two_prereqs_runner.find_register_items_meeting_prerequisites()
-        self.assertTrue(len(items) == 0)
+        #items = self.two_prereqs_runner.find_register_items_meeting_prerequisites()
+        #self.assertTrue(len(items) == 0)
+
+        # there should be two tasks that meet the prereqs
+        items = self.two_prereqs_suc_runner.find_register_items_meeting_prerequisites()
+        self.assertTrue(len(items) == 2)
 
     def test_select_highest_priority(self):
         # tests that the oldest register item is selected

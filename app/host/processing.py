@@ -3,30 +3,40 @@ from abc import ABC
 from abc import abstractmethod
 
 from django.utils import timezone
+from django.db.models import Q
 
 from .ghost import run_ghost
 from .models import Status
 from .models import Task
 from .models import TaskRegister
-
+from .models import Transient
 
 class TaskRunner(ABC):
-    def __init__(self, failed_status):
+    def __init__(self):
         self.processing_status = Status.objects.get(message__exact="processing")
         self.task_register = TaskRegister.objects.all()
-        self.failed_status = failed_status
-        self.prerequsits = self._prerequisites()
+        self.failed_status = Status.objects.get(message__exact=self._failed_status_message())
+        self.prerequisites = self._prerequisites()
+        self.task = Task.objects.get(name__exact=self._task_name())
 
     def find_register_items_meeting_prerequisites(self):
 
-        current_register = self.task_register
+        current_transients = Transient.objects.all()
 
-        for task_name, status_message in self.prerequsits.items():
+        for task_name, status_message in self.prerequisites.items():
             task = Task.objects.get(name__exact=task_name)
             status = Status.objects.get(message__exact=status_message)
-            current_register = current_register.filter(task=task, status=status)
+            current_transients = current_transients.union(
+                Transient.objects.filter(taskregister__task=task,
+                                         taskregister__status=status))
+            #query = query & Q(taskregister__task=task, taskregister__status=status)
+            #print(Transient.objects.filter(query))
 
-        return current_register
+        #qualifying_transients = list(Transient.objects.filter(query))
+        #transient_names = [transient.name for transient in qualifying_transients]
+        print(self.task_register.filter(transient__in=list(current_transients), task=self.task))
+        return self.task_register.filter(transient__in=list(current_transients), task=self.task)
+
 
     def _select_highest_priority(self, register):
         return register.order_by("transient__public_timestamp")[0]
@@ -56,15 +66,25 @@ class TaskRunner(ABC):
     def _prerequisites(self):
         pass
 
+    @abstractmethod
+    def _task_name(self):
+        pass
+
+    @abstractmethod
+    def _failed_status_message(self):
+        pass
+
 
 class GhostRunner(TaskRunner):
-    def __init__(self):
-        super(GhostRunner, self).__init__(
-            Status.objects.get(message__exact="no GHOST match")
-        )
 
     def _prerequisites(self):
         return {"Host Match": "not processed"}
+
+    def _task_name(self):
+        return "Cutout download"
+
+    def _failed_status_message(self):
+        return "no GHOST match"
 
     def _run_process(self, transient):
         host = run_ghost(transient)

@@ -19,7 +19,6 @@ class SkyObjectTest(TestCase):
         self.assertTrue(sky_coord.dec.deg == self.sky_coord.dec.deg)
 
     def test_ra_string(self):
-        print(self.sky_obj.ra)
         self.assertTrue(self.sky_obj.ra == "0h48m00.00s")
 
     def test_dec_string(self):
