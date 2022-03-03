@@ -31,6 +31,7 @@ class TaskRunnerTest(TestCase):
 
             def _failed_status_message(self):
                 return "failed"
+
         self.processed_runner = TestRunnerProcessed()
 
         class TestRunnerFailed(TaskRunner):
@@ -68,8 +69,7 @@ class TaskRunnerTest(TestCase):
                 return Status.objects.get(message__exact="not processed")
 
             def _prerequisites(self):
-                return {"Cutout download": "not processed",
-                        "Host match": "processed"}
+                return {"Cutout download": "not processed", "Host match": "processed"}
 
             def _task_name(self):
                 return "Cutout download"
@@ -84,8 +84,10 @@ class TaskRunnerTest(TestCase):
                 return Status.objects.get(message__exact="not processed")
 
             def _prerequisites(self):
-                return {"Cutout download": "not processed",
-                        "Host match": "not processed"}
+                return {
+                    "Cutout download": "not processed",
+                    "Host match": "not processed",
+                }
 
             def _task_name(self):
                 return "Cutout download"
@@ -181,8 +183,8 @@ class TaskRunnerTest(TestCase):
         self.assertTrue(len(items) == 2)
 
         # there should be no tasks that meet the prereqs
-        #items = self.two_prereqs_runner.find_register_items_meeting_prerequisites()
-        #self.assertTrue(len(items) == 0)
+        # items = self.two_prereqs_runner.find_register_items_meeting_prerequisites()
+        # self.assertTrue(len(items) == 0)
 
         # there should be two tasks that meet the prereqs
         items = self.two_prereqs_suc_runner.find_register_items_meeting_prerequisites()

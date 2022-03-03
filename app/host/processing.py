@@ -2,8 +2,8 @@
 from abc import ABC
 from abc import abstractmethod
 
-from django.utils import timezone
 from django.db.models import Q
+from django.utils import timezone
 
 from .ghost import run_ghost
 from .models import Status
@@ -11,11 +11,14 @@ from .models import Task
 from .models import TaskRegister
 from .models import Transient
 
+
 class TaskRunner(ABC):
     def __init__(self):
         self.processing_status = Status.objects.get(message__exact="processing")
         self.task_register = TaskRegister.objects.all()
-        self.failed_status = Status.objects.get(message__exact=self._failed_status_message())
+        self.failed_status = Status.objects.get(
+            message__exact=self._failed_status_message()
+        )
         self.prerequisites = self._prerequisites()
         self.task = Task.objects.get(name__exact=self._task_name())
 
@@ -27,16 +30,23 @@ class TaskRunner(ABC):
             task = Task.objects.get(name__exact=task_name)
             status = Status.objects.get(message__exact=status_message)
             current_transients = current_transients.union(
-                Transient.objects.filter(taskregister__task=task,
-                                         taskregister__status=status))
-            #query = query & Q(taskregister__task=task, taskregister__status=status)
-            #print(Transient.objects.filter(query))
+                Transient.objects.filter(
+                    taskregister__task=task, taskregister__status=status
+                )
+            )
+            # query = query & Q(taskregister__task=task, taskregister__status=status)
+            # print(Transient.objects.filter(query))
 
-        #qualifying_transients = list(Transient.objects.filter(query))
-        #transient_names = [transient.name for transient in qualifying_transients]
-        print(self.task_register.filter(transient__in=list(current_transients), task=self.task))
-        return self.task_register.filter(transient__in=list(current_transients), task=self.task)
-
+        # qualifying_transients = list(Transient.objects.filter(query))
+        # transient_names = [transient.name for transient in qualifying_transients]
+        print(
+            self.task_register.filter(
+                transient__in=list(current_transients), task=self.task
+            )
+        )
+        return self.task_register.filter(
+            transient__in=list(current_transients), task=self.task
+        )
 
     def _select_highest_priority(self, register):
         return register.order_by("transient__public_timestamp")[0]
@@ -76,7 +86,6 @@ class TaskRunner(ABC):
 
 
 class GhostRunner(TaskRunner):
-
     def _prerequisites(self):
         return {"Host Match": "not processed"}
 
