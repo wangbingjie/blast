@@ -122,6 +122,7 @@ class Transient(SkyObject):
     def __repr__(self):
         return f"Transient(name={self.name})"
 
+
 class Status(models.Model):
     """
     Status of a given processing task
@@ -152,6 +153,7 @@ class Status(models.Model):
     def __repr__(self):
         return f"{self.message}"
 
+
 class Task(models.Model):
     """
     A processing task that needs to be completed for a transient.
@@ -162,6 +164,7 @@ class Task(models.Model):
 
     def __repr__(self):
         return f"{self.name}"
+
 
 class TaskRegister(models.Model):
     """
