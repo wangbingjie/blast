@@ -119,6 +119,8 @@ class Transient(SkyObject):
     def image_download_status_badge_class(self):
         return self._status_badge_class(self.image_download_status)
 
+    def __repr__(self):
+        return f"Transient(name={self.name})"
 
 class Status(models.Model):
     """
@@ -147,6 +149,8 @@ class Status(models.Model):
 
         return badge_class
 
+    def __repr__(self):
+        return f"{self.message}"
 
 class Task(models.Model):
     """
@@ -156,6 +160,8 @@ class Task(models.Model):
     name = models.CharField(max_length=20)
     objects = TaskManager()
 
+    def __repr__(self):
+        return f"{self.name}"
 
 class TaskRegister(models.Model):
     """
@@ -166,6 +172,9 @@ class TaskRegister(models.Model):
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(blank=True, null=True)
+
+    def __repr__(self):
+        return f" {self.transient.name} | {self.task.name} | {self.status.message}"
 
 
 class ExternalResourceCall(models.Model):
