@@ -26,15 +26,10 @@ class TaskRunner(ABC):
         for task_name, status_message in self.prerequisites.items():
             task = Task.objects.get(name__exact=task_name)
             status = Status.objects.get(message__exact=status_message)
-            current_transients = current_transients.union(
-                Transient.objects.filter(taskregister__task=task,
-                                         taskregister__status=status))
-            #query = query & Q(taskregister__task=task, taskregister__status=status)
-            #print(Transient.objects.filter(query))
+            current_transients = current_transients & \
+                                 Transient.objects.filter(taskregister__task=task,
+                                         taskregister__status=status)
 
-        #qualifying_transients = list(Transient.objects.filter(query))
-        #transient_names = [transient.name for transient in qualifying_transients]
-        print(self.task_register.filter(transient__in=list(current_transients), task=self.task))
         return self.task_register.filter(transient__in=list(current_transients), task=self.task)
 
 
