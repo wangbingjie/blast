@@ -26,9 +26,9 @@
       <th scope="col">Right Ascension</th>
       <th scope="col">Declination</th>
       <th scope="col">Discovery Date</th>
-      <th scope="col">Host Match</th>
-        <th scope="col">Cutout Download</th>
-      <th scope="col">Results</th>
+      {& for task in tasks %}
+        <th scope="col">task.name</th>
+      {& end for &}
     </tr>
   </thead>
   <tbody>
