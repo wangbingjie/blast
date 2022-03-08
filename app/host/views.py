@@ -3,8 +3,8 @@ from django.shortcuts import render
 from .forms import ImageGetForm
 from .forms import TransientSearchForm
 from .models import Cutout
-from .models import Task
 from .models import ExternalResourceCall
+from .models import Task
 from .models import Transient
 from .plotting_utils import plot_cutout_image
 from .tasks import ingest_recent_tns_data
