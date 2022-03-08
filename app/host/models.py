@@ -1,20 +1,27 @@
-from django.db import models
-from astropy.coordinates import SkyCoord
 from astropy import units as u
+from astropy.coordinates import SkyCoord
+from django.db import models
+
+from .managers import CatalogManager
+from .managers import FilterManager
+from .managers import StatusManager
+from .managers import SurveyManager
+from .managers import TaskManager
+from .managers import TransientManager
+
 
 class SkyObject(models.Model):
     """
-    Abstract base model to represent an astrophysical object.
+    Abstract base model to represent an astrophysical object with an on-sky
+    position.
 
     Attributes:
-        name (django.db.model.CharField): Name of the sky object, character
-            limit = 20.
         ra_deg (django.db.model.FloatField): Right Ascension (ICRS) in decimal
             degrees of the host
         deg_deg (django.db.model.FloatField): Declination (ICRS) in decimal degrees
             of the host
     """
-    name = models.CharField(max_length=100, blank=True, null=True)
+
     ra_deg = models.FloatField()
     dec_deg = models.FloatField()
 
@@ -26,7 +33,7 @@ class SkyObject(models.Model):
         """
         SkyCoordinate of the object's position.
         """
-        return SkyCoord(ra=self.ra_deg, dec=self.dec_deg, unit='deg')
+        return SkyCoord(ra=self.ra_deg, dec=self.dec_deg, unit="deg")
 
     @property
     def ra(self):
@@ -42,6 +49,7 @@ class SkyObject(models.Model):
         """
         return self.sky_coord.dec.to_string(precision=2)
 
+
 class Host(SkyObject):
     """
     Model to represent a host galaxy.
@@ -55,16 +63,15 @@ class Host(SkyObject):
             of the host
     """
 
-class TransientManager(models.Manager):
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
+    name = models.CharField(max_length=100, blank=True, null=True)
+
 
 class Transient(SkyObject):
     """
     Model to represent a transient.
 
     Attributes:
-        tns_name (django.db.model.CharField): Transient Name
+        name (django.db.model.CharField): Transient Name
             Server name of the transient, character limit = 20.
         tns_id (models.IntegerField): Transient Name Server ID.
         tns_prefix (models.CharField): Transient Name Server name
@@ -78,42 +85,31 @@ class Transient(SkyObject):
         public_timestamp (django.db.model.DateTimeField): Transient name server
             public timestamp for the transient. Field can be null or blank. On
             Delete is set to cascade.
-        host_match_status (models.CharField): Processing host match status for
-            house keeping on the blast web app, character limit = 20. Field can
-            be null or blank.
-        image_download_status (models.CharField): Processing image_download
-            status for house keeping on the blast web app, character limit = 20.
-            Field can be null or blank.
-        catalog_photometry_status (models.CharField): Processing image_download
-            status for house keeping on the blast web app, character limit = 20.
-            Field can be null or blank.
     """
+
     name = models.CharField(max_length=20)
     tns_id = models.IntegerField()
     tns_prefix = models.CharField(max_length=20)
     public_timestamp = models.DateTimeField(null=True, blank=True)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
-    host_match_status = models.CharField(max_length=20, default='not processed')
-    image_download_status = models.CharField(max_length=20, default='not processed')
-    catalog_photometry_status = models.CharField(max_length=20,default='not processed')
     objects = TransientManager()
 
-    def _status_badge_class(self, status):
-        default_button_class = 'badge bg-secondary'
-        warn_status = ['processing']
-        bad_status = ['failed','no match' ]
-        good_status = ['processed']
+    # def _status_badge_class(self, status):
+    #    default_button_class = 'badge bg-secondary'
+    #    warn_status = ['processing']
+    #    bad_status = ['failed','no match' ]
+    #    good_status = ['processed']
 
-        if status in bad_status:
-            badge_class = 'badge bg-danger'
-        elif status in warn_status:
-            badge_class = 'badge bg-warning'
-        elif status in good_status:
-            badge_class = 'badge bg-success'
-        else:
-            badge_class = default_button_class
+    #    if status in bad_status:
+    #        badge_class = 'badge bg-danger'
+    #    elif status in warn_status:
+    #        badge_class = 'badge bg-warning'
+    #    elif status in good_status:
+    #        badge_class = 'badge bg-success'
+    #    else:
+    #        badge_class = default_button_class
 
-        return badge_class
+    #   return badge_class
 
     @property
     def host_match_status_badge_class(self):
@@ -123,14 +119,15 @@ class Transient(SkyObject):
     def image_download_status_badge_class(self):
         return self._status_badge_class(self.image_download_status)
 
-class StatusManager(models.Manager):
-    def get_by_natural_key(self, message):
-        return self.get(message=message)
+    def __repr__(self):
+        return f"Transient(name={self.name})"
+
 
 class Status(models.Model):
     """
     Status of a given processing task
     """
+
     message = models.CharField(max_length=20)
     type = models.CharField(max_length=20)
     objects = StatusManager()
@@ -140,38 +137,48 @@ class Status(models.Model):
         """
         Returns the Boostrap badge class of the status
         """
-        if self.type == 'error':
-            badge_class = 'badge bg-danger'
-        elif self.type == 'warning':
-            badge_class = 'badge bg-warning'
-        elif self.type == 'success':
-            badge_class = 'badge bg-success'
-        elif self.type == 'blank':
-            badge_class = 'badge bg-secondary'
+        if self.type == "error":
+            badge_class = "badge bg-danger"
+        elif self.type == "warning":
+            badge_class = "badge bg-warning"
+        elif self.type == "success":
+            badge_class = "badge bg-success"
+        elif self.type == "blank":
+            badge_class = "badge bg-secondary"
         else:
-            badge_class = 'badge bg-secondary'
+            badge_class = "badge bg-secondary"
 
         return badge_class
 
-class TaskManager(models.Manager):
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
+    def __repr__(self):
+        return f"{self.message}"
+
 
 class Task(models.Model):
     """
     A processing task that needs to be completed for a transient.
     """
+
     name = models.CharField(max_length=20)
     objects = TaskManager()
+
+    def __repr__(self):
+        return f"{self.name}"
+
 
 class TaskRegister(models.Model):
     """
     Keep track of the the various processing status of a transient.
     """
+
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(blank=True, null=True)
+
+    def __repr__(self):
+        return f" {self.transient.name} | {self.task.name} | {self.status.message}"
+
 
 class ExternalResourceCall(models.Model):
     """
@@ -183,32 +190,26 @@ class ExternalResourceCall(models.Model):
             external resource was requested.
         request_time (models.DateTimeField): Time of request to the resource.
     """
+
     resource_name = models.CharField(max_length=20)
     response_status = models.CharField(max_length=20)
     request_time = models.DateTimeField(null=True, blank=True)
-
-class SurveyManager(models.Manager):
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
 
 
 class Survey(models.Model):
     """
     Model to represent a survey
     """
+
     name = models.CharField(max_length=20, unique=True)
     objects = SurveyManager()
-
-
-class FilterManager(models.Manager):
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
 
 
 class Filter(models.Model):
     """
     Model to represent a survey filter
     """
+
     name = models.CharField(max_length=20, unique=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     sedpy_id = models.CharField(max_length=20)
@@ -227,15 +228,11 @@ class Filter(models.Model):
         return self.name
 
 
-class CatalogManager(models.Manager):
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
-
-
 class Catalog(models.Model):
     """
     Model to represent a photometric catalog
     """
+
     name = models.CharField(max_length=100, unique=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     vizier_id = models.CharField(max_length=20)
@@ -258,21 +255,22 @@ def fits_file_path(instance, filename):
     """
     Constructs a file path for a fits image
     """
-    return f'{instance.host}/{instance.filter.survey}/{instance.filter}.fits'
-
+    return f"{instance.host}/{instance.filter.survey}/{instance.filter}.fits"
 
 
 class Cutout(models.Model):
     """
     Model to represent a cutout image of a host galaxy
     """
+
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
-    transient = models.ForeignKey(Transient, on_delete=models.CASCADE, null=True, blank=True)
+    transient = models.ForeignKey(
+        Transient, on_delete=models.CASCADE, null=True, blank=True
+    )
     fits = models.FileField(upload_to=fits_file_path, null=True, blank=True)
 
 
-
-#class Image(models.Model):
+# class Image(models.Model):
 #    """
 #    Model to represent an image
 #    """
@@ -281,54 +279,20 @@ class Cutout(models.Model):
 #    file_path = models.CharField()
 
 
-
-
-#class Match(models.Model):
+# class Match(models.Model):
 #    """
 #    Model to track the matches between and host and transient
 #    """
 
-#class HostApeturePhotometry(models.Model):
+# class HostApeturePhotometry(models.Model):
 #    """
 #    Model to represent forced apeture host photometry
 #    """
 #    pass
 
 
-#class HostCatalogPhotometry(models.Model):
+# class HostCatalogPhotometry(models.Model):
 #    """
 #    Model to represent catalog photometry of a known host
 #    """
 #    pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

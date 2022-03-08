@@ -207,6 +207,3 @@
     catalog: [DES_DR1]
     mag_column: ymag
     mag_error_column: e_ymag
-
-
-

@@ -1,7 +1,9 @@
 import functools
-from .models import ExternalResourceCall
-from django.utils import timezone
 import time
+
+from django.utils import timezone
+
+from .models import ExternalResourceCall
 
 
 def log_resource_call(resource_name):
@@ -13,17 +15,22 @@ def log_resource_call(resource_name):
     Returns:
         Decorator function
     """
+
     def decorator_save(func):
         @functools.wraps(func)
         def wrapper_save(*args, **kwargs):
             value = func(*args, **kwargs)
-            status = value.get('response_message')
-            call = ExternalResourceCall(resource_name=resource_name,
-                                        response_status=status,
-                                        request_time=timezone.now())
+            status = value.get("response_message")
+            call = ExternalResourceCall(
+                resource_name=resource_name,
+                response_status=status,
+                request_time=timezone.now(),
+            )
             call.save()
             return value
+
         return wrapper_save
+
     return decorator_save
 
 
