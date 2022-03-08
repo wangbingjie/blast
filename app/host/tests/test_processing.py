@@ -182,13 +182,8 @@ class TaskRunnerTest(TestCase):
         self.assertTrue(len(items) == 2)
 
         # there should be no tasks that meet the prereqs
-<<<<<<< HEAD
         items = self.two_prereqs_runner.find_register_items_meeting_prerequisites()
         self.assertTrue(len(items) == 0)
-=======
-        # items = self.two_prereqs_runner.find_register_items_meeting_prerequisites()
-        # self.assertTrue(len(items) == 0)
->>>>>>> 050240f031bd22a2de8dd9cfb608f954a4466e5c
 
         # there should be two tasks that meet the prereqs
         items = self.two_prereqs_suc_runner.find_register_items_meeting_prerequisites()
