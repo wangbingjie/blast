@@ -15,7 +15,7 @@ services:
     image: mysql:8.0
     environment:
       - "MYSQL_ROOT_PASSWORD"
-    command: --default-authentication-plugin=mysql_native_password
+#    command: --default-authentication-plugin=mysql_native_password
     restart: always
     volumes:
       - ../data/test_database/:/var/lib/mysql/
