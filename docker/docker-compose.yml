@@ -51,7 +51,7 @@ services:
     env_file:
       - ../env/.env.dev
     volumes:
-      - ..data/database/:/var/lib/mysql/
+      - ../data/database/:/var/lib/mysql/
     ports:
       - "3306:3306"
   nginx:

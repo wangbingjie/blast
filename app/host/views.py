@@ -3,6 +3,7 @@ from django.shortcuts import render
 from .forms import ImageGetForm
 from .forms import TransientSearchForm
 from .models import Cutout
+from .models import Task
 from .models import ExternalResourceCall
 from .models import Transient
 from .plotting_utils import plot_cutout_image
@@ -12,6 +13,7 @@ from .tasks import ingest_recent_tns_data
 def transient_list(request):
 
     transients = Transient.objects.all()
+    tasks = Task.objects.all()
 
     if request.method == "POST":
         form = TransientSearchForm(request.POST)
@@ -24,7 +26,7 @@ def transient_list(request):
         form = TransientSearchForm()
 
     transients = transients.order_by("-public_timestamp")[:100]
-    context = {"transients": transients, "form": form}
+    context = {"transients": transients, "form": form, "tasks": tasks}
     return render(request, "transient_list.html", context)
 
 
