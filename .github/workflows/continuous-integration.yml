@@ -11,4 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: docker compose
-        run: bash run_blast_tests.github_actions.sh
+        run: |
+            echo "$MYSQL_ROOT_PASSWORD"
+            bash run_blast_tests.github_actions.sh
