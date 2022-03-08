@@ -2,8 +2,8 @@
 from abc import ABC
 from abc import abstractmethod
 
-from django.utils import timezone
 from django.db.models import Q
+from django.utils import timezone
 
 from .ghost import run_ghost
 from .models import Status
@@ -11,11 +11,14 @@ from .models import Task
 from .models import TaskRegister
 from .models import Transient
 
+
 class TaskRunner(ABC):
     def __init__(self):
         self.processing_status = Status.objects.get(message__exact="processing")
         self.task_register = TaskRegister.objects.all()
-        self.failed_status = Status.objects.get(message__exact=self._failed_status_message())
+        self.failed_status = Status.objects.get(
+            message__exact=self._failed_status_message()
+        )
         self.prerequisites = self._prerequisites()
         self.task = Task.objects.get(name__exact=self._task_name())
 
@@ -26,6 +29,7 @@ class TaskRunner(ABC):
         for task_name, status_message in self.prerequisites.items():
             task = Task.objects.get(name__exact=task_name)
             status = Status.objects.get(message__exact=status_message)
+
             current_transients = current_transients & \
                                  Transient.objects.filter(taskregister__task=task,
                                          taskregister__status=status)
@@ -71,7 +75,6 @@ class TaskRunner(ABC):
 
 
 class GhostRunner(TaskRunner):
-
     def _prerequisites(self):
         return {"Host Match": "not processed"}
 
