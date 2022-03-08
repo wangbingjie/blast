@@ -10,4 +10,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: docker compose
-        run: bash run_blast_test.sh
+        run: bash run_blast_tests.sh
