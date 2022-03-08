@@ -30,12 +30,13 @@ class TaskRunner(ABC):
             task = Task.objects.get(name__exact=task_name)
             status = Status.objects.get(message__exact=status_message)
 
-            current_transients = current_transients & \
-                                 Transient.objects.filter(taskregister__task=task,
-                                         taskregister__status=status)
+            current_transients = current_transients & Transient.objects.filter(
+                taskregister__task=task, taskregister__status=status
+            )
 
-        return self.task_register.filter(transient__in=list(current_transients), task=self.task)
-
+        return self.task_register.filter(
+            transient__in=list(current_transients), task=self.task
+        )
 
     def _select_highest_priority(self, register):
         return register.order_by("transient__public_timestamp")[0]
