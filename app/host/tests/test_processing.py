@@ -149,7 +149,6 @@ class TaskRunnerTest(TestCase):
         transient = Transient.objects.get(name__exact="2022testtwo")
         task = Task.objects.get(name__exact="Cutout download")
         task_register = TaskRegister.objects.get(transient=transient, task=task)
-        print(task_register.status.message)
         self.assertTrue(task_register.status.message == "processed")
 
         transient = Transient.objects.get(name__exact="2022testone")
@@ -181,8 +180,8 @@ class TaskRunnerTest(TestCase):
         self.assertTrue(len(items) == 2)
 
         # there should be no tasks that meet the prereqs
-        #items = self.two_prereqs_runner.find_register_items_meeting_prerequisites()
-        #self.assertTrue(len(items) == 0)
+        items = self.two_prereqs_runner.find_register_items_meeting_prerequisites()
+        self.assertTrue(len(items) == 0)
 
         # there should be two tasks that meet the prereqs
         items = self.two_prereqs_suc_runner.find_register_items_meeting_prerequisites()
