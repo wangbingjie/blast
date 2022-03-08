@@ -13,6 +13,8 @@ services:
       - ../cutout_cdn:/cutout_cdn
   database:
     image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD = $MYSQL_ROOT_PASSWORD
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     volumes:
