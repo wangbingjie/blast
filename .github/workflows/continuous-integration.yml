@@ -10,7 +10,5 @@ jobs:
     environment: continuous intergration
     steps:
       - uses: actions/checkout@v2
-      - name: docker compose
-        run: |
-            echo "$MYSQL_ROOT_PASSWORD"
-            bash run_blast_tests.github_actions.sh
+      - name: docker compose up
+        run: bash run_blast_tests.github_actions.sh
