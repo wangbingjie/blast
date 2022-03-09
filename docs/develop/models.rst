@@ -1,5 +1,6 @@
-Data Models
-+++++++++++
+models
+======
 
 .. automodule:: host.models
-    :members: Host, Transient
+    :members:
+
