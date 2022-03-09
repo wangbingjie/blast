@@ -1,7 +1,7 @@
 # blast
 Django web app for the automatic characterization of supernova hosts
 
-[![Docker Build](https://github.com/astrophpeter/blast/actions/workflows/docker-build.yml/badge.svg)](https://github.com/astrophpeter/blast/actions/workflows/docker-build.yml)
+[![Continuous Integration](https://github.com/astrophpeter/blast/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/astrophpeter/blast/actions/workflows/docker-build.yml)
 [![Documentation Status](https://readthedocs.org/projects/blast/badge/?version=latest)](https://blast.readthedocs.io/en/latest/?badge=latest)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/astrophpeter/blast/main.svg)](https://results.pre-commit.ci/latest/github/astrophpeter/blast/main)
 
