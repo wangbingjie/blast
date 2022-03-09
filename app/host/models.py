@@ -1,3 +1,7 @@
+"""
+This modules contains the django code used to create tables in the database
+backend.
+"""
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from django.db import models

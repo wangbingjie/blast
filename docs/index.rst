@@ -10,8 +10,9 @@ Welcome to blast's documentation!
    :maxdepth: 2
 
    installation/blast
-   develop/models
    contributing
+   develop/models
+   develop/transient_name_server
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
 

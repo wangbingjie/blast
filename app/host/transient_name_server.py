@@ -1,4 +1,6 @@
-# Download and ingest transients from the Transient Name Server (TNS)
+""""
+Functions to download and ingest transients from the Transient Name Server (TNS)
+"""
 import json
 import os
 import time
