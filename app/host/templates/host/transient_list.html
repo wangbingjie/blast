@@ -26,9 +26,9 @@
       <th scope="col">Right Ascension</th>
       <th scope="col">Declination</th>
       <th scope="col">Discovery Date</th>
-      {& for task in tasks %}
-        <th scope="col">task.name</th>
-      {& end for &}
+      {% for task in tasks %}
+        <th scope="col">{{task.name}}</th>
+      {% endfor %}
     </tr>
   </thead>
   <tbody>

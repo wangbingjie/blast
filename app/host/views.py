@@ -21,7 +21,7 @@ def transient_list(request):
         if form.is_valid():
             name = form.cleaned_data["name"]
             if name != "all":
-                transients = Transient.objects.filter(tns_name__contains=name)
+                transients = Transient.objects.filter(name__contains=name)
     else:
         form = TransientSearchForm()
 
