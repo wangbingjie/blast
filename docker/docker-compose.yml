@@ -5,7 +5,7 @@ services:
     restart: always
     build:
       context: ../app/
-    command: bash docker-entrypoint.sh
+    command: bash entrypoints/docker-entrypoint.app.sh
     ports:
       - "8000:8000"
     volumes:
@@ -17,7 +17,7 @@ services:
     restart: always
     build:
       context: ../app/
-    command: celery -A app worker -l INFO --max-memory-per-child 12000
+    command: bash entrypoints/docker-entrypoint.celery.sh
     volumes:
       - ../app:/app
     depends_on:
@@ -35,7 +35,7 @@ services:
     restart: always
     build:
       context: ../app/
-    command: celery -A app beat -l INFO
+    command: bash entrypoints/docker-entrypoint.celery_beat.sh
     volumes:
       - ../app:/app
     depends_on:
