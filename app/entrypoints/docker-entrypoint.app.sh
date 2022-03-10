@@ -11,4 +11,3 @@ python manage.py loaddata setup_test_transient.yaml &&
 python manage.py loaddata setup_tasks.yaml &&
 python manage.py loaddata setup_status.yaml &&
 gunicorn app.wsgi:application --bind 0.0.0.0:8000
-
