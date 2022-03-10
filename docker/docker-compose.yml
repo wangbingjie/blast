@@ -5,7 +5,7 @@ services:
     restart: always
     build:
       context: ../app/
-    command: bash entrypoints/docker-entrypoint.sh
+    command: bash entrypoints/docker-entrypoint.app.sh
     ports:
       - "8000:8000"
     volumes:
