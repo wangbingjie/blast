@@ -6,6 +6,7 @@ from .models import Cutout
 from .models import ExternalResourceCall
 from .models import Task
 from .models import Transient
+from .models import TaskRegister
 from .plotting_utils import plot_cutout_image
 
 
@@ -13,7 +14,6 @@ from .plotting_utils import plot_cutout_image
 def transient_list(request):
 
     transients = Transient.objects.all()
-    tasks = Task.objects.all()
 
     if request.method == "POST":
         form = TransientSearchForm(request.POST)
@@ -26,7 +26,7 @@ def transient_list(request):
         form = TransientSearchForm()
 
     transients = transients.order_by("-public_timestamp")[:100]
-    context = {"transients": transients, "form": form, "tasks": tasks}
+    context = {"transients": transients, "form": form}
     return render(request, "transient_list.html", context)
 
 
