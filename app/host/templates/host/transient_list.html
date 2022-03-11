@@ -25,10 +25,8 @@
       <th scope="col">Prefix</th>
       <th scope="col">Right Ascension</th>
       <th scope="col">Declination</th>
-      <th scope="col">Discovery Date</th>
-      {% for task in tasks %}
-        <th scope="col">{{task.name}}</th>
-      {% endfor %}
+      <th scope="col">Discovery Date </th>
+      <th scope="col">Results</th>
     </tr>
   </thead>
   <tbody>
@@ -39,7 +37,7 @@
       <td>{{transient.ra}}</td>
       <td>{{transient.dec}}</td>
       <td>{{transient.public_timestamp}}</td>
-    <td><a class="nav-link" href="{{transient.name}}/">{{transient.name}}</a></td>
+      <td><a class="nav-link" href="{{transient.name}}/">{{transient.name}}</a></td>
     </tr>
    {% endfor %}
   </tbody>
