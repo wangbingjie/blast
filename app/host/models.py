@@ -146,6 +146,7 @@ class TaskRegister(models.Model):
     """
     Keep track of the the various processing status of a transient.
     """
+
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
