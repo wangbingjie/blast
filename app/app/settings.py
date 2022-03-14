@@ -146,12 +146,12 @@ CELERY_IMPORTS = ("host.tasks",)
 CELERY_BROKER_URL = "amqp://guest:guest@rabbitmq:5672//"
 
 
-#CELERY_BEAT_SCHEDULE = {
+# CELERY_BEAT_SCHEDULE = {
 #    "ingest_data_task": {"task": "host.tasks.ingest_recent_tns_data", "schedule": 600},
 #    "download_cutouts_task": {"task": "host.tasks.download_cutouts", "schedule": 60.0},
 #    "matching_task": {"task": "host.tasks.match_transient_to_host", "schedule": 60.0},
 #    "cleaning_task": {"task": "host.tasks.delete_ghost_file_logs", "schedule": 30.0},
-#}
+# }
 
 CELERYD_REDIRECT_STDOUTS_LEVEL = "INFO"
 
