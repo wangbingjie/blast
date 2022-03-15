@@ -105,13 +105,10 @@ class Transient(SkyObject):
         """
         tasks = TaskRegister.objects.filter(transient__name__exact=self.name)
         num_tasks = len(tasks)
-        num_unprocessed_tasks = len([task for task in tasks
-                                     if task.status.message == 'not processed'])
+        num_unprocessed_tasks = len(
+            [task for task in tasks if task.status.message == "not processed"]
+        )
         return f"{num_tasks-num_unprocessed_tasks}/{num_tasks}"
-
-
-
-
 
 
 class Status(models.Model):
