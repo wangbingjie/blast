@@ -9,22 +9,35 @@
 <h2>{{ transient.tns_name }}</h2>
 
 <div class="container">
-    <div class="row">
-        <div class="col-sm-6">
+
+<div class="row">
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="card">
                 <h5 class="card-header">TNS Information</h5>
                 <div class="card-body">
                     <h5 class="card-title">{{transient.name}}</h5>
                     <p class="card-text">Prefix: {{transient.tns_prefix}}</p>
-                    <p class="card-text">Right ascension [deg]: {{transient.ra_deg}}</p>
-                    <p class="card-text">Declination [deg]: {{transient.dec_deg}}</p>
+                    <p class="card-text">Right ascension: {{transient.ra}}</p>
+                    <p class="card-text">Declination: {{transient.dec}}</p>
                     <p class="card-text">Discovery Date: {{transient.public_timestamp}}</p>
                 <a class="link" href="https://www.wis-tns.org/object/{{transient.tns_name}}/">TNS link</a>
                 </div>
             </div>
         </div>
-
-        <div class="col-sm-6">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="card">
+                <h5 class="card-header">Processing Status</h5>
+                <div class="card-body">
+                    {% for item in transient.taskregister_set.all %}
+                        <p class="card-text">{{item.task.name}}
+                            <span class="badge {{item.status.badge}}">{{item.status.message}}</span></p>
+                    {% endfor %}
+                </div>
+            </div></div>
+    </div>
+    <div class="col-lg-8 col-md-8 col-sm-8">
+        <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="card">
                 <h5 class="card-header">Host Match information</h5>
                 <div class="card-body">
@@ -43,7 +56,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
