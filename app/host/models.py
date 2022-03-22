@@ -98,33 +98,17 @@ class Transient(SkyObject):
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
     objects = TransientManager()
 
-    # def _status_badge_class(self, status):
-    #    default_button_class = 'badge bg-secondary'
-    #    warn_status = ['processing']
-    #    bad_status = ['failed','no match' ]
-    #    good_status = ['processed']
-
-    #    if status in bad_status:
-    #        badge_class = 'badge bg-danger'
-    #    elif status in warn_status:
-    #        badge_class = 'badge bg-warning'
-    #    elif status in good_status:
-    #        badge_class = 'badge bg-success'
-    #    else:
-    #        badge_class = default_button_class
-
-    #   return badge_class
-
     @property
-    def host_match_status_badge_class(self):
-        return self._status_badge_class(self.host_match_status)
-
-    @property
-    def image_download_status_badge_class(self):
-        return self._status_badge_class(self.image_download_status)
-
-    def __repr__(self):
-        return f"Transient(name={self.name})"
+    def tasks_processed(self):
+        """
+        Number of tasks processed.
+        """
+        tasks = TaskRegister.objects.filter(transient__name__exact=self.name)
+        num_tasks = len(tasks)
+        num_unprocessed_tasks = len(
+            [task for task in tasks if task.status.message == "not processed"]
+        )
+        return f"{num_tasks-num_unprocessed_tasks}/{num_tasks}"
 
 
 class Status(models.Model):
