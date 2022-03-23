@@ -4,14 +4,11 @@ from .forms import ImageGetForm
 from .forms import TransientSearchForm
 from .models import Cutout
 from .models import ExternalResourceCall
-from .models import Task
-from .models import TaskRegister
 from .models import Transient
 from .plotting_utils import plot_cutout_image
 
 
 def transient_list(request):
-
     transients = Transient.objects.all()
 
     if request.method == "POST":

@@ -2,7 +2,6 @@
 from abc import ABC
 from abc import abstractmethod
 
-from django.db.models import Q
 from django.utils import timezone
 
 from .ghost import run_ghost
@@ -10,7 +9,7 @@ from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
-
+from .cutouts import download_and_save_cutouts
 
 class TaskRunner(ABC):
     """
@@ -185,6 +184,34 @@ class GhostRunner(TaskRunner):
 
         return status
 
+class ImageDownloadRunner(TaskRunner):
+    """Task runner to dowload cutout images"""
+
+    def _prerequisites(self):
+        """
+        No prerequisites
+        """
+        return {}
+
+    def _task_name(self):
+        """
+        Task status to be altered is host match.
+        """
+        return "Cutout download"
+
+    def _failed_status_message(self):
+        """
+        Failed status is no GHOST match status.
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """
+        Download cutout images
+        """
+        status = Status.objects.get(message__exact="processed")
+        download_and_save_cutouts(transient)
+        return status
 
 def update_status(task_status, updated_status):
     """
