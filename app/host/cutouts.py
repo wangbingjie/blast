@@ -35,10 +35,9 @@ def download_and_save_cutouts(
         Dictionary of images with the survey names as keys and fits images
         as values.
     """
-    position = SkyCoord(transient.ra_deg, transient.dec_deg, unit="deg")
 
     for filter in Filter.objects.all():
-        fits = cutout(position, filter, fov=fov)
+        fits = cutout(transient.sky_coord, filter, fov=fov)
         if fits:
             save_dir = f"{media_root}/{transient.tns_name}/{filter.survey.name}/"
             os.makedirs(save_dir, exist_ok=True)

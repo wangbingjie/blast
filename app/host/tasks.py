@@ -14,6 +14,8 @@ from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
+from .processing import GhostRunner
+from .processing import ImageDownloadRunner
 from .processing import initialise_all_tasks_status
 from .processing import update_status
 from .transient_name_server import get_tns_credentials
@@ -55,35 +57,8 @@ def match_transient_to_host():
     Returns:
         (None): Matches host to transient
     """
-    matching_task = Task.objects.get(name__exact="Host match")
-    not_processed = Status.objects.get(message__exaxt="not processed")
-    transient = oldest_transient_with_task_status(matching_task, not_processed)
 
-    if transient is not None:
-        processing_status = TaskProcessingStatus.objects.get(
-            transient=transient, task=matching_task
-        )
-
-        processing = Status.objects.get(message__exact="processing")
-        update_status(processing_status, processing)
-
-        try:
-            host = run_ghost(transient)
-        except:
-            host = None
-            failed = Status.objects.get(message__exact="failed")
-            update_status(processing_status, failed)
-
-        if host is not None:
-            host.save()
-            transient.host = host
-            processed = Status.objects.get(message__exact="processed")
-            update_status(processing_status, processed)
-        else:
-            no_ghost_match = Status.objects.get(message__exact="no ghost match")
-            update_status(processing_status, no_ghost_match)
-
-        transient.save()
+    GhostRunner().run_process()
 
 
 @shared_task
@@ -91,22 +66,7 @@ def download_cutouts():
     """
     Downloads cutout data for a single transient
     """
-
-    no_images = Transient.objects.filter(image_download_status__exact="not processed")
-
-    if no_images.exists():
-        transient = no_images.order_by("public_timestamp")[0]
-        transient.image_download_status = "processing"
-        transient.save()
-
-        try:
-            download_and_save_cutouts(transient)
-        except:
-            transient.image_download_status = "failed"
-            transient.save()
-
-        transient.image_download_status = "processed"
-        transient.save()
+    ImageDownloadRunner().run_process()
 
 
 @shared_task
