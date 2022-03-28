@@ -26,5 +26,5 @@ see the errors and assumptions that seasoned contributors have glossed over.
 
 .. note::
     This text was originally written by Adrienne Lowe for a PyCon talk,
-    and was adapted by YSE_PZ based on its use in the README file for the MetPy
+    and was adapted by blast based on its use in the README file for the MetPy
     project and `Astropy <https://www.astropy.org>`_ project.
