@@ -7,4 +7,3 @@ RUN mkdir /app
 RUN mkdir /cutout_cdn
 COPY . /app
 WORKDIR /app
-
