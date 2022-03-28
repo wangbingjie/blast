@@ -7,12 +7,12 @@ Welcome to blast's documentation!
 =================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    installation/blast
+   task_runner
    contributing
-   develop/models
-   develop/transient_name_server
+   code_of_conduct
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
 

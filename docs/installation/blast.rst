@@ -13,7 +13,7 @@ Docker
 ======
 
 The recommended option for installing and running blast locally is to
-use docker. It so strongly recommended in fact, that I'm not going to write
+use docker. It is so strongly recommended in fact, that I'm not going to write
 documentation on how to install and run blast any other way.
 
 Install the Docker desktop app
@@ -36,7 +36,7 @@ Once in the blast directory, start the docker container.
 
 .. code:: none
 
-    bash run_blast.sh
+    bash blast.run.local.sh
 
 .. note::
     The web app container may fail a couple of times while it waits for the
@@ -47,7 +47,7 @@ Then go to `localhost:8000/ <https://0.0.0.0/transients>`_ in your web browser
 and blast should be running.
 
 .. warning::
-    Stating the web app via the `run_blast.sh` script deletes your local copy of
+    Stating the web app via the `blast.run.local.sh` script deletes your local copy of
     the database in `data/database/` and the app runs with an empty database.
 
 To stop blast from running, open a new terminal window and run.
@@ -60,4 +60,4 @@ To run tests with the blast app, run
 
 .. code:: none
 
-    bash run_blast_tests.sh
+    bash blast.tests.local.sh
