@@ -4,12 +4,13 @@ from abc import abstractmethod
 
 from django.utils import timezone
 
+from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
 from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
-from .cutouts import download_and_save_cutouts
+
 
 class TaskRunner(ABC):
     """
@@ -184,6 +185,7 @@ class GhostRunner(TaskRunner):
 
         return status
 
+
 class ImageDownloadRunner(TaskRunner):
     """Task runner to dowload cutout images"""
 
@@ -212,6 +214,7 @@ class ImageDownloadRunner(TaskRunner):
         status = Status.objects.get(message__exact="processed")
         download_and_save_cutouts(transient)
         return status
+
 
 def update_status(task_status, updated_status):
     """
