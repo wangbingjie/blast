@@ -10,8 +10,9 @@ Welcome to blast's documentation!
    :maxdepth: 1
 
    installation/blast
-   contributing
    task_runner
+   contributing
+   code_of_conduct
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
 
