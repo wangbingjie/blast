@@ -52,7 +52,7 @@ Task name
 ---------
 
 The TaskRunner needs to specific which task it operates on. This is done through
-implementing the _task_name_method. This methods takes no arguments and returns
+implementing the _task_name method. This methods takes no arguments and returns
 a string which is the name of the task. Let's say we are implement a task runner
 that matches a transient to a host galaxy, this TaskRunner will alter the status
 of the Host match Task,
@@ -60,5 +60,44 @@ of the Host match Task,
 .. code:: python
     def _task_name():
         return 'Host match'
+
+Failed Status
+-------------
+
+The TaskRunner needs to specify what status happens if your _run_process code
+throws and exception and fails. This is done by implementing the
+_failed_status_message method.  This method takes no arguments and returns a
+string which is the message of the failed status. Let's say we want the failed
+status to be the Status with the message 'failed',
+
+.. code:: python
+    def failed_status_message()
+        return 'failed'
+
+Full TaskRunner class
+---------------------
+
+Putting this all together, the example TaskRunner class would be,
+
+.. code:: python
+    from .processing import TaskRunner
+    from .models import Status
+
+    class ExampleTaskRunner(TaskRunner):
+        """An Example TaskRunner"""
+
+        def _run_process(transient):
+            print('processing')
+            return = Status.objects.get(message__exact="processed")
+
+        def _prerequisites():
+            return {'Host match': 'processed', 'Cutout download': 'processed'}
+
+        def _task_name():
+            return 'Host match'
+
+        def failed_status_message()
+            return 'failed'
+
 
 
