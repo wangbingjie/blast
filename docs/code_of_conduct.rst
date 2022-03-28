@@ -59,8 +59,6 @@ Further details of specific enforcement policies may be posted separately.
 Project maintainers who do not follow or enforce the Code of Conduct in good
 faith may face temporary or permanent repercussions as determined by other
 members of the project’s leadership.
-Attribution
-
 
 .. note::
 
@@ -68,4 +66,4 @@ Attribution
     available at
     `Covenant <https://www.contributor-covenant.org/version/1/4/code-of-conduct.html>`_
     For answers to common questions about this code of conduct, see
-    `here <https://www.contributor-covenant.org/faq>`_
+    `here <https://www.contributor-covenant.org/faq>`_ .
