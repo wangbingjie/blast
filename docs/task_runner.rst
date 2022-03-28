@@ -99,5 +99,3 @@ Putting this all together, the example TaskRunner class would be,
         def failed_status_message()
             return 'failed'
 
-
-
