@@ -67,4 +67,3 @@ members of the project’s leadership.
     `Covenant <https://www.contributor-covenant.org/version/1/4/code-of-conduct.html>`_
     For answers to common questions about this code of conduct, see
     `here <https://www.contributor-covenant.org/faq>`_ .
-
