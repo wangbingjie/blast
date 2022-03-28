@@ -27,6 +27,7 @@ example, let's implement a simple task that just prints 'processing' and
 then returns the processed Status.
 
 .. code:: python
+
     def _run_process(transient):
         print('processing')
         return = Status.objects.get(message__exact="processed")
@@ -42,6 +43,7 @@ the Host match task and the Cutout download task to be completed, it would look
 like this.
 
 .. code:: python
+
     def _prerequisites():
         return {'Host match': 'processed', 'Cutout download': 'processed'}
 
@@ -58,6 +60,7 @@ that matches a transient to a host galaxy, this TaskRunner will alter the status
 of the Host match Task,
 
 .. code:: python
+
     def _task_name():
         return 'Host match'
 
@@ -71,15 +74,17 @@ string which is the message of the failed status. Let's say we want the failed
 status to be the Status with the message 'failed',
 
 .. code:: python
+
     def failed_status_message()
         return 'failed'
 
-Full TaskRunner class
----------------------
+Full example class
+------------------
 
 Putting this all together, the example TaskRunner class would be,
 
 .. code:: python
+
     from .processing import TaskRunner
     from .models import Status
 
