@@ -141,3 +141,5 @@ cutout_cdn/
 data/
 
 static/
+
+.DS_Store
