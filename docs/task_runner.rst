@@ -28,6 +28,8 @@ then returns the processed Status.
 
 .. code:: python
 
+    from .models import Status
+
     def _run_process(transient):
         print('processing')
         return = Status.objects.get(message__exact="processed")
