@@ -19,7 +19,7 @@ will briefly run through them.
 Process method
 --------------
 
-The _run_process method is where your task code should go. This method
+The _run_process method is where your task's code should go. This method
 should contain all the necessary computations and saves to the database for your
 task to be completed. It takes a Transient object as an argument and must return
 a Status object which indicates the status of the task after computation. As an
