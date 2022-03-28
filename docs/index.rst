@@ -11,8 +11,7 @@ Welcome to blast's documentation!
 
    installation/blast
    contributing
-   develop/models
-   develop/transient_name_server
+   task_runner
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
 
