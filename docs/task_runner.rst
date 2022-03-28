@@ -60,5 +60,3 @@ of the Host match Task,
 .. code:: python
     def _task_name():
         return 'Host match'
-
-
