@@ -14,9 +14,9 @@ from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
-from .processing import initialise_all_tasks_status
 from .processing import GhostRunner
 from .processing import ImageDownloadRunner
+from .processing import initialise_all_tasks_status
 from .processing import update_status
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
@@ -60,12 +60,14 @@ def match_transient_to_host():
 
     GhostRunner().run_process()
 
+
 @shared_task
 def download_cutouts():
     """
     Downloads cutout data for a single transient
     """
     ImageDownloadRunner().run_process()
+
 
 @shared_task
 def download_host_catalog_photometry():
