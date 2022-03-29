@@ -5,7 +5,7 @@ services:
     restart: on-failure
     build:
       context: ../app/
-    command: bash entrypoints/docker-entrypoint.app.sh
+    command: bash entrypoints/docker-entrypoint.app.test.sh
     ports:
       - "8000:8000"
     volumes:

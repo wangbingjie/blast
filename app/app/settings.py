@@ -140,7 +140,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = "/cutouts/"
 # os.path.join(os.path.dirname(BASE_DIR), '../cutout_cdn')
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "cutout_cdn")
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../cutout_cdn")
 CELERY_TIMEZONE = "UTC"
 CELERY_IMPORTS = ("host.tasks",)
 CELERY_BROKER_URL = "amqp://guest:guest@rabbitmq:5672//"
