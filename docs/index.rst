@@ -13,7 +13,7 @@ Welcome to blast's documentation!
    task_runner
    contributing
    code_of_conduct
-   API
+   API/
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
 
