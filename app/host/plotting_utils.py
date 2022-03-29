@@ -111,7 +111,7 @@ def plot_cutout_image(cutout=None, transient=None):
             wcs = WCS(fits_file[0].header)
 
         transient_kwargs = {
-            "legend_label": f"{transient.tns_name}",
+            "legend_label": f"{transient.name}",
             "size": 30,
             "line_width": 2,
         }

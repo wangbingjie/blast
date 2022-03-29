@@ -94,11 +94,11 @@ class TaskRunner(ABC):
             update_status(task_register_item, self.processing_status)
             transient = task_register_item.transient
 
-            try:
-                status = self._run_process(transient)
-                update_status(task_register_item, status)
-            except:
-                update_status(task_register_item, self.failed_status)
+            #try:
+            status = self._run_process(transient)
+            update_status(task_register_item, status)
+            #except:
+            #    update_status(task_register_item, self.failed_status)
 
     @abstractmethod
     def _run_process(self, transient):

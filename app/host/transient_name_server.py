@@ -118,7 +118,7 @@ def tns_to_blast_transient(tns_transient):
             tns_transient data.
     """
     blast_transient = Transient(
-        tns_name=tns_transient["objname"],
+        name=tns_transient["objname"],
         tns_id=tns_transient["objid"],
         ra_deg=tns_transient["radeg"],
         dec_deg=tns_transient["decdeg"],
