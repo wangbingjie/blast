@@ -4,6 +4,7 @@ from ..transient_name_server import build_tns_header
 from ..transient_name_server import build_tns_url
 from ..transient_name_server import tns_to_blast_transient
 
+
 class BuildTNSHeaderTest(TestCase):
     def setUp(self):
         self.tns_bot_id = 12345
@@ -44,16 +45,17 @@ class BuildTNSUrlTest(TestCase):
         with self.assertRaises(ValueError):
             build_tns_url("test")
 
+
 class ConvertTNSToBLASTTest(TestCase):
     def test_tns_to_blast(self):
         tns_transient = {}
 
-        tns_transient["objname"] = '2021evd'
+        tns_transient["objname"] = "2021evd"
         tns_transient["objid"] = 2345
         tns_transient["radeg"] = 12.0
         tns_transient["decdeg"] = 13.0
-        tns_transient["name_prefix"] = 'SN'
-        tns_transient["discoverydate"] = '2022-02-04 07:29:02.112+00:00'
+        tns_transient["name_prefix"] = "SN"
+        tns_transient["discoverydate"] = "2022-02-04 07:29:02.112+00:00"
 
         blast_transient = tns_to_blast_transient(tns_transient)
 
@@ -62,5 +64,6 @@ class ConvertTNSToBLASTTest(TestCase):
         self.assertEqual(tns_transient["radeg"], blast_transient.ra_deg)
         self.assertEqual(tns_transient["decdeg"], blast_transient.dec_deg)
         self.assertEqual(tns_transient["name_prefix"], blast_transient.tns_prefix)
-        self.assertEqual(tns_transient["discoverydate"],
-                         blast_transient.public_timestamp)
+        self.assertEqual(
+            tns_transient["discoverydate"], blast_transient.public_timestamp
+        )
