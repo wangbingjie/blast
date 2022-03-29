@@ -39,7 +39,7 @@ def download_and_save_cutouts(
     for filter in Filter.objects.all():
         fits = cutout(transient.sky_coord, filter, fov=fov)
         if fits:
-            save_dir = f"{media_root}/{transient.tns_name}/{filter.survey.name}/"
+            save_dir = f"{media_root}/{transient.name}/{filter.survey.name}/"
             os.makedirs(save_dir, exist_ok=True)
             path_to_fits = save_dir + f"{filter.name}.fits"
             fits.writeto(path_to_fits, overwrite=True)
