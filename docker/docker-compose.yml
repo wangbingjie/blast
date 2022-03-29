@@ -10,7 +10,7 @@ services:
       - "8000:8000"
     volumes:
       - ../app:/app
-      - ../cutout_cdn:/cutout_cdn
+      - ../data/cutout_cdn:/cutout_cdn
     env_file:
       - ../env/.env.dev
   celery:
@@ -20,6 +20,7 @@ services:
     command: bash entrypoints/docker-entrypoint.celery.sh
     volumes:
       - ../app:/app
+      - ../data/cutout_cdn:/cutout_cdn
     depends_on:
       - app
       - rabbitmq
@@ -59,6 +60,7 @@ services:
     build: ../nginx
     volumes:
       - ../static:/static
+      - ../data/cutout_cdn:/cutout_cdn
     ports:
       - "80:80"
     depends_on:

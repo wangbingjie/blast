@@ -28,7 +28,7 @@ def run_ghost(transient):
     )
     host_data = getTransientHosts(
         snCoord=[transient_position],
-        snName=[transient.tns_name],
+        snName=[transient.name],
         verbose=1,
         starcut="gentle",
         ascentMatch=True,

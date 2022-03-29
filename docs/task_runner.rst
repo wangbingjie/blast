@@ -77,7 +77,7 @@ status to be the Status with the message 'failed',
 
 .. code:: python
 
-    def failed_status_message()
+    def _failed_status_message()
         return 'failed'
 
 Full example class
