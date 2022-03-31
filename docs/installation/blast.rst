@@ -20,8 +20,16 @@ Install the Docker desktop app
 -------------------------------
 
 The first step is to install the docker desktop application, which can be found
-`here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux based
-systems.
+`here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux.
+
+Environment File
+----------------
+
+Blast needs some secrets like a transient name server bot key to work. All of
+these should be located in the :code:`env/.env.dev` file. You need to create and
+populate this file yourself. It should follow the same format as the
+:code:`env/.env.dev.example` file.
+
 
 Run the blast app locally
 -------------------------
@@ -47,8 +55,8 @@ Then go to `localhost:8000/ <https://0.0.0.0/transients>`_ in your web browser
 and blast should be running.
 
 .. warning::
-    Stating the web app via the `blast.run.local.sh` script deletes your local copy of
-    the database in `data/database/` and the app runs with an empty database.
+    Stating the web app via the :code:`blast.run.local.sh` script deletes your local copy of
+    the database in :code:`data/database/` and the app runs with an empty database.
 
 To stop blast from running, open a new terminal window and run.
 
