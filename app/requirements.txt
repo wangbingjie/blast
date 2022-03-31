@@ -1,7 +1,7 @@
 alabaster==0.7.12
 amqp==5.0.9
 asgiref==3.4.1
-astro-ghost==0.1.22
+astro-ghost==0.1.25
 astro-prospector==1.0.0
 astropy==5.0
 astroquery==0.4.4
@@ -95,3 +95,4 @@ zope.interface==5.4.0
 pymysql==1.0.2
 mysqlclient
 gunicorn==20.1.0
+coverage
