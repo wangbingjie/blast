@@ -3,4 +3,4 @@
 bash entrypoints/wait-for-it.sh database:3306 --timeout=0 &&
 python manage.py makemigrations &&
 python manage.py migrate &&
-coverage report manage.py test host.tests -v 2
+python manage.py test host.tests -v 2
