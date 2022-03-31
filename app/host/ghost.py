@@ -4,11 +4,12 @@ import os
 from astro_ghost.ghostHelperFunctions import getGHOST
 from astro_ghost.ghostHelperFunctions import getTransientHosts
 from astropy.coordinates import SkyCoord
+from django.conf import settings
 
 from .models import Host
 
 
-def run_ghost(transient):
+def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
     """
     Finds the information about the host galaxy given the position of the supernova.
     Parameters
@@ -30,8 +31,9 @@ def run_ghost(transient):
         snCoord=[transient_position],
         snName=[transient.name],
         verbose=1,
+        savepath=output_dir,
         starcut="gentle",
-        ascentMatch=True,
+        #ascentMatch=False,
     )
 
     # clean up after GHOST...

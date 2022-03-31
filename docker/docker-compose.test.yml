@@ -10,7 +10,8 @@ services:
       - "8000:8000"
     volumes:
       - ../app:/app
-      - ../cutout_cdn:/cutout_cdn
+      - ../data/cutout_cdn:/cutout_cdn
+      - ../data/ghost_output:/ghost_ouput
     env_file:
       - ../env/.env.dev
   database:
