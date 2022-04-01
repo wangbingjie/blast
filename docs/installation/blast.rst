@@ -51,7 +51,7 @@ Once in the blast directory, start the docker container.
     database to be setup. Do not worry, this is normal. The web app container
     will restart automatically until it successfully connects to the database.
 
-Then go to `localhost:8000/ <https://0.0.0.0/transients>`_ in your web browser
+Then go to `https://0.0.0.0/transients <https://0.0.0.0/transients>`_ in your web browser
 and blast should be running.
 
 .. warning::
