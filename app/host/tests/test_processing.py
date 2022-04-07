@@ -8,7 +8,7 @@ from ..processing import GhostRunner
 from ..processing import initialise_all_tasks_status
 from ..processing import TaskRunner
 from ..processing import update_status
-
+from ..processing import ImageDownloadRunner
 
 class TaskRunnerTest(TestCase):
     fixtures = [
@@ -248,3 +248,30 @@ class InitializeTaskRegisterTest(TestCase):
         self.assertTrue(TaskRegister.objects.all().exists() is False)
         initialise_all_tasks_status(transient)
         self.assertTrue(TaskRegister.objects.all().exists() is True)
+
+
+class ImageDownloadTest(TestCase):
+    fixtures = ["setup_tasks.yaml", "setup_status.yaml", "setup_test_transient.yaml", "setup_test_task_register.yaml"]
+
+    def setUp(self):
+        class DummyImageDownloadRunner(ImageDownloadRunner):
+            def _run_process(self, transient):
+                status = Status.objects.get(message__exact="processed")
+                return status
+        self.image_runner = DummyImageDownloadRunner()
+
+    def test_prereqs(self):
+        self.assertTrue(
+            self.image_runner._prerequisites() == {"Cutout download": "not processed"}
+        )
+
+    def test_failed_status(self):
+        self.assertTrue(self.image_runner.failed_status.message == "failed")
+
+
+    def test_run_process(self):
+        self.image_runner.run_process()
+        transient = Transient.objects.get(name__exact="2022testone")
+        task = Task.objects.get(name__exact="Cutout download")
+        task_register = TaskRegister.objects.get(transient=transient, task=task)
+        self.assertTrue(task_register.status.message == "processed")
