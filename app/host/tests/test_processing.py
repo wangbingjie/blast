@@ -5,10 +5,10 @@ from ..models import Task
 from ..models import TaskRegister
 from ..models import Transient
 from ..processing import GhostRunner
+from ..processing import ImageDownloadRunner
 from ..processing import initialise_all_tasks_status
 from ..processing import TaskRunner
 from ..processing import update_status
-from ..processing import ImageDownloadRunner
 
 class TaskRunnerTest(TestCase):
     fixtures = [
