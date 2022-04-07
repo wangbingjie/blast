@@ -23,7 +23,7 @@ from .transient_name_server import get_transients_from_tns
 
 
 @shared_task
-def ingest_recent_tns_data(interval_minutes=1000):
+def ingest_recent_tns_data(interval_minutes=100):
     """
     Download and save recent transients from the transient name server.
 

@@ -193,7 +193,7 @@ class ImageDownloadRunner(TaskRunner):
         """
         No prerequisites
         """
-        return {}
+        return {"Cutout download": "not processed"}
 
     def _task_name(self):
         """
