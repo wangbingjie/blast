@@ -14,3 +14,27 @@
     tns_prefix: AT
     ra_deg: 123.0273250
     dec_deg: 2.1707639
+- model: host.Transient
+  fields:
+    name: 2010ag
+    tns_id: 1
+    public_timestamp: 2010-03-05 00:00:00.000
+    tns_prefix: SN
+    ra_deg: 255.97346
+    dec_deg: 31.50172
+- model: host.Transient
+  fields:
+    name: 2010ai
+    tns_id: 2
+    public_timestamp: 2010-03-08 00:00:00.000
+    tns_prefix: SN
+    ra_deg: 194.85012
+    dec_deg: 27.99642
+- model: host.Transient
+  fields:
+    name: 2010H
+    tns_id: 3
+    public_timestamp: 2010-01-16 00:00:00.000
+    tns_prefix: SN
+    ra_deg: 121.6015
+    dec_deg: 1.03586
