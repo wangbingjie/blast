@@ -147,7 +147,7 @@ class Task(models.Model):
     A processing task that needs to be completed for a transient.
     """
 
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
     objects = TaskManager()
 
     def __repr__(self):
