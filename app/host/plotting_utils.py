@@ -16,21 +16,30 @@ from bokeh.models import Scatter
 from bokeh.plotting import figure
 from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
+from astropy.visualization import PercentileInterval, AsinhStretch
 
+def scale_image(image_data):
+
+    transform = AsinhStretch() + PercentileInterval(99.5)
+    scaled_data = transform(image_data)
+    
+    return scaled_data
 
 def plot_image(image_data, figure):
 
     image_data = np.nan_to_num(image_data, nan=0)  # )=np.amin(image_data))
     image_data = image_data + abs(np.amin(image_data)) + 0.1
-    figure.image(image=[image_data])
-    color_mapper = LogColorMapper(palette="Greys256")
+
+    scaled_image = scale_image(image_data)
+    figure.image(image=[scaled_image])
+    #color_mapper = LogColorMapper(palette="Greys256")
     figure.image(
-        image=[image_data],
+        image=[scaled_image],
         x=0,
         y=0,
         dw=len(image_data),
         dh=len(image_data),
-        color_mapper=color_mapper,
+        #color_mapper=color_mapper,
         level="image",
     )
 
