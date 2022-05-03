@@ -258,6 +258,25 @@ class Cutout(models.Model):
     fits = models.FileField(upload_to=fits_file_path, null=True, blank=True)
 
 
+class Aperture(SkyObject):
+    """
+    Model to represent a sky aperture
+    """
+    host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True,
+                             blank=True)
+    filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
+    orientation = models.FloatField()
+    semi_major_axis_arcsec = models.FloatField()
+    semi_minor_axis_arcsec = models.FloatField()
+    type = models.CharField(max_length=20)
+
+
+
+
+
+
+
+
 # class Image(models.Model):
 #    """
 #    Model to represent an image
