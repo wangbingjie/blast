@@ -10,7 +10,7 @@ from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
-
+from ..models import Aperture
 
 class TaskRunner(ABC):
     """
@@ -240,7 +240,27 @@ class ApertureConstructionRunner(TaskRunner):
 
     def _run_process(self, transient):
         """Code goes here"""
-    pass
+
+        task = Task.objects.get(name__exact="Aperture construction")
+        task_register = TaskRegister.objects.get(transient=transient, task=task)
+        host = Host.objects.get(transient=transient)
+        cutout = Cutout.ob:jects.filter(filter__name="PanSTARRS_g").filter(transient=transient)
+        if not cutout:
+            return self._failed_status_message()
+
+        ap_qs = Aperture.objects.filter(cutout=cutout)
+        if ap_qs:
+            return self._failed_status_message()
+        
+        image_hdu = fits.open(cutout.fits.__str__())
+        aperture = host_utils.construct_aperture(image_hdu, host.sky_coord)
+
+        ap = Aperture.objects.create(
+            cutout=coutout,orientation=aperture.theta.value,semi_major_axis_arcsec=aperture.a.value,
+            semi_minor_axis_arcsec=aperture.b.value,type="global")
+        
+        return "processed"
+
 
 def update_status(task_status, updated_status):
     """
