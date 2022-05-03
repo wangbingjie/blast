@@ -12,7 +12,7 @@ from .managers import StatusManager
 from .managers import SurveyManager
 from .managers import TaskManager
 from .managers import TransientManager
-
+from .managers import HostManager
 
 class SkyObject(models.Model):
     """
@@ -68,7 +68,7 @@ class Host(SkyObject):
     """
 
     name = models.CharField(max_length=100, blank=True, null=True)
-
+    objects = HostManager()
 
 class Transient(SkyObject):
     """
