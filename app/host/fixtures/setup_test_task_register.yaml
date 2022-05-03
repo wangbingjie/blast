@@ -42,6 +42,12 @@
     last_modified: 2000-01-23 01:23:45.678+00:00
 - model: host.TaskRegister
   fields:
+    transient: [2010ai]
+    task: [Local aperture photomety]
+    status: [not processed]
+    last_modified: 2000-01-23 01:23:45.678+00:00
+- model: host.TaskRegister
+  fields:
     transient: [2010ag]
     task: [Host match]
     status: [not processed]
@@ -60,6 +66,12 @@
     last_modified: 2000-01-23 01:23:45.678+00:00
 - model: host.TaskRegister
   fields:
+    transient: [2010ag]
+    task: [Local aperture photomety]
+    status: [not processed]
+    last_modified: 2000-01-23 01:23:45.678+00:00
+- model: host.TaskRegister
+  fields:
     transient: [2010H]
     task: [Host match]
     status: [not processed]
@@ -74,5 +86,11 @@
   fields:
     transient: [2010H]
     task: [Aperture construction]
+    status: [not processed]
+    last_modified: 2000-01-23 01:23:45.678+00:00
+- model: host.TaskRegister
+  fields:
+    transient: [2010H]
+    task: [Local aperture photomety]
     status: [not processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
