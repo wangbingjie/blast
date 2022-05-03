@@ -270,6 +270,12 @@ class Aperture(SkyObject):
     semi_minor_axis_arcsec = models.FloatField()
     type = models.CharField(max_length=20)
 
+    def __str__(self):
+        return f'Aperture(ra={self.ra_deg},dec={self.dec_deg}, ' \
+               f'semi major axis={self.semi_major_axis_arcsec}\", ' \
+               f'semi_minor axis={self.semi_minor_axis_arcsec}\")'
+
+
 
 class AperturePhotometry(models.Model):
     """Model to store the photometric data"""
