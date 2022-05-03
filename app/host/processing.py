@@ -216,6 +216,32 @@ class ImageDownloadRunner(TaskRunner):
         return status
 
 
+class ApertureConstructionRunner(TaskRunner):
+    """Task runner to construct apertures from the cutout download"""
+
+    def _prerequisites(self):
+        """
+        Need both the Cutout and Host match to be processed
+        """
+        return {"Cutout download": "processed", "Host Match": "processed",
+                "Aperture construction": "not processed"}
+
+    def _task_name(self):
+        """
+        Task status to be altered is host match.
+        """
+        return "Aperture construction"
+
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """Code goes here"""
+    pass
+
 def update_status(task_status, updated_status):
     """
     Update the processing status of a task.

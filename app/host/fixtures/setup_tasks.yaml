@@ -4,3 +4,6 @@
 - model: host.Task
   fields:
     name: Cutout download
+- model: host.Task
+  fields:
+    name: Aperture construction
