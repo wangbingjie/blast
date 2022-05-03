@@ -7,3 +7,6 @@
 - model: host.Task
   fields:
     name: Aperture construction
+- model: host.Task
+  fields:
+    name: Local Aperture photometry
