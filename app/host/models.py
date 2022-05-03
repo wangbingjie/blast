@@ -275,7 +275,13 @@ class Aperture(SkyObject):
                f'semi major axis={self.semi_major_axis_arcsec}\", ' \
                f'semi_minor axis={self.semi_minor_axis_arcsec}\")'
 
+    def sky_aperture(self):
+        """Return photutils object"""
+        pass
 
+    def pixel_aperture(self):
+        """Return photutils object"""
+        pass
 
 class AperturePhotometry(models.Model):
     """Model to store the photometric data"""
