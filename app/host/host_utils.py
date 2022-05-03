@@ -16,6 +16,8 @@ from photutils.segmentation import deblend_sources
 from photutils.segmentation import detect_sources
 from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
+from astropy.convolution import Gaussian2DKernel
+from astropy.stats import gaussian_fwhm_to_sigma
 
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
 
@@ -76,6 +78,7 @@ def build_source_catalog(image, background, threshhold_sigma=1.0, npixels=10):
     image_data = image[0].data
     background_subtracted_data = image_data - background.background
     threshold = threshhold_sigma * background.background_rms
+
     segmentation = detect_sources(
         background_subtracted_data, threshold, npixels=npixels
     )
@@ -195,7 +198,7 @@ def estimate_background(image):
         Background estimate of the image
     """
     image_data = image[0].data
-    box_size = int(0.01 * np.sqrt(image_data.size))
+    box_size = int(0.1 * np.sqrt(image_data.size))
     return Background2D(image_data, box_size=box_size)
 
 

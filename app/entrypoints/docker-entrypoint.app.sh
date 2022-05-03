@@ -7,7 +7,9 @@ python manage.py migrate &&
 python manage.py loaddata setup_survey_data.yaml &&
 python manage.py loaddata setup_filter_data.yaml &&
 python manage.py loaddata setup_catalog_data.yaml &&
+python manage.py loaddata setup_test_host.yaml &&
 python manage.py loaddata setup_test_transient.yaml &&
+python manage.py loaddata setup_test_cutout.yaml &&
 python manage.py loaddata setup_tasks.yaml &&
 python manage.py loaddata setup_status.yaml &&
 python manage.py loaddata setup_test_task_register.yaml &&
