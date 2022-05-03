@@ -70,6 +70,7 @@ class Host(SkyObject):
     name = models.CharField(max_length=100, blank=True, null=True)
     objects = HostManager()
 
+
 class Transient(SkyObject):
     """
     Model to represent a transient.
@@ -262,14 +263,24 @@ class Aperture(SkyObject):
     """
     Model to represent a sky aperture
     """
-    host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True,
-                             blank=True)
-    filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
+    cutout = models.ForeignKey(Cutout, on_delete=models.CASCADE, blank=True,
+                               null=True)
     orientation = models.FloatField()
     semi_major_axis_arcsec = models.FloatField()
     semi_minor_axis_arcsec = models.FloatField()
     type = models.CharField(max_length=20)
 
+
+class AperturePhotometry(models.Model):
+    """Model to store the photometric data"""
+
+    aperture = models.ForeignKey(Aperture, on_delete=models.CASCADE)
+    filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
+    transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
+    flux = models.FloatField()
+    flux_error = models.FloatField()
+    magnitude = models.FloatField()
+    magnitude_error = models.FloatField()
 
 
 
