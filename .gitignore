@@ -135,17 +135,13 @@ dmypy.json
 
 transients_*/
 quiverMaps/
-cutout_cdn/
+
 
 .dbdata/
-data/*
-!data/cutout_cdn
 
-data/cutout_cdn/*
-!data/cutout_cdn/2010ag/*
-!data/cutout_cdn/2010ai/*
-!data/cutout_cdn/2010ah/*
-
+data/database/*
+data/ghost_output/*
+data/test_database/*
 
 static/
 
