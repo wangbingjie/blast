@@ -139,9 +139,9 @@ quiverMaps/
 
 .dbdata/
 
-data/database/*
-data/ghost_output/*
-data/test_database/*
+data/database/
+data/ghost_output/
+data/test_database/
 
 static/
 
