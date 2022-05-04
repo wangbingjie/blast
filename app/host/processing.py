@@ -3,6 +3,7 @@ from abc import ABC
 from abc import abstractmethod
 
 from django.utils import timezone
+from astropy.io import fits
 
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
@@ -10,7 +11,9 @@ from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
-from ..models import Aperture
+from .models import Aperture
+from .models import Cutout
+from .host_utils import construct_aperture
 
 class TaskRunner(ABC):
     """
@@ -238,28 +241,46 @@ class ApertureConstructionRunner(TaskRunner):
         """
         return "failed"
 
+    def _select_cutout_aperture(self, cutouts):
+        """
+        Select cutout for aperture
+        """
+
+        panstarrs_g = cutouts.filter(filter__name="PanSTARRS_g")
+        sdss_r = cutouts.filter(filter__name="SDSS_r")
+        two_mass_h = cutouts.filter(filter__name="2MASS_H")
+
+        if panstarrs_g.exists():
+            cutout = panstarrs_g
+        elif sdss_r.exists():
+            cutout = sdss_r
+        else:
+            cutout = two_mass_h
+
+        return cutout
+
+
     def _run_process(self, transient):
         """Code goes here"""
 
-        task = Task.objects.get(name__exact="Aperture construction")
-        task_register = TaskRegister.objects.get(transient=transient, task=task)
-        host = Host.objects.get(transient=transient)
-        cutout = Cutout.ob:jects.filter(filter__name="PanSTARRS_g").filter(transient=transient)
-        if not cutout:
+        cutouts = Cutout.objects.filter(transient=transient)
+        aperture_cutout  = self._select_cutout_aperture(cutouts)
+        host = transient.host
+
+        if not aperture_cutout.exists():
             return self._failed_status_message()
 
-        ap_qs = Aperture.objects.filter(cutout=cutout)
-        if ap_qs:
-            return self._failed_status_message()
-        
-        image_hdu = fits.open(cutout.fits.__str__())
-        aperture = host_utils.construct_aperture(image_hdu, host.sky_coord)
+        image = fits.open(aperture_cutout.fits.name)
+        aperture = construct_aperture(image, host.sky_coord)
 
-        ap = Aperture.objects.create(
-            cutout=coutout,orientation=aperture.theta.value,semi_major_axis_arcsec=aperture.a.value,
-            semi_minor_axis_arcsec=aperture.b.value,type="global")
+        Aperture.objects.create(
+            cutout=aperture_cutout,
+            orientation=aperture.theta.value,
+            semi_major_axis_arcsec=aperture.a.value,
+            semi_minor_axis_arcsec=aperture.b.value,
+            type="global")
         
-        return "processed"
+        return Status.objects.get(message__exact="processed")
 
 
 
