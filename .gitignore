@@ -140,6 +140,11 @@ cutout_cdn/
 .dbdata/
 data/
 
+!data/cutout_cdn/2010ag/
+!data/cutout_cdn/2010ai/
+!data/cutout_cdn/2010ah/
+
+
 static/
 
 .DS_Store
