@@ -18,6 +18,9 @@ from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
 from astropy.visualization import PercentileInterval, AsinhStretch
 
+
+from .models import Aperture
+
 def scale_image(image_data):
 
     transform = AsinhStretch() + PercentileInterval(99.5)
@@ -55,10 +58,12 @@ def plot_position(object, wcs, plotting_kwargs=None, plotting_func=None):
     return None
 
 
-def plot_aperture(figure, aperture):
+def plot_aperture(figure, aperture, wcs):
+    aperture = aperture.to_pixel(wcs)
+    theta_rad = (np.pi/2.0) - (np.pi/180) * aperture.theta
     x, y = aperture.positions
     source = ColumnDataSource(
-        dict(x=[x], y=[y], w=[aperture.a], h=[aperture.b], theta=[aperture.theta])
+        dict(x=[x], y=[y], w=[aperture.a], h=[aperture.b], theta=[theta_rad])
     )
     glyph = Ellipse(
         x="x",
@@ -68,7 +73,7 @@ def plot_aperture(figure, aperture):
         angle="theta",
         fill_color="#cab2d6",
         fill_alpha=0.1,
-        line_color="red",
+        line_color="green",
     )
     figure.add_glyph(source, glyph)
     return figure
@@ -99,7 +104,7 @@ def plot_image_grid(image_dict, apertures=None):
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 
 
-def plot_cutout_image(cutout=None, transient=None):
+def plot_cutout_image(cutout=None, transient=None, global_aperture=None):
 
     title = cutout.filter if cutout is not None else "No cutout selected"
     fig = figure(
@@ -138,12 +143,13 @@ def plot_cutout_image(cutout=None, transient=None):
             plot_position(
                 transient.host, wcs, plotting_kwargs=host_kwargs, plotting_func=fig.x
             )
+        if global_aperture.exists():
+            plot_aperture(fig, global_aperture[0].sky_aperture, wcs)
 
     else:
         image_data = np.zeros((500, 500))
 
     plot_image(image_data, fig)
-
     script, div = components(fig)
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 

@@ -4,6 +4,7 @@ backend.
 """
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from photutils.aperture import SkyEllipticalAperture
 from django.db import models
 
 from .managers import CatalogManager
@@ -265,6 +266,8 @@ class Aperture(SkyObject):
     """
     cutout = models.ForeignKey(Cutout, on_delete=models.CASCADE, blank=True,
                                null=True)
+    transient = models.ForeignKey(Transient, on_delete=models.CASCADE, blank=True,
+                               null=True)
     orientation = models.FloatField()
     semi_major_axis_arcsec = models.FloatField()
     semi_minor_axis_arcsec = models.FloatField()
@@ -275,13 +278,16 @@ class Aperture(SkyObject):
                f'semi major axis={self.semi_major_axis_arcsec}\", ' \
                f'semi_minor axis={self.semi_minor_axis_arcsec}\")'
 
+    @property
     def sky_aperture(self):
         """Return photutils object"""
-        pass
+        return SkyEllipticalAperture(self.sky_coord,
+                                     self.semi_major_axis_arcsec * u.arcsec,
+                                     self.semi_minor_axis_arcsec * u.arcsec,
+                                     theta=self.orientation * u.degree)
 
-    def pixel_aperture(self):
-        """Return photutils object"""
-        pass
+
+
 
 class AperturePhotometry(models.Model):
     """Model to store the photometric data"""

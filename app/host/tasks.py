@@ -16,7 +16,8 @@ from .models import TaskRegister
 from .models import Transient
 from .processing import GhostRunner
 from .processing import ImageDownloadRunner
-from .processing import ApertureConstructionRunner
+from .processing import GlobalApertureConstructionRunner
+from .processing import LocalAperturePhotometry
 from .processing import initialise_all_tasks_status
 from .processing import update_status
 from .transient_name_server import get_tns_credentials
@@ -50,11 +51,17 @@ def ingest_recent_tns_data(interval_minutes=100):
             initialise_all_tasks_status(transient)
 
 @shared_task
-def construct_aperture():
+def construct_global_aperture():
     """
     """
 
-    ApertureConstructionRunner().run_process()
+    GlobalApertureConstructionRunner().run_process()
+
+@shared_task
+def perform_local_photometry():
+    """
+    """
+    LocalAperturePhotometry.run_process()
 
             
 @shared_task
