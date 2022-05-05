@@ -220,7 +220,7 @@ class ImageDownloadRunner(TaskRunner):
         return status
 
 
-class ApertureConstructionRunner(TaskRunner):
+class GlobalApertureConstructionRunner(TaskRunner):
     """Task runner to construct apertures from the cutout download"""
 
     def _prerequisites(self):
@@ -273,10 +273,13 @@ class ApertureConstructionRunner(TaskRunner):
         aperture = construct_aperture(image, transient.host.sky_coord)
 
         Aperture.objects.create(
-            cutout=aperture_cutout,
+            cutout=aperture_cutout[0],
             orientation=aperture.theta.value,
+            ra_deg=aperture.positions.ra.degree,
+            dec_deg=aperture.positions.dec.degree,
             semi_major_axis_arcsec=aperture.a.value,
             semi_minor_axis_arcsec=aperture.b.value,
+            transient=transient,
             type="global")
         
         return Status.objects.get(message__exact="processed")
@@ -306,6 +309,16 @@ class LocalAperturePhotometry(TaskRunner):
 
     def _run_process(self, transient):
         """Code goes here"""
+
+        Aperture.objects.create(
+            orientation=0.0,
+            ra_deg=transient.positions.ra.degree,
+            dec_deg=transient.positions.dec.degree,
+            semi_major_axis_arcsec=1.0,
+            semi_minor_axis_arcsec=1.0,
+            transient=transient,
+            type="local")
+
     pass
 
 
