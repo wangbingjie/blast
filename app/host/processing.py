@@ -102,6 +102,7 @@ class TaskRunner(ABC):
                 update_status(task_register_item, status)
             except:
                 update_status(task_register_item, self.failed_status)
+                raise
 
     @abstractmethod
     def _run_process(self, transient):
@@ -245,19 +246,18 @@ class ApertureConstructionRunner(TaskRunner):
         """
         Select cutout for aperture
         """
+        filter_names = ["PanSTARRS_g", "PanSTARRS_r", "PanSTARRS_i",
+                        "SDSS_r", "SDSS_i", "SDSS_g", "DES_r",
+                        "DES_i","DES_g","2MASS_H"]
 
-        panstarrs_g = cutouts.filter(filter__name="PanSTARRS_g")
-        sdss_r = cutouts.filter(filter__name="SDSS_r")
-        two_mass_h = cutouts.filter(filter__name="2MASS_H")
+        choice = 0
+        filter_choice = filter_names[choice]
 
-        if panstarrs_g.exists():
-            cutout = panstarrs_g
-        elif sdss_r.exists():
-            cutout = sdss_r
-        else:
-            cutout = two_mass_h
+        while not cutouts.filter(filter__name=filter_choice).exists():
+            choice += 1
+            filter_choice = filter_names[choice]
 
-        return cutout
+        return cutouts.filter(filter__name=filter_choice)
 
 
     def _run_process(self, transient):
@@ -265,13 +265,12 @@ class ApertureConstructionRunner(TaskRunner):
 
         cutouts = Cutout.objects.filter(transient=transient)
         aperture_cutout  = self._select_cutout_aperture(cutouts)
-        host = transient.host
 
-        if not aperture_cutout.exists():
-            return self._failed_status_message()
+        #if not aperture_cutout.exists():
+        #    return self._failed_status_message()
 
-        image = fits.open(aperture_cutout.fits.name)
-        aperture = construct_aperture(image, host.sky_coord)
+        image = fits.open(aperture_cutout[0].fits.name)
+        aperture = construct_aperture(image, transient.host.sky_coord)
 
         Aperture.objects.create(
             cutout=aperture_cutout,
