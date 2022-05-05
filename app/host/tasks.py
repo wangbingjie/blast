@@ -61,9 +61,8 @@ def construct_global_aperture():
 def perform_local_photometry():
     """
     """
-    LocalAperturePhotometry.run_process()
+    LocalAperturePhotometry().run_process()
 
-            
 @shared_task
 def match_transient_to_host():
     """
@@ -74,7 +73,6 @@ def match_transient_to_host():
     """
 
     GhostRunner().run_process()
-
 
 @shared_task
 def download_cutouts():
