@@ -104,7 +104,8 @@ def plot_image_grid(image_dict, apertures=None):
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 
 
-def plot_cutout_image(cutout=None, transient=None, global_aperture=None):
+def plot_cutout_image(cutout=None, transient=None, global_aperture=None,
+                      local_aperture=None):
 
     title = cutout.filter if cutout is not None else "No cutout selected"
     fig = figure(
@@ -145,6 +146,9 @@ def plot_cutout_image(cutout=None, transient=None, global_aperture=None):
             )
         if global_aperture.exists():
             plot_aperture(fig, global_aperture[0].sky_aperture, wcs)
+
+        if local_aperture.exists():
+            plot_aperture(fig, local_aperture[0].sky_aperture, wcs)
 
     else:
         image_data = np.zeros((500, 500))

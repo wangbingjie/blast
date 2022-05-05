@@ -37,7 +37,7 @@ def results(request, slug):
     transient = transients.get(name__exact=slug)
 
     global_aperture = Aperture.objects.filter(type__exact="global", transient=transient)
-
+    local_aperture = Aperture.objects.filter(type__exact="local", transient=transient)
 
     all_cutouts = Cutout.objects.filter(transient__name__exact=slug)
     filters = [cutout.filter.name for cutout in all_cutouts]

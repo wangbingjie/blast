@@ -285,7 +285,6 @@ class GlobalApertureConstructionRunner(TaskRunner):
         return Status.objects.get(message__exact="processed")
 
 
-
 class LocalAperturePhotometry(TaskRunner):
     """Task Runner to perform local aperture photometry around host"""
 
@@ -312,14 +311,14 @@ class LocalAperturePhotometry(TaskRunner):
 
         Aperture.objects.create(
             orientation=0.0,
-            ra_deg=transient.positions.ra.degree,
-            dec_deg=transient.positions.dec.degree,
+            ra_deg=transient.sky_coord.ra.degree,
+            dec_deg=transient.sky_coord.dec.degree,
             semi_major_axis_arcsec=1.0,
             semi_minor_axis_arcsec=1.0,
             transient=transient,
             type="local")
 
-    pass
+        return Status.objects.get(message__exact="processed")
 
 
 
