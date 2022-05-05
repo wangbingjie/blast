@@ -1,25 +1,6 @@
 from django.test import TestCase
 
-from ..models import Status
-from ..models import Task
-from ..models import TaskRegister
-from ..models import Transient
-from ..models import Host
-from ..models import Cutout
-from ..processing import GhostRunner
-from ..processing import ImageDownloadRunner
-from ..processing import initialise_all_tasks_status
-from ..processing import TaskRunner
-from ..processing import update_status
-from .. import host_utils
-from ..plotting_utils import scale_image
-from astropy.io import fits
-from matplotlib.patches import Ellipse
-import pylab as plt
-from astropy.wcs import WCS
-import numpy as np
-
-# python manage.py test host.tests.test_photometry
+from ..processing import ApertureConstructionRunner
 
 class PhotometryTest(TestCase):
 
@@ -35,9 +16,16 @@ class PhotometryTest(TestCase):
     ]
 
     def setUp(self):
-        pass
+        self.aperture_runner = ApertureConstructionRunner()
 
+    def test_aperture_construction_runner(self):
+        self.aperture_runner.run_process()
+
+
+    """
     def test_segmentation(self,debug=False):
+        
+        
 
         transient = Transient.objects.get(name__exact="2010H")
         task = Task.objects.get(name__exact="Aperture construction")
@@ -79,4 +67,4 @@ class PhotometryTest(TestCase):
         self.assertTrue(np.isclose(aperture.a.value,38.33,0.01))
         self.assertTrue(np.isclose(aperture.b.value,18.81,0.01))
         self.assertTrue(np.isclose(aperture.theta.value,-2.307,0.001))
-        
+     """
