@@ -59,4 +59,8 @@
     </div>
 </div>
 
+    {% for item in transient.apeturephotometry_set.all %}
+        item.flux
+    {% endfor %}
+
 {% endblock %}

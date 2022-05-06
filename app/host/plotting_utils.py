@@ -58,24 +58,14 @@ def plot_position(object, wcs, plotting_kwargs=None, plotting_func=None):
     return None
 
 
-def plot_aperture(figure, aperture, wcs):
+def plot_aperture(figure, aperture, wcs, plotting_kwargs=None):
     aperture = aperture.to_pixel(wcs)
     theta_rad = (np.pi/2.0) - (np.pi/180) * aperture.theta
     x, y = aperture.positions
-    source = ColumnDataSource(
-        dict(x=[x], y=[y], w=[aperture.a], h=[aperture.b], theta=[theta_rad])
-    )
-    glyph = Ellipse(
-        x="x",
-        y="y",
-        width="w",
-        height="h",
-        angle="theta",
-        fill_color="#cab2d6",
-        fill_alpha=0.1,
-        line_color="green",
-    )
-    figure.add_glyph(source, glyph)
+    plot_dict = {"x": x, "y": y, "width": aperture.a, "height": aperture.b,
+                 "angle": theta_rad, "fill_color": "#cab2d6", "fill_alpha": 0.1}
+    plot_dict = {**plot_dict, **plotting_kwargs}
+    figure.ellipse(**plot_dict)
     return figure
 
 
@@ -145,10 +135,15 @@ def plot_cutout_image(cutout=None, transient=None, global_aperture=None,
                 transient.host, wcs, plotting_kwargs=host_kwargs, plotting_func=fig.x
             )
         if global_aperture.exists():
-            plot_aperture(fig, global_aperture[0].sky_aperture, wcs)
+            filter_name = global_aperture[0].cutout.filter.name
+            plot_aperture(fig, global_aperture[0].sky_aperture, wcs,
+                          plotting_kwargs={"fill_alpha": 0.1,"line_color":"green",
+                                           "legend_label": f'Global Aperture ({filter_name})'})
 
         if local_aperture.exists():
-            plot_aperture(fig, local_aperture[0].sky_aperture, wcs)
+            plot_aperture(fig, local_aperture[0].sky_aperture, wcs,
+                          plotting_kwargs={"fill_alpha": 0.1,"line_color":"blue",
+                                           "legend_label": "Local Aperture"})
 
     else:
         image_data = np.zeros((500, 500))

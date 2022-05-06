@@ -13,7 +13,9 @@ from .models import TaskRegister
 from .models import Transient
 from .models import Aperture
 from .models import Cutout
+from .models import AperturePhotometry
 from .host_utils import construct_aperture
+from .host_utils import do_aperture_photometry
 
 class TaskRunner(ABC):
     """
@@ -309,14 +311,34 @@ class LocalAperturePhotometry(TaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        Aperture.objects.create(
-            orientation=0.0,
+        aperture = Aperture(orientation=0.0,
             ra_deg=transient.sky_coord.ra.degree,
             dec_deg=transient.sky_coord.dec.degree,
             semi_major_axis_arcsec=1.0,
             semi_minor_axis_arcsec=1.0,
             transient=transient,
             type="local")
+        aperture.save()
+        #Aperture.objects.create(
+        #    orientation=0.0,
+        #    ra_deg=transient.sky_coord.ra.degree,
+        #    dec_deg=transient.sky_coord.dec.degree,
+        #    semi_major_axis_arcsec=1.0,
+        #    semi_minor_axis_arcsec=1.0,
+        #    transient=transient,
+        #    type="local")
+
+        cutouts = Cutout.objects.filter(transient=transient)
+
+        for cutout in cutouts:
+            image = fits.open(cutout.fits.name)
+            flux = do_aperture_photometry(image, aperture.sky_aperture)
+            AperturePhotometry.objects.create(
+                aperture=aperture,
+                transient=transient,
+                filter=cutout.filter,
+                flux=flux,
+            )
 
         return Status.objects.get(message__exact="processed")
 

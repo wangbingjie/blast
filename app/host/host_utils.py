@@ -11,6 +11,7 @@ from astropy.units import Quantity
 from astropy.wcs import WCS
 from astroquery.hips2fits import hips2fits
 from photutils.aperture import EllipticalAperture
+from photutils.aperture import aperture_photometry
 from photutils.background import Background2D
 from photutils.segmentation import deblend_sources
 from photutils.segmentation import detect_sources
@@ -144,6 +145,15 @@ def elliptical_sky_aperture(source_catalog, wcs, aperture_scale=3.0):
     )
     pixel_aperture = source_catalog.kron_aperture
     return pixel_aperture.to_sky(wcs)
+
+def do_aperture_photometry(image, sky_aperture):
+    """
+    Performs Aperture photometry
+    """
+    image_data = image[0].data
+    wcs = WCS(image[0].header)
+    phot_table = aperture_photometry(image_data, sky_aperture, wcs=wcs)
+    return phot_table['aperture_sum']
 
 
 # def find_host_data(position, name='No name'):
