@@ -102,7 +102,7 @@ def plot_cutout_image(cutout=None, transient=None, global_aperture=None,
         title=f"{title}",
         x_axis_label="",
         y_axis_label="",
-        plot_width=600,
+        plot_width=700,
         plot_height=600,
     )
 
@@ -162,7 +162,7 @@ def plot_catalog_sed(catalog_dict):
 
     fig = figure(
         title="Spectral energy distribution",
-        width=1200,
+        width=1400,
         height=400,
         min_border=0,
         toolbar_location=None,
