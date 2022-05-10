@@ -103,7 +103,7 @@ def plot_cutout_image(cutout=None, transient=None, global_aperture=None,
         x_axis_label="",
         y_axis_label="",
         plot_width=700,
-        plot_height=600,
+        plot_height=700,
     )
 
     fig.axis.visible = False
