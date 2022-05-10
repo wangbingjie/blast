@@ -39,7 +39,8 @@ def results(request, slug):
 
     global_aperture = Aperture.objects.filter(type__exact="global", transient=transient)
     local_aperture = Aperture.objects.filter(type__exact="local", transient=transient)
-    local_aperture_photometry = AperturePhotometry.objects.filter(transient=transient, type__exact='local')
+    local_aperture_photometry = AperturePhotometry.objects.filter(transient=transient,
+                                                                  aperture__type__exact="local")
 
     all_cutouts = Cutout.objects.filter(transient__name__exact=slug)
     filters = [cutout.filter.name for cutout in all_cutouts]
@@ -56,7 +57,6 @@ def results(request, slug):
     bokeh_context = plot_cutout_image(cutout=cutout, transient=transient,
                                       global_aperture=global_aperture,
                                       local_aperture=local_aperture)
-
     context = {**{"transient": transient, "form": form,
-                  "local_photometry": local_aperture_photometry}, **bokeh_context}
+                  "local_aperture_photometry": local_aperture_photometry}, **bokeh_context}
     return render(request, "results.html", context)

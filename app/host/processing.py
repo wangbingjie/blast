@@ -294,7 +294,8 @@ class LocalAperturePhotometry(TaskRunner):
         """
         Need both the Cutout and Host match to be processed
         """
-        return {"Cutout download": "processed"}
+        return {"Cutout download": "processed",
+                "Local aperture photometry": "not processed"}
 
     def _task_name(self):
         """
@@ -319,14 +320,6 @@ class LocalAperturePhotometry(TaskRunner):
             transient=transient,
             type="local")
         aperture.save()
-        #Aperture.objects.create(
-        #    orientation=0.0,
-        #    ra_deg=transient.sky_coord.ra.degree,
-        #    dec_deg=transient.sky_coord.dec.degree,
-        #    semi_major_axis_arcsec=1.0,
-        #    semi_minor_axis_arcsec=1.0,
-        #    transient=transient,
-        #    type="local")
 
         cutouts = Cutout.objects.filter(transient=transient)
 

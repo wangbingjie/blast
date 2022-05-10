@@ -1,0 +1,12 @@
+<div class="card">
+    <h5 class="card-header">Processing Status</h5>
+    <div class="card-body">
+        {% for item in transient.taskregister_set.all %}
+        <p class="card-text">
+            {{item.task.name}}
+            <span class="badge {{item.status.badge}}">{{item.status.message}}</span>
+        </p>
+        {% endfor %}
+    </div>
+</div>
+<div>&nbsp;</div>

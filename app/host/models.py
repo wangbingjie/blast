@@ -300,7 +300,13 @@ class AperturePhotometry(models.Model):
     magnitude = models.FloatField(blank=True, null=True)
     magnitude_error = models.FloatField(blank=True, null=True)
 
+    @property
+    def flux_rounded(self):
+        return round(self.flux,2)
 
+    @property
+    def flux_error_rounded(self):
+        return round(self.flux_error, 2)
 
 
 
