@@ -3,16 +3,23 @@
         <h5>Aperture Photometry</h5>
         <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="local-tab" data-bs-toggle="tab" data-bs-target="#local" type="button" role="tab" aria-controls="home" aria-selected="true">Local</button>
+                <button class="nav-link active" id="global-tab" data-bs-toggle="tab" data-bs-target="#global" type="button" role="tab" aria-controls="global" aria-selected="false">Global</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="global-tab" data-bs-toggle="tab" data-bs-target="#global" type="button" role="tab" aria-controls="global" aria-selected="false">Global</button>
+                <button class="nav-link" id="local-tab" data-bs-toggle="tab" data-bs-target="#local" type="button" role="tab" aria-controls="home" aria-selected="true">Local</button>
             </li>
         </ul>
     </div>
 
     <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="local" role="tabpanel" aria-labelledby="local-tab">
+        <div class="tab-pane fade" id="local" role="tabpanel" aria-labelledby="local-tab">
+            <div class="container">
+                <br>
+                <h6>Aperture details</h6>
+            RA, DEC (J2000) = {{local_aperture.ra}}, {{local_aperture.dec}}<br>
+            semi major axis, semi minor axis (arcsec) = {{local_aperture.semi_major_axis}}, {{local_aperture.semi_minor_axis}}<br>
+            angle (degrees, clockwise from north) = {{local_aperture.orientation_angle}}<br>
+                <br>
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -29,8 +36,16 @@
                 {% endfor %}
                 </tbody>
             </table>
+            </div>
         </div>
-        <div class="tab-pane fade" id="global" role="tabpanel" aria-labelledby="global-tab">
+        <div class="tab-pane fade show active" id="global" role="tabpanel" aria-labelledby="global-tab">
+            <br>
+            <div class="container">
+            <h6>Aperture details</h6>
+                RA, DEC (J2000) = {{global_aperture.ra}}, {{global_aperture.dec}}<br>
+            semi major axis, semi minor axis (arcsec) = {{global_aperture.semi_major_axis}}, {{global_aperture.semi_minor_axis}}<br>
+            angle (degrees, clockwise from north) = {{global_aperture.orientation_angle}}<br>
+                <br>
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -47,6 +62,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </div>

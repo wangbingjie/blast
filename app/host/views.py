@@ -63,7 +63,22 @@ def results(request, slug):
     bokeh_context = plot_cutout_image(cutout=cutout, transient=transient,
                                       global_aperture=global_aperture,
                                       local_aperture=local_aperture)
-    context = {**{"transient": transient, "form": form,
+
+    if local_aperture.exists():
+        local_aperture = local_aperture[0]
+    else:
+        local_aperture = None
+
+    if global_aperture.exists():
+        global_aperture = global_aperture[0]
+    else:
+        global_aperture = None
+
+    context = {**{"transient": transient,
+                  "form": form,
                   "local_aperture_photometry": local_aperture_photometry,
-                  "filter_status": filter_status}, **bokeh_context}
+                  "filter_status": filter_status,
+                  "local_aperture": local_aperture,
+                  "global_aperture": global_aperture},**bokeh_context}
+
     return render(request, "results.html", context)
