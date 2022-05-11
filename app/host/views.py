@@ -7,6 +7,7 @@ from .models import ExternalResourceCall
 from .models import Transient
 from .models import Aperture
 from .models import AperturePhotometry
+from .models import Filter
 from .plotting_utils import plot_cutout_image
 
 
@@ -44,6 +45,11 @@ def results(request, slug):
 
     all_cutouts = Cutout.objects.filter(transient__name__exact=slug)
     filters = [cutout.filter.name for cutout in all_cutouts]
+    all_filters = Filter.objects.all()
+
+    filter_status = {filter_.name :
+                         ('yes' if filter_.name in filters else 'no')
+                     for filter_ in all_filters}
 
     if request.method == "POST":
         form = ImageGetForm(request.POST, filter_choices=filters)
@@ -58,5 +64,6 @@ def results(request, slug):
                                       global_aperture=global_aperture,
                                       local_aperture=local_aperture)
     context = {**{"transient": transient, "form": form,
-                  "local_aperture_photometry": local_aperture_photometry}, **bokeh_context}
+                  "local_aperture_photometry": local_aperture_photometry,
+                  "filter_status": filter_status}, **bokeh_context}
     return render(request, "results.html", context)
