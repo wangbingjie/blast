@@ -1,39 +1,53 @@
 <div class="card">
     <div class="card-header">
         <h5>Aperture Photometry</h5>
-        <ul class="nav nav-tabs card-header-tabs" id="bologna-list" role="tablist">
-            <button class="nav-link active" id="nav-local-photometry-tab" data-bs-toggle="tab" data-bs-target="#nav-local-photometry" type="button" role="tab" aria-controls="nav-local-photometry" aria-selected="true">Local</button>
-            <button class="nav-link" id="nav-global-photometry-tab" data-bs-toggle="tab" data-bs-target="#nav-global-photometry" type="button" role="tab" aria-controls="nav-global-photometry" aria-selected="false">Global</button>
+        <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="local-tab" data-bs-toggle="tab" data-bs-target="#local" type="button" role="tab" aria-controls="home" aria-selected="true">Local</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="global-tab" data-bs-toggle="tab" data-bs-target="#global" type="button" role="tab" aria-controls="global" aria-selected="false">Global</button>
+            </li>
         </ul>
     </div>
 
-    <div class="card-body">
-        <div class="tab-content mt-3">
-            <div class="tab-content" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="nav-local-photometry" role="tabpanel" aria-labelledby="nav-local-photometry-tab">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th scope="col">Filter</th>
-                                <th scope="col">Flux</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in local_aperture_photometry %}
-                            <tr>
-                                <td>{{item.filter.name}}</td>
-                                <td>{{item.flux_rounded}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            <div class="tab-pane fade" id="nav-global-photometry" role="tabpanel" aria-labelledby="nav-global-photometry">
-                Global
-            </div>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="local" role="tabpanel" aria-labelledby="local-tab">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Filter</th>
+                    <th scope="col">Flux</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in local_aperture_photometry %}
+                <tr>
+                    <td>{{item.filter.name}}</td>
+                    <td>{{item.flux_rounded}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="global" role="tabpanel" aria-labelledby="global-tab">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Filter</th>
+                    <th scope="col">Flux</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for item in global_aperture_photometry %}
+                    <tr>
+                        <td>{{item.filter.name}}</td>
+                        <td>{{item.flux_rounded}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-<div>
-    &nbsp;
-</div>
+<div>&nbsp;</div>
