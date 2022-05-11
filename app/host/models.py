@@ -285,6 +285,19 @@ class Aperture(SkyObject):
                                      self.semi_major_axis_arcsec * u.arcsec,
                                      self.semi_minor_axis_arcsec * u.arcsec,
                                      theta=self.orientation * u.degree)
+    @property
+    def semi_major_axis(self):
+        return round(self.semi_major_axis_arcsec,2)
+
+    @property
+    def semi_minor_axis(self):
+        return round(self.semi_minor_axis_arcsec, 2)
+
+    @property
+    def orientation_angle(self):
+        return round(self.orientation, 2)
+
+
 
 
 
