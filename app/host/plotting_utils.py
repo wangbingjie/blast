@@ -153,7 +153,7 @@ def plot_cutout_image(cutout=None, transient=None, global_aperture=None,
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 
 
-def plot_catalog_sed(catalog_dict):
+def plot_catalog_sed(photometry_table):
     """
     Plot SED from available catalog data
     """
@@ -162,7 +162,7 @@ def plot_catalog_sed(catalog_dict):
 
     fig = figure(
         title="Spectral energy distribution",
-        width=1400,
+        width=700,
         height=400,
         min_border=0,
         toolbar_location=None,
