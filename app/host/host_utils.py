@@ -6,19 +6,19 @@ from collections import namedtuple
 import astropy.units as u
 import numpy as np
 import yaml
+from astropy.convolution import Gaussian2DKernel
 from astropy.coordinates import SkyCoord
+from astropy.stats import gaussian_fwhm_to_sigma
 from astropy.units import Quantity
 from astropy.wcs import WCS
 from astroquery.hips2fits import hips2fits
-from photutils.aperture import EllipticalAperture
 from photutils.aperture import aperture_photometry
+from photutils.aperture import EllipticalAperture
 from photutils.background import Background2D
 from photutils.segmentation import deblend_sources
 from photutils.segmentation import detect_sources
 from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
-from astropy.convolution import Gaussian2DKernel
-from astropy.stats import gaussian_fwhm_to_sigma
 
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
 
