@@ -2,20 +2,20 @@
 from abc import ABC
 from abc import abstractmethod
 
-from django.utils import timezone
 from astropy.io import fits
+from django.utils import timezone
 
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
+from .host_utils import construct_aperture
+from .host_utils import do_aperture_photometry
+from .models import Aperture
+from .models import AperturePhotometry
+from .models import Cutout
 from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
-from .models import Aperture
-from .models import Cutout
-from .models import AperturePhotometry
-from .host_utils import construct_aperture
-from .host_utils import do_aperture_photometry
 
 class TaskRunner(ABC):
     """
@@ -283,7 +283,7 @@ class GlobalApertureConstructionRunner(TaskRunner):
             semi_minor_axis_arcsec=aperture.b.value,
             transient=transient,
             type="global")
-        
+
         return Status.objects.get(message__exact="processed")
 
 

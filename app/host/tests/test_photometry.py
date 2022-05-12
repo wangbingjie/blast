@@ -24,8 +24,8 @@ class PhotometryTest(TestCase):
 
     """
     def test_segmentation(self,debug=False):
-        
-        
+
+
 
         transient = Transient.objects.get(name__exact="2010H")
         task = Task.objects.get(name__exact="Aperture construction")
@@ -35,7 +35,7 @@ class PhotometryTest(TestCase):
 
         # estimate the background
         #estimate_background(image)
-        
+
         # get the source catalog
         #build_source_catalog()
 
@@ -46,7 +46,7 @@ class PhotometryTest(TestCase):
         #elliptical_sky_aperture()
         image_hdu = fits.open(cutout.fits.__str__())
         aperture = host_utils.construct_aperture(image_hdu, host.sky_coord)
-        
+
         # plot it up
         # for debugging
         if debug:
