@@ -12,13 +12,15 @@
     </div>
     <div class="tab-content" id="myTabContent-sed">
         <div class="tab-pane fade" id="local-sed" role="tabpanel" aria-labelledby="local-sed-tab">
+            <div>&nbsp;</div>
             <div class="container">
-                test
+                {{ bokeh_sed_local_div | safe }}
             </div>
         </div>
         <div class="tab-pane fade show active" id="global-sed" role="tabpanel" aria-labelledby="global-sed-tab">
+            <div>&nbsp;</div>
             <div class="container">
-                test, plots to come
+                {{ bokeh_sed_global_div | safe }}
             </div>
         </div>
     </div>

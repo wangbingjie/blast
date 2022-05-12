@@ -153,33 +153,33 @@ def plot_cutout_image(cutout=None, transient=None, global_aperture=None,
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 
 
-def plot_catalog_sed(photometry_table):
+def plot_sed(aperture_photometry=None, type=""):
     """
-    Plot SED from available catalog data
+    Plot SED from aperture photometry.
     """
-    catalogs = survey_list("host/data/catalog_metadata.yml")
-    filter_info = [filter_information(catalog) for catalog in catalogs]
+
+    if aperture_photometry.exists():
+
+        flux = [measurement.flux for measurement in aperture_photometry]
+        flux_error = [measurement.flux_error for measurement in aperture_photometry]
+        wavelength = [measurement.filter.wavelength_eff_angstrom for measurement in aperture_photometry]
+    else:
+        flux, flux_error, wavelength = [], [], []
+
+    flux_error = [0.0 if error is None else error for error in flux_error]
 
     fig = figure(
-        title="Spectral energy distribution",
+        title="",
         width=700,
         height=400,
         min_border=0,
         toolbar_location=None,
         x_axis_type="log",
-        x_axis_label="Wavelength [micro-m]",
-        y_axis_label="Magnitude",
+        x_axis_label="Wavelength [Angstrom]",
+        y_axis_label="Flux",
     )
 
-    wavelengths, mags, mag_errors = [], [], []
-
-    for catalog, data in catalog_dict.items():
-        filter_data = [filter for filter in filter_info if filter["name"] == catalog][0]
-        wavelengths.append(filter_data["WavelengthEff"] * 0.0001)
-        mags.append(data["mag"])
-        mag_errors.append((data["mag_error"]))
-
-    fig = plot_errorbar(fig, wavelengths, mags, yerr=mag_errors)
+    fig = plot_errorbar(fig, wavelength, flux, yerr=flux_error)
 
     # xaxis = LinearAxis()
     # figure.add_layout(xaxis, 'below')
@@ -190,7 +190,7 @@ def plot_catalog_sed(photometry_table):
     # fig.add_layout(Grid(dimension=0, ticker=xaxis.ticker))
     # fig.add_layout(Grid(dimension=1, ticker=yaxis.ticker))
     script, div = components(fig)
-    return {"bokeh_sed_script": script, "bokeh_sed_div": div}
+    return {f'bokeh_sed_{type}_script': script, f'bokeh_sed_{type}_div': div}
 
 
 def plot_errorbar(
@@ -217,9 +217,3 @@ def plot_errorbar(
             y_err_y.append((py - err, py + err))
         figure.multi_line(y_err_x, y_err_y, color=color, **error_kwargs)
     return figure
-
-
-def plot_sed(figure, photometry_dict):
-    """
-    Plot photometry on SED
-    """

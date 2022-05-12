@@ -101,16 +101,12 @@ class Transient(SkyObject):
     objects = TransientManager()
 
     @property
-    def tasks_processed(self):
-        """
-        Number of tasks processed.
-        """
+    def progress(self):
         tasks = TaskRegister.objects.filter(transient__name__exact=self.name)
-        num_tasks = len(tasks)
-        num_unprocessed_tasks = len(
-            [task for task in tasks if task.status.message == "not processed"]
-        )
-        return f"{num_tasks-num_unprocessed_tasks}/{num_tasks}"
+        total_tasks = len(tasks)
+        completed_tasks = len([task for task in tasks
+                                if task.status.message == 'processed'])
+        return int(round(100 * (completed_tasks / total_tasks),0))
 
 
 class Status(models.Model):
@@ -168,6 +164,7 @@ class TaskRegister(models.Model):
 
     def __repr__(self):
         return f" {self.transient.name} | {self.task.name} | {self.status.message}"
+
 
 
 class ExternalResourceCall(models.Model):
