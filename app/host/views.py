@@ -8,7 +8,9 @@ from .models import Transient
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Filter
+from .models import TaskRegister
 from .plotting_utils import plot_cutout_image
+from .plotting_utils import plot_sed
 
 
 def transient_list(request):
@@ -25,6 +27,7 @@ def transient_list(request):
         form = TransientSearchForm()
 
     transients = transients.order_by("-public_timestamp")[:100]
+
     context = {"transients": transients, "form": form}
     return render(request, "transient_list.html", context)
 
@@ -42,6 +45,8 @@ def results(request, slug):
     local_aperture = Aperture.objects.filter(type__exact="local", transient=transient)
     local_aperture_photometry = AperturePhotometry.objects.filter(transient=transient,
                                                                   aperture__type__exact="local")
+    global_aperture_photometry = AperturePhotometry.objects.filter(transient=transient,
+                                                                  aperture__type__exact="global")
 
     all_cutouts = Cutout.objects.filter(transient__name__exact=slug)
     filters = [cutout.filter.name for cutout in all_cutouts]
@@ -63,6 +68,8 @@ def results(request, slug):
     bokeh_context = plot_cutout_image(cutout=cutout, transient=transient,
                                       global_aperture=global_aperture,
                                       local_aperture=local_aperture)
+    bokeh_sed_local_context = plot_sed(aperture_photometry=local_aperture_photometry,type="local")
+    bokeh_sed_global_context = plot_sed(aperture_photometry=global_aperture_photometry, type="global")
 
     if local_aperture.exists():
         local_aperture = local_aperture[0]
@@ -77,8 +84,12 @@ def results(request, slug):
     context = {**{"transient": transient,
                   "form": form,
                   "local_aperture_photometry": local_aperture_photometry,
+                  "global_aperture_photometry": global_aperture_photometry,
                   "filter_status": filter_status,
                   "local_aperture": local_aperture,
-                  "global_aperture": global_aperture},**bokeh_context}
+                  "global_aperture": global_aperture},
+               **bokeh_context,
+               **bokeh_sed_local_context,
+               **bokeh_sed_global_context}
 
     return render(request, "results.html", context)
