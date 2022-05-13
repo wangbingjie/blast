@@ -6,7 +6,10 @@
     name: Cutout download
 - model: host.Task
   fields:
-    name: Aperture construction
+    name: Global aperture construction
 - model: host.Task
   fields:
-    name: Local Aperture photometry
+    name: Local aperture photometry
+- model: host.Task
+  fields:
+    name: Global aperture photometry

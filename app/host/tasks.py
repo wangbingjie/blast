@@ -18,6 +18,7 @@ from .processing import GhostRunner
 from .processing import ImageDownloadRunner
 from .processing import GlobalApertureConstructionRunner
 from .processing import LocalAperturePhotometry
+from .processing import GlobalAperturePhotometry
 from .processing import initialise_all_tasks_status
 from .processing import update_status
 from .transient_name_server import get_tns_credentials
@@ -49,6 +50,12 @@ def ingest_recent_tns_data(interval_minutes=100):
         except Transient.DoesNotExist:
             transient.save()
             initialise_all_tasks_status(transient)
+
+@shared_task
+def perform_global_photometry():
+    """
+    """
+    GlobalAperturePhotometry().run_process()
 
 @shared_task
 def construct_global_aperture():

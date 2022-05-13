@@ -161,6 +161,7 @@ class TaskRegister(models.Model):
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(blank=True, null=True)
+    last_processing_time_seconds = models.FloatField(blank=True, null=True)
 
     def __repr__(self):
         return f" {self.transient.name} | {self.task.name} | {self.status.message}"
@@ -293,10 +294,6 @@ class Aperture(SkyObject):
     @property
     def orientation_angle(self):
         return round(self.orientation, 2)
-
-
-
-
 
 
 class AperturePhotometry(models.Model):
