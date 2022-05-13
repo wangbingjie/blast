@@ -350,7 +350,7 @@ class GlobalAperturePhotometry(TaskRunner):
         Need both the Cutout and Host match to be processed
         """
         return {"Cutout download": "processed",
-                "Aperture Construction": "processed",
+                "Global aperture construction": "processed",
                 "Global aperture photometry": "not processed"}
 
     def _task_name(self):
@@ -375,7 +375,7 @@ class GlobalAperturePhotometry(TaskRunner):
             image = fits.open(cutout.fits.name)
             flux = do_aperture_photometry(image, aperture[0].sky_aperture)
             AperturePhotometry.objects.create(
-                aperture=aperture,
+                aperture=aperture[0],
                 transient=transient,
                 filter=cutout.filter,
                 flux=flux,
