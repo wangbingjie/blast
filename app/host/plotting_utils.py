@@ -1,6 +1,8 @@
 import numpy as np
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
+from astropy.visualization import AsinhStretch
+from astropy.visualization import PercentileInterval
 from astropy.wcs import WCS
 from bokeh.embed import components
 from bokeh.layouts import gridplot
@@ -16,8 +18,6 @@ from bokeh.models import Scatter
 from bokeh.plotting import figure
 from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
-from astropy.visualization import PercentileInterval, AsinhStretch
-
 
 from .models import Aperture
 
@@ -25,7 +25,7 @@ def scale_image(image_data):
 
     transform = AsinhStretch() + PercentileInterval(99.5)
     scaled_data = transform(image_data)
-    
+
     return scaled_data
 
 def plot_image(image_data, figure):
