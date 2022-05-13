@@ -16,7 +16,6 @@ from .models import TaskRegister
 from .models import Transient
 from .processing import GhostRunner
 from .processing import GlobalApertureConstructionRunner
-from .processing import LocalAperturePhotometry
 from .processing import GlobalAperturePhotometry
 from .processing import ImageDownloadRunner
 from .processing import initialise_all_tasks_status
