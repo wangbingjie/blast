@@ -1,6 +1,7 @@
 # Modelus to manage to processing of tasks for transients
 from abc import ABC
 from abc import abstractmethod
+from time import process_time
 
 from django.utils import timezone
 from astropy.io import fits
@@ -99,12 +100,18 @@ class TaskRunner(ABC):
             update_status(task_register_item, self.processing_status)
             transient = task_register_item.transient
 
+            start_time = process_time()
             try:
                 status = self._run_process(transient)
                 update_status(task_register_item, status)
             except:
                 update_status(task_register_item, self.failed_status)
                 raise
+
+            end_time = process_time()
+            processing_time = round(end_time-start_time, 2)
+            task_register_item.last_processing_time_seconds = processing_time
+            task_register_item.save()
 
     @abstractmethod
     def _run_process(self, transient):
@@ -230,13 +237,13 @@ class GlobalApertureConstructionRunner(TaskRunner):
         Need both the Cutout and Host match to be processed
         """
         return {"Cutout download": "processed", "Host Match": "processed",
-                "Aperture construction": "not processed"}
+                "Global aperture construction": "not processed"}
 
     def _task_name(self):
         """
         Task status to be altered is host match.
         """
-        return "Aperture construction"
+        return "Global aperture construction"
 
     def _failed_status_message(self):
         """
@@ -335,7 +342,46 @@ class LocalAperturePhotometry(TaskRunner):
 
         return Status.objects.get(message__exact="processed")
 
+class GlobalAperturePhotometry(TaskRunner):
+    """Task Runner to perform local aperture photometry around host"""
 
+    def _prerequisites(self):
+        """
+        Need both the Cutout and Host match to be processed
+        """
+        return {"Cutout download": "processed",
+                "Aperture Construction": "processed",
+                "Global aperture photometry": "not processed"}
+
+    def _task_name(self):
+        """
+        Task status to be altered is Local Aperture photometry
+        """
+        return "Global aperture photometry"
+
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """Code goes here"""
+
+        aperture = Aperture.objects.filter(transient=transient,type="global")
+        cutouts = Cutout.objects.filter(transient=transient)
+
+        for cutout in cutouts:
+            image = fits.open(cutout.fits.name)
+            flux = do_aperture_photometry(image, aperture[0].sky_aperture)
+            AperturePhotometry.objects.create(
+                aperture=aperture,
+                transient=transient,
+                filter=cutout.filter,
+                flux=flux,
+            )
+
+        return Status.objects.get(message__exact="processed")
 
 def update_status(task_status, updated_status):
     """
