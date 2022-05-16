@@ -1,6 +1,5 @@
-import fsps
 import dynesty
-import sedpy
+import fsps
 import h5py
 import numpy as np
-
+import sedpy

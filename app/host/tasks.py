@@ -6,8 +6,8 @@ import glob
 import shutil
 
 from celery import shared_task
-from django.utils import timezone
 from django.db.models import Q
+from django.utils import timezone
 
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
@@ -18,10 +18,10 @@ from .models import Transient
 from .processing import GhostRunner
 from .processing import GlobalApertureConstructionRunner
 from .processing import GlobalAperturePhotometry
+from .processing import HostInformation
 from .processing import ImageDownloadRunner
 from .processing import initialise_all_tasks_status
 from .processing import LocalAperturePhotometry
-from .processing import HostInformation
 from .processing import TaskRegisterSnapshot
 from .processing import update_status
 from .transient_name_server import get_tns_credentials
