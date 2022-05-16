@@ -2,7 +2,7 @@ import glob
 import os
 import time
 from collections import namedtuple
-from astroquery.ipac.ned import Ned
+
 import astropy.units as u
 import numpy as np
 import yaml
@@ -12,6 +12,7 @@ from astropy.stats import gaussian_fwhm_to_sigma
 from astropy.units import Quantity
 from astropy.wcs import WCS
 from astroquery.hips2fits import hips2fits
+from astroquery.ipac.ned import Ned
 from photutils.aperture import aperture_photometry
 from photutils.aperture import EllipticalAperture
 from photutils.background import Background2D
