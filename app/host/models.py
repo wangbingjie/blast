@@ -315,6 +315,13 @@ class AperturePhotometry(models.Model):
     def flux_error_rounded(self):
         return round(self.flux_error, 2)
 
+class TaskRegisterSnapshot(models.Model):
+    """
+    Model to keep track of how many unprocessed transients exist
+    """
+    time = models.DateTimeField()
+    num_unprocessed_transients = models.IntegerField()
+
 
 
 

@@ -2,7 +2,7 @@ import glob
 import os
 import time
 from collections import namedtuple
-
+from astroquery.ipac.ned import Ned
 import astropy.units as u
 import numpy as np
 import yaml
@@ -228,6 +228,18 @@ def construct_aperture(image, position):
     return elliptical_sky_aperture(source_data, wcs)
 
 
+def query_ned(position):
+
+    #try:
+    #result_table = Ned.query_object(galaxy_name)
+    #except astroquery.exceptions.RemoteServiceError:
+    #    print("here")
+    result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
+    print(len(result_table))
+    print(result_table['Redshift'].value)
+    return 0.0
+
+
 def construct_all_apertures(position, image_dict):
     apertures = {}
 
@@ -275,3 +287,5 @@ def pick_largest_aperture(position, image_dict):
 
     max_size_name = max(aperture_areas, key=aperture_areas.get)
     return {max_size_name: apertures[max_size_name]}
+
+query_ned(SkyCoord(ra=121.60043802, dec=1.03606313, unit='deg'))
