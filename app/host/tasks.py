@@ -7,6 +7,7 @@ import shutil
 
 from celery import shared_task
 from django.utils import timezone
+from django.db.models import Q
 
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
@@ -20,6 +21,8 @@ from .processing import GlobalAperturePhotometry
 from .processing import ImageDownloadRunner
 from .processing import initialise_all_tasks_status
 from .processing import LocalAperturePhotometry
+from .processing import HostInformation
+from .processing import TaskRegisterSnapshot
 from .processing import update_status
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
@@ -50,6 +53,26 @@ def ingest_recent_tns_data(interval_minutes=100):
         except Transient.DoesNotExist:
             transient.save()
             initialise_all_tasks_status(transient)
+
+@shared_task
+def snapshot_task_register():
+    """
+    Takes snapshot of task register for diagnostic purposes.
+    """
+    now = timezone.now()
+    task_register = TaskRegister.objects.filter(
+        ~Q(status__message__exact='processed'))
+    unprocessed_transients = task_register.values('transient').distinct().count()
+
+    TaskRegisterSnapshot.objects.create(time=now,
+                                        num_unprocessed_transients=unprocessed_transients)
+
+
+@shared_task
+def get_host_information():
+    """
+    """
+    HostInformation.run_process()
 
 @shared_task
 def perform_global_photometry():
