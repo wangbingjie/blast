@@ -14,6 +14,7 @@ from .ghost import run_ghost
 from .models import Status
 from .models import Task
 from .models import TaskRegister
+from .models import TaskRegisterSnapshot
 from .models import Transient
 from .processing import GhostRunner
 from .processing import GlobalApertureConstructionRunner
@@ -22,7 +23,6 @@ from .processing import HostInformation
 from .processing import ImageDownloadRunner
 from .processing import initialise_all_tasks_status
 from .processing import LocalAperturePhotometry
-from .models import TaskRegisterSnapshot
 from .processing import update_status
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
