@@ -217,3 +217,19 @@ def plot_errorbar(
             y_err_y.append((py - err, py + err))
         figure.multi_line(y_err_x, y_err_y, color=color, **error_kwargs)
     return figure
+
+def plot_timeseries():
+
+    fig = figure(
+        title="",
+        width=700,
+        height=400,
+        min_border=0,
+        toolbar_location=None,
+        x_axis_type="log",
+        x_axis_label="Time",
+        y_axis_label="Number of Transients",
+    )
+
+    script, div = components(fig)
+    return {f'bokeh_processing_trends_script': script, f'bokeh_processing_trends_div': div}

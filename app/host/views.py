@@ -9,8 +9,11 @@ from .models import ExternalResourceCall
 from .models import Filter
 from .models import TaskRegister
 from .models import Transient
+from .models import TaskRegisterSnapshot
 from .plotting_utils import plot_cutout_image
 from .plotting_utils import plot_sed
+from .plotting_utils import plot_timeseries
+
 
 
 def transient_list(request):
@@ -33,8 +36,24 @@ def transient_list(request):
 
 
 def analytics(request):
-    calls = ExternalResourceCall.objects.all()
-    return render(request, "analytics.html", {"resource_calls": calls})
+
+    analytics_results = {}
+
+    for aggregate in ["total", "not completed", "completed", "waiting"]:
+
+        transients = TaskRegisterSnapshot.objects.filter(aggregate_type__exact=aggregate)
+        transients_ordered = transients.order_by("-time")
+
+        if transients_ordered.exists():
+            transients_current = transients_ordered[0]
+        else:
+            transients_current = None
+
+        analytics_results[f"{aggregate}_transients_current".replace(" ", "_")] = transients_current
+        bokeh_processing_context = plot_timeseries()
+
+    return render(request, "analytics.html", {**analytics_results,
+                                             **bokeh_processing_context})
 
 
 def results(request, slug):

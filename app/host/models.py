@@ -69,6 +69,7 @@ class Host(SkyObject):
     """
 
     name = models.CharField(max_length=100, blank=True, null=True)
+    redshift = models.FloatField(null=True, blank=True)
     objects = HostManager()
 
 
@@ -320,7 +321,8 @@ class TaskRegisterSnapshot(models.Model):
     Model to keep track of how many unprocessed transients exist
     """
     time = models.DateTimeField()
-    num_unprocessed_transients = models.IntegerField()
+    number_of_transients = models.IntegerField()
+    aggregate_type = models.CharField(max_length=100)
 
 
 
