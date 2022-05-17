@@ -153,7 +153,9 @@ CELERY_BEAT_SCHEDULE = {
     "matching_task": {"task": "host.tasks.match_transient_to_host", "schedule": 60.0},
     "global_aperture_construction_task": {"task": "host.tasks.construct_global_aperture", "schedule": 60.0},
     "local_photometry_task": {"task": "host.tasks.perform_local_photometry", "schedule": 60.0},
-    "global_photometry_task": {"task": "host.tasks.perform_global_photometry", "schedule": 60.0}
+    "global_photometry_task": {"task": "host.tasks.perform_global_photometry", "schedule": 60.0},
+    "host_information_task": {"task": "host.tasks.get_host_information", "schedule": 60},
+    "snapshot_task_register_task": {"task": "host.tasks.snapshot_task_register", "schedule": 60},
     #    "cleaning_task": {"task": "host.tasks.delete_ghost_file_logs", "schedule": 30.0},
 }
 

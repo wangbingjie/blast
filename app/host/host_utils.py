@@ -230,15 +230,17 @@ def construct_aperture(image, position):
 
 
 def query_ned(position):
+    """Get a Galaxy's redshift from ned if it available."""
 
-    #try:
-    #result_table = Ned.query_object(galaxy_name)
-    #except astroquery.exceptions.RemoteServiceError:
-    #    print("here")
     result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
-    print(len(result_table))
-    print(result_table['Redshift'].value)
-    return 0.0
+    redshift = result_table['Redshift'].value
+
+    if redshift:
+        galaxy_data = {'redshift': redshift[0]}
+    else:
+        galaxy_data = {'redshift': None}
+
+    return galaxy_data
 
 
 def construct_all_apertures(position, image_dict):
@@ -288,5 +290,3 @@ def pick_largest_aperture(position, image_dict):
 
     max_size_name = max(aperture_areas, key=aperture_areas.get)
     return {max_size_name: apertures[max_size_name]}
-
-query_ned(SkyCoord(ra=121.60043802, dec=1.03606313, unit='deg'))

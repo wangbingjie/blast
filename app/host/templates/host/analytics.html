@@ -1,26 +1,20 @@
 {% extends 'host/base.html' %}
 
 {% block title %} Analytics {% endblock %}
-
+{% block script %} {{ bokeh_processing_trends_script | safe }} {% endblock %}
 {% block body %}
 
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Resource Name</th>
-      <th scope="col">Request Time</th>
-      <th scope="col">Response Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for call in resource_calls %}
-    <tr>
-      <td>{{call.resource_name}}</td>
-      <td>{{call.request_time}}</td>
-      <td>{{call.response_status}}</td>
-    </tr>
-   {% endfor %}
-  </tbody>
-</table>
+<div>&nbsp;</div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-5">
+                {% include "host/analytics_information_card.html" %}
+        </div>
+
+        <div class="col-lg-7">
+            {% include "host/analytics_processing_trend_card.html" %}
+        </div>
+    </div>
+</div>
 
 {% endblock %}
