@@ -11,6 +11,8 @@
     wavelength_min_angstrom: 14787.38
     wavelength_max_angstrom: 18231.02
     vega_zero_point_jansky: 1024.00
+    magnitude_zero_point: 20.4871
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: 2MASS_J
@@ -24,6 +26,8 @@
     wavelength_min_angstrom: 10806.47
     wavelength_max_angstrom: 14067.97
     vega_zero_point_jansky: 1594.00
+    magnitude_zero_point: 20.9044
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: 2MASS_K
@@ -37,6 +41,8 @@
     wavelength_min_angstrom: 19543.69
     wavelength_max_angstrom: 23552.40
     vega_zero_point_jansky: 666.80
+    magnitude_zero_point: 19.9757
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: WISE_W1
@@ -50,6 +56,8 @@
     wavelength_min_angstrom: 27540.97
     wavelength_max_angstrom: 38723.88
     vega_zero_point_jansky: 309.54
+    magnitude_zero_point: 20.752
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: WISE_W2
@@ -63,6 +71,8 @@
     wavelength_min_angstrom: 39633.26
     wavelength_max_angstrom: 53413.60
     vega_zero_point_jansky: 171.79
+    magnitude_zero_point: 19.596
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: WISE_W3
@@ -76,6 +86,8 @@
     wavelength_min_angstrom: 74430.44
     wavelength_max_angstrom: 172613.43
     vega_zero_point_jansky: 31.67
+    magnitude_zero_point: 17.800
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: WISE_W4
@@ -89,6 +101,8 @@
     wavelength_min_angstrom: 195200.83
     wavelength_max_angstrom: 279107.24
     vega_zero_point_jansky: 8.36
+    magnitude_zero_point: 12.945
+    image_pixel_units: 'counts/sec'
 - model: host.filter
   fields:
     name: GALEX_NUV
@@ -102,6 +116,8 @@
     wavelength_min_angstrom: 1692.52
     wavelength_max_angstrom: 3006.67
     vega_zero_point_jansky: 788.55
+    magnitude_zero_point: 20.08
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: GALEX_FUV
@@ -115,6 +131,8 @@
     wavelength_min_angstrom: 1340.32
     wavelength_max_angstrom: 1806.43
     vega_zero_point_jansky: 520.73
+    magnitude_zero_point: 18.82
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: PanSTARRS_g
@@ -128,6 +146,8 @@
     wavelength_min_angstrom: 3943.40
     wavelength_max_angstrom: 5593.27
     vega_zero_point_jansky: 3893.00
+    magnitude_zero_point: 25.0
+    image_pixel_units: 'counts'
 - model: host.Filter
   fields:
     name: PanSTARRS_r
@@ -141,6 +161,8 @@
     wavelength_min_angstrom: 5386.23
     wavelength_max_angstrom: 7035.65
     vega_zero_point_jansky: 3135.50
+    magnitude_zero_point: 25.0
+    image_pixel_units: 'counts'
 - model: host.Filter
   fields:
     name: PanSTARRS_i
@@ -154,6 +176,8 @@
     wavelength_min_angstrom: 6778.45
     wavelength_max_angstrom: 8304.37
     vega_zero_point_jansky: 2577.03
+    magnitude_zero_point: 25.0
+    image_pixel_units: 'counts'
 - model: host.Filter
   fields:
     name: PanSTARRS_z
@@ -167,6 +191,8 @@
     wavelength_min_angstrom: 8028.00
     wavelength_max_angstrom: 9346.00
     vega_zero_point_jansky: 2273.05
+    magnitude_zero_point: 25.0
+    image_pixel_units: 'counts'
 - model: host.Filter
   fields:
     name: PanSTARRS_y
@@ -180,6 +206,8 @@
     wavelength_min_angstrom: 9100.50
     wavelength_max_angstrom: 10838.50
     vega_zero_point_jansky: 2203.66
+    magnitude_zero_point: 25.0
+    image_pixel_units: 'counts'
 - model: host.Filter
   fields:
     name: SDSS_i
@@ -193,6 +221,8 @@
     wavelength_min_angstrom: 3782.54
     wavelength_max_angstrom: 5549.26
     vega_zero_point_jansky: 3971.19
+    magnitude_zero_point: 22.5
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: SDSS_r
@@ -206,6 +236,8 @@
     wavelength_min_angstrom: 5415.34
     wavelength_max_angstrom: 6989.14
     vega_zero_point_jansky: 3142.02
+    magnitude_zero_point: 22.5
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: SDSS_u
@@ -219,6 +251,8 @@
     wavelength_min_angstrom: 3048.28
     wavelength_max_angstrom: 4028.23
     vega_zero_point_jansky: 1628.72
+    magnitude_zero_point: 22.5
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: SDSS_z
@@ -232,6 +266,8 @@
     wavelength_min_angstrom: 7960.44
     wavelength_max_angstrom: 10833.25
     vega_zero_point_jansky: 2227.03
+    magnitude_zero_point: 22.5
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: DES_g
@@ -245,6 +281,8 @@
     wavelength_min_angstrom: 3925.42
     wavelength_max_angstrom: 5529.96
     vega_zero_point_jansky: 3905.01
+    magnitude_zero_point: 22.5
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: DES_r
@@ -258,6 +296,8 @@
     wavelength_min_angstrom: 5519.97
     wavelength_max_angstrom: 7233.72
     vega_zero_point_jansky: 3027.32
+    magnitude_zero_point: 22.5
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: DES_i
@@ -271,6 +311,8 @@
     wavelength_min_angstrom: 6948.18
     wavelength_max_angstrom: 8645.68
     vega_zero_point_jansky: 2467.82
+    magnitude_zero_point: 22.5
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: DES_z
@@ -284,6 +326,8 @@
     wavelength_min_angstrom: 8341.20
     wavelength_max_angstrom: 10074.26
     vega_zero_point_jansky: 2247.33
+    magnitude_zero_point: 22.5
+    image_pixel_units: 'counts/sec'
 - model: host.Filter
   fields:
     name: DES_Y
@@ -297,3 +341,5 @@
     wavelength_min_angstrom: 9364.77
     wavelength_max_angstrom: 10685.78
     vega_zero_point_jansky: 2146.18
+    magnitude_zero_point: 22.5
+    image_pixel_units: 'counts/sec'

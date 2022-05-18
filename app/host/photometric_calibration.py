@@ -1,9 +1,22 @@
+import numpy as np
+
 def ab_mag_to_jansky(ab_mag):
     """
     Converts AB magnitude to spectral flux density in units on Janskys.
     """
     return 10.0 ** (-(ab_mag + 48.60) / 2.5)
 
+def flux_to_mag(flux, zero_point_mag):
+    """
+    Converts flux to magnitude
+    """
+    return -2.5 * np.log10(flux) + zero_point_mag
+
+def counts_to_flux(counts, exposure_time):
+    """
+    Converts raw counts to flux data
+    """
+    return counts / exposure_time
 
 def jansky_to_maggies(flux_density_jansky):
     """
