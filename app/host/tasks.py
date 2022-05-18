@@ -52,7 +52,19 @@ def ingest_recent_tns_data(interval_minutes=100):
             saved_transients.get(name__exact=transient.name)
         except Transient.DoesNotExist:
             transient.save()
-            initialise_all_tasks_status(transient)
+
+
+@shared_task
+def initialize_transient_tasks():
+    """
+    Initializes all task in the database to not processed for new transients.
+    """
+
+    uninitialized_transients = Transient.objects.filter(tasks_initialized__exact="False")
+    for transient in uninitialized_transients:
+        initialise_all_tasks_status(transient)
+        transient.tasks_initialized = "True"
+        transient.save()
 
 @shared_task
 def snapshot_task_register():

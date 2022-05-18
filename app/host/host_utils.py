@@ -20,7 +20,9 @@ from photutils.segmentation import deblend_sources
 from photutils.segmentation import detect_sources
 from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
-
+from .photometric_calibration import flux_to_mag
+from .photometric_calibration import ab_mag_to_jansky
+from .photometric_calibration import ab_mag_to_jansky
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
 
 
@@ -147,14 +149,25 @@ def elliptical_sky_aperture(source_catalog, wcs, aperture_scale=3.0):
     pixel_aperture = source_catalog.kron_aperture
     return pixel_aperture.to_sky(wcs)
 
-def do_aperture_photometry(image, sky_aperture):
+def do_aperture_photometry(image, sky_aperture, filter):
     """
     Performs Aperture photometry
     """
     image_data = image[0].data
     wcs = WCS(image[0].header)
     phot_table = aperture_photometry(image_data, sky_aperture, wcs=wcs)
-    return phot_table['aperture_sum']
+    uncalibrated_pixel_data = phot_table['aperture_sum']
+
+    if filter.image_pixel_units == 'counts/sec':
+        uncalibrated_flux = uncalibrated_pixel_data
+    else:
+        print(image[0].header['EXPTIME'])
+        uncalibrated_flux = uncalibrated_pixel_data
+
+    magnitude = flux_to_mag(uncalibrated_flux, filter.magnitude_zero_point)
+    flux = ab_mag_to_jansky(magnitude)
+
+    return flux
 
 
 # def find_host_data(position, name='No name'):

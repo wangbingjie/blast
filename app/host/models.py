@@ -100,6 +100,7 @@ class Transient(SkyObject):
     public_timestamp = models.DateTimeField(null=True, blank=True)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
     objects = TransientManager()
+    tasks_initialized = models.CharField(max_length=20, default="False")
 
     @property
     def progress(self):
@@ -210,6 +211,8 @@ class Filter(models.Model):
     wavelength_min_angstrom = models.FloatField()
     wavelength_max_angstrom = models.FloatField()
     vega_zero_point_jansky = models.FloatField()
+    magnitude_zero_point = models.FloatField(null=True, blank=True)
+    image_pixel_units = models.CharField(max_length=50, null=True, blank=True)
 
     objects = FilterManager()
 

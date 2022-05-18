@@ -333,7 +333,7 @@ class LocalAperturePhotometry(TaskRunner):
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
-            flux = do_aperture_photometry(image, aperture.sky_aperture)
+            flux = do_aperture_photometry(image, aperture.sky_aperture, cutout.filter)
             AperturePhotometry.objects.create(
                 aperture=aperture,
                 transient=transient,
@@ -374,7 +374,9 @@ class GlobalAperturePhotometry(TaskRunner):
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
-            flux = do_aperture_photometry(image, aperture[0].sky_aperture)
+            flux = do_aperture_photometry(image, aperture[0].sky_aperture, cutout.filter)
+
+
             AperturePhotometry.objects.create(
                 aperture=aperture[0],
                 transient=transient,
