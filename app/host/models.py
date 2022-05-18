@@ -108,7 +108,8 @@ class Transient(SkyObject):
         total_tasks = len(tasks)
         completed_tasks = len([task for task in tasks
                                 if task.status.message == 'processed'])
-        return int(round(100 * (completed_tasks / total_tasks),0))
+        progress = 100 * (completed_tasks / total_tasks) if total_tasks > 0 else 0
+        return int(round(progress,0))
 
 
 class Status(models.Model):
