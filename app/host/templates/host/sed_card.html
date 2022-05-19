@@ -1,0 +1,28 @@
+<div class="card">
+   <div class="card-header">
+        <h5>Spectral Energy Distribution</h5>
+        <ul class="nav nav-tabs card-header-tabs" id="myTab-sed" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="global-sed-tab" data-bs-toggle="tab" data-bs-target="#global-sed" type="button" role="tab" aria-controls="global-sed" aria-selected="false">Global</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="local-sed-tab" data-bs-toggle="tab" data-bs-target="#local-sed" type="button" role="tab" aria-controls="local-sed" aria-selected="true">Local</button>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-content" id="myTabContent-sed">
+        <div class="tab-pane fade" id="local-sed" role="tabpanel" aria-labelledby="local-sed-tab">
+            <div>&nbsp;</div>
+            <div class="container">
+                {{ bokeh_sed_local_div | safe }}
+            </div>
+        </div>
+        <div class="tab-pane fade show active" id="global-sed" role="tabpanel" aria-labelledby="global-sed-tab">
+            <div>&nbsp;</div>
+            <div class="container">
+                {{ bokeh_sed_global_div | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+<div>&nbsp;</div>

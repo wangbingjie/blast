@@ -1,16 +1,23 @@
 # Modelus to manage to processing of tasks for transients
 from abc import ABC
 from abc import abstractmethod
+from time import process_time
 
+from astropy.io import fits
 from django.utils import timezone
 
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
+from .host_utils import construct_aperture
+from .host_utils import do_aperture_photometry
+from .host_utils import query_ned
+from .models import Aperture
+from .models import AperturePhotometry
+from .models import Cutout
 from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
-
 
 class TaskRunner(ABC):
     """
@@ -94,11 +101,18 @@ class TaskRunner(ABC):
             update_status(task_register_item, self.processing_status)
             transient = task_register_item.transient
 
+            start_time = process_time()
             try:
                 status = self._run_process(transient)
                 update_status(task_register_item, status)
             except:
                 update_status(task_register_item, self.failed_status)
+                raise
+
+            end_time = process_time()
+            processing_time = round(end_time-start_time, 2)
+            task_register_item.last_processing_time_seconds = processing_time
+            task_register_item.save()
 
     @abstractmethod
     def _run_process(self, transient):
@@ -213,6 +227,201 @@ class ImageDownloadRunner(TaskRunner):
         """
         status = Status.objects.get(message__exact="processed")
         download_and_save_cutouts(transient)
+        return status
+
+
+class GlobalApertureConstructionRunner(TaskRunner):
+    """Task runner to construct apertures from the cutout download"""
+
+    def _prerequisites(self):
+        """
+        Need both the Cutout and Host match to be processed
+        """
+        return {"Cutout download": "processed", "Host Match": "processed",
+                "Global aperture construction": "not processed"}
+
+    def _task_name(self):
+        """
+        Task status to be altered is host match.
+        """
+        return "Global aperture construction"
+
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _select_cutout_aperture(self, cutouts):
+        """
+        Select cutout for aperture
+        """
+        filter_names = ["PanSTARRS_g", "PanSTARRS_r", "PanSTARRS_i",
+                        "SDSS_r", "SDSS_i", "SDSS_g", "DES_r",
+                        "DES_i","DES_g","2MASS_H"]
+
+        choice = 0
+        filter_choice = filter_names[choice]
+
+        while not cutouts.filter(filter__name=filter_choice).exists():
+            choice += 1
+            filter_choice = filter_names[choice]
+
+        return cutouts.filter(filter__name=filter_choice)
+
+
+    def _run_process(self, transient):
+        """Code goes here"""
+
+        cutouts = Cutout.objects.filter(transient=transient)
+        aperture_cutout  = self._select_cutout_aperture(cutouts)
+
+        #if not aperture_cutout.exists():
+        #    return self._failed_status_message()
+
+        image = fits.open(aperture_cutout[0].fits.name)
+        aperture = construct_aperture(image, transient.host.sky_coord)
+
+        Aperture.objects.create(
+            cutout=aperture_cutout[0],
+            orientation=aperture.theta.value,
+            ra_deg=aperture.positions.ra.degree,
+            dec_deg=aperture.positions.dec.degree,
+            semi_major_axis_arcsec=aperture.a.value,
+            semi_minor_axis_arcsec=aperture.b.value,
+            transient=transient,
+            type="global")
+
+        return Status.objects.get(message__exact="processed")
+
+
+class LocalAperturePhotometry(TaskRunner):
+    """Task Runner to perform local aperture photometry around host"""
+
+    def _prerequisites(self):
+        """
+        Need both the Cutout and Host match to be processed
+        """
+        return {"Cutout download": "processed",
+                "Local aperture photometry": "not processed"}
+
+    def _task_name(self):
+        """
+        Task status to be altered is Local Aperture photometry
+        """
+        return "Local aperture photometry"
+
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """Code goes here"""
+
+        aperture = Aperture(orientation=0.0,
+            ra_deg=transient.sky_coord.ra.degree,
+            dec_deg=transient.sky_coord.dec.degree,
+            semi_major_axis_arcsec=1.0,
+            semi_minor_axis_arcsec=1.0,
+            transient=transient,
+            type="local")
+        aperture.save()
+
+        cutouts = Cutout.objects.filter(transient=transient)
+
+        for cutout in cutouts:
+            image = fits.open(cutout.fits.name)
+            flux = do_aperture_photometry(image, aperture.sky_aperture, cutout.filter)
+            AperturePhotometry.objects.create(
+                aperture=aperture,
+                transient=transient,
+                filter=cutout.filter,
+                flux=flux,
+            )
+
+        return Status.objects.get(message__exact="processed")
+
+class GlobalAperturePhotometry(TaskRunner):
+    """Task Runner to perform local aperture photometry around host"""
+
+    def _prerequisites(self):
+        """
+        Need both the Cutout and Host match to be processed
+        """
+        return {"Cutout download": "processed",
+                "Global aperture construction": "processed",
+                "Global aperture photometry": "not processed"}
+
+    def _task_name(self):
+        """
+        Task status to be altered is Local Aperture photometry
+        """
+        return "Global aperture photometry"
+
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """Code goes here"""
+
+        aperture = Aperture.objects.filter(transient=transient,type="global")
+        cutouts = Cutout.objects.filter(transient=transient)
+
+        for cutout in cutouts:
+            image = fits.open(cutout.fits.name)
+            flux = do_aperture_photometry(image, aperture[0].sky_aperture, cutout.filter)
+
+
+            AperturePhotometry.objects.create(
+                aperture=aperture[0],
+                transient=transient,
+                filter=cutout.filter,
+                flux=flux,
+            )
+
+        return Status.objects.get(message__exact="processed")
+
+
+class HostInformation(TaskRunner):
+    """Task Runner to gather host information from NED"""
+
+    def _prerequisites(self):
+        """
+        Need both the Cutout and Host match to be processed
+        """
+        return {"Host match": "processed",
+                "Host information": "not processed"}
+
+    def _task_name(self):
+        """
+        Task status to be altered is Local Aperture photometry
+        """
+        return "Host information"
+
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """Code goes here"""
+
+        host = transient.host
+        galaxy_ned_data = query_ned(host.sky_coord)
+
+        if galaxy_ned_data['redshift'] is not None:
+            host.redshift = galaxy_ned_data['redshift']
+            host.save()
+            status = Status.objects.get(message__exact="processed")
+        else:
+            status = Status.objects.get(message_exact="no host NED data")
+
         return status
 
 
