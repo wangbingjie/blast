@@ -6,10 +6,14 @@ from collections import namedtuple
 import astropy.units as u
 import numpy as np
 import yaml
+from astropy.convolution import Gaussian2DKernel
 from astropy.coordinates import SkyCoord
+from astropy.stats import gaussian_fwhm_to_sigma
 from astropy.units import Quantity
 from astropy.wcs import WCS
 from astroquery.hips2fits import hips2fits
+from astroquery.ipac.ned import Ned
+from photutils.aperture import aperture_photometry
 from photutils.aperture import EllipticalAperture
 from photutils.background import Background2D
 from photutils.segmentation import deblend_sources
@@ -17,6 +21,8 @@ from photutils.segmentation import detect_sources
 from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
 
+from .photometric_calibration import ab_mag_to_jansky
+from .photometric_calibration import flux_to_mag
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
 
 
@@ -76,6 +82,7 @@ def build_source_catalog(image, background, threshhold_sigma=1.0, npixels=10):
     image_data = image[0].data
     background_subtracted_data = image_data - background.background
     threshold = threshhold_sigma * background.background_rms
+
     segmentation = detect_sources(
         background_subtracted_data, threshold, npixels=npixels
     )
@@ -142,6 +149,26 @@ def elliptical_sky_aperture(source_catalog, wcs, aperture_scale=3.0):
     pixel_aperture = source_catalog.kron_aperture
     return pixel_aperture.to_sky(wcs)
 
+def do_aperture_photometry(image, sky_aperture, filter):
+    """
+    Performs Aperture photometry
+    """
+    image_data = image[0].data
+    wcs = WCS(image[0].header)
+    phot_table = aperture_photometry(image_data, sky_aperture, wcs=wcs)
+    uncalibrated_pixel_data = phot_table['aperture_sum']
+
+    if filter.image_pixel_units == 'counts/sec':
+        uncalibrated_flux = uncalibrated_pixel_data
+    else:
+        print(image[0].header['EXPTIME'])
+        uncalibrated_flux = uncalibrated_pixel_data
+
+    magnitude = flux_to_mag(uncalibrated_flux, filter.magnitude_zero_point)
+    flux = ab_mag_to_jansky(magnitude)
+
+    return flux
+
 
 # def find_host_data(position, name='No name'):
 #    """
@@ -195,7 +222,7 @@ def estimate_background(image):
         Background estimate of the image
     """
     image_data = image[0].data
-    box_size = int(0.01 * np.sqrt(image_data.size))
+    box_size = int(0.1 * np.sqrt(image_data.size))
     return Background2D(image_data, box_size=box_size)
 
 
@@ -213,6 +240,20 @@ def construct_aperture(image, position):
     catalog = build_source_catalog(image, background)
     source_data = match_source(position, catalog, wcs)
     return elliptical_sky_aperture(source_data, wcs)
+
+
+def query_ned(position):
+    """Get a Galaxy's redshift from ned if it available."""
+
+    result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
+    redshift = result_table['Redshift'].value
+
+    if redshift:
+        galaxy_data = {'redshift': redshift[0]}
+    else:
+        galaxy_data = {'redshift': None}
+
+    return galaxy_data
 
 
 def construct_all_apertures(position, image_dict):

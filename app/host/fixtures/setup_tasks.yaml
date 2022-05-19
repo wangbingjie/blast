@@ -4,3 +4,15 @@
 - model: host.Task
   fields:
     name: Cutout download
+- model: host.Task
+  fields:
+    name: Global aperture construction
+- model: host.Task
+  fields:
+    name: Local aperture photometry
+- model: host.Task
+  fields:
+    name: Global aperture photometry
+- model: host.Task
+  fields:
+    name: Host information
