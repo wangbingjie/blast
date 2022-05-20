@@ -102,14 +102,16 @@ class TaskRunner(ABC):
             transient = task_register_item.transient
 
             start_time = process_time()
+
             try:
                 status = self._run_process(transient)
-                update_status(task_register_item, status)
             except:
-                update_status(task_register_item, self.failed_status)
+                status = self.failed_status
                 raise
 
             end_time = process_time()
+
+            update_status(task_register_item, status)
             processing_time = round(end_time-start_time, 2)
             task_register_item.last_processing_time_seconds = processing_time
             task_register_item.save()
