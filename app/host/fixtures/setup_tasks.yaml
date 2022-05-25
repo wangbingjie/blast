@@ -16,3 +16,10 @@
 - model: host.Task
   fields:
     name: Host information
+- model: host.Task
+  fields:
+    name: Global host SED inference
+- model: host.Task
+  fields:
+    name: Local host SED inference
+
