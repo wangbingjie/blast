@@ -426,6 +426,43 @@ class HostInformation(TaskRunner):
 
         return status
 
+class Propector(TaskRunner):
+    """Task Runner to run host galaxy inference with prospector"""
+
+    def _prerequisites(self):
+        """
+        Need both the Cutout and Host match to be processed
+        """
+        return {"Host match": "processed",
+                "Host information": "not processed"}
+
+    def _task_name(self):
+        """
+        Task status to be altered is Local Aperture photometry
+        """
+        return "Global host SED inference"
+
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """Code goes here"""
+
+        host = transient.host
+        galaxy_ned_data = query_ned(host.sky_coord)
+
+        if galaxy_ned_data['redshift'] is not None:
+            host.redshift = galaxy_ned_data['redshift']
+            host.save()
+            status = Status.objects.get(message__exact="processed")
+        else:
+            status = Status.objects.get(message_exact="no host NED data")
+
+        return status
+
 
 def update_status(task_status, updated_status):
     """
