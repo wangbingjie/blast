@@ -11,6 +11,7 @@ from .ghost import run_ghost
 from .host_utils import construct_aperture
 from .host_utils import do_aperture_photometry
 from .host_utils import query_ned
+from .host_utils import query_sdss
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
@@ -418,14 +419,20 @@ class HostInformation(TaskRunner):
         """Code goes here"""
 
         host = transient.host
-        galaxy_ned_data = query_ned(host.sky_coord)
 
-        if galaxy_ned_data['redshift'] is not None:
+        galaxy_ned_data = query_ned(host.sky_coord)
+        galaxy_sdss_data = query_sdss(host.sky_coord)
+
+        if galaxy_sdss_data['redshift'] is not None:
+            host.redshift = galaxy_sdss_data['redshift']
+            host.save()
+            status = Status.objects.get(message__exact="processed")
+        elif galaxy_ned_data['redshift'] is not None:
             host.redshift = galaxy_ned_data['redshift']
             host.save()
             status = Status.objects.get(message__exact="processed")
         else:
-            status = Status.objects.get(message_exact="no host NED data")
+            status = Status.objects.get(message_exact="no host redshift")
 
         return status
 
