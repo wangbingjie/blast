@@ -22,7 +22,7 @@ def flux_to_mJy_flux(flux, zero_point_mag_in):
     """
     Converts flux to magnitude
     """
-    return 10**(-0.4*(zero_point_mag_in - 23.9))
+    return flux*10**(-0.4*(zero_point_mag_in - 23.9))
 
 def counts_to_flux(counts, exposure_time):
     """
