@@ -23,6 +23,9 @@ from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
 
 from .photometric_calibration import ab_mag_to_mJy,flux_to_mJy_flux,flux_to_mag
+
+from django.conf import settings
+
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
 
 
@@ -171,6 +174,11 @@ def do_aperture_photometry(image, sky_aperture, filter):
 
     return flux
 
+def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
+    """Gets milkyway reddening value"""
+
+    #config['data_dir'] = f'{media_root}../dustmaps/'
+    return 0.0
 
 # def find_host_data(position, name='No name'):
 #    """
@@ -259,11 +267,15 @@ def query_ned(position):
 
 def query_sdss(position):
     """Get a Galaxy's redshift from SDSS if it is available"""
-    result_table = SDSS.query_region(position, spectro=True)
-    redshift = result_table['z'].value
+    result_table = SDSS.query_region(position, spectro=True, radius=1.0 * u.arcsec)
 
-    if redshift:
-        galaxy_data = {'redshift': redshift[0]}
+    if result_table is not None:
+        redshift = result_table['z'].value
+
+        if redshift:
+            galaxy_data = {'redshift': redshift[0]}
+        else:
+            galaxy_data = {'redshift': None}
     else:
         galaxy_data = {'redshift': None}
 
