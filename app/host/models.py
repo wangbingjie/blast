@@ -101,6 +101,10 @@ class Transient(SkyObject):
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
     objects = TransientManager()
     tasks_initialized = models.CharField(max_length=20, default="False")
+    redshift = models.FloatField(null=True, blank=True)
+    spectroscopic_class = models.CharFeild(max_length=20)
+    photometric_class = models.CharFeild(max_length=20)
+    milkyway_dust_reddening = models.FloatField(null=True, blank=True)
 
     @property
     def progress(self):
