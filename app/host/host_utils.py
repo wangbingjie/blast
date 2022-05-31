@@ -164,19 +164,18 @@ def do_aperture_photometry(image, sky_aperture, filter):
     image_data = image[0].data
     wcs = WCS(image[0].header)
     phot_table = aperture_photometry(image_data, sky_aperture, wcs=wcs)
-    uncalibrated_pixel_data = phot_table['aperture_sum']
+    uncalibrated_flux = phot_table['aperture_sum']
 
     if filter.image_pixel_units == 'counts/sec':
-        uncalibrated_flux = uncalibrated_pixel_data
         zpt = filter.magnitude_zero_point
     else:
-        uncalibrated_flux = uncalibrated_pixel_data
         zpt = filter.magnitude_zero_point + 2.5*np.log10(image[0].header['EXPTIME'])
         
     flux = flux_to_mJy_flux(uncalibrated_flux, zpt)
     magnitude = flux_to_mag(uncalibrated_flux, zpt)
+    fluxerr,magerr = None,None
 
-    return flux
+    return flux,fluxerr,magnitude,magerr
 
 def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
     """Gets milkyway reddening value"""
