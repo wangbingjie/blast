@@ -104,7 +104,7 @@ def get_host_information():
 
 
 @shared_task
-def get_transiet_information():
+def get_transient_information():
     """
     Get infotmation on the transient
     """

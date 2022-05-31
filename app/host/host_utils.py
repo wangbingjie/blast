@@ -2,7 +2,7 @@ import glob
 import os
 import time
 from collections import namedtuple
-
+import math
 import astropy.units as u
 import numpy as np
 import yaml
@@ -24,7 +24,11 @@ from photutils.segmentation import SourceCatalog
 
 from .photometric_calibration import ab_mag_to_mJy,flux_to_mJy_flux,flux_to_mag
 
-from dustmaps.config import config
+#from dustmaps.config import config
+#import dustmaps.sfd
+#from dustmaps.sfd import SFDQuery
+#import dustmaps.sfd
+
 from django.conf import settings
 
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
@@ -166,7 +170,6 @@ def do_aperture_photometry(image, sky_aperture, filter):
         uncalibrated_flux = uncalibrated_pixel_data
         zpt = filter.magnitude_zero_point
     else:
-        print(image[0].header['EXPTIME'])
         uncalibrated_flux = uncalibrated_pixel_data
         zpt = filter.magnitude_zero_point + 2.5*np.log10(image[0].header['EXPTIME'])
         
@@ -179,7 +182,10 @@ def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
     """Gets milkyway reddening value"""
     config.reset()
     config['data_dir'] = f'{media_root}../dustmaps/'
-    return 0.0
+    dustmaps.sfd.fetch()
+    ebv = SFDQuery().sfd(position)
+    # see Schlegel, Finkbeiner 2011 for the 0.86 correction term
+    return 0.86 * ebv
 
 # def find_host_data(position, name='No name'):
 #    """
@@ -272,9 +278,11 @@ def query_sdss(position):
 
     if result_table is not None:
         redshift = result_table['z'].value
-
         if redshift:
-            galaxy_data = {'redshift': redshift[0]}
+            if not math.isnan(redshift[0]):
+                galaxy_data = {'redshift': redshift[0]}
+            else:
+                galaxy_data = {'redshift': None}
         else:
             galaxy_data = {'redshift': None}
     else:
