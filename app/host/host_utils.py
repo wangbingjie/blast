@@ -22,11 +22,11 @@ from photutils.segmentation import detect_sources
 from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
 
-from .photometric_calibration import ab_mag_to_jansky
-from .photometric_calibration import flux_to_mag
+from .photometric_calibration import ab_mag_to_mJy,flux_to_mJy_flux,flux_to_mag
 
 from dustmaps.config import config
 from django.conf import settings
+
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
 
 
@@ -164,12 +164,14 @@ def do_aperture_photometry(image, sky_aperture, filter):
 
     if filter.image_pixel_units == 'counts/sec':
         uncalibrated_flux = uncalibrated_pixel_data
+        zpt = filter.magnitude_zero_point
     else:
         print(image[0].header['EXPTIME'])
         uncalibrated_flux = uncalibrated_pixel_data
-
-    magnitude = flux_to_mag(uncalibrated_flux, filter.magnitude_zero_point)
-    flux = ab_mag_to_jansky(magnitude)
+        zpt = filter.magnitude_zero_point + 2.5*np.log10(image[0].header['EXPTIME'])
+        
+    flux = flux_to_mJy_flux(uncalibrated_flux, zpt)
+    magnitude = flux_to_mag(uncalibrated_flux, zpt)
 
     return flux
 
