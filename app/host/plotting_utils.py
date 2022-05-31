@@ -1,6 +1,8 @@
 import numpy as np
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
+from astropy.visualization import AsinhStretch
+from astropy.visualization import PercentileInterval
 from astropy.wcs import WCS
 from bokeh.embed import components
 from bokeh.layouts import gridplot
@@ -16,13 +18,14 @@ from bokeh.models import Scatter
 from bokeh.plotting import figure
 from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
-from astropy.visualization import PercentileInterval, AsinhStretch
+
+from .models import Aperture
 
 def scale_image(image_data):
 
     transform = AsinhStretch() + PercentileInterval(99.5)
     scaled_data = transform(image_data)
-    
+
     return scaled_data
 
 def plot_image(image_data, figure):
@@ -55,22 +58,14 @@ def plot_position(object, wcs, plotting_kwargs=None, plotting_func=None):
     return None
 
 
-def plot_aperture(figure, aperture):
+def plot_aperture(figure, aperture, wcs, plotting_kwargs=None):
+    aperture = aperture.to_pixel(wcs)
+    theta_rad = (np.pi/2.0) - (np.pi/180) * aperture.theta
     x, y = aperture.positions
-    source = ColumnDataSource(
-        dict(x=[x], y=[y], w=[aperture.a], h=[aperture.b], theta=[aperture.theta])
-    )
-    glyph = Ellipse(
-        x="x",
-        y="y",
-        width="w",
-        height="h",
-        angle="theta",
-        fill_color="#cab2d6",
-        fill_alpha=0.1,
-        line_color="red",
-    )
-    figure.add_glyph(source, glyph)
+    plot_dict = {"x": x, "y": y, "width": aperture.a, "height": aperture.b,
+                 "angle": theta_rad, "fill_color": "#cab2d6", "fill_alpha": 0.1}
+    plot_dict = {**plot_dict, **plotting_kwargs}
+    figure.ellipse(**plot_dict)
     return figure
 
 
@@ -99,15 +94,16 @@ def plot_image_grid(image_dict, apertures=None):
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 
 
-def plot_cutout_image(cutout=None, transient=None):
+def plot_cutout_image(cutout=None, transient=None, global_aperture=None,
+                      local_aperture=None):
 
     title = cutout.filter if cutout is not None else "No cutout selected"
     fig = figure(
         title=f"{title}",
         x_axis_label="",
         y_axis_label="",
-        plot_width=600,
-        plot_height=600,
+        plot_width=700,
+        plot_height=700,
     )
 
     fig.axis.visible = False
@@ -138,43 +134,52 @@ def plot_cutout_image(cutout=None, transient=None):
             plot_position(
                 transient.host, wcs, plotting_kwargs=host_kwargs, plotting_func=fig.x
             )
+        if global_aperture.exists():
+            filter_name = global_aperture[0].cutout.filter.name
+            plot_aperture(fig, global_aperture[0].sky_aperture, wcs,
+                          plotting_kwargs={"fill_alpha": 0.1,"line_color":"green",
+                                           "legend_label": f'Global Aperture ({filter_name})'})
+
+        if local_aperture.exists():
+            plot_aperture(fig, local_aperture[0].sky_aperture, wcs,
+                          plotting_kwargs={"fill_alpha": 0.1,"line_color":"blue",
+                                           "legend_label": "Local Aperture"})
 
     else:
         image_data = np.zeros((500, 500))
 
     plot_image(image_data, fig)
-
     script, div = components(fig)
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 
 
-def plot_catalog_sed(catalog_dict):
+def plot_sed(aperture_photometry=None, type=""):
     """
-    Plot SED from available catalog data
+    Plot SED from aperture photometry.
     """
-    catalogs = survey_list("host/data/catalog_metadata.yml")
-    filter_info = [filter_information(catalog) for catalog in catalogs]
+
+    if aperture_photometry.exists():
+
+        flux = [measurement.flux for measurement in aperture_photometry]
+        flux_error = [measurement.flux_error for measurement in aperture_photometry]
+        wavelength = [measurement.filter.wavelength_eff_angstrom for measurement in aperture_photometry]
+    else:
+        flux, flux_error, wavelength = [], [], []
+
+    flux_error = [0.0 if error is None else error for error in flux_error]
 
     fig = figure(
-        title="Spectral energy distribution",
-        width=1200,
+        title="",
+        width=700,
         height=400,
         min_border=0,
         toolbar_location=None,
         x_axis_type="log",
-        x_axis_label="Wavelength [micro-m]",
-        y_axis_label="Magnitude",
+        x_axis_label="Wavelength [Angstrom]",
+        y_axis_label="Flux",
     )
 
-    wavelengths, mags, mag_errors = [], [], []
-
-    for catalog, data in catalog_dict.items():
-        filter_data = [filter for filter in filter_info if filter["name"] == catalog][0]
-        wavelengths.append(filter_data["WavelengthEff"] * 0.0001)
-        mags.append(data["mag"])
-        mag_errors.append((data["mag_error"]))
-
-    fig = plot_errorbar(fig, wavelengths, mags, yerr=mag_errors)
+    fig = plot_errorbar(fig, wavelength, flux, yerr=flux_error)
 
     # xaxis = LinearAxis()
     # figure.add_layout(xaxis, 'below')
@@ -185,7 +190,7 @@ def plot_catalog_sed(catalog_dict):
     # fig.add_layout(Grid(dimension=0, ticker=xaxis.ticker))
     # fig.add_layout(Grid(dimension=1, ticker=yaxis.ticker))
     script, div = components(fig)
-    return {"bokeh_sed_script": script, "bokeh_sed_div": div}
+    return {f'bokeh_sed_{type}_script': script, f'bokeh_sed_{type}_div': div}
 
 
 def plot_errorbar(
@@ -213,8 +218,18 @@ def plot_errorbar(
         figure.multi_line(y_err_x, y_err_y, color=color, **error_kwargs)
     return figure
 
+def plot_timeseries():
 
-def plot_sed(figure, photometry_dict):
-    """
-    Plot photometry on SED
-    """
+    fig = figure(
+        title="",
+        width=700,
+        height=400,
+        min_border=0,
+        toolbar_location=None,
+        x_axis_type="log",
+        x_axis_label="Time",
+        y_axis_label="Number of Transients",
+    )
+
+    script, div = components(fig)
+    return {f'bokeh_processing_trends_script': script, f'bokeh_processing_trends_div': div}

@@ -11,6 +11,7 @@ services:
     volumes:
       - ../app:/app
       - ../cutout_cdn:/cutout_cdn
+      - ../data/ghost_output:/prospector_output
   database:
     image: mysql:8.0
     environment:

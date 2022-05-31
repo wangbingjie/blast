@@ -32,11 +32,10 @@
     dec_deg: 27.99642
 - model: host.Transient
   fields:
-    name: 2010H
+    name: 2010h
     tns_id: 3
     public_timestamp: 2010-01-16 00:00:00.000
     tns_prefix: SN
     ra_deg: 121.6015
     dec_deg: 1.03586
     host: [PSO J080624.103+010209.859]
-    

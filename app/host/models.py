@@ -5,14 +5,15 @@ backend.
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from django.db import models
+from photutils.aperture import SkyEllipticalAperture
 
 from .managers import CatalogManager
 from .managers import FilterManager
+from .managers import HostManager
 from .managers import StatusManager
 from .managers import SurveyManager
 from .managers import TaskManager
 from .managers import TransientManager
-from .managers import HostManager
 
 class SkyObject(models.Model):
     """
@@ -68,6 +69,7 @@ class Host(SkyObject):
     """
 
     name = models.CharField(max_length=100, blank=True, null=True)
+    redshift = models.FloatField(null=True, blank=True)
     objects = HostManager()
 
 
@@ -98,18 +100,16 @@ class Transient(SkyObject):
     public_timestamp = models.DateTimeField(null=True, blank=True)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
     objects = TransientManager()
+    tasks_initialized = models.CharField(max_length=20, default="False")
 
     @property
-    def tasks_processed(self):
-        """
-        Number of tasks processed.
-        """
+    def progress(self):
         tasks = TaskRegister.objects.filter(transient__name__exact=self.name)
-        num_tasks = len(tasks)
-        num_unprocessed_tasks = len(
-            [task for task in tasks if task.status.message == "not processed"]
-        )
-        return f"{num_tasks-num_unprocessed_tasks}/{num_tasks}"
+        total_tasks = len(tasks)
+        completed_tasks = len([task for task in tasks
+                                if task.status.message == 'processed'])
+        progress = 100 * (completed_tasks / total_tasks) if total_tasks > 0 else 0
+        return int(round(progress,0))
 
 
 class Status(models.Model):
@@ -164,9 +164,11 @@ class TaskRegister(models.Model):
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(blank=True, null=True)
+    last_processing_time_seconds = models.FloatField(blank=True, null=True)
 
     def __repr__(self):
         return f" {self.transient.name} | {self.task.name} | {self.status.message}"
+
 
 
 class ExternalResourceCall(models.Model):
@@ -210,6 +212,8 @@ class Filter(models.Model):
     wavelength_min_angstrom = models.FloatField()
     wavelength_max_angstrom = models.FloatField()
     vega_zero_point_jansky = models.FloatField()
+    magnitude_zero_point = models.FloatField(null=True, blank=True)
+    image_pixel_units = models.CharField(max_length=50, null=True, blank=True)
 
     objects = FilterManager()
 
@@ -265,6 +269,8 @@ class Aperture(SkyObject):
     """
     cutout = models.ForeignKey(Cutout, on_delete=models.CASCADE, blank=True,
                                null=True)
+    transient = models.ForeignKey(Transient, on_delete=models.CASCADE, blank=True,
+                               null=True)
     orientation = models.FloatField()
     semi_major_axis_arcsec = models.FloatField()
     semi_minor_axis_arcsec = models.FloatField()
@@ -275,13 +281,25 @@ class Aperture(SkyObject):
                f'semi major axis={self.semi_major_axis_arcsec}\", ' \
                f'semi_minor axis={self.semi_minor_axis_arcsec}\")'
 
+    @property
     def sky_aperture(self):
         """Return photutils object"""
-        pass
+        return SkyEllipticalAperture(self.sky_coord,
+                                     self.semi_major_axis_arcsec * u.arcsec,
+                                     self.semi_minor_axis_arcsec * u.arcsec,
+                                     theta=self.orientation * u.degree)
+    @property
+    def semi_major_axis(self):
+        return round(self.semi_major_axis_arcsec,2)
 
-    def pixel_aperture(self):
-        """Return photutils object"""
-        pass
+    @property
+    def semi_minor_axis(self):
+        return round(self.semi_minor_axis_arcsec, 2)
+
+    @property
+    def orientation_angle(self):
+        return round(self.orientation, 2)
+
 
 class AperturePhotometry(models.Model):
     """Model to store the photometric data"""
@@ -290,11 +308,30 @@ class AperturePhotometry(models.Model):
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
     flux = models.FloatField()
-    flux_error = models.FloatField()
-    magnitude = models.FloatField()
-    magnitude_error = models.FloatField()
+    flux_error = models.FloatField(blank=True, null=True)
+    magnitude = models.FloatField(blank=True, null=True)
+    magnitude_error = models.FloatField(blank=True, null=True)
+
+    @property
+    def flux_rounded(self):
+        return round(self.flux,2)
+
+    @property
+    def flux_error_rounded(self):
+        return round(self.flux_error, 2)
+
+class ProspectorResult(models.Model):
+    """Model to store prospector results"""
+    posterior = models.FileField(upload_to=fits_file_path, null=True, blank=True)
 
 
+class TaskRegisterSnapshot(models.Model):
+    """
+    Model to keep track of how many unprocessed transients exist
+    """
+    time = models.DateTimeField()
+    number_of_transients = models.IntegerField()
+    aggregate_type = models.CharField(max_length=100)
 
 
 

@@ -1,60 +1,31 @@
 {% extends 'host/base.html' %}
 
 {% block title %} Results {% endblock %}
-{% block script %} {{ bokeh_cutout_script | safe }} {% endblock %}
+{% block script %} {{ bokeh_cutout_script | safe }} {{ bokeh_sed_local_script | safe }} {{ bokeh_sed_global_script | safe }}  {% endblock %}
 
 {% load crispy_forms_tags %}
 
 {% block body %}
-<h2>{{ transient.tns_name }}</h2>
-
+<div>&nbsp;</div>
 <div class="container">
+    <div class="row">
+        <div class="col-lg-5">
+                {% include "host/information_card.html" %}
 
-<div class="row">
-    <div class="col-lg-4 col-md-4 col-sm-4">
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="card">
-                <h5 class="card-header">TNS Information</h5>
-                <div class="card-body">
-                    <h5 class="card-title">{{transient.name}}</h5>
-                    <p class="card-text">Prefix: {{transient.tns_prefix}}</p>
-                    <p class="card-text">Right ascension: {{transient.ra}}</p>
-                    <p class="card-text">Declination: {{transient.dec}}</p>
-                    <p class="card-text">Discovery Date: {{transient.public_timestamp}}</p>
-                <a class="link" href="https://www.wis-tns.org/object/{{transient.tns_name}}/">TNS link</a>
-                </div>
-            </div>
+                {% include "host/processing_status_card.html" %}
+
+                {% include "host/cutout_status_card.html" %}
+
+                {% include "host/photometry_card.html" %}
+
         </div>
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="card">
-                <h5 class="card-header">Processing Status</h5>
-                <div class="card-body">
-                    {% for item in transient.taskregister_set.all %}
-                        <p class="card-text">{{item.task.name}}
-                            <span class="badge {{item.status.badge}}">{{item.status.message}}</span></p>
-                    {% endfor %}
-                </div>
-            </div></div>
-    </div>
-    <div class="col-lg-8 col-md-8 col-sm-8">
-        <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="card">
-                <h5 class="card-header">Host Match information</h5>
-                <div class="card-body">
-                    {{ bokeh_cutout_div | safe }}
-                    <form class="form", method="POST">
-                        {% csrf_token %}
-                        <div class="input-group mb-10">
-                            {{ form.filters }}
-                            <div class="input-group-append">
-                                 <button type="submit",
-                                    class="btn btn-outline-success"
-                                    type="button">Get Cutout</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+
+        <div class="col-lg-7">
+            {% include "host/cutout_card.html" %}
+
+            {% include "host/sed_card.html" %}
+
+            {% include "host/sed_inference_card.html" %}
         </div>
     </div>
 </div>

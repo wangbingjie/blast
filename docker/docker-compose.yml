@@ -11,7 +11,8 @@ services:
     volumes:
       - ../app:/app
       - ../data/cutout_cdn:/cutout_cdn
-      - ../data/ghost_output:/ghost_ouput
+      - ../data/ghost_output:/ghost_output
+      - ../data/ghost_output:/prospector_output
     env_file:
       - ../env/.env.dev
   celery:
@@ -22,7 +23,8 @@ services:
     volumes:
       - ../app:/app
       - ../data/cutout_cdn:/cutout_cdn
-      - ../data/ghost_output:/ghost_ouput
+      - ../data/ghost_output:/ghost_output
+      -../data/ghost_output:/prospector_output
     env_file:
       - ../env/.env.dev
   rabbitmq:
