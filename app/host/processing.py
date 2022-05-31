@@ -380,14 +380,15 @@ class GlobalAperturePhotometry(TaskRunner):
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
-            flux = do_aperture_photometry(image, aperture[0].sky_aperture, cutout.filter)
+            flux,fluxerr,mag,magerr = do_aperture_photometry(image, aperture[0].sky_aperture, cutout.filter)
 
 
             AperturePhotometry.objects.create(
                 aperture=aperture[0],
                 transient=transient,
                 filter=cutout.filter,
-                flux=flux,
+                flux=flux,flux_error=fluxerr,
+                magnitude=mag,magnitude_error=magerr
             )
 
         return Status.objects.get(message__exact="processed")
