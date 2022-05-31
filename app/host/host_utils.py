@@ -13,6 +13,7 @@ from astropy.units import Quantity
 from astropy.wcs import WCS
 from astroquery.hips2fits import hips2fits
 from astroquery.ipac.ned import Ned
+from astroquery.sdss import SDSS
 from photutils.aperture import aperture_photometry
 from photutils.aperture import EllipticalAperture
 from photutils.background import Background2D
@@ -245,7 +246,7 @@ def construct_aperture(image, position):
 
 
 def query_ned(position):
-    """Get a Galaxy's redshift from ned if it available."""
+    """Get a Galaxy's redshift from ned if it is available."""
 
     result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
     redshift = result_table['Redshift'].value
@@ -256,6 +257,20 @@ def query_ned(position):
         galaxy_data = {'redshift': None}
 
     return galaxy_data
+
+def query_sdss(position):
+    """Get a Galaxy's redshift from SDSS if it is available"""
+    result_table = SDSS.query_region(position, spectro=True)
+    redshift = result_table['z'].value
+
+    if redshift:
+        galaxy_data = {'redshift': redshift[0]}
+    else:
+        galaxy_data = {'redshift': None}
+
+    return galaxy_data
+
+
 
 
 def construct_all_apertures(position, image_dict):
