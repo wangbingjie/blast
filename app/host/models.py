@@ -104,8 +104,8 @@ class Transient(SkyObject):
     objects = TransientManager()
     tasks_initialized = models.CharField(max_length=20, default="False")
     redshift = models.FloatField(null=True, blank=True)
-    spectroscopic_class = models.CharField(max_length=20)
-    photometric_class = models.CharField(max_length=20)
+    spectroscopic_class = models.CharField(max_length=20, null=True, blank=True)
+    photometric_class = models.CharField(max_length=20, null=True, blank=True)
     milkyway_dust_reddening = models.FloatField(null=True, blank=True)
 
     @property
@@ -261,7 +261,7 @@ class Cutout(models.Model):
     """
     Model to represent a cutout image of a host galaxy
     """
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, null=True, blank=True)
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
     transient = models.ForeignKey(
         Transient, on_delete=models.CASCADE, null=True, blank=True
@@ -273,7 +273,7 @@ class Aperture(SkyObject):
     """
     Model to represent a sky aperture
     """
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, blank=True, null=True)
     cutout = models.ForeignKey(Cutout, on_delete=models.CASCADE, blank=True,
                                null=True)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE, blank=True,
