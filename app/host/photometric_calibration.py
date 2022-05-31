@@ -18,11 +18,23 @@ def flux_to_mag(flux, zero_point_mag):
     """
     return -2.5 * np.log10(flux) + zero_point_mag
 
+def fluxerr_to_magerr(flux, fluxerr):
+    """
+    Converts flux to magnitude
+    """
+    return 1.0857*fluxerr/flux
+
 def flux_to_mJy_flux(flux, zero_point_mag_in):
     """
     Converts flux to magnitude
     """
     return flux*10**(-0.4*(zero_point_mag_in - 23.9))
+
+def fluxerr_to_mJy_fluxerr(fluxerr, zero_point_mag_in):
+    """
+    Converts flux to magnitude
+    """
+    return fluxerr*10**(-0.4*(zero_point_mag_in - 23.9))
 
 def counts_to_flux(counts, exposure_time):
     """
