@@ -278,7 +278,7 @@ class Aperture(SkyObject):
                                null=True)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE, blank=True,
                                null=True)
-    orientation = models.FloatField()
+    orientation_deg = models.FloatField()
     semi_major_axis_arcsec = models.FloatField()
     semi_minor_axis_arcsec = models.FloatField()
     type = models.CharField(max_length=20)
@@ -295,7 +295,7 @@ class Aperture(SkyObject):
         return SkyEllipticalAperture(self.sky_coord,
                                      self.semi_major_axis_arcsec * u.arcsec,
                                      self.semi_minor_axis_arcsec * u.arcsec,
-                                     theta=self.orientation * u.degree)
+                                     theta=self.orientation_deg * u.degree)
     @property
     def semi_major_axis(self):
         return round(self.semi_major_axis_arcsec,2)
@@ -306,7 +306,7 @@ class Aperture(SkyObject):
 
     @property
     def orientation_angle(self):
-        return round(self.orientation, 2)
+        return round(self.orientation_deg, 2)
 
 
 class AperturePhotometry(models.Model):

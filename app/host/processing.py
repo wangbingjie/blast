@@ -12,6 +12,7 @@ from .host_utils import construct_aperture
 from .host_utils import do_aperture_photometry
 from .host_utils import query_ned
 from .host_utils import query_sdss
+from .host_utils import get_dust_maps
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
@@ -19,6 +20,7 @@ from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
+import numpy as np
 
 class TaskRunner(ABC):
     """
@@ -288,7 +290,7 @@ class GlobalApertureConstructionRunner(TaskRunner):
         Aperture.objects.create(
             name=f'{aperture_cutout[0].name}_global',
             cutout=aperture_cutout[0],
-            orientation=aperture.theta.value,
+            orientation_deg=(np.pi/180)*aperture.theta.value,
             ra_deg=aperture.positions.ra.degree,
             dec_deg=aperture.positions.dec.degree,
             semi_major_axis_arcsec=aperture.a.value,
@@ -326,7 +328,7 @@ class LocalAperturePhotometry(TaskRunner):
 
         aperture = Aperture(
             name=f'{transient.name}_local',
-            orientation=0.0,
+            orientation_deg=0.0,
             ra_deg=transient.sky_coord.ra.degree,
             dec_deg=transient.sky_coord.dec.degree,
             semi_major_axis_arcsec=1.0,
@@ -411,6 +413,8 @@ class TransientInformation(TaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
+        #get_dust_maps(10)
+        return Status.objects.get(message__exact="processed")
 
 
 class HostInformation(TaskRunner):
