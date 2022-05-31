@@ -393,6 +393,26 @@ class GlobalAperturePhotometry(TaskRunner):
         return Status.objects.get(message__exact="processed")
 
 
+class TransientInformation(TaskRunner):
+    """Task Runner to gather information about the Transient"""
+
+    def _prerequisites(self):
+        return {"Transient information": "not processed"}
+
+    def _task_name(self):
+        return "Transient information"
+
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """Code goes here"""
+
+
+
 class HostInformation(TaskRunner):
     """Task Runner to gather host information from NED"""
 
@@ -404,9 +424,6 @@ class HostInformation(TaskRunner):
                 "Host information": "not processed"}
 
     def _task_name(self):
-        """
-        Task status to be altered is Local Aperture photometry
-        """
         return "Host information"
 
     def _failed_status_message(self):

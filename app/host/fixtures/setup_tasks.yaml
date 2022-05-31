@@ -22,4 +22,8 @@
 - model: host.Task
   fields:
     name: Local host SED inference
+- model: host.Task
+  fields:
+    name: Transient information
+
 
