@@ -20,5 +20,5 @@
     type: error
 - model: host.Status
   fields:
-    message: no host NED data
+    message: no host redshift
     type: error
