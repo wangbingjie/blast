@@ -25,6 +25,7 @@ from photutils.segmentation import SourceCatalog
 from .photometric_calibration import ab_mag_to_jansky
 from .photometric_calibration import flux_to_mag
 
+from dustmaps.config import config
 from django.conf import settings
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
 
@@ -174,8 +175,8 @@ def do_aperture_photometry(image, sky_aperture, filter):
 
 def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
     """Gets milkyway reddening value"""
-
-    #config['data_dir'] = f'{media_root}../dustmaps/'
+    config.reset()
+    config['data_dir'] = f'{media_root}../dustmaps/'
     return 0.0
 
 # def find_host_data(position, name='No name'):
