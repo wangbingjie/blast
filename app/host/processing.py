@@ -451,7 +451,7 @@ class Prospector(TaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-       pass
+        pass
 
 
 def update_status(task_status, updated_status):
