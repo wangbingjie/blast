@@ -22,8 +22,7 @@ from photutils.segmentation import detect_sources
 from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
 
-from .photometric_calibration import ab_mag_to_jansky
-from .photometric_calibration import flux_to_mag
+from .photometric_calibration import ab_mag_to_mJy,flux_to_mJy_flux,flux_to_mag
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
 
 
