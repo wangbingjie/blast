@@ -6,6 +6,7 @@ import glob
 import shutil
 
 from celery import shared_task
+from django.db.models import Q
 from django.utils import timezone
 
 from .cutouts import download_and_save_cutouts
@@ -13,11 +14,15 @@ from .ghost import run_ghost
 from .models import Status
 from .models import Task
 from .models import TaskRegister
+from .models import TaskRegisterSnapshot
 from .models import Transient
 from .processing import GhostRunner
+from .processing import GlobalApertureConstructionRunner
+from .processing import GlobalAperturePhotometry
+from .processing import HostInformation
 from .processing import ImageDownloadRunner
-from .processing import ApertureConstructionRunner
 from .processing import initialise_all_tasks_status
+from .processing import LocalAperturePhotometry
 from .processing import update_status
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
@@ -47,16 +52,75 @@ def ingest_recent_tns_data(interval_minutes=100):
             saved_transients.get(name__exact=transient.name)
         except Transient.DoesNotExist:
             transient.save()
-            initialise_all_tasks_status(transient)
+
 
 @shared_task
-def construct_aperture():
+def initialize_transient_tasks():
+    """
+    Initializes all task in the database to not processed for new transients.
+    """
+
+    uninitialized_transients = Transient.objects.filter(tasks_initialized__exact="False")
+    for transient in uninitialized_transients:
+        initialise_all_tasks_status(transient)
+        transient.tasks_initialized = "True"
+        transient.save()
+
+@shared_task
+def snapshot_task_register():
+    """
+    Takes snapshot of task register for diagnostic purposes.
+    """
+    transients = Transient.objects.all()
+    total, completed, waiting, not_completed = 0,0,0,0
+
+    for transient in transients:
+        total += 1
+        if transient.progress == 100:
+            completed += 1
+        if transient.progress == 0:
+            waiting += 1
+        if transient.progress < 100:
+            not_completed += 1
+
+    now = timezone.now()
+
+    for aggregate, label in zip([not_completed, total, completed, waiting],
+                                 ['not completed', 'total', 'completed', 'waiting']):
+
+        TaskRegisterSnapshot.objects.create(time=now,
+                                            number_of_transients=aggregate,
+                                            aggregate_type=label)
+
+
+
+
+@shared_task
+def get_host_information():
+    """
+    Get infotmation on the host galaxy
+    """
+    HostInformation().run_process()
+
+@shared_task
+def perform_global_photometry():
+    """
+    """
+    GlobalAperturePhotometry().run_process()
+
+@shared_task
+def construct_global_aperture():
     """
     """
 
-    ApertureConstructionRunner().run_process()
+    GlobalApertureConstructionRunner().run_process()
 
-            
+@shared_task
+def perform_local_photometry():
+    """
+    """
+    LocalAperturePhotometry().run_process()
+
 @shared_task
 def match_transient_to_host():
     """
@@ -67,7 +131,6 @@ def match_transient_to_host():
     """
 
     GhostRunner().run_process()
-
 
 @shared_task
 def download_cutouts():

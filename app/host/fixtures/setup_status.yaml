@@ -18,3 +18,7 @@
   fields:
     message: failed
     type: error
+- model: host.Status
+  fields:
+    message: no host NED data
+    type: error

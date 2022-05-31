@@ -18,7 +18,7 @@
   </div>
 </form>
 
-<table class="table table-striped">
+<table class="table">
   <thead>
     <tr>
       <th scope="col">Transient</th>
@@ -26,6 +26,7 @@
       <th scope="col">Right Ascension</th>
       <th scope="col">Declination</th>
       <th scope="col">Discovery Date </th>
+        <th scope="col">Progress</th>
       <th scope="col">Results</th>
     </tr>
   </thead>
@@ -37,6 +38,19 @@
       <td>{{transient.ra}}</td>
       <td>{{transient.dec}}</td>
       <td>{{transient.public_timestamp}}</td>
+        <td>
+          {% if transient.progress == 0 %}
+              Waiting
+          {% elif transient.progress == 100 %}
+            <div class="progress">
+              <div class="progress-bar bg-success" role="progressbar" style="width: {{transient.progress}}%;" aria-valuenow="{{transient.progress}}" aria-valuemin="0" aria-valuemax="100">{{transient.progress}}%</div>
+            </div>
+          {% else %}
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" style="width: {{transient.progress}}%;" aria-valuenow="{{transient.progress}}" aria-valuemin="0" aria-valuemax="100">{{transient.progress}}%</div>
+            </div>
+          {% endif %}
+        </td>
       <td><a class="nav-link" href="{{transient.name}}/">{{transient.name}}</a></td>
     </tr>
    {% endfor %}
