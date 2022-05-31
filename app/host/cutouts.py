@@ -43,8 +43,8 @@ def download_and_save_cutouts(
             os.makedirs(save_dir, exist_ok=True)
             path_to_fits = save_dir + f"{filter.name}.fits"
             fits.writeto(path_to_fits, overwrite=True)
-
-            cutout_object = Cutout(filter=filter, transient=transient)
+            cutout_name = f'{transient.name}_{filter.name}'
+            cutout_object = Cutout(name=cutout_name, filter=filter, transient=transient)
             cutout_object.fits.name = path_to_fits
             cutout_object.save()
 
