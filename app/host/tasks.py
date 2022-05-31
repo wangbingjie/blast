@@ -23,6 +23,7 @@ from .processing import HostInformation
 from .processing import ImageDownloadRunner
 from .processing import initialise_all_tasks_status
 from .processing import LocalAperturePhotometry
+from .processing import TransientInformation
 from .processing import update_status
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
@@ -94,13 +95,20 @@ def snapshot_task_register():
 
 
 
-
 @shared_task
 def get_host_information():
     """
-    Get infotmation on the host galaxy
+    Get infotmation on the host
     """
     HostInformation().run_process()
+
+
+@shared_task
+def get_transiet_information():
+    """
+    Get infotmation on the transient
+    """
+    TransientInformation().run_process()
 
 @shared_task
 def perform_global_photometry():
