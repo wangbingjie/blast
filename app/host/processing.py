@@ -426,7 +426,7 @@ class HostInformation(TaskRunner):
 
         return status
 
-class Propector(TaskRunner):
+class Prospector(TaskRunner):
     """Task Runner to run host galaxy inference with prospector"""
 
     def _prerequisites(self):
@@ -451,17 +451,7 @@ class Propector(TaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        host = transient.host
-        galaxy_ned_data = query_ned(host.sky_coord)
-
-        if galaxy_ned_data['redshift'] is not None:
-            host.redshift = galaxy_ned_data['redshift']
-            host.save()
-            status = Status.objects.get(message__exact="processed")
-        else:
-            status = Status.objects.get(message_exact="no host NED data")
-
-        return status
+       pass
 
 
 def update_status(task_status, updated_status):

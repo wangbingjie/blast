@@ -320,6 +320,11 @@ class AperturePhotometry(models.Model):
     def flux_error_rounded(self):
         return round(self.flux_error, 2)
 
+class ProspectorResult(models.Model):
+    """Model to store prospector results"""
+    posterior = models.FileField(upload_to=fits_file_path, null=True, blank=True)
+
+
 class TaskRegisterSnapshot(models.Model):
     """
     Model to keep track of how many unprocessed transients exist
