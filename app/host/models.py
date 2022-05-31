@@ -14,6 +14,8 @@ from .managers import StatusManager
 from .managers import SurveyManager
 from .managers import TaskManager
 from .managers import TransientManager
+from .managers import ApertureManager
+from .managers import CutoutManager
 
 class SkyObject(models.Model):
     """
@@ -259,18 +261,19 @@ class Cutout(models.Model):
     """
     Model to represent a cutout image of a host galaxy
     """
-
+    name = models.CharField(max_length=50)
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
     transient = models.ForeignKey(
         Transient, on_delete=models.CASCADE, null=True, blank=True
     )
     fits = models.FileField(upload_to=fits_file_path, null=True, blank=True)
-
+    objects = CutoutManager()
 
 class Aperture(SkyObject):
     """
     Model to represent a sky aperture
     """
+    name = models.CharField(max_length=50)
     cutout = models.ForeignKey(Cutout, on_delete=models.CASCADE, blank=True,
                                null=True)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE, blank=True,
@@ -279,6 +282,7 @@ class Aperture(SkyObject):
     semi_major_axis_arcsec = models.FloatField()
     semi_minor_axis_arcsec = models.FloatField()
     type = models.CharField(max_length=20)
+    objects = ApertureManager()
 
     def __str__(self):
         return f'Aperture(ra={self.ra_deg},dec={self.dec_deg}, ' \
