@@ -21,8 +21,10 @@ from photutils.segmentation import deblend_sources
 from photutils.segmentation import detect_sources
 from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
+from photutils.utils import calc_total_error
 
-from .photometric_calibration import ab_mag_to_mJy,flux_to_mJy_flux,flux_to_mag
+from .photometric_calibration import ab_mag_to_mJy,flux_to_mJy_flux,\
+    flux_to_mag,fluxerr_to_mJy_fluxerr,fluxerr_to_magerr
 
 from dustmaps.config import config
 from django.conf import settings
@@ -159,9 +161,16 @@ def do_aperture_photometry(image, sky_aperture, filter):
     """
     image_data = image[0].data
     wcs = WCS(image[0].header)
-    phot_table = aperture_photometry(image_data, sky_aperture, wcs=wcs)
-    uncalibrated_flux = phot_table['aperture_sum']
 
+    # get the background
+    background = estimate_background(image)
+    background_subtracted_data = image_data - background.background
+    
+    error = calc_total_error(image_data, background.background_rms, 1.0)
+    phot_table = aperture_photometry(background_subtracted_data, sky_aperture, wcs=wcs, error=error)
+    uncalibrated_flux = phot_table['aperture_sum']
+    uncalibrated_flux_err = phot_table['aperture_sum_err']
+    
     if filter.image_pixel_units == 'counts/sec':
         zpt = filter.magnitude_zero_point
     else:
@@ -169,8 +178,12 @@ def do_aperture_photometry(image, sky_aperture, filter):
         zpt = filter.magnitude_zero_point + 2.5*np.log10(image[0].header['EXPTIME'])
         
     flux = flux_to_mJy_flux(uncalibrated_flux, zpt)
+    fluxerr = fluxerr_to_mJy_fluxerr(uncalibrated_flux_err, zpt)
     magnitude = flux_to_mag(uncalibrated_flux, zpt)
-    fluxerr,magerr = None,None
+    magerr = fluxerr_to_magerr(uncalibrated_flux, uncalibrated_flux_err)
+    if magnitude != magnitude:
+        magnitude = None
+        magerr = None
 
     return flux,fluxerr,magnitude,magerr
 
