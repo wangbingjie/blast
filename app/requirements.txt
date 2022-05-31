@@ -97,3 +97,4 @@ mysqlclient
 gunicorn==20.1.0
 coverage
 scikit-image
+dustmaps
