@@ -285,6 +285,7 @@ class GlobalApertureConstructionRunner(TaskRunner):
         aperture = construct_aperture(image, transient.host.sky_coord)
 
         Aperture.objects.create(
+            name=f'{aperture_cutout[0].name}_global',
             cutout=aperture_cutout[0],
             orientation=aperture.theta.value,
             ra_deg=aperture.positions.ra.degree,
@@ -322,7 +323,9 @@ class LocalAperturePhotometry(TaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        aperture = Aperture(orientation=0.0,
+        aperture = Aperture(
+            name=f'{transient.name}_local',
+            orientation=0.0,
             ra_deg=transient.sky_coord.ra.degree,
             dec_deg=transient.sky_coord.dec.degree,
             semi_major_axis_arcsec=1.0,
@@ -450,7 +453,6 @@ class Prospector(TaskRunner):
 
     def _run_process(self, transient):
         """Code goes here"""
-
         pass
 
 
