@@ -6,6 +6,7 @@ from ..models import TaskRegister
 from ..models import Transient
 from ..models import Host
 from ..models import Cutout
+from ..models import Aperture
 from ..processing import GhostRunner
 from ..processing import ImageDownloadRunner
 from ..processing import initialise_all_tasks_status
