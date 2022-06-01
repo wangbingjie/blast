@@ -290,7 +290,7 @@ class GlobalApertureConstructionRunner(TaskRunner):
         Aperture.objects.create(
             name=f'{aperture_cutout[0].name}_global',
             cutout=aperture_cutout[0],
-            orientation_deg=(np.pi/180)*aperture.theta.value,
+            orientation_deg=(180/np.pi)*aperture.theta.value,
             ra_deg=aperture.positions.ra.degree,
             dec_deg=aperture.positions.dec.degree,
             semi_major_axis_arcsec=aperture.a.value,

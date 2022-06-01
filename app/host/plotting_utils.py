@@ -60,7 +60,7 @@ def plot_position(object, wcs, plotting_kwargs=None, plotting_func=None):
 
 def plot_aperture(figure, aperture, wcs, plotting_kwargs=None):
     aperture = aperture.to_pixel(wcs)
-    theta_rad = (np.pi/2.0) - (np.pi/180) * aperture.theta
+    theta_rad = aperture.theta
     x, y = aperture.positions
     plot_dict = {"x": x, "y": y, "width": aperture.a, "height": aperture.b,
                  "angle": theta_rad, "fill_color": "#cab2d6", "fill_alpha": 0.1}
