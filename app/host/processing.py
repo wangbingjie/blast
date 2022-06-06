@@ -21,6 +21,7 @@ from .models import Task
 from .models import TaskRegister
 from .models import Transient
 import numpy as np
+import math
 
 class TaskRunner(ABC):
     """
@@ -445,17 +446,16 @@ class HostInformation(TaskRunner):
         galaxy_ned_data = query_ned(host.sky_coord)
         galaxy_sdss_data = query_sdss(host.sky_coord)
 
-        if galaxy_sdss_data['redshift'] is not None:
+        status = Status.objects.get(message__exact="processed")
+
+        if galaxy_sdss_data['redshift'] is not None and not math.isnan(galaxy_sdss_data['redshift']):
             host.redshift = galaxy_sdss_data['redshift']
-            host.save()
-            status = Status.objects.get(message__exact="processed")
-        elif galaxy_ned_data['redshift'] is not None:
+        elif galaxy_ned_data['redshift'] is not None and not math.isnan(galaxy_ned_data['redshift']):
             host.redshift = galaxy_ned_data['redshift']
-            host.save()
-            status = Status.objects.get(message__exact="processed")
         else:
             status = Status.objects.get(message_exact="no host redshift")
 
+        host.save()
         return status
 
 class Prospector(TaskRunner):
