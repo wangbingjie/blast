@@ -181,14 +181,14 @@ def do_aperture_photometry(image, sky_aperture, filter):
         zpt = filter.magnitude_zero_point + 2.5*np.log10(image[0].header['EXPTIME'])
         
     flux = flux_to_mJy_flux(uncalibrated_flux, zpt)
-    fluxerr = fluxerr_to_mJy_fluxerr(uncalibrated_flux_err, zpt)
+    flux_error = fluxerr_to_mJy_fluxerr(uncalibrated_flux_err, zpt)
     magnitude = flux_to_mag(uncalibrated_flux, zpt)
-    magerr = fluxerr_to_magerr(uncalibrated_flux, uncalibrated_flux_err)
+    magnitude_error = fluxerr_to_magerr(uncalibrated_flux, uncalibrated_flux_err)
     if magnitude != magnitude:
-        magnitude = None
-        magerr = None
+        magnitude, magnitude_error = 0,0
 
-    return flux,fluxerr,magnitude,magerr
+    return {"flux" : flux, "flux_error": flux_error, "magnitude": magnitude,
+            "magnitude_error": magnitude_error}
 
 def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
     """Gets milkyway reddening value"""
