@@ -117,8 +117,7 @@ class TaskRunner(ABC):
             try:
                 status = Status.objects.get(message__exact=status_message)
             except:
-                print(f'The status message you entered ({status_message}) is not in the database, you need to add it')
-                raise
+                raise ValueError(f'The status message you entered ({status_message}) is not in the database, you need to add it.')
 
             update_status(task_register_item, status)
             processing_time = round(end_time-start_time, 2)
