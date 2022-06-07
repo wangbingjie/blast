@@ -290,7 +290,7 @@ def query_sdss(position):
 
     if result_table is not None:
         redshift = result_table['z'].value
-        if redshift:
+        if len(redshift) > 0:
             if not math.isnan(redshift[0]):
                 galaxy_data = {'redshift': redshift[0]}
             else:
@@ -301,8 +301,6 @@ def query_sdss(position):
         galaxy_data = {'redshift': None}
 
     return galaxy_data
-
-
 
 
 def construct_all_apertures(position, image_dict):
