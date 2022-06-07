@@ -124,6 +124,7 @@ def tns_to_blast_transient(tns_transient):
         dec_deg=tns_transient["decdeg"],
         tns_prefix=tns_transient["name_prefix"],
         public_timestamp=tns_transient["discoverydate"],
+        spectroscopic_class=tns_transient["type"]
     )
     return blast_transient
 
@@ -214,3 +215,14 @@ def build_tns_search_query_data(tns_bot_api_key, time_after):
     """
     search_obj = [("public_timestamp", time_after.isoformat())]
     return build_tns_query_data(tns_bot_api_key, search_obj)
+
+
+def get_daily_tns_staging_csv(date):
+    """
+    Gets the daily staging csv from TNS that contains all transients added and
+    modified each data.
+    """
+    tns_staging_url = "https://www.wis-tns.org/system/files/tns_public_objects/"
+    tns_staging_url += f'{date}csv.zip'
+
+
