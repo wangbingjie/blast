@@ -5,11 +5,12 @@ import json
 import os
 import time
 from collections import OrderedDict
-
+import pandas as pd
 import requests
-
-from .decorators import log_resource_call
-from .models import Transient
+from io import StringIO
+import zipfile
+import io
+#from .models import Transient
 
 
 def get_tns_credentials():
@@ -217,12 +218,43 @@ def build_tns_search_query_data(tns_bot_api_key, time_after):
     return build_tns_query_data(tns_bot_api_key, search_obj)
 
 
-def get_daily_tns_staging_csv(date):
+def get_daily_tns_staging_csv(date, tns_credentials=None):
     """
     Gets the daily staging csv from TNS that contains all transients added and
     modified each data.
     """
     tns_staging_url = "https://www.wis-tns.org/system/files/tns_public_objects/"
-    tns_staging_url += f'{date}csv.zip'
+    tns_staging_url += f'tns_public_objects_{date}.csv.zip'
+
+    csv_path = get_tns_zipped_csv(url=tns_staging_url,
+                                  file_name=f'tns_public_objects_{date}.csv',
+                                  tns_credentials=tns_credentials)
+    print(pd.read_csv(csv_path))
+
+def get_tns_zipped_csv(url=None, file_name=None, tns_credentials=None, save_dir=''):
+    """
+    Downloads and saves zipped csv file from TNS.
+
+    Returns the file name
+    """
+
+    tns_bot_id = tns_credentials["TNS_BOT_ID"]
+    tns_bot_name = tns_credentials["TNS_BOT_NAME"]
+    tns_bot_api_key = tns_credentials["TNS_BOT_API_KEY"]
+
+    headers = build_tns_header(tns_bot_id, tns_bot_name)
+    data = {'api_key': tns_bot_api_key}
+    response = requests.post(url, headers=headers, data=data,
+                             stream=True)
+    z = zipfile.ZipFile(io.BytesIO(response.content))
+    file_path = save_dir + file_name
+    print(file_path)
+    z.extractall(file_path)
+    return file_path
+
+
+get_daily_tns_staging_csv('20220601', tns_credentials=get_tns_credentials())
+
+
 
 

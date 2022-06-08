@@ -5,6 +5,7 @@ from time import process_time
 
 from astropy.io import fits
 from django.utils import timezone
+from celery import shared_task
 
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
@@ -94,6 +95,7 @@ class TaskRunner(ABC):
         """
         register = self.find_register_items_meeting_prerequisites()
         return self._select_highest_priority(register) if register.exists() else None
+
 
     def run_process(self):
         """
