@@ -153,6 +153,32 @@ def tns_staging_blast_transient(tns_transient):
     return blast_transient
 
 
+def update_blast_transient(blast_transient, tns_staging_transient):
+    """
+    Updates blast transient with information from the tns_csv staging
+    """
+    mapping =  {"ra_deg" : "ra",
+                "dec_deg": "declination", "tns_prefix": "name_prefix" ,
+                "public_timestamp": "discoverydate",
+                "spectroscopic_class": "type"}
+
+    names_match = blast_transient.name == tns_staging_transient["name"]
+    ids_match = blast_transient.tns_id == tns_staging_transient["objid"]
+
+    if names_match and ids_match:
+        for blast_attribute, staging_attribute in mapping.items():
+            blast_value = getattr(blast_transient, blast_attribute)
+            staging_value = tns_staging_transient[staging_attribute]
+            values_match = blast_value == staging_value
+            if values_match:
+                pass
+            else:
+                setattr(blast_transient,blast_attribute, staging_value)
+
+        blast_transient.save()
+
+
+
 def build_tns_header(tns_bot_id, tns_bot_name):
     """
     Builds the TNS header dictionary.
@@ -281,7 +307,11 @@ def get_tns_zipped_csv(url=None, file_name=None, tns_credentials=None, save_dir=
     z.extractall(save_dir)
     return file_path
 
-
+def tns_staging_file_date_name(date):
+    """
+    Gets the TNS file name for a staging csv for a given date.
+    """
+    return f'{date.year}{str(date.month).zfill(2)}{str(date.day).zfill(2)}'
 
 
 

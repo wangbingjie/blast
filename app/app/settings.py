@@ -159,7 +159,7 @@ CELERY_BEAT_SCHEDULE = {
     "snapshot_task_register_task": {"task": "host.tasks.snapshot_task_register", "schedule": 60},
     "initialize_transient_tasks": {"task": "host.tasks.initialize_transient_tasks", "schedule": 60},
     "transient_information_task": {"task": "host.tasks.get_transient_information", "schedule": 60},
-    "get_missed_transients_tns": {"task": "host.tasks.get_missed_transients_tns", "schedule": 600},
+    "get_missed_and_update_transients_tns": {"task": "host.tasks.get_missed_and_update_transients_tns", "schedule": 60},
     #    "cleaning_task": {"task": "host.tasks.delete_ghost_file_logs", "schedule": 30.0},
 }
 

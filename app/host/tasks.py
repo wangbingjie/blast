@@ -23,7 +23,8 @@ from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
 from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import tns_staging_blast_transient
-
+from .transient_name_server import update_blast_transient
+from .transient_name_server import tns_staging_file_date_name
 
 @shared_task
 def ingest_recent_tns_data(interval_minutes=100):
@@ -90,40 +91,26 @@ def snapshot_task_register():
                                             aggregate_type=label)
 
 @shared_task
-def get_missed_transients_tns():
+def get_missed_and_update_transients_tns():
     """
-    Gets missed transients from tns using the daily staging csv
+    Gets missed transients from tns and update them using the daily staging csv
     """
     yesterday = timezone.now() - datetime.timedelta(days=1)
-    date_string = f'{yesterday.year}{str(yesterday.month).zfill(2)}{str(yesterday.day).zfill(2)}'
+    date_string = tns_staging_file_date_name(yesterday)
     data = get_daily_tns_staging_csv(date_string, tns_credentials=get_tns_credentials(),
                                      save_dir=settings.TNS_STAGING_ROOT)
     saved_transients = Transient.objects.all()
 
     for _, transient in data.iterrows():
+        # if transient exists update it
         try:
-            saved_transients.get(name__exact=transient['name'])
-
+            blast_transient = saved_transients.get(
+                name__exact=transient['name'])
+            update_blast_transient(blast_transient, transient)
+        # if transient does not exist add it
         except Transient.DoesNotExist:
             blast_transient = tns_staging_blast_transient(transient)
             blast_transient.save()
-
-@shared_task
-def update_transients_tns(date):
-    """
-    Gets missed transients from tns using the daily staging csv
-    """
-
-    data = get_daily_tns_staging_csv(date, tns_credentials=get_tns_credentials())
-    saved_transients = Transient.objects.all()
-
-    for _, transient in data.iterrows():
-        try:
-            saved_transients.get(name__exact=transient['name'])
-        except Transient.DoesNotExist:
-            blast_transient = tns_staging_blast_transient(transient)
-            blast_transient.save()
-
 
 @shared_task
 def get_host_information():
