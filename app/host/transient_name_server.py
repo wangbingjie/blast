@@ -10,7 +10,8 @@ import requests
 from io import StringIO
 import zipfile
 import io
-#from .models import Transient
+
+from .models import Transient
 
 
 def get_tns_credentials():
@@ -129,6 +130,28 @@ def tns_to_blast_transient(tns_transient):
     )
     return blast_transient
 
+def tns_staging_blast_transient(tns_transient):
+    """Convert transient name server staging transient into blast transient
+    data model.
+
+    Args:
+        tns_transient (Dict): Dictionary containing transient name server
+            transient information.
+    Returns:
+        blast_transient (Transient): Transient object with the
+            tns_transient data.
+    """
+    blast_transient = Transient(
+        name=tns_transient["name"],
+        tns_id=tns_transient["objid"],
+        ra_deg=tns_transient["ra"],
+        dec_deg=tns_transient["declination"],
+        tns_prefix=tns_transient["name_prefix"],
+        public_timestamp=tns_transient["discoverydate"],
+        spectroscopic_class=tns_transient["type"]
+    )
+    return blast_transient
+
 
 def build_tns_header(tns_bot_id, tns_bot_name):
     """
@@ -218,18 +241,25 @@ def build_tns_search_query_data(tns_bot_api_key, time_after):
     return build_tns_query_data(tns_bot_api_key, search_obj)
 
 
-def get_daily_tns_staging_csv(date, tns_credentials=None):
+def get_daily_tns_staging_csv(date, tns_credentials=None, save_dir=''):
     """
     Gets the daily staging csv from TNS that contains all transients added and
-    modified each data.
+    modified at the specified date.
     """
-    tns_staging_url = "https://www.wis-tns.org/system/files/tns_public_objects/"
-    tns_staging_url += f'tns_public_objects_{date}.csv.zip'
+    file_name = f'tns_public_objects_{date}.csv'
 
-    csv_path = get_tns_zipped_csv(url=tns_staging_url,
-                                  file_name=f'tns_public_objects_{date}.csv',
-                                  tns_credentials=tns_credentials)
-    print(pd.read_csv(csv_path))
+    if os.path.exists(f'{save_dir}/{file_name}'):
+        staging_data = pd.read_csv(f'{save_dir}/{file_name}', header=1)
+    else:
+        tns_staging_url = "https://www.wis-tns.org/system/files/tns_public_objects/"
+        tns_staging_url += f'{file_name}.zip'
+
+        csv_path = get_tns_zipped_csv(url=tns_staging_url,
+                                  file_name=file_name,
+                                  tns_credentials=tns_credentials,
+                                  save_dir=save_dir)
+        staging_data = pd.read_csv(csv_path, header=1)
+    return staging_data
 
 def get_tns_zipped_csv(url=None, file_name=None, tns_credentials=None, save_dir=''):
     """
@@ -247,13 +277,10 @@ def get_tns_zipped_csv(url=None, file_name=None, tns_credentials=None, save_dir=
     response = requests.post(url, headers=headers, data=data,
                              stream=True)
     z = zipfile.ZipFile(io.BytesIO(response.content))
-    file_path = save_dir + file_name
-    print(file_path)
-    z.extractall(file_path)
+    file_path = f'{save_dir}/{file_name}'
+    z.extractall(save_dir)
     return file_path
 
-
-get_daily_tns_staging_csv('20220601', tns_credentials=get_tns_credentials())
 
 
 

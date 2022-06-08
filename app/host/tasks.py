@@ -6,14 +6,9 @@ import glob
 import shutil
 
 from celery import shared_task
-from django.db.models import Q
 from django.utils import timezone
+from django.conf import settings
 
-from .cutouts import download_and_save_cutouts
-from .ghost import run_ghost
-from .models import Status
-from .models import Task
-from .models import TaskRegister
 from .models import TaskRegisterSnapshot
 from .models import Transient
 from .processing import GhostRunner
@@ -24,9 +19,10 @@ from .processing import ImageDownloadRunner
 from .processing import initialise_all_tasks_status
 from .processing import LocalAperturePhotometry
 from .processing import TransientInformation
-from .processing import update_status
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
+from .transient_name_server import get_daily_tns_staging_csv
+from .transient_name_server import tns_staging_blast_transient
 
 
 @shared_task
@@ -94,8 +90,39 @@ def snapshot_task_register():
                                             aggregate_type=label)
 
 @shared_task
-def update_transients_tns():
+def get_missed_transients_tns():
+    """
+    Gets missed transients from tns using the daily staging csv
+    """
+    yesterday = timezone.now() - datetime.timedelta(days=1)
+    date_string = f'{yesterday.year}{str(yesterday.month).zfill(2)}{str(yesterday.day).zfill(2)}'
+    data = get_daily_tns_staging_csv(date_string, tns_credentials=get_tns_credentials(),
+                                     save_dir=settings.TNS_STAGING_ROOT)
+    saved_transients = Transient.objects.all()
 
+    for _, transient in data.iterrows():
+        try:
+            saved_transients.get(name__exact=transient['name'])
+
+        except Transient.DoesNotExist:
+            blast_transient = tns_staging_blast_transient(transient)
+            blast_transient.save()
+
+@shared_task
+def update_transients_tns(date):
+    """
+    Gets missed transients from tns using the daily staging csv
+    """
+
+    data = get_daily_tns_staging_csv(date, tns_credentials=get_tns_credentials())
+    saved_transients = Transient.objects.all()
+
+    for _, transient in data.iterrows():
+        try:
+            saved_transients.get(name__exact=transient['name'])
+        except Transient.DoesNotExist:
+            blast_transient = tns_staging_blast_transient(transient)
+            blast_transient.save()
 
 
 @shared_task

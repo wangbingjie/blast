@@ -12,7 +12,8 @@ services:
       - ../app:/app
       - ../data/cutout_cdn:/cutout_cdn
       - ../data/ghost_output:/ghost_output
-      - ../data/ghost_output:/prospector_output
+      - ../data/pospector_output:/prospector_output
+      - ../data/tns_staging:/tns_staging
     env_file:
       - ../env/.env.dev
   celery:
@@ -24,7 +25,8 @@ services:
       - ../app:/app
       - ../data/cutout_cdn:/cutout_cdn
       - ../data/ghost_output:/ghost_output
-      - ../data/ghost_output:/prospector_output
+      - ../data/pospector_output:/prospector_output
+      - ../data/tns_staging:/tns_staging
     env_file:
       - ../env/.env.dev
   rabbitmq:
