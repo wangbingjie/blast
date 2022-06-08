@@ -93,6 +93,9 @@ def snapshot_task_register():
                                             number_of_transients=aggregate,
                                             aggregate_type=label)
 
+@shared_task
+def update_transients_tns():
+
 
 
 @shared_task
