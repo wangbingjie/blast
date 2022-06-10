@@ -5,11 +5,10 @@ from .forms import TransientSearchForm
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
-from .models import ExternalResourceCall
 from .models import Filter
-from .models import TaskRegister
 from .models import TaskRegisterSnapshot
 from .models import Transient
+from .models import Acknowledgement
 from .plotting_utils import plot_cutout_image
 from .plotting_utils import plot_sed
 from .plotting_utils import plot_timeseries
@@ -114,5 +113,5 @@ def results(request, slug):
 
 
 def acknowledgements(request):
-    context = {}
+    context = {'acknowledgements': Acknowledgement.objects.all()}
     return render(request, "acknowledgements.html", context)

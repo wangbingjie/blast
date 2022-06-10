@@ -353,10 +353,10 @@ class Acknowledgement(models.Model):
     """
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000, null=True, blank=True)
-    github_url = models.CharField(max_length=100, null=True, blank=True)
+    repository_url = models.CharField(max_length=100, null=True, blank=True)
     website_url = models.CharField(max_length=100, null=True, blank=True)
     paper_url = models.CharField(max_length=100, null=True, blank=True)
-    paper_string = models.CharField(max_length=1000, null=True, blank=True)
+    doi = models.CharField(max_length=1000, null=True, blank=True)
     acknowledgement_text = models.CharField(max_length=1000, null=True, blank=True)
 
 

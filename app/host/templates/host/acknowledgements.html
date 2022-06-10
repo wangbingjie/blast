@@ -7,11 +7,36 @@
 
 <h2>Acknowledgements</h2>
 
-<h4>
+<p>
     Blast is largely glue between already established software projects. It could not
     exist without them. If you use blast, you <b>must</b> acknowledge and cite all
     of the following projects which blast uses.
-</h4>
+</p>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Project</th>
+      <th scope="col">Usage</th>
+      <th scope="col">Repository</th>
+      <th scope="col">Paper</th>
+      <th scope="col">DOI</th>
+      <th scope="col">Website</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for acknowledgement in acknowledgements %}
+    <tr>
+      <td>{{acknowledgement.name}}</td>
+      <td>{{acknowledgement.description}}</td>
+      <td><a class="nav-link" href="{{acknowledgement.repository_url}}/">{{acknowledgement.repository_url}}</a></td>
+      <td><a class="nav-link" href="{{acknowledgement.paper_url}}/">ADS</a></td>
+      <td><a class="nav-link" href="{{acknowledgement.doi}}/">{{acknowledgement.doi}}</a></td>
+      <td><a class="nav-link" href="{{acknowledgement.website_url}}/">{{acknowledgement.website_url}}</a></td>
+    </tr>
+   {% endfor %}
+  </tbody>
+</table>
 
 
 {% endblock %}
