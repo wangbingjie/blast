@@ -34,7 +34,6 @@ def transient_list(request):
     context = {"transients": transients, "form": form}
     return render(request, "transient_list.html", context)
 
-
 def analytics(request):
 
     analytics_results = {}
@@ -112,3 +111,8 @@ def results(request, slug):
                **bokeh_sed_global_context}
 
     return render(request, "results.html", context)
+
+
+def acknowledgements(request):
+    context = {}
+    return render(request, "acknowledgements.html", context)

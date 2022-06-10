@@ -347,6 +347,17 @@ class TaskRegisterSnapshot(models.Model):
     number_of_transients = models.IntegerField()
     aggregate_type = models.CharField(max_length=100)
 
+class Acknowledgement(models.Model):
+    """
+    Model to keep track of other work blast uses and relies on.
+    """
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000, null=True, blank=True)
+    github_url = models.CharField(max_length=100, null=True, blank=True)
+    website_url = models.CharField(max_length=100, null=True, blank=True)
+    paper_url = models.CharField(max_length=100, null=True, blank=True)
+    paper_string = models.CharField(max_length=1000, null=True, blank=True)
+    acknowledgement_text = models.CharField(max_length=1000, null=True, blank=True)
 
 
 
