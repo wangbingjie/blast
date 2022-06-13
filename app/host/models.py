@@ -209,6 +209,7 @@ class Filter(models.Model):
 
     name = models.CharField(max_length=20, unique=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
+    kcorrect_name = models.CharField(max_length=100, null=True, blank=True)
     sedpy_id = models.CharField(max_length=20)
     hips_id = models.CharField(max_length=250)
     vosa_id = models.CharField(max_length=20)

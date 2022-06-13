@@ -13,6 +13,7 @@
     vega_zero_point_jansky: 1024.00
     magnitude_zero_point: 20.4871
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'twomass_H'
 - model: host.Filter
   fields:
     name: 2MASS_J
@@ -28,6 +29,7 @@
     vega_zero_point_jansky: 1594.00
     magnitude_zero_point: 20.9044
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'twomass_J'
 - model: host.Filter
   fields:
     name: 2MASS_K
@@ -43,6 +45,7 @@
     vega_zero_point_jansky: 666.80
     magnitude_zero_point: 19.9757
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'twomass_Ks'
 - model: host.Filter
   fields:
     name: WISE_W1
@@ -58,6 +61,7 @@
     vega_zero_point_jansky: 309.54
     magnitude_zero_point: 20.752
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'wise_w1'
 - model: host.Filter
   fields:
     name: WISE_W2
@@ -73,6 +77,7 @@
     vega_zero_point_jansky: 171.79
     magnitude_zero_point: 19.596
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'wise_w2'
 - model: host.Filter
   fields:
     name: WISE_W3
@@ -88,6 +93,7 @@
     vega_zero_point_jansky: 31.67
     magnitude_zero_point: 17.800
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'wise_w3'
 - model: host.Filter
   fields:
     name: WISE_W4
@@ -103,6 +109,7 @@
     vega_zero_point_jansky: 8.36
     magnitude_zero_point: 12.945
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'wise_w4'
 - model: host.filter
   fields:
     name: GALEX_NUV
@@ -118,6 +125,7 @@
     vega_zero_point_jansky: 788.55
     magnitude_zero_point: 20.08
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'galex_NUV'
 - model: host.Filter
   fields:
     name: GALEX_FUV
@@ -133,6 +141,7 @@
     vega_zero_point_jansky: 520.73
     magnitude_zero_point: 18.82
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'galex_FUV'
 - model: host.Filter
   fields:
     name: PanSTARRS_g
@@ -148,6 +157,7 @@
     vega_zero_point_jansky: 3893.00
     magnitude_zero_point: 25.0
     image_pixel_units: 'counts'
+    kcorrect_name: 'none'
 - model: host.Filter
   fields:
     name: PanSTARRS_r
@@ -163,6 +173,7 @@
     vega_zero_point_jansky: 3135.50
     magnitude_zero_point: 25.0
     image_pixel_units: 'counts'
+    kcorrect_name: 'none'
 - model: host.Filter
   fields:
     name: PanSTARRS_i
@@ -178,6 +189,7 @@
     vega_zero_point_jansky: 2577.03
     magnitude_zero_point: 25.0
     image_pixel_units: 'counts'
+    kcorrect_name: 'none'
 - model: host.Filter
   fields:
     name: PanSTARRS_z
@@ -193,6 +205,7 @@
     vega_zero_point_jansky: 2273.05
     magnitude_zero_point: 25.0
     image_pixel_units: 'counts'
+    kcorrect_name: 'none'
 - model: host.Filter
   fields:
     name: PanSTARRS_y
@@ -208,6 +221,7 @@
     vega_zero_point_jansky: 2203.66
     magnitude_zero_point: 25.0
     image_pixel_units: 'counts'
+    kcorrect_name: 'none'
 - model: host.Filter
   fields:
     name: SDSS_i
@@ -223,6 +237,7 @@
     vega_zero_point_jansky: 3971.19
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'sdss_i0'
 - model: host.Filter
   fields:
     name: SDSS_r
@@ -238,6 +253,7 @@
     vega_zero_point_jansky: 3142.02
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'sdss_r0'
 - model: host.Filter
   fields:
     name: SDSS_u
@@ -253,6 +269,7 @@
     vega_zero_point_jansky: 1628.72
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'sdss_u0'
 - model: host.Filter
   fields:
     name: SDSS_z
@@ -268,6 +285,7 @@
     vega_zero_point_jansky: 2227.03
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'sdss_z0'
 - model: host.Filter
   fields:
     name: DES_g
@@ -283,6 +301,7 @@
     vega_zero_point_jansky: 3905.01
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'decam_g'
 - model: host.Filter
   fields:
     name: DES_r
@@ -298,6 +317,7 @@
     vega_zero_point_jansky: 3027.32
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'decam_r'
 - model: host.Filter
   fields:
     name: DES_i
@@ -313,6 +333,7 @@
     vega_zero_point_jansky: 2467.82
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'decam_i'
 - model: host.Filter
   fields:
     name: DES_z
@@ -328,6 +349,7 @@
     vega_zero_point_jansky: 2247.33
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'decam_z'
 - model: host.Filter
   fields:
     name: DES_Y
@@ -343,3 +365,4 @@
     vega_zero_point_jansky: 2146.18
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
+    kcorrect_name: 'decam_Y'
