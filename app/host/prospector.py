@@ -1,8 +1,11 @@
 # Utils and wrappers for the prospector SED fitting code
-from .models import Filter, Transient, AperturePhotometry
-from sedpy.observate import load_filters
-from .photometric_calibration import jansky_to_maggies
 import numpy as np
+from sedpy.observate import load_filters
+
+from .models import AperturePhotometry
+from .models import Filter
+from .models import Transient
+from .photometric_calibration import jansky_to_maggies
 
 def build_obs(transient, aperture_type):
 

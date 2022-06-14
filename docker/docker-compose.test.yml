@@ -28,4 +28,4 @@ services:
     ports:
       - "3306:3306"
     platform: linux/x86_64
-     
+

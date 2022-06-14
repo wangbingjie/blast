@@ -1,8 +1,9 @@
 import glob
+import math
 import os
 import time
 from collections import namedtuple
-import math
+
 import astropy.units as u
 import numpy as np
 import yaml
@@ -14,6 +15,7 @@ from astropy.wcs import WCS
 from astroquery.hips2fits import hips2fits
 from astroquery.ipac.ned import Ned
 from astroquery.sdss import SDSS
+from django.conf import settings
 from photutils.aperture import aperture_photometry
 from photutils.aperture import EllipticalAperture
 from photutils.background import Background2D
@@ -23,15 +25,15 @@ from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
 from photutils.utils import calc_total_error
 
-from .photometric_calibration import ab_mag_to_mJy,flux_to_mJy_flux,\
-    flux_to_mag,fluxerr_to_mJy_fluxerr,fluxerr_to_magerr
-
+from .photometric_calibration import ab_mag_to_mJy
+from .photometric_calibration import flux_to_mag
+from .photometric_calibration import flux_to_mJy_flux
+from .photometric_calibration import fluxerr_to_magerr
+from .photometric_calibration import fluxerr_to_mJy_fluxerr
 #from dustmaps.config import config
 #import dustmaps.sfd
 #from dustmaps.sfd import SFDQuery
 #import dustmaps.sfd
-
-from django.conf import settings
 
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
 
@@ -169,17 +171,17 @@ def do_aperture_photometry(image, sky_aperture, filter):
     # get the background
     background = estimate_background(image)
     background_subtracted_data = image_data - background.background
-    
+
     error = calc_total_error(image_data, background.background_rms, 1.0)
     phot_table = aperture_photometry(background_subtracted_data, sky_aperture, wcs=wcs, error=error)
     uncalibrated_flux = phot_table['aperture_sum']
     uncalibrated_flux_err = phot_table['aperture_sum_err']
-    
+
     if filter.image_pixel_units == 'counts/sec':
         zpt = filter.magnitude_zero_point
     else:
         zpt = filter.magnitude_zero_point + 2.5*np.log10(image[0].header['EXPTIME'])
-        
+
     flux = flux_to_mJy_flux(uncalibrated_flux, zpt)
     flux_error = fluxerr_to_mJy_fluxerr(uncalibrated_flux_err, zpt)
     magnitude = flux_to_mag(uncalibrated_flux, zpt)

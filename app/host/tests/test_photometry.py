@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from ..processing import ApertureConstructionRunner
 
 # python manage.py test host.tests.test_photometry

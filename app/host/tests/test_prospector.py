@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from ..prospector import build_obs
 
 class PropsectorBuildObsTest(TestCase):
@@ -9,7 +10,3 @@ class PropsectorBuildObsTest(TestCase):
 
     def test_build_obs(self):
         pass
-
-
-
-

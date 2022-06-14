@@ -25,5 +25,3 @@
 - model: host.Task
   fields:
     name: Transient information
-
-

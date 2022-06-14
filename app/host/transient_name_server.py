@@ -1,15 +1,16 @@
 """"
 Functions to download and ingest transients from the Transient Name Server (TNS)
 """
+import io
 import json
 import os
 import time
+import zipfile
 from collections import OrderedDict
+from io import StringIO
+
 import pandas as pd
 import requests
-from io import StringIO
-import zipfile
-import io
 
 from .models import Transient
 
@@ -312,6 +313,3 @@ def tns_staging_file_date_name(date):
     Gets the TNS file name for a staging csv for a given date.
     """
     return f'{date.year}{str(date.month).zfill(2)}{str(date.day).zfill(2)}'
-
-
-
