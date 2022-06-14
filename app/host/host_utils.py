@@ -1,4 +1,5 @@
 import glob
+import math
 import os
 import time
 from collections import namedtuple
@@ -13,6 +14,8 @@ from astropy.units import Quantity
 from astropy.wcs import WCS
 from astroquery.hips2fits import hips2fits
 from astroquery.ipac.ned import Ned
+from astroquery.sdss import SDSS
+from django.conf import settings
 from photutils.aperture import aperture_photometry
 from photutils.aperture import EllipticalAperture
 from photutils.background import Background2D
@@ -20,9 +23,18 @@ from photutils.segmentation import deblend_sources
 from photutils.segmentation import detect_sources
 from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
+from photutils.utils import calc_total_error
 
-from .photometric_calibration import ab_mag_to_jansky
+from .photometric_calibration import ab_mag_to_mJy
 from .photometric_calibration import flux_to_mag
+from .photometric_calibration import flux_to_mJy_flux
+from .photometric_calibration import fluxerr_to_magerr
+from .photometric_calibration import fluxerr_to_mJy_fluxerr
+#from dustmaps.config import config
+#import dustmaps.sfd
+#from dustmaps.sfd import SFDQuery
+#import dustmaps.sfd
+
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
 
 
@@ -155,20 +167,39 @@ def do_aperture_photometry(image, sky_aperture, filter):
     """
     image_data = image[0].data
     wcs = WCS(image[0].header)
-    phot_table = aperture_photometry(image_data, sky_aperture, wcs=wcs)
-    uncalibrated_pixel_data = phot_table['aperture_sum']
+
+    # get the background
+    background = estimate_background(image)
+    background_subtracted_data = image_data - background.background
+
+    error = calc_total_error(image_data, background.background_rms, 1.0)
+    phot_table = aperture_photometry(background_subtracted_data, sky_aperture, wcs=wcs, error=error)
+    uncalibrated_flux = phot_table['aperture_sum']
+    uncalibrated_flux_err = phot_table['aperture_sum_err']
 
     if filter.image_pixel_units == 'counts/sec':
-        uncalibrated_flux = uncalibrated_pixel_data
+        zpt = filter.magnitude_zero_point
     else:
-        print(image[0].header['EXPTIME'])
-        uncalibrated_flux = uncalibrated_pixel_data
+        zpt = filter.magnitude_zero_point + 2.5*np.log10(image[0].header['EXPTIME'])
 
-    magnitude = flux_to_mag(uncalibrated_flux, filter.magnitude_zero_point)
-    flux = ab_mag_to_jansky(magnitude)
+    flux = flux_to_mJy_flux(uncalibrated_flux, zpt)
+    flux_error = fluxerr_to_mJy_fluxerr(uncalibrated_flux_err, zpt)
+    magnitude = flux_to_mag(uncalibrated_flux, zpt)
+    magnitude_error = fluxerr_to_magerr(uncalibrated_flux, uncalibrated_flux_err)
+    if magnitude != magnitude:
+        magnitude, magnitude_error = 0,0
 
-    return flux
+    return {"flux" : flux, "flux_error": flux_error, "magnitude": magnitude,
+            "magnitude_error": magnitude_error}
 
+def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
+    """Gets milkyway reddening value"""
+    config.reset()
+    config['data_dir'] = f'{media_root}../dustmaps/'
+    dustmaps.sfd.fetch()
+    ebv = SFDQuery().sfd(position)
+    # see Schlegel, Finkbeiner 2011 for the 0.86 correction term
+    return 0.86 * ebv
 
 # def find_host_data(position, name='No name'):
 #    """
@@ -243,13 +274,31 @@ def construct_aperture(image, position):
 
 
 def query_ned(position):
-    """Get a Galaxy's redshift from ned if it available."""
+    """Get a Galaxy's redshift from ned if it is available."""
 
     result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
     redshift = result_table['Redshift'].value
 
     if redshift:
         galaxy_data = {'redshift': redshift[0]}
+    else:
+        galaxy_data = {'redshift': None}
+
+    return galaxy_data
+
+def query_sdss(position):
+    """Get a Galaxy's redshift from SDSS if it is available"""
+    result_table = SDSS.query_region(position, spectro=True, radius=1.0 * u.arcsec)
+
+    if result_table is not None:
+        redshift = result_table['z'].value
+        if len(redshift) > 0:
+            if not math.isnan(redshift[0]):
+                galaxy_data = {'redshift': redshift[0]}
+            else:
+                galaxy_data = {'redshift': None}
+        else:
+            galaxy_data = {'redshift': None}
     else:
         galaxy_data = {'redshift': None}
 

@@ -11,7 +11,10 @@ services:
     volumes:
       - ../app:/app
       - ../data/cutout_cdn:/cutout_cdn
-      - ../data/ghost_output:/ghost_ouput
+      - ../data/ghost_output:/ghost_output
+      - ../data/ghost_output:/prospector_output
+      - ../data/tns_staging:/tns_staging
+      - ../data/transmission:/transmission
     env_file:
       - ../env/.env.dev
   celery:
@@ -22,7 +25,10 @@ services:
     volumes:
       - ../app:/app
       - ../data/cutout_cdn:/cutout_cdn
-      - ../data/ghost_output:/ghost_ouput
+      - ../data/ghost_output:/ghost_output
+      - ../data/ghost_output:/prospector_output
+      - ../data/tns_staging:/tns_staging
+      - ../data/transmission:/transmission
     env_file:
       - ../env/.env.dev
   rabbitmq:
@@ -42,7 +48,7 @@ services:
     env_file:
       - ../env/.env.dev
   database:
-    image: mysql:8.0
+    image: mysql:5.7
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     env_file:
@@ -51,6 +57,7 @@ services:
       - ../data/database/:/var/lib/mysql/
     ports:
       - "3306:3306"
+    platform: linux/x86_64
   nginx:
     restart: always
     image: nginx:1.21-alpine
