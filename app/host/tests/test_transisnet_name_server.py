@@ -56,6 +56,7 @@ class ConvertTNSToBLASTTest(TestCase):
         tns_transient["decdeg"] = 13.0
         tns_transient["name_prefix"] = "SN"
         tns_transient["discoverydate"] = "2022-02-04 07:29:02.112+00:00"
+        tns_transient["type"] = "SN 1a"
 
         blast_transient = tns_to_blast_transient(tns_transient)
 
@@ -66,4 +67,7 @@ class ConvertTNSToBLASTTest(TestCase):
         self.assertEqual(tns_transient["name_prefix"], blast_transient.tns_prefix)
         self.assertEqual(
             tns_transient["discoverydate"], blast_transient.public_timestamp
+        )
+        self.assertEqual(
+            tns_transient["type"], blast_transient.spectroscopic_class
         )
