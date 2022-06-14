@@ -13,6 +13,7 @@ services:
       - ../data/ghost_output:/ghost_output
       - ../data/pospector_output:/prospector_output
       - ../data/tns_staging:/tns_staging
+      - ../data/transmission:/transmission
     env_file:
       - ../env/.env.dev
   celery:
@@ -26,6 +27,7 @@ services:
       - ../data/ghost_output:/ghost_output
       - ../data/pospector_output:/prospector_output
       - ../data/tns_staging:/tns_staging
+      - ../data/transmission:/transmission
     env_file:
       - ../env/.env.dev
   rabbitmq:

@@ -227,6 +227,12 @@ class Filter(models.Model):
     def __str__(self):
         return self.name
 
+    def transmission_curve(self):
+        """
+        Returns the transission curve of the filter
+        """
+        return 0.0
+
 
 class Catalog(models.Model):
     """
