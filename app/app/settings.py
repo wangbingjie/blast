@@ -141,6 +141,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/cutouts/"
 # os.path.join(os.path.dirname(BASE_DIR), '../cutout_cdn')
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../cutout_cdn")
+GHOST_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../ghost_output")
+TNS_STAGING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../tns_staging")
 CELERY_TIMEZONE = "UTC"
 CELERY_IMPORTS = ("host.tasks",)
 CELERY_BROKER_URL = f'''amqp://{os.environ.get("RABBITMQ_USERNAME", "guest")}:{os.environ.get("RABBITMQ_PASSWORD", "guest")}@rabbitmq:5672//'''
@@ -150,6 +152,14 @@ CELERY_BEAT_SCHEDULE = {
     "ingest_data_task": {"task": "host.tasks.ingest_recent_tns_data", "schedule": 600},
     "download_cutouts_task": {"task": "host.tasks.download_cutouts", "schedule": 60.0},
     "matching_task": {"task": "host.tasks.match_transient_to_host", "schedule": 60.0},
+    "global_aperture_construction_task": {"task": "host.tasks.construct_global_aperture", "schedule": 60.0},
+    "local_photometry_task": {"task": "host.tasks.perform_local_photometry", "schedule": 60.0},
+    "global_photometry_task": {"task": "host.tasks.perform_global_photometry", "schedule": 60.0},
+    "host_information_task": {"task": "host.tasks.get_host_information", "schedule": 60},
+    "snapshot_task_register_task": {"task": "host.tasks.snapshot_task_register", "schedule": 60},
+    "initialize_transient_tasks": {"task": "host.tasks.initialize_transient_tasks", "schedule": 60},
+    "transient_information_task": {"task": "host.tasks.get_transient_information", "schedule": 60},
+    "get_missed_and_update_transients_tns": {"task": "host.tasks.get_missed_and_update_transients_tns", "schedule": 60},
     #    "cleaning_task": {"task": "host.tasks.delete_ghost_file_logs", "schedule": 30.0},
 }
 

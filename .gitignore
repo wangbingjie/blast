@@ -131,14 +131,28 @@ dmypy.json
 .idea/
 
 #fits files
-*.fits
 
 transients_*/
 quiverMaps/
-cutout_cdn/
+
 
 .dbdata/
-data/
+
+
+!data/
+data/*
+!data/cutout_cdn/
+!data/transmission/
+data/cutout_cdn/*
+!data/cutout_cdn/2010h/
+data/cutout_cdn/2010h/*
+!data/cutout_cdn/2010ag/
+data/cutout_cdn/2010ag/*
+!data/cutout_cdn/2010ai/
+data/cutout_cdn/2010ai/*
+!data/cutout_cdn/2010h/*
+!data/cutout_cdn/2010ag/*
+!data/cutout_cdn/2010ai/*
 
 static/
 
