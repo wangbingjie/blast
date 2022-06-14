@@ -87,10 +87,10 @@ WSGI_APPLICATION = "app.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("MYSQL_DATABASE", "django_db"),
-        "USER": "root",
-        "PASSWORD": "password",
-        "HOST": "database",
+        "NAME": os.environ.get("DB_NAME", "django_db"),
+        "USER": os.environ.get("DB_USER", "root"),
+        "PASSWORD": os.environ.get("DB_PASS", "password"),
+        "HOST": os.environ.get("DB_HOST", "database"),
         "PORT": "3306",
     }
 }
@@ -145,7 +145,7 @@ GHOST_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../ghost_output")
 TNS_STAGING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../tns_staging")
 CELERY_TIMEZONE = "UTC"
 CELERY_IMPORTS = ("host.tasks",)
-CELERY_BROKER_URL = "amqp://guest:guest@rabbitmq:5672//"
+CELERY_BROKER_URL = f'''amqp://{os.environ.get("RABBITMQ_USERNAME", "guest")}:{os.environ.get("RABBITMQ_PASSWORD", "guest")}@rabbitmq:5672//'''
 
 
 CELERY_BEAT_SCHEDULE = {
