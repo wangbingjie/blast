@@ -1,14 +1,17 @@
 """"
 Functions to download and ingest transients from the Transient Name Server (TNS)
 """
+import io
 import json
 import os
 import time
+import zipfile
 from collections import OrderedDict
+from io import StringIO
 
+import pandas as pd
 import requests
 
-from .decorators import log_resource_call
 from .models import Transient
 
 
@@ -124,8 +127,57 @@ def tns_to_blast_transient(tns_transient):
         dec_deg=tns_transient["decdeg"],
         tns_prefix=tns_transient["name_prefix"],
         public_timestamp=tns_transient["discoverydate"],
+        spectroscopic_class=tns_transient["type"]
     )
     return blast_transient
+
+def tns_staging_blast_transient(tns_transient):
+    """Convert transient name server staging transient into blast transient
+    data model.
+
+    Args:
+        tns_transient (Dict): Dictionary containing transient name server
+            transient information.
+    Returns:
+        blast_transient (Transient): Transient object with the
+            tns_transient data.
+    """
+    blast_transient = Transient(
+        name=tns_transient["name"],
+        tns_id=tns_transient["objid"],
+        ra_deg=tns_transient["ra"],
+        dec_deg=tns_transient["declination"],
+        tns_prefix=tns_transient["name_prefix"],
+        public_timestamp=tns_transient["discoverydate"],
+        spectroscopic_class=tns_transient["type"]
+    )
+    return blast_transient
+
+
+def update_blast_transient(blast_transient, tns_staging_transient):
+    """
+    Updates blast transient with information from the tns_csv staging
+    """
+    mapping =  {"ra_deg" : "ra",
+                "dec_deg": "declination", "tns_prefix": "name_prefix" ,
+                "public_timestamp": "discoverydate",
+                "spectroscopic_class": "type"}
+
+    names_match = blast_transient.name == tns_staging_transient["name"]
+    ids_match = blast_transient.tns_id == tns_staging_transient["objid"]
+
+    if names_match and ids_match:
+        for blast_attribute, staging_attribute in mapping.items():
+            blast_value = getattr(blast_transient, blast_attribute)
+            staging_value = tns_staging_transient[staging_attribute]
+            values_match = blast_value == staging_value
+            if values_match:
+                pass
+            else:
+                setattr(blast_transient,blast_attribute, staging_value)
+
+        blast_transient.save()
+
 
 
 def build_tns_header(tns_bot_id, tns_bot_name):
@@ -214,3 +266,50 @@ def build_tns_search_query_data(tns_bot_api_key, time_after):
     """
     search_obj = [("public_timestamp", time_after.isoformat())]
     return build_tns_query_data(tns_bot_api_key, search_obj)
+
+
+def get_daily_tns_staging_csv(date, tns_credentials=None, save_dir=''):
+    """
+    Gets the daily staging csv from TNS that contains all transients added and
+    modified at the specified date.
+    """
+    file_name = f'tns_public_objects_{date}.csv'
+
+    if os.path.exists(f'{save_dir}/{file_name}'):
+        staging_data = pd.read_csv(f'{save_dir}/{file_name}', header=1)
+    else:
+        tns_staging_url = "https://www.wis-tns.org/system/files/tns_public_objects/"
+        tns_staging_url += f'{file_name}.zip'
+
+        csv_path = get_tns_zipped_csv(url=tns_staging_url,
+                                  file_name=file_name,
+                                  tns_credentials=tns_credentials,
+                                  save_dir=save_dir)
+        staging_data = pd.read_csv(csv_path, header=1)
+    return staging_data
+
+def get_tns_zipped_csv(url=None, file_name=None, tns_credentials=None, save_dir=''):
+    """
+    Downloads and saves zipped csv file from TNS.
+
+    Returns the file name
+    """
+
+    tns_bot_id = tns_credentials["TNS_BOT_ID"]
+    tns_bot_name = tns_credentials["TNS_BOT_NAME"]
+    tns_bot_api_key = tns_credentials["TNS_BOT_API_KEY"]
+
+    headers = build_tns_header(tns_bot_id, tns_bot_name)
+    data = {'api_key': tns_bot_api_key}
+    response = requests.post(url, headers=headers, data=data,
+                             stream=True)
+    z = zipfile.ZipFile(io.BytesIO(response.content))
+    file_path = f'{save_dir}/{file_name}'
+    z.extractall(save_dir)
+    return file_path
+
+def tns_staging_file_date_name(date):
+    """
+    Gets the TNS file name for a staging csv for a given date.
+    """
+    return f'{date.year}{str(date.month).zfill(2)}{str(date.day).zfill(2)}'

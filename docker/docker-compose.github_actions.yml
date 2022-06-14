@@ -11,6 +11,10 @@ services:
     volumes:
       - ../app:/app
       - ../cutout_cdn:/cutout_cdn
+      - ../data/ghost_output:/prospector_output
+      - ../data/ghost_output:/prospector_output
+      - ../data/tns_staging:/tns_staging
+      - ../data/transmission:/transmission
   database:
     image: mysql:8.0
     environment:

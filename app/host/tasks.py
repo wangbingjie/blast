@@ -6,24 +6,28 @@ import glob
 import shutil
 
 from celery import shared_task
+from django.conf import settings
 from django.utils import timezone
 
-from .cutouts import download_and_save_cutouts
-from .ghost import run_ghost
-from .models import Status
-from .models import Task
-from .models import TaskRegister
+from .models import TaskRegisterSnapshot
 from .models import Transient
 from .processing import GhostRunner
+from .processing import GlobalApertureConstructionRunner
+from .processing import GlobalAperturePhotometry
+from .processing import HostInformation
 from .processing import ImageDownloadRunner
 from .processing import initialise_all_tasks_status
-from .processing import update_status
+from .processing import LocalAperturePhotometry
+from .processing import TransientInformation
+from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
-
+from .transient_name_server import tns_staging_blast_transient
+from .transient_name_server import tns_staging_file_date_name
+from .transient_name_server import update_blast_transient
 
 @shared_task
-def ingest_recent_tns_data(interval_minutes=1000):
+def ingest_recent_tns_data(interval_minutes=100):
     """
     Download and save recent transients from the transient name server.
 
@@ -46,8 +50,101 @@ def ingest_recent_tns_data(interval_minutes=1000):
             saved_transients.get(name__exact=transient.name)
         except Transient.DoesNotExist:
             transient.save()
-            initialise_all_tasks_status(transient)
 
+
+@shared_task
+def initialize_transient_tasks():
+    """
+    Initializes all task in the database to not processed for new transients.
+    """
+
+    uninitialized_transients = Transient.objects.filter(tasks_initialized__exact="False")
+    for transient in uninitialized_transients:
+        initialise_all_tasks_status(transient)
+        transient.tasks_initialized = "True"
+        transient.save()
+
+@shared_task
+def snapshot_task_register():
+    """
+    Takes snapshot of task register for diagnostic purposes.
+    """
+    transients = Transient.objects.all()
+    total, completed, waiting, not_completed = 0,0,0,0
+
+    for transient in transients:
+        total += 1
+        if transient.progress == 100:
+            completed += 1
+        if transient.progress == 0:
+            waiting += 1
+        if transient.progress < 100:
+            not_completed += 1
+
+    now = timezone.now()
+
+    for aggregate, label in zip([not_completed, total, completed, waiting],
+                                 ['not completed', 'total', 'completed', 'waiting']):
+
+        TaskRegisterSnapshot.objects.create(time=now,
+                                            number_of_transients=aggregate,
+                                            aggregate_type=label)
+
+@shared_task
+def get_missed_and_update_transients_tns():
+    """
+    Gets missed transients from tns and update them using the daily staging csv
+    """
+    yesterday = timezone.now() - datetime.timedelta(days=1)
+    date_string = tns_staging_file_date_name(yesterday)
+    data = get_daily_tns_staging_csv(date_string, tns_credentials=get_tns_credentials(),
+                                     save_dir=settings.TNS_STAGING_ROOT)
+    saved_transients = Transient.objects.all()
+
+    for _, transient in data.iterrows():
+        # if transient exists update it
+        try:
+            blast_transient = saved_transients.get(
+                name__exact=transient['name'])
+            update_blast_transient(blast_transient, transient)
+        # if transient does not exist add it
+        except Transient.DoesNotExist:
+            blast_transient = tns_staging_blast_transient(transient)
+            blast_transient.save()
+
+@shared_task
+def get_host_information():
+    """
+    Get infotmation on the host
+    """
+    HostInformation().run_process()
+
+
+@shared_task
+def get_transient_information():
+    """
+    Get infotmation on the transient
+    """
+    TransientInformation().run_process()
+
+@shared_task
+def perform_global_photometry():
+    """
+    """
+    GlobalAperturePhotometry().run_process()
+
+@shared_task
+def construct_global_aperture():
+    """
+    """
+
+    GlobalApertureConstructionRunner().run_process()
+
+@shared_task
+def perform_local_photometry():
+    """
+    """
+    LocalAperturePhotometry().run_process()
 
 @shared_task
 def match_transient_to_host():
@@ -59,7 +156,6 @@ def match_transient_to_host():
     """
 
     GhostRunner().run_process()
-
 
 @shared_task
 def download_cutouts():

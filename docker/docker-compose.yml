@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   app:
-    restart: always
     build:
       context: ../app/
     command: bash entrypoints/docker-entrypoint.app.sh
@@ -11,6 +10,10 @@ services:
     volumes:
       - ../app:/app
       - ../data/cutout_cdn:/cutout_cdn
+      - ../data/ghost_output:/ghost_output
+      - ../data/pospector_output:/prospector_output
+      - ../data/tns_staging:/tns_staging
+      - ../data/transmission:/transmission
     env_file:
       - ../env/.env.dev
   celery:
@@ -21,12 +24,14 @@ services:
     volumes:
       - ../app:/app
       - ../data/cutout_cdn:/cutout_cdn
-    depends_on:
-      - app
-      - rabbitmq
+      - ../data/ghost_output:/ghost_output
+      - ../data/pospector_output:/prospector_output
+      - ../data/tns_staging:/tns_staging
+      - ../data/transmission:/transmission
     env_file:
       - ../env/.env.dev
   rabbitmq:
+    restart: always
     image: rabbitmq:3.9-alpine
     ports:
       - "5672:5672"
@@ -39,14 +44,11 @@ services:
     command: bash entrypoints/docker-entrypoint.celery_beat.sh
     volumes:
       - ../app:/app
-    depends_on:
-      - app
-      - rabbitmq
-      - celery
     env_file:
       - ../env/.env.dev
   database:
-    image: mysql:8.0
+    image: mysql:5.7
+    platform: linux/x86_64
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     env_file:
@@ -57,11 +59,10 @@ services:
       - "3306:3306"
   nginx:
     restart: always
-    build: ../nginx
+    image: nginx:1.21-alpine
     volumes:
       - ../static:/static
       - ../data/cutout_cdn:/cutout_cdn
+      - ../nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "80:80"
-    depends_on:
-      - app
