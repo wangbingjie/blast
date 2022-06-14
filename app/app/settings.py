@@ -142,6 +142,7 @@ MEDIA_URL = "/cutouts/"
 # os.path.join(os.path.dirname(BASE_DIR), '../cutout_cdn')
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../cutout_cdn")
 GHOST_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../ghost_output")
+TNS_STAGING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../tns_staging")
 CELERY_TIMEZONE = "UTC"
 CELERY_IMPORTS = ("host.tasks",)
 CELERY_BROKER_URL = "amqp://guest:guest@rabbitmq:5672//"
@@ -157,6 +158,8 @@ CELERY_BEAT_SCHEDULE = {
     "host_information_task": {"task": "host.tasks.get_host_information", "schedule": 60},
     "snapshot_task_register_task": {"task": "host.tasks.snapshot_task_register", "schedule": 60},
     "initialize_transient_tasks": {"task": "host.tasks.initialize_transient_tasks", "schedule": 60},
+    "transient_information_task": {"task": "host.tasks.get_transient_information", "schedule": 60},
+    "get_missed_and_update_transients_tns": {"task": "host.tasks.get_missed_and_update_transients_tns", "schedule": 60},
     #    "cleaning_task": {"task": "host.tasks.delete_ghost_file_logs", "schedule": 30.0},
 }
 

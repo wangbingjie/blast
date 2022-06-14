@@ -1,16 +1,21 @@
 # Modelus to manage to processing of tasks for transients
+import math
 from abc import ABC
 from abc import abstractmethod
 from time import process_time
 
+import numpy as np
 from astropy.io import fits
+from celery import shared_task
 from django.utils import timezone
 
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
 from .host_utils import construct_aperture
 from .host_utils import do_aperture_photometry
+from .host_utils import get_dust_maps
 from .host_utils import query_ned
+from .host_utils import query_sdss
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
@@ -91,6 +96,7 @@ class TaskRunner(ABC):
         register = self.find_register_items_meeting_prerequisites()
         return self._select_highest_priority(register) if register.exists() else None
 
+
     def run_process(self):
         """
         Runs task runner process.
@@ -103,13 +109,19 @@ class TaskRunner(ABC):
 
             start_time = process_time()
             try:
-                status = self._run_process(transient)
-                update_status(task_register_item, status)
-            except:
-                update_status(task_register_item, self.failed_status)
-                raise
+                status_message = self._run_process(transient)
 
+            except:
+                status_message = self.failed_status
+                raise
             end_time = process_time()
+
+            try:
+                status = Status.objects.get(message__exact=status_message)
+            except:
+                raise ValueError(f'The status message you entered ({status_message}) is not in the database, you need to add it.')
+
+            update_status(task_register_item, status)
             processing_time = round(end_time-start_time, 2)
             task_register_item.last_processing_time_seconds = processing_time
             task_register_item.save()
@@ -193,11 +205,11 @@ class GhostRunner(TaskRunner):
             host.save()
             transient.host = host
             transient.save()
-            status = Status.objects.get(message__exact="processed")
+            status_message = "processed"
         else:
-            status = Status.objects.get(message__exact="no ghost match")
+            status_message = "no ghost match"
 
-        return status
+        return status_message
 
 
 class ImageDownloadRunner(TaskRunner):
@@ -225,9 +237,8 @@ class ImageDownloadRunner(TaskRunner):
         """
         Download cutout images
         """
-        status = Status.objects.get(message__exact="processed")
         download_and_save_cutouts(transient)
-        return status
+        return "processed"
 
 
 class GlobalApertureConstructionRunner(TaskRunner):
@@ -283,8 +294,9 @@ class GlobalApertureConstructionRunner(TaskRunner):
         aperture = construct_aperture(image, transient.host.sky_coord)
 
         Aperture.objects.create(
+            name=f'{aperture_cutout[0].name}_global',
             cutout=aperture_cutout[0],
-            orientation=aperture.theta.value,
+            orientation_deg=(180/np.pi)*aperture.theta.value,
             ra_deg=aperture.positions.ra.degree,
             dec_deg=aperture.positions.dec.degree,
             semi_major_axis_arcsec=aperture.a.value,
@@ -292,7 +304,7 @@ class GlobalApertureConstructionRunner(TaskRunner):
             transient=transient,
             type="global")
 
-        return Status.objects.get(message__exact="processed")
+        return "processed"
 
 
 class LocalAperturePhotometry(TaskRunner):
@@ -320,7 +332,9 @@ class LocalAperturePhotometry(TaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        aperture = Aperture(orientation=0.0,
+        aperture = Aperture(
+            name=f'{transient.name}_local',
+            orientation_deg=0.0,
             ra_deg=transient.sky_coord.ra.degree,
             dec_deg=transient.sky_coord.dec.degree,
             semi_major_axis_arcsec=1.0,
@@ -333,15 +347,18 @@ class LocalAperturePhotometry(TaskRunner):
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
-            flux = do_aperture_photometry(image, aperture.sky_aperture, cutout.filter)
+            photometry = do_aperture_photometry(image, aperture.sky_aperture, cutout.filter)
             AperturePhotometry.objects.create(
                 aperture=aperture,
                 transient=transient,
                 filter=cutout.filter,
-                flux=flux,
+                flux=photometry['flux'],
+                flux_error=photometry['flux_error'],
+                magnitude=photometry['magnitude'],
+                magnitude_error=photometry['magnitude_error']
             )
 
-        return Status.objects.get(message__exact="processed")
+        return "processed"
 
 class GlobalAperturePhotometry(TaskRunner):
     """Task Runner to perform local aperture photometry around host"""
@@ -374,17 +391,41 @@ class GlobalAperturePhotometry(TaskRunner):
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
-            flux = do_aperture_photometry(image, aperture[0].sky_aperture, cutout.filter)
-
+            photometry = do_aperture_photometry(image, aperture[0].sky_aperture, cutout.filter)
 
             AperturePhotometry.objects.create(
                 aperture=aperture[0],
                 transient=transient,
                 filter=cutout.filter,
-                flux=flux,
+                flux=photometry['flux'],
+                flux_error=photometry['flux_error'],
+                magnitude=photometry['magnitude'],
+                magnitude_error=photometry['magnitude_error']
             )
 
-        return Status.objects.get(message__exact="processed")
+        return "processed"
+
+
+class TransientInformation(TaskRunner):
+    """Task Runner to gather information about the Transient"""
+
+    def _prerequisites(self):
+        return {"Transient information": "not processed"}
+
+    def _task_name(self):
+        return "Transient information"
+
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """Code goes here"""
+
+        #get_dust_maps(10)
+        return "processed"
 
 
 class HostInformation(TaskRunner):
@@ -398,9 +439,6 @@ class HostInformation(TaskRunner):
                 "Host information": "not processed"}
 
     def _task_name(self):
-        """
-        Task status to be altered is Local Aperture photometry
-        """
         return "Host information"
 
     def _failed_status_message(self):
@@ -413,16 +451,47 @@ class HostInformation(TaskRunner):
         """Code goes here"""
 
         host = transient.host
+
         galaxy_ned_data = query_ned(host.sky_coord)
+        galaxy_sdss_data = query_sdss(host.sky_coord)
 
-        if galaxy_ned_data['redshift'] is not None:
+        status_message = "processed"
+
+        if galaxy_sdss_data['redshift'] is not None and not math.isnan(galaxy_sdss_data['redshift']):
+            host.redshift = galaxy_sdss_data['redshift']
+        elif galaxy_ned_data['redshift'] is not None and not math.isnan(galaxy_ned_data['redshift']):
             host.redshift = galaxy_ned_data['redshift']
-            host.save()
-            status = Status.objects.get(message__exact="processed")
         else:
-            status = Status.objects.get(message_exact="no host NED data")
+            status_message = "no host redshift"
 
-        return status
+        host.save()
+        return status_message
+
+class Prospector(TaskRunner):
+    """Task Runner to run host galaxy inference with prospector"""
+
+    def _prerequisites(self):
+        """
+        Need both the Cutout and Host match to be processed
+        """
+        return {"Host match": "processed",
+                "Host information": "not processed"}
+
+    def _task_name(self):
+        """
+        Task status to be altered is Local Aperture photometry
+        """
+        return "Global host SED inference"
+
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """Code goes here"""
+        pass
 
 
 def update_status(task_status, updated_status):

@@ -2,12 +2,11 @@ from django.shortcuts import render
 
 from .forms import ImageGetForm
 from .forms import TransientSearchForm
+from .models import Acknowledgement
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
-from .models import ExternalResourceCall
 from .models import Filter
-from .models import TaskRegister
 from .models import TaskRegisterSnapshot
 from .models import Transient
 from .plotting_utils import plot_cutout_image
@@ -33,7 +32,6 @@ def transient_list(request):
 
     context = {"transients": transients, "form": form}
     return render(request, "transient_list.html", context)
-
 
 def analytics(request):
 
@@ -112,3 +110,8 @@ def results(request, slug):
                **bokeh_sed_global_context}
 
     return render(request, "results.html", context)
+
+
+def acknowledgements(request):
+    context = {'acknowledgements': Acknowledgement.objects.all()}
+    return render(request, "acknowledgements.html", context)

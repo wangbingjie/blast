@@ -7,7 +7,9 @@ from astropy.coordinates import SkyCoord
 from django.db import models
 from photutils.aperture import SkyEllipticalAperture
 
+from .managers import ApertureManager
 from .managers import CatalogManager
+from .managers import CutoutManager
 from .managers import FilterManager
 from .managers import HostManager
 from .managers import StatusManager
@@ -101,6 +103,10 @@ class Transient(SkyObject):
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
     objects = TransientManager()
     tasks_initialized = models.CharField(max_length=20, default="False")
+    redshift = models.FloatField(null=True, blank=True)
+    spectroscopic_class = models.CharField(max_length=20, null=True, blank=True)
+    photometric_class = models.CharField(max_length=20, null=True, blank=True)
+    milkyway_dust_reddening = models.FloatField(null=True, blank=True)
 
     @property
     def progress(self):
@@ -203,6 +209,7 @@ class Filter(models.Model):
 
     name = models.CharField(max_length=20, unique=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
+    kcorrect_name = models.CharField(max_length=100, null=True, blank=True)
     sedpy_id = models.CharField(max_length=20)
     hips_id = models.CharField(max_length=250)
     vosa_id = models.CharField(max_length=20)
@@ -219,6 +226,12 @@ class Filter(models.Model):
 
     def __str__(self):
         return self.name
+
+    def transmission_curve(self):
+        """
+        Returns the transission curve of the filter
+        """
+        return 0.0
 
 
 class Catalog(models.Model):
@@ -255,26 +268,28 @@ class Cutout(models.Model):
     """
     Model to represent a cutout image of a host galaxy
     """
-
+    name = models.CharField(max_length=50, null=True, blank=True)
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
     transient = models.ForeignKey(
         Transient, on_delete=models.CASCADE, null=True, blank=True
     )
     fits = models.FileField(upload_to=fits_file_path, null=True, blank=True)
-
+    objects = CutoutManager()
 
 class Aperture(SkyObject):
     """
     Model to represent a sky aperture
     """
+    name = models.CharField(max_length=50, blank=True, null=True)
     cutout = models.ForeignKey(Cutout, on_delete=models.CASCADE, blank=True,
                                null=True)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE, blank=True,
                                null=True)
-    orientation = models.FloatField()
+    orientation_deg = models.FloatField()
     semi_major_axis_arcsec = models.FloatField()
     semi_minor_axis_arcsec = models.FloatField()
     type = models.CharField(max_length=20)
+    objects = ApertureManager()
 
     def __str__(self):
         return f'Aperture(ra={self.ra_deg},dec={self.dec_deg}, ' \
@@ -287,7 +302,7 @@ class Aperture(SkyObject):
         return SkyEllipticalAperture(self.sky_coord,
                                      self.semi_major_axis_arcsec * u.arcsec,
                                      self.semi_minor_axis_arcsec * u.arcsec,
-                                     theta=self.orientation * u.degree)
+                                     theta=self.orientation_deg * u.degree)
     @property
     def semi_major_axis(self):
         return round(self.semi_major_axis_arcsec,2)
@@ -298,7 +313,7 @@ class Aperture(SkyObject):
 
     @property
     def orientation_angle(self):
-        return round(self.orientation, 2)
+        return round(self.orientation_deg, 2)
 
 
 class AperturePhotometry(models.Model):
@@ -320,6 +335,17 @@ class AperturePhotometry(models.Model):
     def flux_error_rounded(self):
         return round(self.flux_error, 2)
 
+class ProspectorResult(models.Model):
+    """Model to store prospector results"""
+    posterior = models.FileField(upload_to=fits_file_path, null=True, blank=True)
+    log_mass_16 = models.FloatField(null=True, blank=True)
+    log_mass_50 = models.FloatField(null=True, blank=True)
+    log_mass_84 = models.FloatField(null=True, blank=True)
+
+    log_ssfr_16 = models.FloatField(null=True, blank=True)
+    log_ssfr_50 = models.FloatField(null=True, blank=True)
+    log_ssfr_84 = models.FloatField(null=True, blank=True)
+
 class TaskRegisterSnapshot(models.Model):
     """
     Model to keep track of how many unprocessed transients exist
@@ -328,6 +354,17 @@ class TaskRegisterSnapshot(models.Model):
     number_of_transients = models.IntegerField()
     aggregate_type = models.CharField(max_length=100)
 
+class Acknowledgement(models.Model):
+    """
+    Model to keep track of other work blast uses and relies on.
+    """
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000, null=True, blank=True)
+    repository_url = models.CharField(max_length=100, null=True, blank=True)
+    website_url = models.CharField(max_length=100, null=True, blank=True)
+    paper_url = models.CharField(max_length=100, null=True, blank=True)
+    doi = models.CharField(max_length=1000, null=True, blank=True)
+    acknowledgement_text = models.CharField(max_length=1000, null=True, blank=True)
 
 
 
