@@ -142,6 +142,7 @@ quiverMaps/
 !data/
 data/*
 !data/cutout_cdn/
+!data/transmission/
 data/cutout_cdn/*
 !data/cutout_cdn/2010h/
 data/cutout_cdn/2010h/*
