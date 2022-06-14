@@ -7,15 +7,15 @@ from astropy.coordinates import SkyCoord
 from django.db import models
 from photutils.aperture import SkyEllipticalAperture
 
+from .managers import ApertureManager
 from .managers import CatalogManager
+from .managers import CutoutManager
 from .managers import FilterManager
 from .managers import HostManager
 from .managers import StatusManager
 from .managers import SurveyManager
 from .managers import TaskManager
 from .managers import TransientManager
-from .managers import ApertureManager
-from .managers import CutoutManager
 
 class SkyObject(models.Model):
     """

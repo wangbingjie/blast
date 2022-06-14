@@ -6,8 +6,8 @@ import glob
 import shutil
 
 from celery import shared_task
-from django.utils import timezone
 from django.conf import settings
+from django.utils import timezone
 
 from .models import TaskRegisterSnapshot
 from .models import Transient
@@ -19,12 +19,12 @@ from .processing import ImageDownloadRunner
 from .processing import initialise_all_tasks_status
 from .processing import LocalAperturePhotometry
 from .processing import TransientInformation
+from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
-from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import tns_staging_blast_transient
-from .transient_name_server import update_blast_transient
 from .transient_name_server import tns_staging_file_date_name
+from .transient_name_server import update_blast_transient
 
 @shared_task
 def ingest_recent_tns_data(interval_minutes=100):

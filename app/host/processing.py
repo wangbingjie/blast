@@ -1,19 +1,21 @@
 # Modelus to manage to processing of tasks for transients
+import math
 from abc import ABC
 from abc import abstractmethod
 from time import process_time
 
+import numpy as np
 from astropy.io import fits
-from django.utils import timezone
 from celery import shared_task
+from django.utils import timezone
 
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
 from .host_utils import construct_aperture
 from .host_utils import do_aperture_photometry
+from .host_utils import get_dust_maps
 from .host_utils import query_ned
 from .host_utils import query_sdss
-from .host_utils import get_dust_maps
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
@@ -21,8 +23,6 @@ from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
-import numpy as np
-import math
 
 class TaskRunner(ABC):
     """
