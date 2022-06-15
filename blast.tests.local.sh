@@ -1,3 +1,3 @@
 #!/bin/env bash
-rm -r data/test_database
+bash entrypoints/clean_data.sh
 docker compose -f docker/docker-compose.test.yml up --exit-code-from app

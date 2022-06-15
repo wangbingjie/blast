@@ -11,4 +11,6 @@ urlpatterns = [
     path(f'''{base_path}transients/''', views.transient_list),
     path(f'''{base_path}analytics/''', views.analytics),
     path(f'''{base_path}transients/<slug:slug>/''', views.results),
+    path(f'''{base_path}acknowledgements/''', views.acknowledgements),
+    path(f'''{base_path}''', views.home)
 ]
