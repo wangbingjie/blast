@@ -179,4 +179,3 @@
       filter: [WISE_W4]
       transient: [2010ag]
       fits: /../cutout_cdn/2010ag/WISE/WISE_W4.fits
-

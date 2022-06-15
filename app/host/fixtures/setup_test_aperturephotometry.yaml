@@ -3,7 +3,7 @@
       aperture: [PanSTARRS_g_2010H]
       filter: [PanSTARRS_g]
       transient: [2010H]
-      flux: 
+      flux:
       flux_error:
       magnitude:
       magnitude_error:
