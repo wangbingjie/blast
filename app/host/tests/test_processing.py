@@ -253,6 +253,7 @@ class InitializeTaskRegisterTest(TestCase):
 class ImageDownloadTest(TestCase):
     fixtures = ["setup_tasks.yaml", "setup_status.yaml", "setup_test_transient.yaml", "setup_test_task_register.yaml"]
 
+
     def setUp(self):
         class DummyImageDownloadRunner(ImageDownloadRunner):
             def _run_process(self, transient):
@@ -264,6 +265,7 @@ class ImageDownloadTest(TestCase):
         self.assertTrue(
             self.image_runner._prerequisites() == {"Cutout download": "not processed"}
         )
+
 
     def test_failed_status(self):
         self.assertTrue(self.image_runner.failed_status.message == "failed")

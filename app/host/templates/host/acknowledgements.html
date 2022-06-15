@@ -4,14 +4,12 @@
 
 {% block body %}
 
-
-<h2>Acknowledgements</h2>
-
-<p>
-    Blast is largely glue between already established software projects. It could not
+<div class="p-5 text-left bg-light">
+  <h1 class="mb-3">Acknowledgements</h1>
+  <h6 class="mb-3">Blast is largely glue between already established software projects. It could not
     exist without them. If you use blast, you <b>must</b> acknowledge and cite all
-    of the following projects which blast uses.
-</p>
+    of the following projects which blast uses.</h6>
+</div>
 
 <table class="table">
   <thead>
@@ -31,7 +29,7 @@
       <td>{{acknowledgement.description}}</td>
       <td><a class="nav-link" href="{{acknowledgement.repository_url}}/">{{acknowledgement.repository_url}}</a></td>
       <td><a class="nav-link" href="{{acknowledgement.paper_url}}/">ADS</a></td>
-      <td><a class="nav-link" href="{{acknowledgement.doi}}/">{{acknowledgement.doi}}</a></td>
+      <td><a class="nav-link" href="https://www.doi.org/{{acknowledgement.doi}}/">{{acknowledgement.doi}}</a></td>
       <td><a class="nav-link" href="{{acknowledgement.website_url}}/">{{acknowledgement.website_url}}</a></td>
     </tr>
    {% endfor %}
