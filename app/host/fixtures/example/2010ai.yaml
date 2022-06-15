@@ -172,4 +172,3 @@
       filter: [WISE_W4]
       transient: [2010ai]
       fits: /../cutout_cdn/2010ai/WISE/WISE_W4.fits
-
