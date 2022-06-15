@@ -1,1 +1,1 @@
-python manage.py loaddata ./*/fixtures/example/2010ag.yaml
+python manage.py loaddata ./*/fixtures/example/*.yaml

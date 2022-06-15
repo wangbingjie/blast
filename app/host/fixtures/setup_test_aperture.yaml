@@ -1,9 +1,0 @@
-- model: host.Aperture
-  fields:
-      name: 2010H_PanSTARRS_g_global
-      cutout: [2010H_PanSTARRS_g]
-      transient: [2010H]
-      orientation: 227.80
-      semi_major_axis_arcsec: 38.33451152763058
-      semi_minor_axis_arcsec: 18.809674824389276
-      type: global
