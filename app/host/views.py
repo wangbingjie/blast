@@ -115,3 +115,8 @@ def results(request, slug):
 def acknowledgements(request):
     context = {'acknowledgements': Acknowledgement.objects.all()}
     return render(request, "acknowledgements.html", context)
+
+def home(request):
+    context = {}
+    return render(request, "index.html", context)
+

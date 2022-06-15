@@ -1,4 +1,4 @@
 #!/bin/env bash
-rm -r data/ghost_output/
-rm -r data/database/
+
+bash app/entrypoints/clean_data.sh
 docker compose -f docker/docker-compose.yml up --build
