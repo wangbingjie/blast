@@ -12,16 +12,16 @@ from ..processing import update_status
 
 class TaskRunnerTest(TestCase):
     fixtures = [
-        "setup_test_transient.yaml",
-        "setup_tasks.yaml",
-        "setup_status.yaml",
-        "setup_test_task_register.yaml",
+        "../fixtures/test/setup_test_transient.yaml",
+        "../fixtures/initial/setup_tasks.yaml",
+        "../fixtures/initial/setup_status.yaml",
+        "../fixtures/test/setup_test_task_register.yaml",
     ]
 
     def setUp(self):
         class TestRunnerProcessed(TaskRunner):
             def _run_process(self, transient):
-                return Status.objects.get(message__exact="processed")
+                return "processed"
 
             def _prerequisites(self):
                 return {"Cutout download": "not processed"}
@@ -51,7 +51,7 @@ class TaskRunnerTest(TestCase):
 
         class TestRunnerNotProcessed(TaskRunner):
             def _run_process(self, transient):
-                return Status.objects.get(message__exact="not processed")
+                return "not processed"
 
             def _prerequisites(self):
                 return {"Cutout download": "not processed"}
@@ -66,7 +66,7 @@ class TaskRunnerTest(TestCase):
 
         class TestRunnerTwoPrereqs(TaskRunner):
             def _run_process(self, transient):
-                return Status.objects.get(message__exact="not processed")
+                return "not processed"
 
             def _prerequisites(self):
                 return {"Cutout download": "not processed", "Host match": "processed"}
@@ -81,7 +81,7 @@ class TaskRunnerTest(TestCase):
 
         class TestRunnerTwoPrereqsSuc(TaskRunner):
             def _run_process(self, transient):
-                return Status.objects.get(message__exact="not processed")
+                return "not processed"
 
             def _prerequisites(self):
                 return {
@@ -115,6 +115,7 @@ class TaskRunnerTest(TestCase):
 
     def test_run_failed(self):
         self.failed_runner.run_process()
+
 
         # 2022testone is the oldest transient so should be selected and
         # processed. 2022testtwo should not be selected or processed.
@@ -225,7 +226,8 @@ class TaskRunnerTest(TestCase):
 
 
 class GHOSTRunnerTest(TestCase):
-    fixtures = ["setup_tasks.yaml", "setup_status.yaml"]
+    fixtures = ["../fixtures/initial/setup_tasks.yaml",
+                "../fixtures/initial/setup_status.yaml"]
 
     def setUp(self):
         self.ghost_runner = GhostRunner()
@@ -236,11 +238,13 @@ class GHOSTRunnerTest(TestCase):
         )
 
     def test_failed_status(self):
-        self.assertTrue(self.ghost_runner.failed_status.message == "no GHOST match")
+        self.assertTrue(self.ghost_runner._failed_status_message() == "no GHOST match")
 
 
 class InitializeTaskRegisterTest(TestCase):
-    fixtures = ["setup_test_transient.yaml", "setup_status.yaml", "setup_tasks.yaml"]
+    fixtures = ["../fixtures/test/setup_test_transient.yaml",
+                "../fixtures/initial/setup_status.yaml",
+                "../fixtures/initial/setup_tasks.yaml"]
 
     def test_task_register_init(self):
         transient = Transient.objects.get(name__exact="2022testone")
@@ -251,14 +255,17 @@ class InitializeTaskRegisterTest(TestCase):
 
 
 class ImageDownloadTest(TestCase):
-    fixtures = ["setup_tasks.yaml", "setup_status.yaml", "setup_test_transient.yaml", "setup_test_task_register.yaml"]
+    fixtures = ["../fixtures/initial/setup_tasks.yaml",
+                "../fixtures/initial/setup_status.yaml",
+                "../fixtures/test/setup_test_transient.yaml",
+                "../fixtures/test/setup_test_task_register.yaml"]
 
 
     def setUp(self):
         class DummyImageDownloadRunner(ImageDownloadRunner):
             def _run_process(self, transient):
-                status = Status.objects.get(message__exact="processed")
-                return status
+                return 'processed'
+
         self.image_runner = DummyImageDownloadRunner()
 
     def test_prereqs(self):
@@ -268,7 +275,7 @@ class ImageDownloadTest(TestCase):
 
 
     def test_failed_status(self):
-        self.assertTrue(self.image_runner.failed_status.message == "failed")
+        self.assertTrue(self.image_runner._failed_status_message() == "failed")
 
 
     def test_run_process(self):

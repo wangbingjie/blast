@@ -45,9 +45,9 @@ class TaskRunner(ABC):
         """
         self.processing_status = Status.objects.get(message__exact="processing")
         self.task_register = TaskRegister.objects.all()
-        self.failed_status = Status.objects.get(
-            message__exact=self._failed_status_message()
-        )
+        #self.failed_status = Status.objects.get(
+        #    message__exact=self._failed_status_message()
+        #)
         self.prerequisites = self._prerequisites()
         self.task = Task.objects.get(name__exact=self._task_name())
 
@@ -112,8 +112,8 @@ class TaskRunner(ABC):
                 status_message = self._run_process(transient)
 
             except:
-                status_message = self.failed_status
-                raise
+                status_message = self._failed_status_message()
+                #raise
             end_time = process_time()
 
             try:

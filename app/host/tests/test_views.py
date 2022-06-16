@@ -2,7 +2,7 @@ from django.test import TestCase
 
 
 class ViewTest(TestCase):
-    fixtures = ["setup_test_transient.yaml"]
+    fixtures = ["../fixtures/test/setup_test_transient.yaml"]
 
     def test_transient_list_page(self):
         response = self.client.get("/transients/")
