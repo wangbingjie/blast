@@ -6,6 +6,9 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from django.db import models
 from photutils.aperture import SkyEllipticalAperture
+import pandas as pd
+from sedpy import observate
+from django.conf import settings
 
 from .managers import ApertureManager
 from .managers import CatalogManager
@@ -229,9 +232,16 @@ class Filter(models.Model):
 
     def transmission_curve(self):
         """
-        Returns the transission curve of the filter
+        Returns the transmission curve of the filter
         """
-        return 0.0
+        curve_name = f'{settings.TRANSMISSION_CURVES_ROOT}/{self.name}.txt'
+        transmission_curve = pd.read_csv(curve_name,
+                                         delim_whitespace=True,
+                                         header=None)
+        wavelength = transmission_curve[0].to_numpy()
+        transmission = transmission_curve[1].to_numpy()
+        return observate.Filter(self.name, data=(wavelength, transmission))
+
 
 
 class Catalog(models.Model):

@@ -140,9 +140,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = "/cutouts/"
 # os.path.join(os.path.dirname(BASE_DIR), '../cutout_cdn')
+
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../cutout_cdn")
 GHOST_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../ghost_output")
 TNS_STAGING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../tns_staging")
+TRANSMISSION_CURVES_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../transmission")
+
 CELERY_TIMEZONE = "UTC"
 CELERY_IMPORTS = ("host.tasks",)
 CELERY_BROKER_URL = f'''amqp://{os.environ.get("RABBITMQ_USERNAME", "guest")}:{os.environ.get("RABBITMQ_PASSWORD", "guest")}@rabbitmq:5672//'''
