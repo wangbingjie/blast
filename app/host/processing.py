@@ -24,6 +24,7 @@ from .models import Task
 from .models import TaskRegister
 from .models import Transient
 
+
 class TaskRunner(ABC):
     """
     Abstract base class for a task runner.
@@ -45,9 +46,9 @@ class TaskRunner(ABC):
         """
         self.processing_status = Status.objects.get(message__exact="processing")
         self.task_register = TaskRegister.objects.all()
-        #self.failed_status = Status.objects.get(
+        # self.failed_status = Status.objects.get(
         #    message__exact=self._failed_status_message()
-        #)
+        # )
         self.prerequisites = self._prerequisites()
         self.task = Task.objects.get(name__exact=self._task_name())
 
@@ -96,7 +97,6 @@ class TaskRunner(ABC):
         register = self.find_register_items_meeting_prerequisites()
         return self._select_highest_priority(register) if register.exists() else None
 
-
     def run_process(self):
         """
         Runs task runner process.
@@ -113,16 +113,18 @@ class TaskRunner(ABC):
 
             except:
                 status_message = self._failed_status_message()
-                #raise
+                # raise
             end_time = process_time()
 
             try:
                 status = Status.objects.get(message__exact=status_message)
             except:
-                raise ValueError(f'The status message you entered ({status_message}) is not in the database, you need to add it.')
+                raise ValueError(
+                    f"The status message you entered ({status_message}) is not in the database, you need to add it."
+                )
 
             update_status(task_register_item, status)
-            processing_time = round(end_time-start_time, 2)
+            processing_time = round(end_time - start_time, 2)
             task_register_item.last_processing_time_seconds = processing_time
             task_register_item.save()
 
@@ -248,8 +250,11 @@ class GlobalApertureConstructionRunner(TaskRunner):
         """
         Need both the Cutout and Host match to be processed
         """
-        return {"Cutout download": "processed", "Host Match": "processed",
-                "Global aperture construction": "not processed"}
+        return {
+            "Cutout download": "processed",
+            "Host Match": "processed",
+            "Global aperture construction": "not processed",
+        }
 
     def _task_name(self):
         """
@@ -267,9 +272,18 @@ class GlobalApertureConstructionRunner(TaskRunner):
         """
         Select cutout for aperture
         """
-        filter_names = ["PanSTARRS_g", "PanSTARRS_r", "PanSTARRS_i",
-                        "SDSS_r", "SDSS_i", "SDSS_g", "DES_r",
-                        "DES_i","DES_g","2MASS_H"]
+        filter_names = [
+            "PanSTARRS_g",
+            "PanSTARRS_r",
+            "PanSTARRS_i",
+            "SDSS_r",
+            "SDSS_i",
+            "SDSS_g",
+            "DES_r",
+            "DES_i",
+            "DES_g",
+            "2MASS_H",
+        ]
 
         choice = 0
         filter_choice = filter_names[choice]
@@ -280,29 +294,29 @@ class GlobalApertureConstructionRunner(TaskRunner):
 
         return cutouts.filter(filter__name=filter_choice)
 
-
     def _run_process(self, transient):
         """Code goes here"""
 
         cutouts = Cutout.objects.filter(transient=transient)
-        aperture_cutout  = self._select_cutout_aperture(cutouts)
+        aperture_cutout = self._select_cutout_aperture(cutouts)
 
-        #if not aperture_cutout.exists():
+        # if not aperture_cutout.exists():
         #    return self._failed_status_message()
 
         image = fits.open(aperture_cutout[0].fits.name)
         aperture = construct_aperture(image, transient.host.sky_coord)
 
         Aperture.objects.create(
-            name=f'{aperture_cutout[0].name}_global',
+            name=f"{aperture_cutout[0].name}_global",
             cutout=aperture_cutout[0],
-            orientation_deg=(180/np.pi)*aperture.theta.value,
+            orientation_deg=(180 / np.pi) * aperture.theta.value,
             ra_deg=aperture.positions.ra.degree,
             dec_deg=aperture.positions.dec.degree,
             semi_major_axis_arcsec=aperture.a.value,
             semi_minor_axis_arcsec=aperture.b.value,
             transient=transient,
-            type="global")
+            type="global",
+        )
 
         return "processed"
 
@@ -314,8 +328,10 @@ class LocalAperturePhotometry(TaskRunner):
         """
         Need both the Cutout and Host match to be processed
         """
-        return {"Cutout download": "processed",
-                "Local aperture photometry": "not processed"}
+        return {
+            "Cutout download": "processed",
+            "Local aperture photometry": "not processed",
+        }
 
     def _task_name(self):
         """
@@ -333,32 +349,36 @@ class LocalAperturePhotometry(TaskRunner):
         """Code goes here"""
 
         aperture = Aperture(
-            name=f'{transient.name}_local',
+            name=f"{transient.name}_local",
             orientation_deg=0.0,
             ra_deg=transient.sky_coord.ra.degree,
             dec_deg=transient.sky_coord.dec.degree,
             semi_major_axis_arcsec=1.0,
             semi_minor_axis_arcsec=1.0,
             transient=transient,
-            type="local")
+            type="local",
+        )
         aperture.save()
 
         cutouts = Cutout.objects.filter(transient=transient)
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
-            photometry = do_aperture_photometry(image, aperture.sky_aperture, cutout.filter)
+            photometry = do_aperture_photometry(
+                image, aperture.sky_aperture, cutout.filter
+            )
             AperturePhotometry.objects.create(
                 aperture=aperture,
                 transient=transient,
                 filter=cutout.filter,
-                flux=photometry['flux'],
-                flux_error=photometry['flux_error'],
-                magnitude=photometry['magnitude'],
-                magnitude_error=photometry['magnitude_error']
+                flux=photometry["flux"],
+                flux_error=photometry["flux_error"],
+                magnitude=photometry["magnitude"],
+                magnitude_error=photometry["magnitude_error"],
             )
 
         return "processed"
+
 
 class GlobalAperturePhotometry(TaskRunner):
     """Task Runner to perform local aperture photometry around host"""
@@ -367,9 +387,11 @@ class GlobalAperturePhotometry(TaskRunner):
         """
         Need both the Cutout and Host match to be processed
         """
-        return {"Cutout download": "processed",
-                "Global aperture construction": "processed",
-                "Global aperture photometry": "not processed"}
+        return {
+            "Cutout download": "processed",
+            "Global aperture construction": "processed",
+            "Global aperture photometry": "not processed",
+        }
 
     def _task_name(self):
         """
@@ -386,21 +408,23 @@ class GlobalAperturePhotometry(TaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        aperture = Aperture.objects.filter(transient=transient,type="global")
+        aperture = Aperture.objects.filter(transient=transient, type="global")
         cutouts = Cutout.objects.filter(transient=transient)
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
-            photometry = do_aperture_photometry(image, aperture[0].sky_aperture, cutout.filter)
+            photometry = do_aperture_photometry(
+                image, aperture[0].sky_aperture, cutout.filter
+            )
 
             AperturePhotometry.objects.create(
                 aperture=aperture[0],
                 transient=transient,
                 filter=cutout.filter,
-                flux=photometry['flux'],
-                flux_error=photometry['flux_error'],
-                magnitude=photometry['magnitude'],
-                magnitude_error=photometry['magnitude_error']
+                flux=photometry["flux"],
+                flux_error=photometry["flux_error"],
+                magnitude=photometry["magnitude"],
+                magnitude_error=photometry["magnitude_error"],
             )
 
         return "processed"
@@ -424,7 +448,7 @@ class TransientInformation(TaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        #get_dust_maps(10)
+        # get_dust_maps(10)
         return "processed"
 
 
@@ -435,8 +459,7 @@ class HostInformation(TaskRunner):
         """
         Need both the Cutout and Host match to be processed
         """
-        return {"Host match": "processed",
-                "Host information": "not processed"}
+        return {"Host match": "processed", "Host information": "not processed"}
 
     def _task_name(self):
         return "Host information"
@@ -457,15 +480,20 @@ class HostInformation(TaskRunner):
 
         status_message = "processed"
 
-        if galaxy_sdss_data['redshift'] is not None and not math.isnan(galaxy_sdss_data['redshift']):
-            host.redshift = galaxy_sdss_data['redshift']
-        elif galaxy_ned_data['redshift'] is not None and not math.isnan(galaxy_ned_data['redshift']):
-            host.redshift = galaxy_ned_data['redshift']
+        if galaxy_sdss_data["redshift"] is not None and not math.isnan(
+            galaxy_sdss_data["redshift"]
+        ):
+            host.redshift = galaxy_sdss_data["redshift"]
+        elif galaxy_ned_data["redshift"] is not None and not math.isnan(
+            galaxy_ned_data["redshift"]
+        ):
+            host.redshift = galaxy_ned_data["redshift"]
         else:
             status_message = "no host redshift"
 
         host.save()
         return status_message
+
 
 class Prospector(TaskRunner):
     """Task Runner to run host galaxy inference with prospector"""
@@ -474,8 +502,7 @@ class Prospector(TaskRunner):
         """
         Need both the Cutout and Host match to be processed
         """
-        return {"Host match": "processed",
-                "Host information": "not processed"}
+        return {"Host match": "processed", "Host information": "not processed"}
 
     def _task_name(self):
         """

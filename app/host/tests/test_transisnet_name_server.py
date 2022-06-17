@@ -68,6 +68,4 @@ class ConvertTNSToBLASTTest(TestCase):
         self.assertEqual(
             tns_transient["discoverydate"], blast_transient.public_timestamp
         )
-        self.assertEqual(
-            tns_transient["type"], blast_transient.spectroscopic_class
-        )
+        self.assertEqual(tns_transient["type"], blast_transient.spectroscopic_class)

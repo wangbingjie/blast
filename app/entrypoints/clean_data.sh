@@ -12,4 +12,3 @@ rm -r data/cutout_cdn/*
 mv data/2010ag/ data/cutout_cdn/
 mv data/2010ai/ data/cutout_cdn/
 mv data/2010h/ data/cutout_cdn/
-

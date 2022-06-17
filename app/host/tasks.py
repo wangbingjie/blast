@@ -26,6 +26,7 @@ from .transient_name_server import tns_staging_blast_transient
 from .transient_name_server import tns_staging_file_date_name
 from .transient_name_server import update_blast_transient
 
+
 @shared_task
 def ingest_recent_tns_data(interval_minutes=100):
     """
@@ -58,11 +59,14 @@ def initialize_transient_tasks():
     Initializes all task in the database to not processed for new transients.
     """
 
-    uninitialized_transients = Transient.objects.filter(tasks_initialized__exact="False")
+    uninitialized_transients = Transient.objects.filter(
+        tasks_initialized__exact="False"
+    )
     for transient in uninitialized_transients:
         initialise_all_tasks_status(transient)
         transient.tasks_initialized = "True"
         transient.save()
+
 
 @shared_task
 def snapshot_task_register():
@@ -70,7 +74,7 @@ def snapshot_task_register():
     Takes snapshot of task register for diagnostic purposes.
     """
     transients = Transient.objects.all()
-    total, completed, waiting, not_completed = 0,0,0,0
+    total, completed, waiting, not_completed = 0, 0, 0, 0
 
     for transient in transients:
         total += 1
@@ -83,12 +87,15 @@ def snapshot_task_register():
 
     now = timezone.now()
 
-    for aggregate, label in zip([not_completed, total, completed, waiting],
-                                 ['not completed', 'total', 'completed', 'waiting']):
+    for aggregate, label in zip(
+        [not_completed, total, completed, waiting],
+        ["not completed", "total", "completed", "waiting"],
+    ):
 
-        TaskRegisterSnapshot.objects.create(time=now,
-                                            number_of_transients=aggregate,
-                                            aggregate_type=label)
+        TaskRegisterSnapshot.objects.create(
+            time=now, number_of_transients=aggregate, aggregate_type=label
+        )
+
 
 @shared_task
 def get_missed_and_update_transients_tns():
@@ -97,20 +104,23 @@ def get_missed_and_update_transients_tns():
     """
     yesterday = timezone.now() - datetime.timedelta(days=1)
     date_string = tns_staging_file_date_name(yesterday)
-    data = get_daily_tns_staging_csv(date_string, tns_credentials=get_tns_credentials(),
-                                     save_dir=settings.TNS_STAGING_ROOT)
+    data = get_daily_tns_staging_csv(
+        date_string,
+        tns_credentials=get_tns_credentials(),
+        save_dir=settings.TNS_STAGING_ROOT,
+    )
     saved_transients = Transient.objects.all()
 
     for _, transient in data.iterrows():
         # if transient exists update it
         try:
-            blast_transient = saved_transients.get(
-                name__exact=transient['name'])
+            blast_transient = saved_transients.get(name__exact=transient["name"])
             update_blast_transient(blast_transient, transient)
         # if transient does not exist add it
         except Transient.DoesNotExist:
             blast_transient = tns_staging_blast_transient(transient)
             blast_transient.save()
+
 
 @shared_task
 def get_host_information():
@@ -127,24 +137,25 @@ def get_transient_information():
     """
     TransientInformation().run_process()
 
+
 @shared_task
 def perform_global_photometry():
-    """
-    """
+    """ """
     GlobalAperturePhotometry().run_process()
+
 
 @shared_task
 def construct_global_aperture():
-    """
-    """
+    """ """
 
     GlobalApertureConstructionRunner().run_process()
 
+
 @shared_task
 def perform_local_photometry():
-    """
-    """
+    """ """
     LocalAperturePhotometry().run_process()
+
 
 @shared_task
 def match_transient_to_host():
@@ -156,6 +167,7 @@ def match_transient_to_host():
     """
 
     GhostRunner().run_process()
+
 
 @shared_task
 def download_cutouts():

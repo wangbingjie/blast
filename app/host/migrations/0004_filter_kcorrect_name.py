@@ -6,13 +6,13 @@ from django.db import models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('host', '0003_acknowledgement'),
+        ("host", "0003_acknowledgement"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='filter',
-            name='kcorrect_name',
+            model_name="filter",
+            name="kcorrect_name",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
     ]
