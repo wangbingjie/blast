@@ -10,8 +10,8 @@ services:
       - "8000:8000"
     volumes:
       - ../app:/app
-      - ../cutout_cdn:/cutout_cdn
-      - ../data/ghost_output:/prospector_output
+      - ../data/cutout_cdn:/cutout_cdn
+      - ../data/ghost_output:/ghost_output
       - ../data/ghost_output:/prospector_output
       - ../data/tns_staging:/tns_staging
       - ../data/transmission:/transmission
