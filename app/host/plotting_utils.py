@@ -21,12 +21,14 @@ from host.host_utils import survey_list
 
 from .models import Aperture
 
+
 def scale_image(image_data):
 
     transform = AsinhStretch() + PercentileInterval(99.5)
     scaled_data = transform(image_data)
 
     return scaled_data
+
 
 def plot_image(image_data, figure):
 
@@ -35,14 +37,14 @@ def plot_image(image_data, figure):
 
     scaled_image = scale_image(image_data)
     figure.image(image=[scaled_image])
-    #color_mapper = LogColorMapper(palette="Greys256")
+    # color_mapper = LogColorMapper(palette="Greys256")
     figure.image(
         image=[scaled_image],
         x=0,
         y=0,
         dw=len(image_data),
         dh=len(image_data),
-        #color_mapper=color_mapper,
+        # color_mapper=color_mapper,
         level="image",
     )
 
@@ -62,8 +64,15 @@ def plot_aperture(figure, aperture, wcs, plotting_kwargs=None):
     aperture = aperture.to_pixel(wcs)
     theta_rad = aperture.theta
     x, y = aperture.positions
-    plot_dict = {"x": x, "y": y, "width": aperture.a, "height": aperture.b,
-                 "angle": theta_rad, "fill_color": "#cab2d6", "fill_alpha": 0.1}
+    plot_dict = {
+        "x": x,
+        "y": y,
+        "width": aperture.a,
+        "height": aperture.b,
+        "angle": theta_rad,
+        "fill_color": "#cab2d6",
+        "fill_alpha": 0.1,
+    }
     plot_dict = {**plot_dict, **plotting_kwargs}
     figure.ellipse(**plot_dict)
     return figure
@@ -94,8 +103,9 @@ def plot_image_grid(image_dict, apertures=None):
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 
 
-def plot_cutout_image(cutout=None, transient=None, global_aperture=None,
-                      local_aperture=None):
+def plot_cutout_image(
+    cutout=None, transient=None, global_aperture=None, local_aperture=None
+):
 
     title = cutout.filter if cutout is not None else "No cutout selected"
     fig = figure(
@@ -136,14 +146,28 @@ def plot_cutout_image(cutout=None, transient=None, global_aperture=None,
             )
         if global_aperture.exists():
             filter_name = global_aperture[0].cutout.filter.name
-            plot_aperture(fig, global_aperture[0].sky_aperture, wcs,
-                          plotting_kwargs={"fill_alpha": 0.1,"line_color":"green",
-                                           "legend_label": f'Global Aperture ({filter_name})'})
+            plot_aperture(
+                fig,
+                global_aperture[0].sky_aperture,
+                wcs,
+                plotting_kwargs={
+                    "fill_alpha": 0.1,
+                    "line_color": "green",
+                    "legend_label": f"Global Aperture ({filter_name})",
+                },
+            )
 
         if local_aperture.exists():
-            plot_aperture(fig, local_aperture[0].sky_aperture, wcs,
-                          plotting_kwargs={"fill_alpha": 0.1,"line_color":"blue",
-                                           "legend_label": "Local Aperture"})
+            plot_aperture(
+                fig,
+                local_aperture[0].sky_aperture,
+                wcs,
+                plotting_kwargs={
+                    "fill_alpha": 0.1,
+                    "line_color": "blue",
+                    "legend_label": "Local Aperture",
+                },
+            )
 
     else:
         image_data = np.zeros((500, 500))
@@ -162,7 +186,10 @@ def plot_sed(aperture_photometry=None, type=""):
 
         flux = [measurement.flux for measurement in aperture_photometry]
         flux_error = [measurement.flux_error for measurement in aperture_photometry]
-        wavelength = [measurement.filter.wavelength_eff_angstrom for measurement in aperture_photometry]
+        wavelength = [
+            measurement.filter.wavelength_eff_angstrom
+            for measurement in aperture_photometry
+        ]
     else:
         flux, flux_error, wavelength = [], [], []
 
@@ -190,7 +217,7 @@ def plot_sed(aperture_photometry=None, type=""):
     # fig.add_layout(Grid(dimension=0, ticker=xaxis.ticker))
     # fig.add_layout(Grid(dimension=1, ticker=yaxis.ticker))
     script, div = components(fig)
-    return {f'bokeh_sed_{type}_script': script, f'bokeh_sed_{type}_div': div}
+    return {f"bokeh_sed_{type}_script": script, f"bokeh_sed_{type}_div": div}
 
 
 def plot_errorbar(
@@ -218,6 +245,7 @@ def plot_errorbar(
         figure.multi_line(y_err_x, y_err_y, color=color, **error_kwargs)
     return figure
 
+
 def plot_timeseries():
 
     fig = figure(
@@ -232,4 +260,7 @@ def plot_timeseries():
     )
 
     script, div = components(fig)
-    return {f'bokeh_processing_trends_script': script, f'bokeh_processing_trends_div': div}
+    return {
+        f"bokeh_processing_trends_script": script,
+        f"bokeh_processing_trends_div": div,
+    }

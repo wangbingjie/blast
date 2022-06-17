@@ -10,6 +10,7 @@ from ..processing import initialise_all_tasks_status
 from ..processing import TaskRunner
 from ..processing import update_status
 
+
 class TaskRunnerTest(TestCase):
     fixtures = [
         "../fixtures/test/setup_test_transient.yaml",
@@ -115,7 +116,6 @@ class TaskRunnerTest(TestCase):
 
     def test_run_failed(self):
         self.failed_runner.run_process()
-
 
         # 2022testone is the oldest transient so should be selected and
         # processed. 2022testtwo should not be selected or processed.
@@ -226,8 +226,10 @@ class TaskRunnerTest(TestCase):
 
 
 class GHOSTRunnerTest(TestCase):
-    fixtures = ["../fixtures/initial/setup_tasks.yaml",
-                "../fixtures/initial/setup_status.yaml"]
+    fixtures = [
+        "../fixtures/initial/setup_tasks.yaml",
+        "../fixtures/initial/setup_status.yaml",
+    ]
 
     def setUp(self):
         self.ghost_runner = GhostRunner()
@@ -242,9 +244,11 @@ class GHOSTRunnerTest(TestCase):
 
 
 class InitializeTaskRegisterTest(TestCase):
-    fixtures = ["../fixtures/test/setup_test_transient.yaml",
-                "../fixtures/initial/setup_status.yaml",
-                "../fixtures/initial/setup_tasks.yaml"]
+    fixtures = [
+        "../fixtures/test/setup_test_transient.yaml",
+        "../fixtures/initial/setup_status.yaml",
+        "../fixtures/initial/setup_tasks.yaml",
+    ]
 
     def test_task_register_init(self):
         transient = Transient.objects.get(name__exact="2022testone")
@@ -255,16 +259,17 @@ class InitializeTaskRegisterTest(TestCase):
 
 
 class ImageDownloadTest(TestCase):
-    fixtures = ["../fixtures/initial/setup_tasks.yaml",
-                "../fixtures/initial/setup_status.yaml",
-                "../fixtures/test/setup_test_transient.yaml",
-                "../fixtures/test/setup_test_task_register.yaml"]
-
+    fixtures = [
+        "../fixtures/initial/setup_tasks.yaml",
+        "../fixtures/initial/setup_status.yaml",
+        "../fixtures/test/setup_test_transient.yaml",
+        "../fixtures/test/setup_test_task_register.yaml",
+    ]
 
     def setUp(self):
         class DummyImageDownloadRunner(ImageDownloadRunner):
             def _run_process(self, transient):
-                return 'processed'
+                return "processed"
 
         self.image_runner = DummyImageDownloadRunner()
 
@@ -273,10 +278,8 @@ class ImageDownloadTest(TestCase):
             self.image_runner._prerequisites() == {"Cutout download": "not processed"}
         )
 
-
     def test_failed_status(self):
         self.assertTrue(self.image_runner._failed_status_message() == "failed")
-
 
     def test_run_process(self):
         self.image_runner.run_process()
