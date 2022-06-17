@@ -2,13 +2,13 @@
 This modules contains the django code used to create tables in the database
 backend.
 """
+import pandas as pd
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from django.conf import settings
 from django.db import models
 from photutils.aperture import SkyEllipticalAperture
-import pandas as pd
 from sedpy import observate
-from django.conf import settings
 
 from .managers import ApertureManager
 from .managers import CatalogManager
@@ -19,6 +19,7 @@ from .managers import StatusManager
 from .managers import SurveyManager
 from .managers import TaskManager
 from .managers import TransientManager
+
 
 class SkyObject(models.Model):
     """
@@ -115,10 +116,11 @@ class Transient(SkyObject):
     def progress(self):
         tasks = TaskRegister.objects.filter(transient__name__exact=self.name)
         total_tasks = len(tasks)
-        completed_tasks = len([task for task in tasks
-                                if task.status.message == 'processed'])
+        completed_tasks = len(
+            [task for task in tasks if task.status.message == "processed"]
+        )
         progress = 100 * (completed_tasks / total_tasks) if total_tasks > 0 else 0
-        return int(round(progress,0))
+        return int(round(progress, 0))
 
 
 class Status(models.Model):
@@ -179,7 +181,6 @@ class TaskRegister(models.Model):
         return f" {self.transient.name} | {self.task.name} | {self.status.message}"
 
 
-
 class ExternalResourceCall(models.Model):
     """
     A model to represent a call to a call to an external resource.
@@ -234,14 +235,11 @@ class Filter(models.Model):
         """
         Returns the transmission curve of the filter
         """
-        curve_name = f'{settings.TRANSMISSION_CURVES_ROOT}/{self.name}.txt'
-        transmission_curve = pd.read_csv(curve_name,
-                                         delim_whitespace=True,
-                                         header=None)
+        curve_name = f"{settings.TRANSMISSION_CURVES_ROOT}/{self.name}.txt"
+        transmission_curve = pd.read_csv(curve_name, delim_whitespace=True, header=None)
         wavelength = transmission_curve[0].to_numpy()
         transmission = transmission_curve[1].to_numpy()
         return observate.Filter(self.name, data=(wavelength, transmission))
-
 
 
 class Catalog(models.Model):
@@ -278,6 +276,7 @@ class Cutout(models.Model):
     """
     Model to represent a cutout image of a host galaxy
     """
+
     name = models.CharField(max_length=50, null=True, blank=True)
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
     transient = models.ForeignKey(
@@ -286,15 +285,17 @@ class Cutout(models.Model):
     fits = models.FileField(upload_to=fits_file_path, null=True, blank=True)
     objects = CutoutManager()
 
+
 class Aperture(SkyObject):
     """
     Model to represent a sky aperture
     """
+
     name = models.CharField(max_length=50, blank=True, null=True)
-    cutout = models.ForeignKey(Cutout, on_delete=models.CASCADE, blank=True,
-                               null=True)
-    transient = models.ForeignKey(Transient, on_delete=models.CASCADE, blank=True,
-                               null=True)
+    cutout = models.ForeignKey(Cutout, on_delete=models.CASCADE, blank=True, null=True)
+    transient = models.ForeignKey(
+        Transient, on_delete=models.CASCADE, blank=True, null=True
+    )
     orientation_deg = models.FloatField()
     semi_major_axis_arcsec = models.FloatField()
     semi_minor_axis_arcsec = models.FloatField()
@@ -302,20 +303,25 @@ class Aperture(SkyObject):
     objects = ApertureManager()
 
     def __str__(self):
-        return f'Aperture(ra={self.ra_deg},dec={self.dec_deg}, ' \
-               f'semi major axis={self.semi_major_axis_arcsec}\", ' \
-               f'semi_minor axis={self.semi_minor_axis_arcsec}\")'
+        return (
+            f"Aperture(ra={self.ra_deg},dec={self.dec_deg}, "
+            f'semi major axis={self.semi_major_axis_arcsec}", '
+            f'semi_minor axis={self.semi_minor_axis_arcsec}")'
+        )
 
     @property
     def sky_aperture(self):
         """Return photutils object"""
-        return SkyEllipticalAperture(self.sky_coord,
-                                     self.semi_major_axis_arcsec * u.arcsec,
-                                     self.semi_minor_axis_arcsec * u.arcsec,
-                                     theta=self.orientation_deg * u.degree)
+        return SkyEllipticalAperture(
+            self.sky_coord,
+            self.semi_major_axis_arcsec * u.arcsec,
+            self.semi_minor_axis_arcsec * u.arcsec,
+            theta=self.orientation_deg * u.degree,
+        )
+
     @property
     def semi_major_axis(self):
-        return round(self.semi_major_axis_arcsec,2)
+        return round(self.semi_major_axis_arcsec, 2)
 
     @property
     def semi_minor_axis(self):
@@ -339,14 +345,16 @@ class AperturePhotometry(models.Model):
 
     @property
     def flux_rounded(self):
-        return round(self.flux,2)
+        return round(self.flux, 2)
 
     @property
     def flux_error_rounded(self):
         return round(self.flux_error, 2)
 
+
 class ProspectorResult(models.Model):
     """Model to store prospector results"""
+
     posterior = models.FileField(upload_to=fits_file_path, null=True, blank=True)
     log_mass_16 = models.FloatField(null=True, blank=True)
     log_mass_50 = models.FloatField(null=True, blank=True)
@@ -356,18 +364,22 @@ class ProspectorResult(models.Model):
     log_ssfr_50 = models.FloatField(null=True, blank=True)
     log_ssfr_84 = models.FloatField(null=True, blank=True)
 
+
 class TaskRegisterSnapshot(models.Model):
     """
     Model to keep track of how many unprocessed transients exist
     """
+
     time = models.DateTimeField()
     number_of_transients = models.IntegerField()
     aggregate_type = models.CharField(max_length=100)
+
 
 class Acknowledgement(models.Model):
     """
     Model to keep track of other work blast uses and relies on.
     """
+
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000, null=True, blank=True)
     repository_url = models.CharField(max_length=100, null=True, blank=True)
@@ -375,8 +387,6 @@ class Acknowledgement(models.Model):
     paper_url = models.CharField(max_length=100, null=True, blank=True)
     doi = models.CharField(max_length=1000, null=True, blank=True)
     acknowledgement_text = models.CharField(max_length=1000, null=True, blank=True)
-
-
 
 
 # class Image(models.Model):

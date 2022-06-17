@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from ..processing import GlobalApertureConstructionRunner
+
 # python manage.py test host.tests.test_photometry
 
 
@@ -13,7 +14,7 @@ class PhotometryTest(TestCase):
         "../fixtures/test/setup_test_task_register.yaml",
         "../fixtures/test/setup_test_host.yaml",
         "../fixtures/initial/setup_survey_data.yaml",
-        "../fixtures/initial/setup_filter_data.yaml"
+        "../fixtures/initial/setup_filter_data.yaml",
     ]
 
     def setUp(self):
@@ -21,7 +22,7 @@ class PhotometryTest(TestCase):
 
     def test_aperture_construction_runner(self):
         self.aperture_runner.run_process()
-        self.assertTrue('true'=='true')
+        self.assertTrue("true" == "true")
 
     """
     def test_segmentation(self,debug=False):

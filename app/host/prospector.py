@@ -7,6 +7,7 @@ from .models import Filter
 from .models import Transient
 from .photometric_calibration import jansky_to_maggies
 
+
 def build_obs(transient, aperture_type):
 
     """
@@ -16,8 +17,9 @@ def build_obs(transient, aperture_type):
 
     """
 
-    photometry = AperturePhotometry.objects.filter(transient=transient,
-                                      aperture__type__exact=aperture_type)
+    photometry = AperturePhotometry.objects.filter(
+        transient=transient, aperture__type__exact=aperture_type
+    )
 
     if not photometry.exists():
         raise ValueError(f"No host photometry of type {aperture_type}")
@@ -39,11 +41,15 @@ def build_obs(transient, aperture_type):
         except AperturePhotometry.DoesNotExist or AperturePhotometry.MultipleObjectsReturned:
             raise
 
-    obs_data = dict(wavelength=None, spectrum=None, unc=None,
-                    redshift=transient.host.redshift,
-                    maggies=np.array(flux_maggies),
-                    maggies_unc=np.array(flux_maggies_error),
-                    filters=load_filters(filter_names))
+    obs_data = dict(
+        wavelength=None,
+        spectrum=None,
+        unc=None,
+        redshift=transient.host.redshift,
+        maggies=np.array(flux_maggies),
+        maggies_unc=np.array(flux_maggies_error),
+        filters=load_filters(filter_names),
+    )
 
     return obs_data
 
