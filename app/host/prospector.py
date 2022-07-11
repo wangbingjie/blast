@@ -1,14 +1,14 @@
 # Utils and wrappers for the prospector SED fitting code
 import numpy as np
-from sedpy.observate import load_filters
-from sedpy.observate import Filter as SedpyFilter
-
 import pandas as pd
+from django.conf import settings
+from sedpy.observate import Filter as SedpyFilter
+from sedpy.observate import load_filters
+
 from .models import AperturePhotometry
 from .models import Filter
 from .models import Transient
 from .photometric_calibration import jansky_to_maggies
-from django.conf import settings
 
 
 def filter_to_sedpy_filter(filter, data_dir=settings.TRANSMISSION_CURVES_ROOT):
@@ -17,12 +17,13 @@ def filter_to_sedpy_filter(filter, data_dir=settings.TRANSMISSION_CURVES_ROOT):
     """
 
     try:
-        transmission = pd.read_csv(f'{data_dir}/{filter.name}.txt',
-                                           header=None, delim_whitespace=True)
+        transmission = pd.read_csv(
+            f"{data_dir}/{filter.name}.txt", header=None, delim_whitespace=True
+        )
     except:
-        raise ValueError('Problem loading filter transmission curve')
+        raise ValueError("Problem loading filter transmission curve")
 
-    wavelength, transmission = transmission[0].values,transmission[1].values
+    wavelength, transmission = transmission[0].values, transmission[1].values
     return SedpyFilter(nick=filter.name, data=(wavelength, transmission))
 
 
