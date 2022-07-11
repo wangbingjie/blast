@@ -1,11 +1,29 @@
 # Utils and wrappers for the prospector SED fitting code
 import numpy as np
 from sedpy.observate import load_filters
+from sedpy.observate import Filter as SedpyFilter
 
+import pandas as pd
 from .models import AperturePhotometry
 from .models import Filter
 from .models import Transient
 from .photometric_calibration import jansky_to_maggies
+from django.conf import settings
+
+
+def filter_to_sedpy_filter(filter, data_dir=settings.TRANSMISSION_CURVES_ROOT):
+    """
+    Converts blast filter to sedpy filter object
+    """
+
+    try:
+        transmission = pd.read_csv(f'{data_dir}/{filter.name}.txt',
+                                           header=None, delim_whitespace=True)
+    except:
+        raise ValueError('Problem loading filter transmission curve')
+
+    wavelength, transmission = transmission[0].values,transmission[1].values
+    return SedpyFilter(nick=filter.name, data=(wavelength, transmission))
 
 
 def build_obs(transient, aperture_type):
