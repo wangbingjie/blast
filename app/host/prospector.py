@@ -11,22 +11,6 @@ from .models import Transient
 from .photometric_calibration import jansky_to_maggies
 
 
-def filter_to_sedpy_filter(filter, data_dir=settings.TRANSMISSION_CURVES_ROOT):
-    """
-    Converts blast filter to sedpy filter object
-    """
-
-    try:
-        transmission = pd.read_csv(
-            f"{data_dir}/{filter.name}.txt", header=None, delim_whitespace=True
-        )
-    except:
-        raise ValueError("Problem loading filter transmission curve")
-
-    wavelength, transmission = transmission[0].values, transmission[1].values
-    return SedpyFilter(nick=filter.name, data=(wavelength, transmission))
-
-
 def build_obs(transient, aperture_type):
 
     """
