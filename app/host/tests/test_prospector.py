@@ -29,8 +29,11 @@ class FilterTest(TestCase):
             # assert_array_equal(sedpy_filter.transmission, raw_transmission)
 
 
-# class PropsectorBuildObsTest(TestCase):
-#    fixtures = []
+class PropsectorBuildObsTest(TestCase):
+    fixtures = [
+        "../fixtures/initial/setup_survey_data.yaml",
+        "../fixtures/initial/setup_filter_data.yaml",
+    ]
 
-##    def test_build_obs(self):
-#       pass
+    def test_build_obs(self):
+       pass
