@@ -236,10 +236,15 @@ class Filter(models.Model):
         Returns the transmission curve of the filter
         """
         curve_name = f"{settings.TRANSMISSION_CURVES_ROOT}/{self.name}.txt"
-        transmission_curve = pd.read_csv(curve_name, delim_whitespace=True, header=None)
+
+        try:
+            transmission_curve = pd.read_csv(curve_name, delim_whitespace=True, header=None)
+        except:
+            raise ValueError(f"{self.name}: Problem loading filter transmission curve")
+
         wavelength = transmission_curve[0].to_numpy()
         transmission = transmission_curve[1].to_numpy()
-        return observate.Filter(self.name, data=(wavelength, transmission))
+        return observate.Filter(nick=self.name, data=(wavelength, transmission))
 
 
 class Catalog(models.Model):
