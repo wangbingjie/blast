@@ -97,6 +97,33 @@ class TaskRunner(ABC):
         register = self.find_register_items_meeting_prerequisites()
         return self._select_highest_priority(register) if register.exists() else None
 
+    def _get_status(self, status_message):
+        return 0.0
+
+    def _overwrite_or_create_object(self, model, unique_object_query, object_data):
+        """
+        Overwrites or creates new objects in the blast database.
+
+        Parameters
+        ----------
+        model: blast model of the object that needs to be updated
+        unique_object_query: query to be past to model.objects.get that will
+            uniquely identify the object of interest
+        object_data: data to be saved or over written for the object.
+        Returns
+        -------
+        None
+
+        """
+
+        try:
+            object = model.objects.get(**unique_object_query)
+            object.delete()
+            model.objects.create(**object_data)
+        except model.DoesNotExist:
+            model.objects.create(**object_data)
+
+
     def run_process(self):
         """
         Runs task runner process.
@@ -110,23 +137,23 @@ class TaskRunner(ABC):
             start_time = process_time()
             try:
                 status_message = self._run_process(transient)
-
             except:
                 status_message = self._failed_status_message()
-                # raise
-            end_time = process_time()
+                raise
+            finally:
+                end_time = process_time()
 
-            try:
-                status = Status.objects.get(message__exact=status_message)
-            except:
-                raise ValueError(
+                try:
+                    status = Status.objects.get(message__exact=status_message)
+                except:
+                    raise ValueError(
                     f"The status message you entered ({status_message}) is not in the database, you need to add it."
-                )
+                    )
 
-            update_status(task_register_item, status)
-            processing_time = round(end_time - start_time, 2)
-            task_register_item.last_processing_time_seconds = processing_time
-            task_register_item.save()
+                update_status(task_register_item, status)
+                processing_time = round(end_time - start_time, 2)
+                task_register_item.last_processing_time_seconds = processing_time
+                task_register_item.save()
 
     @abstractmethod
     def _run_process(self, transient):
@@ -417,15 +444,29 @@ class GlobalAperturePhotometry(TaskRunner):
                 image, aperture[0].sky_aperture, cutout.filter
             )
 
-            AperturePhotometry.objects.create(
-                aperture=aperture[0],
-                transient=transient,
-                filter=cutout.filter,
-                flux=photometry["flux"],
-                flux_error=photometry["flux_error"],
-                magnitude=photometry["magnitude"],
-                magnitude_error=photometry["magnitude_error"],
-            )
+            query = {'aperture': aperture[0],
+                     'transient': transient,
+                     'filter': cutout.filter}
+
+            data = {'aperture': aperture[0],
+                    'transient': transient,
+                    'filter': cutout.filter,
+                    'flux':  photometry["flux"],
+                    'flux_error': photometry["flux_error"],
+                    'magnitude': photometry["magnitude"],
+                    'magnitude_error': photometry["magnitude_error"]}
+
+
+            self._overwrite_or_create_object(AperturePhotometry, query, data)
+            #AperturePhotometry.objects.create(
+            #    aperture=aperture[0],
+            #    transient=transient,
+            #    filter=cutout.filter,
+            #    flux=photometry["flux"],
+            #    flux_error=photometry["flux_error"],
+            #    magnitude=photometry["magnitude"],
+            #    magnitude_error=photometry["magnitude_error"],
+            #)
 
         return "processed"
 
