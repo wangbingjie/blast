@@ -6,7 +6,7 @@
     dec_deg: 1.0359861
 - model: host.Transient
   fields:
-    name: 2010H
+    name: 2010h
     tns_id: 3
     public_timestamp: 2010-01-16 00:00:00.000+00:00
     tns_prefix: SN
@@ -47,7 +47,7 @@
   fields:
     transient: [2010h]
     task: [Local aperture photometry]
-    status: [processed]
+    status: [not processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 0.03
 - model: host.TaskRegister
@@ -190,3 +190,104 @@
       semi_major_axis_arcsec: 38.33451152763058
       semi_minor_axis_arcsec: 18.809674824389276
       type: global
+- model: host.Aperture
+  fields:
+      name: 2010h_local
+      cutout: [2010h_PanSTARRS_g]
+      transient: [2010h]
+      orientation_deg: 0.0
+      ra_deg: 121.6004583
+      dec_deg: 1.0359861
+      semi_major_axis_arcsec: 1.0
+      semi_minor_axis_arcsec: 1.0
+      type: local
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [PanSTARRS_g]
+      transient: [2010h]
+      flux: 66.48
+      flux_error: 0.3
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [PanSTARRS_r]
+      transient: [2010h]
+      flux: 134.14
+      flux_error: 0.35
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [PanSTARRS_i]
+      transient: [2010h]
+      flux: 199.2
+      flux_error: 0.39
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [PanSTARRS_z]
+      transient: [2010h]
+      flux: 251.87
+      flux_error: 0.87
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [PanSTARRS_y]
+      transient: [2010h]
+      flux: 318.33
+      flux_error: 1.79
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [SDSS_u]
+      transient: [2010h]
+      flux: 24.5
+      flux_error: 9.52
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [SDSS_r]
+      transient: [2010h]
+      flux: 265.28
+      flux_error: 31.09
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [SDSS_i]
+      transient: [2010h]
+      flux: 406.41
+      flux_error: 38.5
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [SDSS_z]
+      transient: [2010h]
+      flux: 537.61
+      flux_error: 44.29
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [GALEX_NUV]
+      transient: [2010h]
+      flux: 1.27
+      flux_error: 6.88
+      magnitude: 0.0
+      magnitude_error: 0.0

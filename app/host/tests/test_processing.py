@@ -115,7 +115,11 @@ class TaskRunnerTest(TestCase):
         self.assertTrue(task_register.status.message == "processed")
 
     def test_run_failed(self):
-        self.failed_runner.run_process()
+
+        try:
+            self.failed_runner.run_process()
+        except ValueError:
+            pass
 
         # 2022testone is the oldest transient so should be selected and
         # processed. 2022testtwo should not be selected or processed.
