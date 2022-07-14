@@ -40,7 +40,14 @@
   fields:
     transient: [2010h]
     task: [Global aperture photometry]
-    status: [not processed]
+    status: [processed]
+    last_modified: 2000-01-23 01:23:45.678+00:00
+    last_processing_time_seconds: 11.2323
+- model: host.TaskRegister
+  fields:
+    transient: [2010h]
+    task: [Global aperture construction]
+    status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 11.2323
 - model: host.TaskRegister
@@ -352,5 +359,158 @@
       transient: [2010h]
       flux: 1196.85
       flux_error: 99386.74
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [PanSTARRS_g]
+      transient: [2010h]
+      flux: 11486.21
+      flux_error: 6.74
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [PanSTARRS_r]
+      transient: [2010h]
+      flux: 22544.18
+      flux_error: 7.45
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [PanSTARRS_i]
+      transient: [2010h]
+      flux: 32834.65
+      flux_error: 9.23
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [PanSTARRS_z]
+      transient: [2010h]
+      flux: 40192.33
+      flux_error: 21.9
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [PanSTARRS_y]
+      transient: [2010h]
+      flux: 51028.82
+      flux_error: 46.89
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [SDSS_u]
+      transient: [2010h]
+      flux: 3836.16
+      flux_error: 124.09
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [SDSS_r]
+      transient: [2010h]
+      flux: 40749.25
+      flux_error: 387.75
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [SDSS_i]
+      transient: [2010h]
+      flux: 60157.54
+      flux_error: 472.23
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [SDSS_z]
+      transient: [2010h]
+      flux: 78708.5
+      flux_error: 541.32
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [GALEX_NUV]
+      transient: [2010h]
+      flux: 171.44
+      flux_error: 94.73
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [2MASS_J]
+      transient: [2010h]
+      flux: 131353.83
+      flux_error: 1394.29
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [2MASS_H]
+      transient: [2010h]
+      flux: 260596.03
+      flux_error: 2474.14
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [2MASS_K]
+      transient: [2010h]
+      flux: 318604.53
+      flux_error: 3663.86
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [WISE_W1]
+      transient: [2010h]
+      flux: 69285.33
+      flux_error: 1264.35
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [WISE_W2]
+      transient: [2010h]
+      flux: 78341.46
+      flux_error: 3323.04
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [WISE_W3]
+      transient: [2010h]
+      flux: 516932.66
+      flux_error: 109896.85
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_PanSTARRS_g_global]
+      filter: [WISE_W4]
+      transient: [2010h]
+      flux: 326671.97
+      flux_error: 2666271.5
       magnitude: 0.0
       magnitude_error: 0.0

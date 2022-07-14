@@ -46,9 +46,6 @@ class TaskRunner(ABC):
         """
         self.processing_status = Status.objects.get(message__exact="processing")
         self.task_register = TaskRegister.objects.all()
-        # self.failed_status = Status.objects.get(
-        #    message__exact=self._failed_status_message()
-        # )
         self.prerequisites = self._prerequisites()
         self.task = Task.objects.get(name__exact=self._task_name())
 
@@ -327,9 +324,6 @@ class GlobalApertureConstructionRunner(TaskRunner):
         cutouts = Cutout.objects.filter(transient=transient)
         aperture_cutout = self._select_cutout_aperture(cutouts)
 
-        # if not aperture_cutout.exists():
-        #    return self._failed_status_message()
-
         image = fits.open(aperture_cutout[0].fits.name)
         aperture = construct_aperture(image, transient.host.sky_coord)
 
@@ -345,19 +339,6 @@ class GlobalApertureConstructionRunner(TaskRunner):
             "type": "global"}
 
         self._overwrite_or_create_object(Aperture, query, data)
-
-        #Aperture.objects.create(
-        #    name=f"{aperture_cutout[0].name}_global",
-        #    cutout=aperture_cutout[0],
-        #    orientation_deg=(180 / np.pi) * aperture.theta.value,
-        #    ra_deg=aperture.positions.ra.degree,
-        #    dec_deg=aperture.positions.dec.degree,
-        #    semi_major_axis_arcsec=aperture.a.value,
-        #    semi_minor_axis_arcsec=aperture.b.value,
-        #    transient=transient,
-        #    type="global",
-        #)
-
         return "processed"
 
 
