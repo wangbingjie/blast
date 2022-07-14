@@ -1,30 +1,9 @@
 # Utils and wrappers for the prospector SED fitting code
 import numpy as np
-import pandas as pd
-from django.conf import settings
-from sedpy.observate import Filter as SedpyFilter
-from sedpy.observate import load_filters
 
 from .models import AperturePhotometry
 from .models import Filter
-from .models import Transient
 from .photometric_calibration import jansky_to_maggies
-
-
-def filter_to_sedpy_filter(filter, data_dir=settings.TRANSMISSION_CURVES_ROOT):
-    """
-    Converts blast filter to sedpy filter object
-    """
-
-    try:
-        transmission = pd.read_csv(
-            f"{data_dir}/{filter.name}.txt", header=None, delim_whitespace=True
-        )
-    except:
-        raise ValueError("Problem loading filter transmission curve")
-
-    wavelength, transmission = transmission[0].values, transmission[1].values
-    return SedpyFilter(nick=filter.name, data=(wavelength, transmission))
 
 
 def build_obs(transient, aperture_type):
@@ -49,12 +28,12 @@ def build_obs(transient, aperture_type):
     if transient.host.redshift is None:
         raise ValueError("No host galaxy redshift")
 
-    filter_names, flux_maggies, flux_maggies_error = [], [], []
+    filters, flux_maggies, flux_maggies_error = [], [], []
 
     for filter in Filter.objects.all():
         try:
             datapoint = photometry.get(filter=filter)
-            filter_names.append(datapoint.kcorrect_name)
+            filters.append(filter.transmission_curve())
             flux_maggies.append(jansky_to_maggies(datapoint.flux))
             flux_maggies_error.append(jansky_to_maggies(datapoint.flux_error))
         except AperturePhotometry.DoesNotExist or AperturePhotometry.MultipleObjectsReturned:
@@ -67,7 +46,7 @@ def build_obs(transient, aperture_type):
         redshift=transient.host.redshift,
         maggies=np.array(flux_maggies),
         maggies_unc=np.array(flux_maggies_error),
-        filters=load_filters(filter_names),
+        filters=filters,
     )
 
     return obs_data

@@ -46,9 +46,6 @@ class TaskRunner(ABC):
         """
         self.processing_status = Status.objects.get(message__exact="processing")
         self.task_register = TaskRegister.objects.all()
-        # self.failed_status = Status.objects.get(
-        #    message__exact=self._failed_status_message()
-        # )
         self.prerequisites = self._prerequisites()
         self.task = Task.objects.get(name__exact=self._task_name())
 
@@ -97,6 +94,32 @@ class TaskRunner(ABC):
         register = self.find_register_items_meeting_prerequisites()
         return self._select_highest_priority(register) if register.exists() else None
 
+    def _get_status(self, status_message):
+        return 0.0
+
+    def _overwrite_or_create_object(self, model, unique_object_query, object_data):
+        """
+        Overwrites or creates new objects in the blast database.
+
+        Parameters
+        ----------
+        model: blast model of the object that needs to be updated
+        unique_object_query: query to be past to model.objects.get that will
+            uniquely identify the object of interest
+        object_data: data to be saved or over written for the object.
+        Returns
+        -------
+        None
+
+        """
+
+        try:
+            object = model.objects.get(**unique_object_query)
+            object.delete()
+            model.objects.create(**object_data)
+        except model.DoesNotExist:
+            model.objects.create(**object_data)
+
     def run_process(self):
         """
         Runs task runner process.
@@ -110,23 +133,23 @@ class TaskRunner(ABC):
             start_time = process_time()
             try:
                 status_message = self._run_process(transient)
-
             except:
                 status_message = self._failed_status_message()
-                # raise
-            end_time = process_time()
+                raise
+            finally:
+                end_time = process_time()
 
-            try:
-                status = Status.objects.get(message__exact=status_message)
-            except:
-                raise ValueError(
-                    f"The status message you entered ({status_message}) is not in the database, you need to add it."
-                )
+                try:
+                    status = Status.objects.get(message__exact=status_message)
+                except:
+                    raise ValueError(
+                        f"The status message you entered ({status_message}) is not in the database, you need to add it."
+                    )
 
-            update_status(task_register_item, status)
-            processing_time = round(end_time - start_time, 2)
-            task_register_item.last_processing_time_seconds = processing_time
-            task_register_item.save()
+                update_status(task_register_item, status)
+                processing_time = round(end_time - start_time, 2)
+                task_register_item.last_processing_time_seconds = processing_time
+                task_register_item.save()
 
     @abstractmethod
     def _run_process(self, transient):
@@ -300,24 +323,23 @@ class GlobalApertureConstructionRunner(TaskRunner):
         cutouts = Cutout.objects.filter(transient=transient)
         aperture_cutout = self._select_cutout_aperture(cutouts)
 
-        # if not aperture_cutout.exists():
-        #    return self._failed_status_message()
-
         image = fits.open(aperture_cutout[0].fits.name)
         aperture = construct_aperture(image, transient.host.sky_coord)
 
-        Aperture.objects.create(
-            name=f"{aperture_cutout[0].name}_global",
-            cutout=aperture_cutout[0],
-            orientation_deg=(180 / np.pi) * aperture.theta.value,
-            ra_deg=aperture.positions.ra.degree,
-            dec_deg=aperture.positions.dec.degree,
-            semi_major_axis_arcsec=aperture.a.value,
-            semi_minor_axis_arcsec=aperture.b.value,
-            transient=transient,
-            type="global",
-        )
+        query = {"name": f"{aperture_cutout[0].name}_global"}
+        data = {
+            "name": f"{aperture_cutout[0].name}_global",
+            "cutout": aperture_cutout[0],
+            "orientation_deg": (180 / np.pi) * aperture.theta.value,
+            "ra_deg": aperture.positions.ra.degree,
+            "dec_deg": aperture.positions.dec.degree,
+            "semi_major_axis_arcsec": aperture.a.value,
+            "semi_minor_axis_arcsec": aperture.b.value,
+            "transient": transient,
+            "type": "global",
+        }
 
+        self._overwrite_or_create_object(Aperture, query, data)
         return "processed"
 
 
@@ -348,34 +370,62 @@ class LocalAperturePhotometry(TaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        aperture = Aperture(
-            name=f"{transient.name}_local",
-            orientation_deg=0.0,
-            ra_deg=transient.sky_coord.ra.degree,
-            dec_deg=transient.sky_coord.dec.degree,
-            semi_major_axis_arcsec=1.0,
-            semi_minor_axis_arcsec=1.0,
-            transient=transient,
-            type="local",
-        )
-        aperture.save()
+        query = {"name__exact": f"{transient.name}_local"}
+        data = {
+            "name": f"{transient.name}_local",
+            "orientation_deg": 0.0,
+            "ra_deg": transient.sky_coord.ra.degree,
+            "dec_deg": transient.sky_coord.dec.degree,
+            "semi_major_axis_arcsec": 1.0,
+            "semi_minor_axis_arcsec": 1.0,
+            "transient": transient,
+            "type": "local",
+        }
 
+        self._overwrite_or_create_object(Aperture, query, data)
+        aperture = Aperture.objects.get(**query)
         cutouts = Cutout.objects.filter(transient=transient)
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
-            photometry = do_aperture_photometry(
-                image, aperture.sky_aperture, cutout.filter
-            )
-            AperturePhotometry.objects.create(
-                aperture=aperture,
-                transient=transient,
-                filter=cutout.filter,
-                flux=photometry["flux"],
-                flux_error=photometry["flux_error"],
-                magnitude=photometry["magnitude"],
-                magnitude_error=photometry["magnitude_error"],
-            )
+
+            try:
+                photometry = do_aperture_photometry(
+                    image, aperture.sky_aperture, cutout.filter
+                )
+
+                query = {
+                    "aperture": aperture,
+                    "transient": transient,
+                    "filter": cutout.filter,
+                }
+
+                data = {
+                    "aperture": aperture,
+                    "transient": transient,
+                    "filter": cutout.filter,
+                    "flux": photometry["flux"],
+                    "flux_error": photometry["flux_error"],
+                    "magnitude": photometry["magnitude"],
+                    "magnitude_error": photometry["magnitude_error"],
+                }
+
+                self._overwrite_or_create_object(AperturePhotometry, query, data)
+            except Exception as e:
+                print(e)
+
+            # photometry = do_aperture_photometry(
+            #    image, aperture.sky_aperture, cutout.filter
+            # )
+            # AperturePhotometry.objects.create(
+            #    aperture=aperture,
+            #    transient=transient,
+            #    filter=cutout.filter,
+            #    flux=photometry["flux"],
+            #    flux_error=photometry["flux_error"],
+            #    magnitude=photometry["magnitude"],
+            #    magnitude_error=photometry["magnitude_error"],
+            # )
 
         return "processed"
 
@@ -413,19 +463,31 @@ class GlobalAperturePhotometry(TaskRunner):
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
-            photometry = do_aperture_photometry(
-                image, aperture[0].sky_aperture, cutout.filter
-            )
 
-            AperturePhotometry.objects.create(
-                aperture=aperture[0],
-                transient=transient,
-                filter=cutout.filter,
-                flux=photometry["flux"],
-                flux_error=photometry["flux_error"],
-                magnitude=photometry["magnitude"],
-                magnitude_error=photometry["magnitude_error"],
-            )
+            try:
+                photometry = do_aperture_photometry(
+                    image, aperture[0].sky_aperture, cutout.filter
+                )
+
+                query = {
+                    "aperture": aperture[0],
+                    "transient": transient,
+                    "filter": cutout.filter,
+                }
+
+                data = {
+                    "aperture": aperture[0],
+                    "transient": transient,
+                    "filter": cutout.filter,
+                    "flux": photometry["flux"],
+                    "flux_error": photometry["flux_error"],
+                    "magnitude": photometry["magnitude"],
+                    "magnitude_error": photometry["magnitude_error"],
+                }
+
+                self._overwrite_or_create_object(AperturePhotometry, query, data)
+            except Exception as e:
+                print(e)
 
         return "processed"
 

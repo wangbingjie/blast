@@ -1,5 +1,7 @@
 from django.test import TestCase
 
+from ..models import Cutout
+from ..models import Filter
 from ..models import Status
 from ..models import Task
 from ..models import TaskRegister
@@ -17,6 +19,9 @@ class TaskRunnerTest(TestCase):
         "../fixtures/initial/setup_tasks.yaml",
         "../fixtures/initial/setup_status.yaml",
         "../fixtures/test/setup_test_task_register.yaml",
+        "../fixtures/initial/setup_survey_data.yaml",
+        "../fixtures/initial/setup_filter_data.yaml",
+        "../fixtures/test/test_cutout.yaml",
     ]
 
     def setUp(self):
@@ -115,7 +120,11 @@ class TaskRunnerTest(TestCase):
         self.assertTrue(task_register.status.message == "processed")
 
     def test_run_failed(self):
-        self.failed_runner.run_process()
+
+        try:
+            self.failed_runner.run_process()
+        except ValueError:
+            pass
 
         # 2022testone is the oldest transient so should be selected and
         # processed. 2022testtwo should not be selected or processed.
@@ -223,6 +232,41 @@ class TaskRunnerTest(TestCase):
         task = Task.objects.get(name__exact="Cutout download")
         task_register = TaskRegister.objects.get(transient=transient, task=task)
         self.assertTrue(task_register.status.message == "not processed")
+
+    def test_overwrite_object(self):
+        transient = Transient.objects.get(name__exact="2022testone")
+        wise_filter = Filter.objects.get(name__exact="WISE_W4")
+
+        query = {"transient": transient, "filter": wise_filter}
+        data = {
+            "transient": transient,
+            "filter": wise_filter,
+            "fits": "test",
+            "name": "test_name",
+        }
+        self.processed_runner._overwrite_or_create_object(Cutout, query, data)
+
+        cutout_changed = Cutout.objects.get(name__exact="test_name")
+        self.assertTrue(cutout_changed.fits.name == "test")
+        self.assertTrue(cutout_changed.name == "test_name")
+
+    def test_create_object(self):
+        transient = Transient.objects.get(name__exact="2022testone")
+        wise_filter = Filter.objects.get(name__exact="WISE_W1")
+
+        query = {"transient": transient, "filter": wise_filter}
+        data = {
+            "transient": transient,
+            "filter": wise_filter,
+            "fits": "test",
+            "name": "test_name",
+        }
+        self.processed_runner._overwrite_or_create_object(Cutout, query, data)
+
+        cutout_changed = Cutout.objects.get(name__exact="test_name")
+        self.assertTrue(cutout_changed.fits.name == "test")
+        self.assertTrue(cutout_changed.name == "test_name")
+        self.assertTrue(cutout_changed.filter.name == "WISE_W1")
 
 
 class GHOSTRunnerTest(TestCase):
