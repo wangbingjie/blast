@@ -407,14 +407,14 @@ class LocalAperturePhotometry(TaskRunner):
 
             try:
                 photometry = do_aperture_photometry(
-                    image, aperture[0].sky_aperture, cutout.filter
+                    image, aperture.sky_aperture, cutout.filter
                 )
 
-                query = {'aperture': aperture[0],
+                query = {'aperture': aperture,
                          'transient': transient,
                       'filter': cutout.filter}
 
-                data = {'aperture': aperture[0],
+                data = {'aperture': aperture,
                         'transient': transient,
                          'filter': cutout.filter,
                         'flux':  photometry["flux"],

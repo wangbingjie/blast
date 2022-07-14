@@ -47,7 +47,7 @@
   fields:
     transient: [2010h]
     task: [Local aperture photometry]
-    status: [not processed]
+    status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 0.03
 - model: host.TaskRegister
@@ -289,5 +289,68 @@
       transient: [2010h]
       flux: 1.27
       flux_error: 6.88
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [2MASS_J]
+      transient: [2010h]
+      flux: 1091.48
+      flux_error: 130.38
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [2MASS_H]
+      transient: [2010h]
+      flux: 2183.8
+      flux_error: 224.97
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [2MASS_K]
+      transient: [2010h]
+      flux: 2744.2
+      flux_error: 321.52
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [WISE_W1]
+      transient: [2010h]
+      flux: 300.12
+      flux_error: 76.95
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [WISE_W2]
+      transient: [2010h]
+      flux: 332.67
+      flux_error: 164.67
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [WISE_W3]
+      transient: [2010h]
+      flux: 2095.17
+      flux_error: 4138.78
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2010h_local]
+      filter: [WISE_W4]
+      transient: [2010h]
+      flux: 1196.85
+      flux_error: 99386.74
       magnitude: 0.0
       magnitude_error: 0.0
