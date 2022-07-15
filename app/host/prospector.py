@@ -4,6 +4,10 @@ import numpy as np
 from .models import AperturePhotometry
 from .models import Filter
 from .photometric_calibration import jansky_to_maggies
+from prospect.models.templates import TemplateLibrary
+from prospect.models import SpecModel
+from prospect.sources import CSPSpecBasis
+from prospect.fitting import lnprobfn, fit_model
 
 
 def build_obs(transient, aperture_type):
@@ -52,12 +56,32 @@ def build_obs(transient, aperture_type):
     return obs_data
 
 
-def build_model(my, arguments):
+def build_model(observations):
     """
-    Required by propector defined by
-    https://prospect.readthedocs.io/en/latest/models.html
+    Construct all model components
     """
-    return 0.0
+
+    model_params = TemplateLibrary["parametric_sfh"]
+    model_params.update(TemplateLibrary["nebular"])
+    model_params["zred"]["init"] = observations["redshift"]
+    model = SpecModel(model_params)
+    sps = CSPSpecBasis(zcontinuous=1)
+    noise_model = (None, None)
+
+    return {'model': model, 'sps': sps, 'noise_model': noise_model}
+
+
+def fit_model(observations, model_components, fitting_kwargs):
+    """Fit the model"""
+    output = fit_model(observations,
+                       model_components['model'],
+                       model_components['sps'],
+                       optimize=False,
+                       dynesty=True,
+                       lnprobfn=lnprobfn,
+                       noise=model_components['noise_model'],
+                       **fitting_kwargs)
+    return output
 
 
 def build_sps(my, arguments):

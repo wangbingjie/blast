@@ -23,6 +23,9 @@ from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
+from .prospector import build_obs
+from .prospector import build_model
+from .prospector import fit_model
 
 
 class TaskRunner(ABC):
@@ -104,7 +107,7 @@ class TaskRunner(ABC):
         Parameters
         ----------
         model: blast model of the object that needs to be updated
-        unique_object_query: query to be past to model.objects.get that will
+        unique_object_query: query to be passed to model.objects.get that will
             uniquely identify the object of interest
         object_data: data to be saved or over written for the object.
         Returns
@@ -413,20 +416,6 @@ class LocalAperturePhotometry(TaskRunner):
                 self._overwrite_or_create_object(AperturePhotometry, query, data)
             except Exception as e:
                 print(e)
-
-            # photometry = do_aperture_photometry(
-            #    image, aperture.sky_aperture, cutout.filter
-            # )
-            # AperturePhotometry.objects.create(
-            #    aperture=aperture,
-            #    transient=transient,
-            #    filter=cutout.filter,
-            #    flux=photometry["flux"],
-            #    flux_error=photometry["flux_error"],
-            #    magnitude=photometry["magnitude"],
-            #    magnitude_error=photometry["magnitude_error"],
-            # )
-
         return "processed"
 
 
@@ -580,6 +569,12 @@ class Prospector(TaskRunner):
 
     def _run_process(self, transient):
         """Code goes here"""
+        observations = build_obs(transient='global')
+        model_components = build_model(observations)
+        fitting_settings = dict(nlive_init=400,
+                                nested_method="rwalk",
+                                nested_target_n_effective=10000)
+        posterior = fit_model(observations, model_components, fitting_settings)
         pass
 
 
