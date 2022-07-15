@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      PYTHON: '3.7'
+      PYTHON: '3.8'
     steps:
     - uses: actions/checkout@master
     - name: Setup Python
