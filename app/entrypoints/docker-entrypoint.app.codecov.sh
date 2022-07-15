@@ -4,4 +4,4 @@ python manage.py makemigrations &&
 python manage.py migrate &&
 pip install coverage &&
 coverage run manage.py test host.tests -v 2 &&
-codecov
+
