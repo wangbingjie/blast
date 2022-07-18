@@ -137,5 +137,24 @@ def acknowledgements(request):
 
 
 def home(request):
-    context = {}
-    return render(request, "index.html", context)
+
+    analytics_results = {}
+
+    for aggregate in ["total", "not completed", "completed", "waiting"]:
+
+        transients = TaskRegisterSnapshot.objects.filter(
+            aggregate_type__exact=aggregate
+        )
+        transients_ordered = transients.order_by("-time")
+
+        if transients_ordered.exists():
+            transients_current = transients_ordered[0]
+        else:
+            transients_current = None
+
+        analytics_results[
+            f"{aggregate}_transients_current".replace(" ", "_")
+        ] = transients_current
+        bokeh_processing_context = plot_timeseries()
+
+    return render(request, "index.html", {**analytics_results, **bokeh_processing_context})
