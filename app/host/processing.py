@@ -23,6 +23,7 @@ from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
+from .models import ProspectorResult
 from .prospector import build_obs
 from .prospector import build_model
 from .prospector import fit_model
@@ -546,14 +547,15 @@ class HostInformation(TaskRunner):
         return status_message
 
 
-class Prospector(TaskRunner):
+class HostSEDFitting(TaskRunner):
     """Task Runner to run host galaxy inference with prospector"""
 
     def _prerequisites(self):
         """
         Need both the Cutout and Host match to be processed
         """
-        return {"Host match": "processed", "Host information": "not processed"}
+        return {"Host match": "processed", "Host information": "processed",
+                "Global aperture photometry": "processed"}
 
     def _task_name(self):
         """
@@ -575,7 +577,8 @@ class Prospector(TaskRunner):
                                 nested_method="rwalk",
                                 nested_target_n_effective=10000)
         posterior = fit_model(observations, model_components, fitting_settings)
-        pass
+
+        return "processed"
 
 
 def update_status(task_status, updated_status):
