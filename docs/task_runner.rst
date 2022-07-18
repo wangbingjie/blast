@@ -6,8 +6,8 @@ Task Runners
 
 This page walks you through how to write a TaskRunner. A TaskRunner performs a
 given computational task on a transient ingested into the blast database. An
-example of TaskRunner would be finding a Host galaxy match for a given
-transient.
+example of task that a TaskRunner would perform would be finding a Host
+galaxy match for a given transient.
 
 All TaskRunners should inherit from the TaskRunner class. This abstract base
 class takes care of all the house keeping associated with running as task in
@@ -22,7 +22,7 @@ Process method
 The _run_process method is where your task's code should go. This method
 should contain all the necessary computations and saves to the database for your
 task to be completed. It takes a Transient object as an argument and must return
-a Status object which indicates the status of the task after computation. As an
+a status string which indicates the status of the task after computation. As an
 example, let's implement a simple task that just prints 'processing' and
 then returns the processed Status.
 
@@ -32,7 +32,7 @@ then returns the processed Status.
 
     def _run_process(transient):
         print('processing')
-        return = Status.objects.get(message__exact="processed")
+        "processed"
 
 Prerequisites
 -------------
@@ -95,7 +95,7 @@ Putting this all together, the example TaskRunner class would be,
 
         def _run_process(transient):
             print('processing')
-            return = Status.objects.get(message__exact="processed")
+            "processed"
 
         def _prerequisites():
             return {'Host match': 'processed', 'Cutout download': 'processed'}
