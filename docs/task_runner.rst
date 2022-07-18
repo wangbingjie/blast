@@ -32,7 +32,7 @@ then returns the processed Status.
 
     def _run_process(transient):
         print('processing')
-        "processed"
+        return "processed"
 
 Prerequisites
 -------------
@@ -47,7 +47,7 @@ like this.
 .. code:: python
 
     def _prerequisites():
-        return {'Host match': 'processed', 'Cutout download': 'processed'}
+        return {"Host match": "processed", "Cutout download": "processed"}
 
 This will mean that your TaskRunner will only run on transients in the blast
 database meeting the prerequisites.
@@ -64,7 +64,7 @@ of the Host match Task,
 .. code:: python
 
     def _task_name():
-        return 'Host match'
+        return "Host match"
 
 Failed Status
 -------------
@@ -78,7 +78,7 @@ status to be the Status with the message 'failed',
 .. code:: python
 
     def _failed_status_message()
-        return 'failed'
+        return "failed"
 
 Full example class
 ------------------
@@ -95,13 +95,13 @@ Putting this all together, the example TaskRunner class would be,
 
         def _run_process(transient):
             print('processing')
-            "processed"
+            return "processed"
 
         def _prerequisites():
-            return {'Host match': 'processed', 'Cutout download': 'processed'}
+            return {"Host match": "processed", "Cutout download": "processed"}
 
         def _task_name():
-            return 'Host match'
+            return "Host match"
 
         def failed_status_message()
-            return 'failed'
+            return "failed"
