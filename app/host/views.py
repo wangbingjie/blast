@@ -157,4 +157,6 @@ def home(request):
         ] = transients_current
         bokeh_processing_context = plot_timeseries()
 
-    return render(request, "index.html", {**analytics_results, **bokeh_processing_context})
+    return render(
+        request, "index.html", {**analytics_results, **bokeh_processing_context}
+    )
