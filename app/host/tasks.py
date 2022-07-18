@@ -15,11 +15,11 @@ from .processing import GhostRunner
 from .processing import GlobalApertureConstructionRunner
 from .processing import GlobalAperturePhotometry
 from .processing import HostInformation
+from .processing import HostSEDFitting
 from .processing import ImageDownloadRunner
 from .processing import initialise_all_tasks_status
 from .processing import LocalAperturePhotometry
 from .processing import TransientInformation
-from .processing import HostSEDFitting
 from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
@@ -169,12 +169,14 @@ def match_transient_to_host():
 
     GhostRunner().run_process()
 
+
 @shared_task
 def global_host_sed_fitting():
     """
     Runs fits to global host aperture photometry
     """
     HostSEDFitting().run_process()
+
 
 @shared_task
 def download_cutouts():

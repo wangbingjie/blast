@@ -19,13 +19,13 @@ from .host_utils import query_sdss
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
+from .models import ProspectorResult
 from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
-from .models import ProspectorResult
-from .prospector import build_obs
 from .prospector import build_model
+from .prospector import build_obs
 from .prospector import fit_model
 
 
@@ -554,8 +554,11 @@ class HostSEDFitting(TaskRunner):
         """
         Need both the Cutout and Host match to be processed
         """
-        return {"Host match": "processed", "Host information": "processed",
-                "Global aperture photometry": "processed"}
+        return {
+            "Host match": "processed",
+            "Host information": "processed",
+            "Global aperture photometry": "processed",
+        }
 
     def _task_name(self):
         """
@@ -571,11 +574,11 @@ class HostSEDFitting(TaskRunner):
 
     def _run_process(self, transient):
         """Code goes here"""
-        observations = build_obs(transient='global')
+        observations = build_obs(transient="global")
         model_components = build_model(observations)
-        fitting_settings = dict(nlive_init=400,
-                                nested_method="rwalk",
-                                nested_target_n_effective=10000)
+        fitting_settings = dict(
+            nlive_init=400, nested_method="rwalk", nested_target_n_effective=10000
+        )
         posterior = fit_model(observations, model_components, fitting_settings)
 
         return "processed"
