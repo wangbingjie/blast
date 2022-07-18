@@ -362,6 +362,7 @@ class AperturePhotometry(models.Model):
 class ProspectorResult(models.Model):
     """Model to store prospector results"""
 
+    host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
     posterior = models.FileField(upload_to=fits_file_path, null=True, blank=True)
     log_mass_16 = models.FloatField(null=True, blank=True)
     log_mass_50 = models.FloatField(null=True, blank=True)

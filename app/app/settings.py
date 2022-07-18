@@ -187,6 +187,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "host.tasks.get_missed_and_update_transients_tns",
         "schedule": 60,
     },
+    "global_host_sed_fitting": {
+        "task": "host.tasks.global_host_sed_fitting",
+        "schedule": 60,
+    },
     #    "cleaning_task": {"task": "host.tasks.delete_ghost_file_logs", "schedule": 30.0},
 }
 

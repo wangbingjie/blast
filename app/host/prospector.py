@@ -70,7 +70,6 @@ def build_model(observations):
 
     return {'model': model, 'sps': sps, 'noise_model': noise_model}
 
-
 def fit_model(observations, model_components, fitting_kwargs):
     """Fit the model"""
     output = fit_model(observations,
@@ -84,17 +83,5 @@ def fit_model(observations, model_components, fitting_kwargs):
     return output
 
 
-def build_sps(my, arguments):
-    """
-    Required by prospector defined by
-    https://prospect.readthedocs.io/en/latest/usage.html
-    """
-    return 0.0
-
-
-def build_noise(my, arguments):
-    """
-    Required by prospector defined by
-    https://prospect.readthedocs.io/en/latest/usage.html
-    """
+def prospector_result_to_blast(prospector_output):
     return 0.0
