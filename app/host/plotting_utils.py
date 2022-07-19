@@ -1,4 +1,7 @@
+from math import pi
+
 import numpy as np
+import pandas as pd
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.visualization import AsinhStretch
@@ -6,13 +9,6 @@ from astropy.visualization import PercentileInterval
 from astropy.wcs import WCS
 from bokeh.embed import components
 from bokeh.layouts import gridplot
-from math import pi
-
-import pandas as pd
-
-from bokeh.palettes import Category20c
-from bokeh.plotting import figure, show
-from bokeh.transform import cumsum
 from bokeh.models import Circle
 from bokeh.models import ColumnDataSource
 from bokeh.models import Cross
@@ -22,7 +18,10 @@ from bokeh.models import LinearAxis
 from bokeh.models import LogColorMapper
 from bokeh.models import Plot
 from bokeh.models import Scatter
+from bokeh.palettes import Category20c
 from bokeh.plotting import figure
+from bokeh.plotting import show
+from bokeh.transform import cumsum
 from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
 
@@ -254,25 +253,41 @@ def plot_errorbar(
 
 
 def plot_pie_chart(data_dict):
-    data = pd.Series(data_dict).reset_index(name='value').rename(
-        columns={'index': 'country'})
-    data['angle'] = data['value'] / data['value'].sum() * 2 * pi
-    data['color'] = Category20c[len(data)]
+    data = (
+        pd.Series(data_dict)
+        .reset_index(name="value")
+        .rename(columns={"index": "country"})
+    )
+    data["angle"] = data["value"] / data["value"].sum() * 2 * pi
+    data["color"] = Category20c[len(data)]
 
-    p = figure(height=350, title="Pie Chart", toolbar_location=None,
-               tools="hover", tooltips="@country: @value", x_range=(-0.5, 1.0))
+    p = figure(
+        height=350,
+        title="Pie Chart",
+        toolbar_location=None,
+        tools="hover",
+        tooltips="@country: @value",
+        x_range=(-0.5, 1.0),
+    )
 
-    p.wedge(x=0, y=1, radius=0.4,
-            start_angle=cumsum('angle', include_zero=True),
-            end_angle=cumsum('angle'),
-            line_color="white", fill_color='color', legend_field='country',
-            source=data)
+    p.wedge(
+        x=0,
+        y=1,
+        radius=0.4,
+        start_angle=cumsum("angle", include_zero=True),
+        end_angle=cumsum("angle"),
+        line_color="white",
+        fill_color="color",
+        legend_field="country",
+        source=data,
+    )
 
     p.axis.axis_label = None
     p.axis.visible = False
     p.grid.grid_line_color = None
     script, div = components(p)
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
+
 
 def plot_timeseries():
 

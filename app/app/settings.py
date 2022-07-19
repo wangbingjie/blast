@@ -147,7 +147,10 @@ TNS_STAGING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../tns_staging")
 TRANSMISSION_CURVES_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../transmission")
 
 CELERY_TIMEZONE = "UTC"
-CELERY_IMPORTS = ("host.tasks", "host.processing",)
+CELERY_IMPORTS = (
+    "host.tasks",
+    "host.processing",
+)
 CELERY_BROKER_URL = f"""amqp://{os.environ.get("RABBITMQ_USERNAME", "guest")}:{os.environ.get("RABBITMQ_PASSWORD", "guest")}@rabbitmq:5672//"""
 
 
