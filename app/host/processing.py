@@ -124,6 +124,7 @@ class TaskRunner(ABC):
         except model.DoesNotExist:
             model.objects.create(**object_data)
 
+
     def run_process(self):
         """
         Runs task runner process.
@@ -142,18 +143,12 @@ class TaskRunner(ABC):
                 raise
             finally:
                 end_time = process_time()
-
-                try:
-                    status = Status.objects.get(message__exact=status_message)
-                except:
-                    raise ValueError(
-                        f"The status message you entered ({status_message}) is not in the database, you need to add it."
-                    )
-
+                status = Status.objects.get(message__exact=status_message)
                 update_status(task_register_item, status)
                 processing_time = round(end_time - start_time, 2)
                 task_register_item.last_processing_time_seconds = processing_time
                 task_register_item.save()
+
 
     @abstractmethod
     def _run_process(self, transient):
@@ -200,6 +195,16 @@ class TaskRunner(ABC):
         """
         pass
 
+    def celery_task(self):
+        """
+        Returns the shared celery task
+        """
+
+        @shared_task
+        def task():
+            self.run_process()
+
+        return task
 
 class GhostRunner(TaskRunner):
     """
@@ -574,7 +579,7 @@ class HostSEDFitting(TaskRunner):
 
     def _run_process(self, transient):
         """Code goes here"""
-        observations = build_obs(transient="global")
+        observations = build_obs(transient, "global")
         model_components = build_model(observations)
         fitting_settings = dict(
             nlive_init=400, nested_method="rwalk", nested_target_n_effective=10000
