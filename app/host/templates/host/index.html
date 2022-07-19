@@ -1,7 +1,7 @@
 {% extends 'host/base.html' %}
 
 {% block title %} Home {% endblock %}
-
+{% block script %} {{ bokeh_cutout_script | safe }} {% endblock %}
 {% block body %}
 
 {% load crispy_forms_tags %}

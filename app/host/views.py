@@ -12,7 +12,7 @@ from .models import Transient
 from .plotting_utils import plot_cutout_image
 from .plotting_utils import plot_sed
 from .plotting_utils import plot_timeseries
-
+from .plotting_utils import plot_pie_chart
 
 def transient_list(request):
     transients = Transient.objects.all()
@@ -138,25 +138,29 @@ def acknowledgements(request):
 
 def home(request):
 
-    analytics_results = {}
+    #analytics_results = {}
 
-    for aggregate in ["total", "not completed", "completed", "waiting"]:
+    #for aggregate in ["total", "not completed", "completed", "waiting"]:
 
-        transients = TaskRegisterSnapshot.objects.filter(
-            aggregate_type__exact=aggregate
-        )
-        transients_ordered = transients.order_by("-time")
+    #    transients = TaskRegisterSnapshot.objects.filter(
+    #        aggregate_type__exact=aggregate
+    #    )
+    #    transients_ordered = transients.order_by("-time")
 
-        if transients_ordered.exists():
-            transients_current = transients_ordered[0]
-        else:
-            transients_current = None
+    #    if transients_ordered.exists():
+    #        transients_current = transients_ordered[0]
+    #    else:
+    #        transients_current = None
 
-        analytics_results[
-            f"{aggregate}_transients_current".replace(" ", "_")
-        ] = transients_current
-        bokeh_processing_context = plot_timeseries()
+    #    analytics_results[
+    #        f"{aggregate}_transients_current".replace(" ", "_")
+    #    ] = transients_current
+        #bokeh_processing_context = plot_timeseries()
+
+
+    #bokeh_processing_context =  plot_pie_chart(analytics_results)
+
 
     return render(
-        request, "index.html", {**analytics_results, **bokeh_processing_context}
-    )
+        request, "index.html")#, #{**analytics_results, **bokeh_processing_context}
+    #)
