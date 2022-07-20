@@ -13,3 +13,4 @@ for taskrunner in periodic_tasks:
         name=taskrunner._task_name(),
         task=taskrunner.task_function_name,
     )
+
