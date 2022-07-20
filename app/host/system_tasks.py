@@ -1,6 +1,3 @@
-from .base_tasks import TaskRunner
-from .base_tasks import initialise_all_tasks_status
-
 import datetime
 import glob
 import shutil
@@ -8,9 +5,10 @@ import shutil
 from django.conf import settings
 from django.utils import timezone
 
+from .base_tasks import initialise_all_tasks_status
+from .base_tasks import TaskRunner
 from .models import TaskRegisterSnapshot
 from .models import Transient
-
 from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
@@ -18,8 +16,8 @@ from .transient_name_server import tns_staging_blast_transient
 from .transient_name_server import tns_staging_file_date_name
 from .transient_name_server import update_blast_transient
 
-class TNSDataIngestion(TaskRunner):
 
+class TNSDataIngestion(TaskRunner):
     def run_process(self, interval_minutes=100):
         now = timezone.now()
         time_delta = datetime.timedelta(minutes=interval_minutes)
@@ -40,7 +38,6 @@ class TNSDataIngestion(TaskRunner):
 
 
 class InitializeTransientTasks(TaskRunner):
-
     def run_process(self):
         """
         Initializes all task in the database to not processed for new transients.
@@ -60,7 +57,6 @@ class InitializeTransientTasks(TaskRunner):
 
 
 class IngestMissedTNSTransients(TaskRunner):
-
     def run_process(self):
         """
         Gets missed transients from tns and update them using the daily staging csv
@@ -90,7 +86,6 @@ class IngestMissedTNSTransients(TaskRunner):
 
 
 class DeleteGHOSTFiles(TaskRunner):
-
     def run_process(self):
         """
         Removes GHOST files
@@ -117,7 +112,6 @@ class DeleteGHOSTFiles(TaskRunner):
 
 
 class SnapshotTaskRegister(TaskRunner):
-
     def run_process(self, interval_minutes=100):
         """
         Takes snapshot of task register for diagnostic purposes.
@@ -147,4 +141,3 @@ class SnapshotTaskRegister(TaskRunner):
     @property
     def task_name(self):
         return "Snapshot task register"
-

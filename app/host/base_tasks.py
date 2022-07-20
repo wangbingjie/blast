@@ -1,12 +1,14 @@
 from abc import ABC
 from abc import abstractmethod
-from django.utils import timezone
 from time import process_time
+
+from django.utils import timezone
 
 from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
+
 
 class TaskRunner(ABC):
     """
@@ -83,7 +85,6 @@ class TaskRunner(ABC):
 
 
 class TransientTaskRunner(TaskRunner):
-
     def __init__(self):
         """
         Initialized method which sets up the task runner.
@@ -176,7 +177,6 @@ class TransientTaskRunner(TaskRunner):
                 processing_time = round(end_time - start_time, 2)
                 task_register_item.last_processing_time_seconds = processing_time
                 task_register_item.save()
-
 
     @abstractmethod
     def _run_process(self, transient):

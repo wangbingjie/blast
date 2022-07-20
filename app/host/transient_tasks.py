@@ -1,7 +1,9 @@
-from .base_tasks import TransientTaskRunner
 import math
+
 import numpy as np
 from astropy.io import fits
+
+from .base_tasks import TransientTaskRunner
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
 from .host_utils import construct_aperture
@@ -405,4 +407,3 @@ class HostSEDFitting(TransientTaskRunner):
         posterior = fit_model(observations, model_components, fitting_settings)
 
         return "processed"
-
