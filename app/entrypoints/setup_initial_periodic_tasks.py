@@ -1,4 +1,4 @@
-from host.processing import periodic_tasks
+from host.tasks import periodic_tasks
 from django_celery_beat.models import PeriodicTask, IntervalSchedule
 
 for taskrunner in periodic_tasks:

@@ -3,12 +3,13 @@ import math
 from abc import ABC
 from abc import abstractmethod
 from time import process_time
-
+import datetime
 import numpy as np
 from astropy.io import fits
 from celery import shared_task
 from django.utils import timezone
-
+from django.conf import settings
+import glob
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
 from .host_utils import construct_aperture
@@ -24,10 +25,18 @@ from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
+from .models import TaskRegisterSnapshot
 from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
-from django_celery_beat.models import IntervalSchedule
+
+from .transient_name_server import get_daily_tns_staging_csv
+from .transient_name_server import get_tns_credentials
+from .transient_name_server import get_transients_from_tns
+from .transient_name_server import tns_staging_blast_transient
+from .transient_name_server import tns_staging_file_date_name
+from .transient_name_server import update_blast_transient
+from django.utils import timezone
 
 class TaskRunner(ABC):
     """
@@ -130,7 +139,7 @@ class TaskRunner(ABC):
 
     @property
     def task_function_name(self):
-        return "host." + self._task_name().replace(" ", "_").lower()
+        return "host.tasks." + self._task_name().replace(" ", "_").lower()
 
     def run_process(self):
         """
@@ -156,7 +165,7 @@ class TaskRunner(ABC):
                 task_register_item.last_processing_time_seconds = processing_time
                 task_register_item.save()
 
-    @abstractmethod
+
     def _run_process(self, transient):
         """
         Run process function to be implemented by child classes.
@@ -170,7 +179,7 @@ class TaskRunner(ABC):
         """
         pass
 
-    @abstractmethod
+
     def _prerequisites(self):
         """
         Task prerequisites to be implemented by child classes.
@@ -181,7 +190,7 @@ class TaskRunner(ABC):
         """
         pass
 
-    @abstractmethod
+
     def _task_name(self):
         """
         Name of the task the task runner works on.
@@ -191,7 +200,7 @@ class TaskRunner(ABC):
         """
         pass
 
-    @abstractmethod
+
     def _failed_status_message(self):
         """
         Message of the failed status.
@@ -595,6 +604,146 @@ class HostSEDFitting(TaskRunner):
 
         return "processed"
 
+class TNSDataIngestion(TaskRunner):
+
+    def __init__(self):
+        pass
+
+    def run_process(self, interval_minutes=100):
+        now = timezone.now()
+        time_delta = datetime.timedelta(minutes=interval_minutes)
+        tns_credentials = get_tns_credentials()
+        recent_transients = get_transients_from_tns(
+            now - time_delta, tns_credentials=tns_credentials
+        )
+        saved_transients = Transient.objects.all()
+
+        for transient in recent_transients:
+            try:
+                saved_transients.get(name__exact=transient.name)
+            except Transient.DoesNotExist:
+                transient.save()
+
+    def _task_name(self):
+        return "TNS data ingestion"
+
+
+class InitializeTransientTasks(TaskRunner):
+
+    def __init__(self):
+        pass
+
+    def run_process(self):
+        """
+        Initializes all task in the database to not processed for new transients.
+        """
+
+        uninitialized_transients = Transient.objects.filter(
+            tasks_initialized__exact="False"
+        )
+        for transient in uninitialized_transients:
+            initialise_all_tasks_status(transient)
+            transient.tasks_initialized = "True"
+            transient.save()
+
+    def _task_name(self):
+        return "Initialize transient task"
+
+
+class IngestMissedTNSTransients(TaskRunner):
+
+    def __init__(self):
+        pass
+
+    def run_process(self):
+        """
+        Gets missed transients from tns and update them using the daily staging csv
+        """
+        yesterday = timezone.now() - datetime.timedelta(days=1)
+        date_string = tns_staging_file_date_name(yesterday)
+        data = get_daily_tns_staging_csv(
+            date_string,
+            tns_credentials=get_tns_credentials(),
+            save_dir=settings.TNS_STAGING_ROOT,
+        )
+        saved_transients = Transient.objects.all()
+
+        for _, transient in data.iterrows():
+            # if transient exists update it
+            try:
+                blast_transient = saved_transients.get(name__exact=transient["name"])
+                update_blast_transient(blast_transient, transient)
+            # if transient does not exist add it
+            except Transient.DoesNotExist:
+                blast_transient = tns_staging_blast_transient(transient)
+                blast_transient.save()
+
+    def _task_name(self):
+        return "Ingest missed TNS transients"
+
+
+class DeleteGHOSTFiles(TaskRunner):
+    def __init__(self):
+        pass
+
+    def run_process(self):
+        """
+        Removes GHOST files
+        """
+        dir_list = glob.glob("transients_*/")
+
+        for dir in dir_list:
+            try:
+                shutil.rmtree(dir)
+            except OSError as e:
+                print("Error: %s : %s" % (dir, e.strerror))
+
+        dir_list = glob.glob("quiverMaps/")
+
+        for dir in dir_list:
+            try:
+                shutil.rmtree(dir)
+            except OSError as e:
+                print("Error: %s : %s" % (dir, e.strerror))
+
+    def _task_name(self):
+        return "Delete GHOST files"
+
+
+class SnapshotTaskRegister(TaskRunner):
+    def __init__(self):
+        pass
+
+    def run_process(self, interval_minutes=100):
+        """
+        Takes snapshot of task register for diagnostic purposes.
+        """
+        transients = Transient.objects.all()
+        total, completed, waiting, not_completed = 0, 0, 0, 0
+
+        for transient in transients:
+            total += 1
+            if transient.progress == 100:
+                completed += 1
+            if transient.progress == 0:
+                waiting += 1
+            if transient.progress < 100:
+                not_completed += 1
+
+        now = timezone.now()
+
+        for aggregate, label in zip(
+                [not_completed, total, completed, waiting],
+                ["not completed", "total", "completed", "waiting"],
+        ):
+            TaskRegisterSnapshot.objects.create(
+                time=now, number_of_transients=aggregate, aggregate_type=label
+            )
+
+
+    def _task_name(self):
+        return "Snapshot task register"
+
 
 def update_status(task_status, updated_status):
     """
@@ -630,7 +779,8 @@ def initialise_all_tasks_status(transient):
         update_status(task_status, not_processed)
 
 
-periodic_tasks = [GhostRunner(),ImageDownloadRunner(),
-                  GlobalApertureConstructionRunner(), LocalAperturePhotometry(),
-                  GlobalAperturePhotometry(),TransientInformation(), HostInformation(),
-                  HostSEDFitting()]
+#periodic_tasks = [GhostRunner(),ImageDownloadRunner(),
+#                  GlobalApertureConstructionRunner(), LocalAperturePhotometry(),
+#                  GlobalAperturePhotometry(),TransientInformation(), HostInformation(),
+#                  HostSEDFitting(), TNSDataIngestion(), InitializeTransientTasks(),
+#                  IngestMissedTNSTransients(), DeleteGHOSTFiles(), SnapshotTaskRegister()]
