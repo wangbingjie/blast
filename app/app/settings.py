@@ -148,6 +148,7 @@ TRANSMISSION_CURVES_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../transmiss
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_TIMEZONE = "UTC"
+
 CELERY_IMPORTS = ["host.tasks"]
 CELERY_BROKER_URL = f"""amqp://{os.environ.get("RABBITMQ_USERNAME", "guest")}:{os.environ.get("RABBITMQ_PASSWORD", "guest")}@rabbitmq:5672//"""
 

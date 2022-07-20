@@ -123,7 +123,7 @@ def get_missed_and_update_transients_tns():
             blast_transient.save()
 
 
-#get_transient_information = TransientInformation().celery_task()
+# get_transient_information = TransientInformation().celery_task()
 
 
 @shared_task

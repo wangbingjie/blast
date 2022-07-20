@@ -156,7 +156,6 @@ class TaskRunner(ABC):
                 task_register_item.last_processing_time_seconds = processing_time
                 task_register_item.save()
 
-
     @abstractmethod
     def _run_process(self, transient):
         """
@@ -212,6 +211,7 @@ class TaskRunner(ABC):
             self.run_process()
 
         return task
+
 
 class GhostRunner(TaskRunner):
     """
