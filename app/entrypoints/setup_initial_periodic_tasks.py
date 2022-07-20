@@ -1,5 +1,6 @@
+from django_celery_beat.models import IntervalSchedule
+from django_celery_beat.models import PeriodicTask
 from host.tasks import periodic_tasks
-from django_celery_beat.models import PeriodicTask, IntervalSchedule
 
 
 for taskrunner in periodic_tasks:
