@@ -336,7 +336,7 @@ class HostInformation(TransientTaskRunner):
         """
         return {"Host match": "processed", "Host information": "not processed"}
 
-    @propety
+    @property
     def task_name(self):
         return "Host information"
 
