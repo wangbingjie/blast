@@ -127,7 +127,7 @@ def get_missed_and_update_transients_tns():
 
 
 @shared_task
-def get_host_information():
+def host_information():
     """
     Get infotmation on the host
     """
@@ -135,7 +135,7 @@ def get_host_information():
 
 
 @shared_task
-def get_transient_information():
+def transient_information():
     """
     Get infotmation on the transient
     """
@@ -143,26 +143,26 @@ def get_transient_information():
 
 
 @shared_task
-def perform_global_photometry():
+def global_aperture_photometry():
     """ """
     GlobalAperturePhotometry().run_process()
 
 
 @shared_task
-def construct_global_aperture():
+def global_aperture_construction():
     """ """
 
     GlobalApertureConstructionRunner().run_process()
 
 
 @shared_task
-def perform_local_photometry():
+def local_aperture_photometry():
     """ """
     LocalAperturePhotometry().run_process()
 
 
 @shared_task
-def match_transient_to_host():
+def host_match():
     """
     Match a single transient in the database to a host galaxy.
 
@@ -174,7 +174,7 @@ def match_transient_to_host():
 
 
 @shared_task
-def global_host_sed_fitting():
+def global_host_sed_inference():
     """
     Runs fits to global host aperture photometry
     """
@@ -182,7 +182,7 @@ def global_host_sed_fitting():
 
 
 @shared_task
-def download_cutouts():
+def cutout_download():
     """
     Downloads cutout data for a single transient
     """
