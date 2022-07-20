@@ -8,6 +8,7 @@ import numpy as np
 from astropy.io import fits
 from celery import shared_task
 from django.utils import timezone
+from django_celery_beat.models import IntervalSchedule
 
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
@@ -27,7 +28,7 @@ from .models import Transient
 from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
-from django_celery_beat.models import IntervalSchedule
+
 
 class TaskRunner(ABC):
     """
@@ -630,7 +631,13 @@ def initialise_all_tasks_status(transient):
         update_status(task_status, not_processed)
 
 
-periodic_tasks = [GhostRunner(),ImageDownloadRunner(),
-                  GlobalApertureConstructionRunner(), LocalAperturePhotometry(),
-                  GlobalAperturePhotometry(),TransientInformation(), HostInformation(),
-                  HostSEDFitting()]
+periodic_tasks = [
+    GhostRunner(),
+    ImageDownloadRunner(),
+    GlobalApertureConstructionRunner(),
+    LocalAperturePhotometry(),
+    GlobalAperturePhotometry(),
+    TransientInformation(),
+    HostInformation(),
+    HostSEDFitting(),
+]
