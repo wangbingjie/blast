@@ -2,6 +2,7 @@
 import datetime
 import glob
 import math
+import shutil
 from abc import ABC
 from abc import abstractmethod
 from time import process_time
@@ -10,12 +11,7 @@ import numpy as np
 from astropy.io import fits
 from celery import shared_task
 from django.conf import settings
-
-import glob
-import shutil
-
 from django.utils import timezone
-
 
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
@@ -36,13 +32,13 @@ from .models import Transient
 from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
-
-from .transient_name_server import tns_staging_file_date_name
-from .transient_name_server import update_blast_transient
+from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
-from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import tns_staging_blast_transient
+from .transient_name_server import tns_staging_file_date_name
+from .transient_name_server import update_blast_transient
+
 
 class TaskRunner(ABC):
     """

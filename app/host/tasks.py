@@ -40,13 +40,13 @@ for task in periodic_tasks:
     exec(f"@shared_task\ndef {func_name}(): {type(task).__name__}().run_process()")
 
 
-#@shared_task
-#def tns_data_ingestion(interval_minutes=100):
+# @shared_task
+# def tns_data_ingestion(interval_minutes=100):
 #    TNSDataIngestion().run_process(interval_minutes=interval_minutes)
 
 
-#@shared_task
-#def initialize_transient_tasks():
+# @shared_task
+# def initialize_transient_tasks():
 #    """
 #    Initializes all task in the database to not processed for new transients.
 #    """
@@ -54,53 +54,53 @@ for task in periodic_tasks:
 #    InitializeTransientTasks().run_process()
 
 
-#@shared_task
-#def snapshot_task_register():
+# @shared_task
+# def snapshot_task_register():
 #    SnapshotTaskRegister().run_process()
 
 
-#@shared_task
-#def ingest_missed_tns_transients():
+# @shared_task
+# def ingest_missed_tns_transients():
 #    IngestMissedTNSTransients().run_process()
 
 
-#@shared_task
-#def host_information():
+# @shared_task
+# def host_information():
 #    """
 #    Get infotmation on the host
 #    """
 #    HostInformation().run_process()
 
 
-#@shared_task
-#def transient_information():
+# @shared_task
+# def transient_information():
 #    """
 #    Get infotmation on the transient
 #    """
 #    TransientInformation().run_process()
 
 
-#@shared_task
-#def global_aperture_photometry():
+# @shared_task
+# def global_aperture_photometry():
 #    """ """
 #    GlobalAperturePhotometry().run_process()
 
 
 ##@shared_task
-#def global_aperture_construction():
- #   """ """
+# def global_aperture_construction():
+#   """ """
 
 #    GlobalApertureConstructionRunner().run_process()
 
 
-#@shared_task
-#def local_aperture_photometry():
+# @shared_task
+# def local_aperture_photometry():
 #    """ """
 #    LocalAperturePhotometry().run_process()
 
 
-#@shared_task
-#def host_match():
+# @shared_task
+# def host_match():
 #    """
 #    Match a single transient in the database to a host galaxy.
 #
@@ -111,23 +111,22 @@ for task in periodic_tasks:
 #    GhostRunner().run_process()
 
 
-#@shared_task
-#def global_host_sed_inference():
+# @shared_task
+# def global_host_sed_inference():
 #    """
 #    Runs fits to global host aperture photometry
 #    """
 #    HostSEDFitting().run_process()
 
 
-#@shared_task
-#def cutout_download():
+# @shared_task
+# def cutout_download():
 #    """
 #    Downloads cutout data for a single transient
 #    """
 #    ImageDownloadRunner().run_process()
 
 
-#@shared_task
-#def delete_ghost_files():
+# @shared_task
+# def delete_ghost_files():
 #    DeleteGHOSTFiles().run_process()
-
