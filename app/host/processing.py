@@ -1,15 +1,16 @@
 # Modelus to manage to processing of tasks for transients
+import datetime
+import glob
 import math
 from abc import ABC
 from abc import abstractmethod
 from time import process_time
-import datetime
+
 import numpy as np
 from astropy.io import fits
 from celery import shared_task
-from django.utils import timezone
 from django.conf import settings
-import glob
+from django.utils import timezone
 
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
@@ -25,8 +26,8 @@ from .models import ProspectorResult
 from .models import Status
 from .models import Task
 from .models import TaskRegister
-from .models import Transient
 from .models import TaskRegisterSnapshot
+from .models import Transient
 from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
@@ -159,7 +160,6 @@ class TaskRunner(ABC):
                 task_register_item.last_processing_time_seconds = processing_time
                 task_register_item.save()
 
-
     def _run_process(self, transient):
         """
         Run process function to be implemented by child classes.
@@ -173,7 +173,6 @@ class TaskRunner(ABC):
         """
         pass
 
-
     def _prerequisites(self):
         """
         Task prerequisites to be implemented by child classes.
@@ -184,7 +183,6 @@ class TaskRunner(ABC):
         """
         pass
 
-
     def _task_name(self):
         """
         Name of the task the task runner works on.
@@ -193,7 +191,6 @@ class TaskRunner(ABC):
             task name (str): Name of the task the task runner is to work on.
         """
         pass
-
 
     def _failed_status_message(self):
         """
@@ -598,8 +595,8 @@ class HostSEDFitting(TaskRunner):
 
         return "processed"
 
-class TNSDataIngestion(TaskRunner):
 
+class TNSDataIngestion(TaskRunner):
     def __init__(self):
         pass
 
@@ -623,7 +620,6 @@ class TNSDataIngestion(TaskRunner):
 
 
 class InitializeTransientTasks(TaskRunner):
-
     def __init__(self):
         pass
 
@@ -645,7 +641,6 @@ class InitializeTransientTasks(TaskRunner):
 
 
 class IngestMissedTNSTransients(TaskRunner):
-
     def __init__(self):
         pass
 
@@ -727,13 +722,12 @@ class SnapshotTaskRegister(TaskRunner):
         now = timezone.now()
 
         for aggregate, label in zip(
-                [not_completed, total, completed, waiting],
-                ["not completed", "total", "completed", "waiting"],
+            [not_completed, total, completed, waiting],
+            ["not completed", "total", "completed", "waiting"],
         ):
             TaskRegisterSnapshot.objects.create(
                 time=now, number_of_transients=aggregate, aggregate_type=label
             )
-
 
     def _task_name(self):
         return "Snapshot task register"
@@ -771,4 +765,3 @@ def initialise_all_tasks_status(transient):
     for task in tasks:
         task_status = TaskRegister(task=task, transient=transient)
         update_status(task_status, not_processed)
-
