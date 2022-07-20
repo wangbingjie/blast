@@ -18,27 +18,9 @@ app = Celery("app")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 # Load task modules from all registered Django apps.
-app.autodiscover_tasks(settings.INSTALLED_APPS)
-
+app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 @app.task(bind=True)
 def debug_task(self):
     print(f"Request: {self.request!r}")
 
-"""
-@app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    for taskrunner in periodic_tasks:
-        interval, created = IntervalSchedule.objects.get_or_create(
-            every=taskrunner.task_frequency_seconds,
-            period=IntervalSchedule.SECONDS)
-
-
-        PeriodicTask.objects.create(interval=interval,
-                                    name=taskrunner._task_name(),
-                                    task=taskrunner.task_function_name)
-
-    sender.add_periodic_task(taskrunner.task_frequency_seconds, test.s('test'), name='add every 10')
-    sender.add_periodic_task(10.0, )
-    sender.add_periodic_task(30.0, test.s(), expires=10)
-"""
