@@ -27,7 +27,7 @@ from .models import Transient
 from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
-
+from django_celery_beat.models import IntervalSchedule
 
 class TaskRunner(ABC):
     """
@@ -124,6 +124,13 @@ class TaskRunner(ABC):
         except model.DoesNotExist:
             model.objects.create(**object_data)
 
+    @property
+    def task_frequency_seconds(self):
+        return 60.0
+
+    @property
+    def task_function_name(self):
+        return "host." + self._task_name().replace(" ", "_").lower()
 
     def run_process(self):
         """
@@ -621,3 +628,9 @@ def initialise_all_tasks_status(transient):
     for task in tasks:
         task_status = TaskRegister(task=task, transient=transient)
         update_status(task_status, not_processed)
+
+
+periodic_tasks = [GhostRunner(),ImageDownloadRunner(),
+                  GlobalApertureConstructionRunner(), LocalAperturePhotometry(),
+                  GlobalAperturePhotometry(),TransientInformation(), HostInformation(),
+                  HostSEDFitting()]

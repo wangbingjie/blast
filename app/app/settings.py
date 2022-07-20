@@ -146,11 +146,13 @@ GHOST_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../ghost_output")
 TNS_STAGING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../tns_staging")
 TRANSMISSION_CURVES_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../transmission")
 
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_TIMEZONE = "UTC"
-CELERY_IMPORTS = ("host.tasks", "host.processing",)
+CELERY_IMPORTS = ["host.tasks"]
 CELERY_BROKER_URL = f"""amqp://{os.environ.get("RABBITMQ_USERNAME", "guest")}:{os.environ.get("RABBITMQ_PASSWORD", "guest")}@rabbitmq:5672//"""
 
 
+"""
 CELERY_BEAT_SCHEDULE = {
     "ingest_data_task": {"task": "host.tasks.ingest_recent_tns_data", "schedule": 600},
     "download_cutouts_task": {"task": "host.tasks.download_cutouts", "schedule": 60.0},
@@ -193,8 +195,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     #    "cleaning_task": {"task": "host.tasks.delete_ghost_file_logs", "schedule": 30.0},
 }
+"""
 
 CELERYD_REDIRECT_STDOUTS_LEVEL = "INFO"
-
-
 CRISPY_TEMPLATE_PACK = "bootstrap4"
