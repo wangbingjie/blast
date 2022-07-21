@@ -6,7 +6,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from .base_tasks import initialise_all_tasks_status
-from .base_tasks import TaskRunner
+from .base_tasks import SystemTaskRunner
 from .models import TaskRegisterSnapshot
 from .models import Transient
 from .transient_name_server import get_daily_tns_staging_csv
@@ -17,7 +17,7 @@ from .transient_name_server import tns_staging_file_date_name
 from .transient_name_server import update_blast_transient
 
 
-class TNSDataIngestion(TaskRunner):
+class TNSDataIngestion(SystemTaskRunner):
     def run_process(self, interval_minutes=100):
         now = timezone.now()
         time_delta = datetime.timedelta(minutes=interval_minutes)
@@ -33,11 +33,12 @@ class TNSDataIngestion(TaskRunner):
             except Transient.DoesNotExist:
                 transient.save()
 
-    def _task_name(self):
+    @property
+    def task_name(self):
         return "TNS data ingestion"
 
 
-class InitializeTransientTasks(TaskRunner):
+class InitializeTransientTasks(SystemTaskRunner):
     def run_process(self):
         """
         Initializes all task in the database to not processed for new transients.
@@ -56,7 +57,7 @@ class InitializeTransientTasks(TaskRunner):
         return "Initialize transient task"
 
 
-class IngestMissedTNSTransients(TaskRunner):
+class IngestMissedTNSTransients(SystemTaskRunner):
     def run_process(self):
         """
         Gets missed transients from tns and update them using the daily staging csv
@@ -85,7 +86,7 @@ class IngestMissedTNSTransients(TaskRunner):
         return "Ingest missed TNS transients"
 
 
-class DeleteGHOSTFiles(TaskRunner):
+class DeleteGHOSTFiles(SystemTaskRunner):
     def run_process(self):
         """
         Removes GHOST files
@@ -111,7 +112,7 @@ class DeleteGHOSTFiles(TaskRunner):
         return "Delete GHOST files"
 
 
-class SnapshotTaskRegister(TaskRunner):
+class SnapshotTaskRegister(SystemTaskRunner):
     def run_process(self, interval_minutes=100):
         """
         Takes snapshot of task register for diagnostic purposes.
