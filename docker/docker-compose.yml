@@ -71,9 +71,10 @@ services:
     ports:
       - "80:80"
   flower:
-    image: mher/flower
-    command: sh entrypoints/docker-entrypoint.flower.sh
+    build:
+      context: ../flower/
+    command: bash entrypoints/docker-entrypoint.flower.sh
     ports:
       - "8888:8888"
     volumes:
-      - ../app:/app
+      - ../app/entrypoints:/data/entrypoints

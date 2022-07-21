@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import user_passes_test
+from django.http import HttpResponse
 
 from .forms import ImageGetForm
 from .forms import TransientSearchForm
@@ -164,3 +166,13 @@ def home(request):
         request, "index.html"
     )  # , #{**analytics_results, **bokeh_processing_context}
     # )
+
+
+#@user_passes_test(lambda u: u.is_staff and u.is_superuser)
+def flower_view(request):
+    '''passes the request back up to nginx for internal routing'''
+    response = HttpResponse()
+    path = request.get_full_path()
+    path = path.replace('flower', 'flower-internal', 1)
+    response['X-Accel-Redirect'] = path
+    return response
