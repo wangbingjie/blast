@@ -18,7 +18,7 @@ from .prospector import build_obs
 from .prospector import fit_model
 
 
-class GhostRunner(TransientTaskRunner):
+class Ghost(TransientTaskRunner):
     """
     TaskRunner to run the GHOST matching algorithm.
     """
@@ -180,7 +180,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
         }
 
     @property
-    def _task_name(self):
+    def task_name(self):
         """
         Task status to be altered is Local Aperture photometry
         """
@@ -311,7 +311,7 @@ class TransientInformation(TransientTaskRunner):
         return {"Transient information": "not processed"}
 
     @property
-    def _task_name(self):
+    def task_name(self):
         return "Transient information"
 
     def _failed_status_message(self):

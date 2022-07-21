@@ -4,6 +4,7 @@ rm -r data/ghost_output/*
 rm -r data/database/*
 rm -r data/test_database/*
 rm -r data/tns_staging/*
+rm -r app/static/*
 
 mv data/cutout_cdn/2010ag/ data/
 mv data/cutout_cdn/2010ai/ data/
