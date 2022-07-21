@@ -92,7 +92,7 @@ class TransientTaskRunner(TaskRunner):
         self.processing_status = Status.objects.get(message__exact="processing")
         self.task_register = TaskRegister.objects.all()
         self.prerequisites = self._prerequisites()
-        #self.task = Task.objects.get(name__exact=self.task_name)
+        # self.task = Task.objects.get(name__exact=self.task_name)
 
     def find_register_items_meeting_prerequisites(self):
         """
@@ -158,7 +158,7 @@ class TransientTaskRunner(TaskRunner):
         """
         Runs task runner process.
         """
-        #self.task = Task.objects.get(name__exact=self.task_name)
+        # self.task = Task.objects.get(name__exact=self.task_name)
 
         task_register_item = self.select_register_item()
 
@@ -221,11 +221,9 @@ class TransientTaskRunner(TaskRunner):
 
 
 class SystemTaskRunner(TaskRunner):
-
     @property
     def task_type(self):
         return "system"
-
 
 
 def update_status(task_status, updated_status):

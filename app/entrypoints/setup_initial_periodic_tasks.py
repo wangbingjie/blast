@@ -1,7 +1,7 @@
 from django_celery_beat.models import IntervalSchedule
 from django_celery_beat.models import PeriodicTask
-from host.tasks import periodic_tasks
 from host.models import Task
+from host.tasks import periodic_tasks
 
 for taskrunner in periodic_tasks:
 
@@ -15,6 +15,5 @@ for taskrunner in periodic_tasks:
         task=taskrunner.task_function_name,
     )
 
-    #if taskrunner.task_type == 'transient':
+    # if taskrunner.task_type == 'transient':
     #    Task.objects.create(name=taskrunner.task_name)
-
