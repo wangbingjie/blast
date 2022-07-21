@@ -3,34 +3,32 @@ from __future__ import unicode_literals
 
 from celery import shared_task
 
-#from .processing import DeleteGHOSTFiles
-#from .processing import GhostRunner
-#from .processing import GlobalApertureConstructionRunner
-#from .processing import GlobalAperturePhotometry
-#from .processing import HostInformation
-#from .processing import HostSEDFitting
-#from .processing import ImageDownloadRunner
-#from .processing import IngestMissedTNSTransients
-#from .processing import InitializeTransientTasks
-#from .processing import LocalAperturePhotometry
-#from .processing import SnapshotTaskRegister
-#from .processing import TNSDataIngestion
-#from .processing import TransientInformation
-
 from .system_tasks import DeleteGHOSTFiles
+from .system_tasks import IngestMissedTNSTransients
+from .system_tasks import InitializeTransientTasks
+from .system_tasks import SnapshotTaskRegister
+from .system_tasks import TNSDataIngestion
 from .transient_tasks import Ghost
 from .transient_tasks import GlobalApertureConstruction
 from .transient_tasks import GlobalAperturePhotometry
 from .transient_tasks import HostInformation
 from .transient_tasks import HostSEDFitting
 from .transient_tasks import ImageDownload
-from .system_tasks import IngestMissedTNSTransients
-from .system_tasks import InitializeTransientTasks
 from .transient_tasks import LocalAperturePhotometry
-from .system_tasks import SnapshotTaskRegister
-from .system_tasks import TNSDataIngestion
 from .transient_tasks import TransientInformation
-
+# from .processing import DeleteGHOSTFiles
+# from .processing import GhostRunner
+# from .processing import GlobalApertureConstructionRunner
+# from .processing import GlobalAperturePhotometry
+# from .processing import HostInformation
+# from .processing import HostSEDFitting
+# from .processing import ImageDownloadRunner
+# from .processing import IngestMissedTNSTransients
+# from .processing import InitializeTransientTasks
+# from .processing import LocalAperturePhotometry
+# from .processing import SnapshotTaskRegister
+# from .processing import TNSDataIngestion
+# from .processing import TransientInformation
 
 
 periodic_tasks = [
