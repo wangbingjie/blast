@@ -13,4 +13,3 @@ for taskrunner in periodic_tasks:
         name=taskrunner.task_name,
         task=taskrunner.task_function_name,
     )
-
