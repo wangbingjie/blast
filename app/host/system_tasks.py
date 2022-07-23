@@ -93,6 +93,7 @@ class IngestMissedTNSTransients(SystemTaskRunner):
     def task_initially_enabled(self):
         return False
 
+
 class DeleteGHOSTFiles(SystemTaskRunner):
     def run_process(self):
         """

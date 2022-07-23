@@ -13,5 +13,5 @@ for taskrunner in periodic_tasks:
         interval=interval,
         name=taskrunner.task_name,
         task=taskrunner.task_function_name,
-        enabled=taskrunner.task_initially_enabled
+        enabled=taskrunner.task_initially_enabled,
     )

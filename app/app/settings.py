@@ -146,7 +146,9 @@ rabbitmq_password = os.environ.get("RABBITMQ_PASSWORD", "guest")
 rabbitmq_host = os.environ.get("MESSAGE_BROKER_HOST", "rabbitmq")
 rabbitmq_port = os.environ.get("MESSAGE_BROKER_PORT", "5672")
 
-CELERY_BROKER_URL = f"amqp://{rabbitmq_user}:{rabbitmq_password}@{rabbitmq_host}:{rabbitmq_port}//"
+CELERY_BROKER_URL = (
+    f"amqp://{rabbitmq_user}:{rabbitmq_password}@{rabbitmq_host}:{rabbitmq_port}//"
+)
 
 CELERYD_REDIRECT_STDOUTS_LEVEL = "INFO"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
