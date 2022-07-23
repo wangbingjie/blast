@@ -11,7 +11,7 @@ Please check all that apply to your proposed changes
 
 - [ ] HTML code change
 - [ ] Added package dependency
-- [ ] Added data 
+- [ ] Added data
 - [ ] Changed django model
 - [ ] Documentation change
 
