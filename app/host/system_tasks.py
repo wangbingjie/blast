@@ -37,6 +37,10 @@ class TNSDataIngestion(SystemTaskRunner):
     def task_name(self):
         return "TNS data ingestion"
 
+    @property
+    def task_initially_enabled(self):
+        return False
+
 
 class InitializeTransientTasks(SystemTaskRunner):
     def run_process(self):
@@ -85,6 +89,9 @@ class IngestMissedTNSTransients(SystemTaskRunner):
     def task_name(self):
         return "Ingest missed TNS transients"
 
+    @property
+    def task_initially_enabled(self):
+        return False
 
 class DeleteGHOSTFiles(SystemTaskRunner):
     def run_process(self):
