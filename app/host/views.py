@@ -1,6 +1,12 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
+<<<<<<< HEAD
 from django.shortcuts import render
+=======
+from django.contrib.auth.mixins import UserPassesTestMixin
+from revproxy.views import ProxyView
+from django.urls import re_path
+>>>>>>> 4ecb7bc (factoring out .env)
 
 from .forms import ImageGetForm
 from .forms import TransientSearchForm
@@ -176,3 +182,21 @@ def flower_view(request):
     path = path.replace("flower", "flower-internal", 1)
     response["X-Accel-Redirect"] = path
     return response
+
+
+
+class FlowerProxyView(UserPassesTestMixin, ProxyView):
+    # `flower` is Docker container, you can use `localhost` instead
+    upstream = 'http://{}:{}'.format('flower', 8888)
+    url_prefix = 'flower'
+    rewrite = (
+        (r'^/{}$'.format(url_prefix), r'/{}/'.format(url_prefix)),
+     )
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    @classmethod
+    def as_url(cls):
+        return re_path(r'^(?P<path>{}.*)$'.format(cls.url_prefix), cls.as_view())
+
