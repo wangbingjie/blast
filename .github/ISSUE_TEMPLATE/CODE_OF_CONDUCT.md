@@ -45,5 +45,5 @@ a project may be further defined and clarified by project maintainers.
 
 This Code of Conduct is adapted from the Contributor Covenant, version 1.4,
 available at Covenant: <https://www.contributor-covenant.org/version/1/4/code-of-conduct.html>.
-For answers to common questions about this code of conduct, 
+For answers to common questions about this code of conduct,
 see here: <https://www.contributor-covenant.org/faq>.
