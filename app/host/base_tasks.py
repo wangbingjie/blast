@@ -59,6 +59,11 @@ class TaskRunner(ABC):
         return 60.0
 
     @property
+    def task_initially_enabled(self):
+        """Will the task be run on start up"""
+        return True
+
+    @property
     def task_function_name(self):
         return "host.tasks." + self.task_name.replace(" ", "_").lower()
 

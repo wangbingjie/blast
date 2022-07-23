@@ -151,6 +151,9 @@ class Status(models.Model):
 
         return badge_class
 
+    def __str__(self):
+        return f"{self.message}"
+
     def __repr__(self):
         return f"{self.message}"
 
@@ -162,6 +165,9 @@ class Task(models.Model):
 
     name = models.CharField(max_length=100)
     objects = TaskManager()
+
+    def __str__(self):
+        return self.name
 
     def __repr__(self):
         return f"{self.name}"

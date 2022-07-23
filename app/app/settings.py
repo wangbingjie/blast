@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "host",
     "crispy_forms",
     "django_celery_beat",
+    "revproxy",
 ]
 
 MIDDLEWARE = [
@@ -76,28 +77,17 @@ WSGI_APPLICATION = "app.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-# }
-
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("DB_NAME", "django_db"),
-        "USER": os.environ.get("DB_USER", "root"),
-        "PASSWORD": os.environ.get("DB_PASS", "password"),
-        "HOST": os.environ.get("DB_HOST", "database"),
-        "PORT": "3306",
+        "NAME": os.environ.get("MYSQL_DATABASE", "blast_db"),
+        "USER": os.environ.get("MYSQL_USER", "admin"),
+        "PASSWORD": os.environ.get("MYSQL_ROOT_PASSWORD", "password"),
+        "HOST": os.environ.get("DATABASE_HOST", "database"),
+        "PORT": os.environ.get("DATABASE_PORT", "database"),
     }
 }
-
-# if 'test' in sys.argv:
-#    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -150,7 +140,13 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_TIMEZONE = "UTC"
 
 CELERY_IMPORTS = ["host.tasks"]
-CELERY_BROKER_URL = f"""amqp://{os.environ.get("RABBITMQ_USERNAME", "guest")}:{os.environ.get("RABBITMQ_PASSWORD", "guest")}@rabbitmq:5672//"""
+
+rabbitmq_user = os.environ.get("RABBITMQ_USERNAME", "guest")
+rabbitmq_password = os.environ.get("RABBITMQ_PASSWORD", "guest")
+rabbitmq_host = os.environ.get("MESSAGE_BROKER_HOST", "rabbitmq")
+rabbitmq_port = os.environ.get("MESSAGE_BROKER_PORT", "5672")
+
+CELERY_BROKER_URL = f"amqp://{rabbitmq_user}:{rabbitmq_password}@{rabbitmq_host}:{rabbitmq_port}//"
 
 CELERYD_REDIRECT_STDOUTS_LEVEL = "INFO"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
