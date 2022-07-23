@@ -1,9 +1,18 @@
-from django.shortcuts import render
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
+<<<<<<< HEAD
 from django.contrib.auth.mixins import UserPassesTestMixin
 from revproxy.views import ProxyView
 from django.urls import re_path
+=======
+<<<<<<< HEAD
+from django.shortcuts import render
+=======
+from django.contrib.auth.mixins import UserPassesTestMixin
+from revproxy.views import ProxyView
+from django.urls import re_path
+>>>>>>> 4ecb7bc (factoring out .env)
+>>>>>>> prospector_rebase
 
 from .forms import ImageGetForm
 from .forms import TransientSearchForm
@@ -171,14 +180,18 @@ def home(request):
     # )
 
 
-#@user_passes_test(lambda u: u.is_staff and u.is_superuser)
+# @user_passes_test(lambda u: u.is_staff and u.is_superuser)
 def flower_view(request):
-    '''passes the request back up to nginx for internal routing'''
+    """passes the request back up to nginx for internal routing"""
     response = HttpResponse()
     path = request.get_full_path()
     path = path.replace('flower', 'flower-internal', 1)
     response['X-Accel-Redirect'] = path
     return response
+
+
+
+
 
 class FlowerProxyView(UserPassesTestMixin, ProxyView):
     # `flower` is Docker container, you can use `localhost` instead
