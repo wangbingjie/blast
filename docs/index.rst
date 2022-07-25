@@ -7,7 +7,7 @@ Welcome to blast's documentation!
 =================================
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
-.. image:: https://readthedocs.org/projects/blast/badge/?version=latest
+.. image:: https://github.com/astrophpeter/blast/actions/workflows/continuous-integration.yml/badge.svg
 .. image:: https://results.pre-commit.ci/badge/github/astrophpeter/blast/main.svg
 
 Blast is a Django web app for the automatic characterization of supernova hosts.
@@ -25,6 +25,7 @@ Using the web API
 -----------------
 
 
+
 Developer Guide
 ---------------
 
@@ -33,9 +34,7 @@ Developer Guide
    :hidden:
    :caption: Developer
 
-   contributing
-   code_of_conduct
-   developer_workflow
+   dev_getting_started
    installation/blast
 
 Code API
@@ -47,5 +46,3 @@ Code API
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
 
-Blast is a Django web app for the automatic characterization of supernova hosts.
-Blast is developed on `github <https://github.com/astrophpeter/blast>`_
