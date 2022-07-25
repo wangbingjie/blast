@@ -37,6 +37,7 @@ Developer Guide
    dev_getting_started
    running_blast
    dev_workflow
+   github_issues
 
 Code API
 --------
