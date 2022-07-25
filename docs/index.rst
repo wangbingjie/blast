@@ -31,9 +31,11 @@ Developer Guide
    :caption: Developer
 
    dev_getting_started
-   running_blast
+   dev_running_blast
    dev_workflow
-   github_issues
+   dev_overview_of_repo
+   dev_github_issues
+
 
 Code API
 --------
