@@ -35,7 +35,7 @@ Developer Guide
    :caption: Developer
 
    dev_getting_started
-   installation/blast
+   running_blast
 
 Code API
 --------
