@@ -45,4 +45,3 @@ Code API
 
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
-
