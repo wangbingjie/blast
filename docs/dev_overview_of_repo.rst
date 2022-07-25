@@ -67,7 +67,7 @@ entrypoints
 
 The :code:`app/entrypoints` directory contains the entrypoint scripts used to
 start the blast application and related services. These scripts are used by the
-docker compose files. This directory also contains utilty scripts to clean data
+docker compose files. This directory also contains utility scripts to clean data
 directories when restarting blast.
 
 app
@@ -79,3 +79,26 @@ host
 ++++
 
 The :code:`app/host/` directory contains all the blast source code.
+
+fixtures
+^^^^^^^^
+
+The :code:`app/host/fixtures` directory contains all the data that is loaded into
+blast upon start up.
+
+templates
+^^^^^^^^^
+
+The :code:`app/host/templates/` directory contains all the html temples used to
+render the blast web pages.
+
+tests
+^^^^^
+
+The :code:`app/host/tests/` directory contains all code used to test blast.
+
+migrations
+^^^^^^^^^^
+
+The :code:`app/host/migrations/` directory contains all the django database
+migrations which are applied upon startup of blast.
