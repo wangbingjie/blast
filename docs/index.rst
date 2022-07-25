@@ -9,9 +9,18 @@ Welcome to blast's documentation!
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: Installation
+   :caption: Web interface
 
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Developer
+
+   contributing
+   code_of_conduct
+   developer_workflow
    installation/blast
+
 
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
