@@ -4,6 +4,9 @@
 Getting started
 +++++++++++++++
 
+We need your help
++++++++++++++++++
+
 This section walks you through how to become a blast developer. We want your
 help. No, really. There may be a little voice inside your head that
 is telling you that you're not ready to be an open source contributor; that your
