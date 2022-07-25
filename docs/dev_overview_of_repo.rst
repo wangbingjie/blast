@@ -1,5 +1,5 @@
 Repository overview
-=========================
+===================
 
 This section gives a high-level overview of the blast repository. It is
 designed to help new developers navigate the code.
@@ -57,8 +57,29 @@ testing.
 app
 ---
 
-The :code:`app/` directory contains all the blast django app source code. We
-will provide a more detailed breakdown below.
+The :code:`app/` directory contains all the blast django app source code.
+:code:`app/Dockerfile` tells docker how to build the blast container.
+:code:`app/requirements.txt` contains all the blast package dependencies. We
+provide a more detailed breakdown below of the sub directories below.
 
 entrypoints
 +++++++++++
+
+The :code:`app/entrypoints` directory contains the entrypoint scripts used to
+start the blast application and related services. These scripts are used by the
+docker compose files. This directory also contains utilty scripts to clean data
+directories when restarting blast.
+
+app
++++
+
+The :code:`app/app/` directory contains the django level application settings.
+
+host
+++++
+
+The :code:`app/host/` directory contains all the blast source code.
+
+
+
+
