@@ -21,10 +21,6 @@ Using the web interface
    :hidden:
    :caption: Web interface
 
-Using the web API
------------------
-
-
 
 Developer Guide
 ---------------
