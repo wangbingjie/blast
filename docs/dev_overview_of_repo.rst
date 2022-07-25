@@ -15,4 +15,3 @@ nginx
 
 The :code:`run/` directory contains the nginx config file which controls how the
 application is served.
-
