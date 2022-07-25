@@ -28,7 +28,7 @@ Developer Guide
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: Developer
+   :caption: Developer Guide
 
    dev_getting_started
    dev_running_blast
