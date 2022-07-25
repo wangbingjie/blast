@@ -15,3 +15,12 @@ nginx
 
 The :code:`run/` directory contains the nginx config file which controls how the
 application is served.
+
+docs
+----
+
+The :code:`docs/` directory contains all the code and text used to make the
+documentation (which you are reading right now). If you are making a
+documentation addition of change only, you will only edit code is this
+directory.
+
