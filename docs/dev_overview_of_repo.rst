@@ -79,7 +79,3 @@ host
 ++++
 
 The :code:`app/host/` directory contains all the blast source code.
-
-
-
-
