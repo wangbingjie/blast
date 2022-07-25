@@ -7,22 +7,11 @@ Welcome to blast's documentation!
 =================================
 
 .. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: User Guide
-
-
-
-
-.. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :hidden:
    :caption: Installation
 
    installation/blast
-
-
-
 
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
