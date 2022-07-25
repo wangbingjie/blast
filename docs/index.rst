@@ -40,8 +40,11 @@ Developer Guide
 Code API
 --------
 
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Code API
 
+   API/models
+   API/transient_name_server
 
-
-
-.. image:: https://readthedocs.org/projects/blast/badge/?version=latest
