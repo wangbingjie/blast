@@ -2,7 +2,7 @@
    :maxdepth: 2
 
 Getting started
-+++++++++++++++
+===============
 
 We need your help
 +++++++++++++++++
