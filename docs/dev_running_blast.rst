@@ -1,38 +1,21 @@
-.. toctree::
-   :maxdepth: 2
-
 Running blast locally
-+++++++++++++++++++++
+=====================
 
 If you want to develop on blast, for most things, you will have to run blast
-locally to see the effect of your code changes. There are several ways to
-install and run blast locally. This pages walks you through how to install blast
-and get it running on your machine.
-
-Docker
-======
-
-The recommended option for installing and running blast locally is to
-use docker. It is so strongly recommended in fact, that I'm not going to write
-documentation on how to install and run blast any other way.
+locally to see the effect of your code changes. This pages walks you through
+how to install blast and get it running on your machine.
 
 Install the Docker desktop app
 -------------------------------
 
-The first step is to install the docker desktop application, which can be found
+The recommended option for installing and running blast locally is to
+use docker. It is so strongly recommended in fact, that I'm not going to write
+documentation on how to install and run blast any other way. The first step is to
+install the docker desktop application, which can be found
 `here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux.
 
-Environment File
-----------------
-
-Blast needs some secrets like a transient name server bot key to work. All of
-these should be located in the :code:`env/.env.dev` file. You need to create and
-populate this file yourself. It should follow the same format as the
-:code:`env/.env.dev.example` file.
-
-
-Run the blast app locally
--------------------------
+Clone the blast repository
+--------------------------
 
 Clone the bast repository.
 
@@ -40,29 +23,49 @@ Clone the bast repository.
 
     git clone https://github.com/astrophpeter/blast.git
 
-Once in the blast directory, start the docker container.
+Setup environment file
+----------------------
+
+Blast needs some environment variables to run. All of
+these should be located in the :code:`env/.env.dev` file. This file is not in
+source control, you need to create and populate this file yourself.
+It should follow the same format as the :code:`env/.env.dev.example` file. If you
+do not need to ingest real transient data from TNS the example :code:`.env.file`
+file should be sufficient with the TNS variables left blank. While in the
+:code:`env/` directory run:
+
+.. code:: none
+
+    cp .env.dev.example .env.dev
+
+If you do need to ingest real TNS for development you will need the details of
+a TNS api bot (see ).
+
+Run the blast app
+-----------------
+
+Once in the top level blast directory, start the docker container.
 
 .. code:: none
 
     bash run/blast.run.local.sh
 
-.. note::
-    The web app container may fail a couple of times while it waits for the
-    database to be setup. Do not worry, this is normal. The web app container
-    will restart automatically until it successfully connects to the database.
-
-Then go to `https://0.0.0.0/ <https://0.0.0.0/>`_ in your web browser
-and blast should be running.
+Then go to `https://0.0.0.0/ <https://0.0.0.0/>`_  in your web browser,
+after all the containers have started, and blast should be running.
 
 .. warning::
-    Stating the web app via the :code:`blast.run.local.sh` script deletes your local copy of
-    the database in :code:`data/database/` and the app runs with an empty database.
+    Stating the web app via the :code:`run/blast.run.local.sh` script deletes
+    your local copy of the database in :code:`data/database/` and the app runs
+    with an empty database.
 
 To stop blast from running, open a new terminal window and run.
 
 .. code:: none
 
     docker compose down
+
+Testing the blast app
+---------------------
 
 To run tests with the blast app, run
 
