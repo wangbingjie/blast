@@ -1,7 +1,7 @@
-Blast repository overview
+Repository overview
 =========================
 
-This sections describes a high-level overview of the blast repository. It is
+This section gives a high-level overview of the blast repository. It is
 designed to help new developers navigate the code.
 
 run
@@ -15,3 +15,5 @@ nginx
 
 The :code:`run/` directory contains the nginx config file which controls how the
 application is served.
+
+
