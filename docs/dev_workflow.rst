@@ -3,7 +3,7 @@ General workflow
 
 To add or change code on blast we use git and github. If you are unfamiliar with
 these two pieces of software, a great place to start would be to watch this
-great introduction to git and github on youtube
+introduction to git and github on youtube
 `here <https://www.youtube.com/watch?v=RGOj5yH7evk>`_.
 
 The normal develop workflow of blast is to branch off main, commit and push

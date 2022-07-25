@@ -4,10 +4,10 @@
 Running blast locally
 +++++++++++++++++++++
 
-There are several ways to install and run blast locally. You might want to
-do this if you want to contribute to the development of blast, or if you don't
-want to use the live web app. This pages walks you through how to install blast
-and get it running on your machine in a couple of different ways.
+If you want to develop on blast, for most things, you will have to run blast
+locally to see the effect of your code changes. There are several ways to
+install and run blast locally. This pages walks you through how to install blast
+and get it running on your machine.
 
 Docker
 ======
