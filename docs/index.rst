@@ -7,13 +7,23 @@ Welcome to blast's documentation!
 =================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :hidden:
+   :caption: User Guide
+
+
+
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Installation
 
    installation/blast
-   task_runner
-   contributing
-   code_of_conduct
-   API
+
+
+
+
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
 
