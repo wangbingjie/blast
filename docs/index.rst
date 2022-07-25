@@ -18,16 +18,16 @@ Using the web interface
 
 .. toctree::
    :maxdepth: 2
-   :hidden:
    :caption: Web interface
 
+   web_pages
+   web_api
 
 Developer Guide
 ---------------
 
 .. toctree::
    :maxdepth: 2
-   :hidden:
    :caption: Developer Guide
 
    dev_getting_started
@@ -42,7 +42,6 @@ Code API
 
 .. toctree::
    :maxdepth: 2
-   :hidden:
    :caption: Code API
 
    API/models
