@@ -16,6 +16,12 @@ nginx
 The :code:`run/` directory contains the nginx config file which controls how the
 application is served.
 
+kubernetes
+----------
+
+The :code:`kubernetes/` directory contains files needed to run blast and its related
+services on a kubernetes clusters.
+
 docs
 ----
 
@@ -83,7 +89,7 @@ The :code:`app/host/` directory contains all the blast source code.
 fixtures
 ^^^^^^^^
 
-The :code:`app/host/fixtures` directory contains all the data that is loaded into
+The :code:`app/host/fixtures/` directory contains all the data that is loaded into
 blast upon start up.
 
 templates
