@@ -7,16 +7,16 @@ work on. The best place to start is the
 page. Here you will find a list of develop tasks that need to be worked on for
 blast. They are tagged by level of difficulty:
 
-Entry level issues
-------------------
+Entry level
+-----------
 
 These issues are tagged with :code:`Difficulty: entry level`. These issues are
 self-contained short tasks that often require only editing html or documentation
 rst files. These issues will often have specific instructions on how to complete
 them. These issues are a great place to start for new developers.
 
-Intermediate level issues
--------------------------
+Intermediate
+------------
 
 These issues are tagged with :code:`Difficulty: intermediate`. These issues are
 slightly longer tasks which require editing python code with blast. You may have
@@ -26,11 +26,15 @@ have to figure out specific implementation details. These issues are great for
 developers who have some experience with python and / or have completed
 a few entry level issues.
 
-Advanced level issues
----------------------
+Advanced
+--------
 
 These issues are tagged with :code:`Difficulty: advanced`. These issues are
 open-ended tasks which often require knowledge of all aspects of the application,
 or involve project level structural changes. These issues are great for
 developers who are confident with python and django and have completed
 many intermediate level issues.
+
+
+You are now ready to get stuck in, pick an issue and good luck! :-)
+
