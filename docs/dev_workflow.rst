@@ -51,10 +51,10 @@ open a draft pull request.
 
 7. As you commit and push changes to your branch on github they will show up
 in the draft pull request. When you are a happy for you changes to be reviewed
-and then eventually merged into develop, click ready for review.
+and then eventually merged into main, click ready for review.
 
 Your code will now be reviewed and when it is accepted it will be merged into
-develop.
+main.
 
 8. After your branch has been merged, delete the branch from your local
 repository.
