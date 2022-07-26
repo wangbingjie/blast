@@ -41,10 +41,11 @@ then returns the processed status message.
 .. note::
 
     The available status messages can be found in
-    :code:`app/host/fixtures/initial/setup_status.yaml`. The _run_process method must
-    return a string that matches the message field of one of the statuses in
-    :code:`app/host/fixtures/initial/setup_status.yaml`. If you want to use a new
-    status add it to :code:`app/host/fixtures/initial/setup_status.yaml`
+    :code:`app/host/fixtures/initial/setup_status.yaml`. The :code:`_run_process`
+    method must return a string that matches the message field of
+    one of the statuses in :code:`app/host/fixtures/initial/setup_status.yaml`.
+    If you want to use a new status add it to
+    :code:`app/host/fixtures/initial/setup_status.yaml`
 
 Task name
 ^^^^^^^^^
@@ -90,7 +91,7 @@ database meeting the prerequisites.
 .. note::
 
     The available tasks can be found in
-    :code:`app/host/fixtures/initial/setup_tasks.yaml`.  The _prerequisites method must
+    :code:`app/host/fixtures/initial/setup_tasks.yaml`.  The :code:`_prerequisites` method must
     return a dictionary with keys that match the name field of one of the tasks in
     :code:`app/host/fixtures/initial/setup_tasks.yaml` and values that match a
     status :code:`app/host/fixtures/initial/setup_status.yaml`.
@@ -98,9 +99,9 @@ database meeting the prerequisites.
 Failed Status
 ^^^^^^^^^^^^^
 
-The TaskRunner needs to specify what status happens if your _run_process code
+The TaskRunner needs to specify what status happens if your :code:`_run_process` code
 throws and exception and fails. This is done by implementing the
-_failed_status_message method.  This method takes no arguments and returns a
+:code:`_failed_status_message method`.  This method takes no arguments and returns a
 string which is the message of the failed status. Let's say we want the failed
 status to be the Status with the message 'failed',
 
@@ -169,10 +170,6 @@ Registering your task
 For blast to actually run your task you have to register it within the app. For
 both a SystemTaskRunner and a TransientTaskRunner you have to add the an instance
 of your Taskrunner to the periodic_tasks list in :code:`app/host/task.py`.
-
-If you are implementing a TransientTaskRunner you also need to add you task name into
-:code:`app/host/fixtures/initial/setup_tasks.yaml` making sure task_name matches the
-name field in the fixture. This will ensure blast loads your task on start up.
 
 To check that your task has been registered and is being run in blast go to
 `<0.0.0.0/admin/>`_ login and then go to `<0.0.0.0/admin/periodic_tasks/>`_
