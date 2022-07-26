@@ -15,4 +15,4 @@ and have a draft pull request open, everytime you push changes a preview of
 the documentation is available. You can view this preview by clicking here in the
 pull request:
 
-.. image:: _static auto_read_the_docs_build.png
+.. image:: _static/auto_read_the_docs_build.png
