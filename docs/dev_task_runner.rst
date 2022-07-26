@@ -180,4 +180,3 @@ and you should see you task and its schedule.
 
 You can check if you task is running without error by going to the flower
 dashboard at `<0.0.0.0:8888>`_.
-
