@@ -36,6 +36,8 @@ Developer Guide
    dev_workflow
    dev_overview_of_repo
    dev_github_issues
+   dev_documentation
+   dev_task_runner
 
 
 Code API

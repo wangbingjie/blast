@@ -50,11 +50,24 @@ Then open a new draft pull request.
 open a draft pull request.
 
 7. As you commit and push changes to your branch on github they will show up
-in the draft pull request. When you are a happy for you changes to be reviewed
-and then eventually merged into develop, click ready for review.
+in the draft pull request. On every commit some checks will be performed on
+your code, they are shown here:
+
+.. image:: _static/ci_checks.png
+
+The Continuous integration test checks if any of the code you changed failed
+any of the blast app tests. The read the docs checks test if any of the code
+you added broke the documentation build. Finally, the pre-commit test checks if
+the code you added is correctly formatted. If it is not, pre-commit will
+automatically fix things for you and push the changes. All the checks have passed
+in the above screenshot and they should for your code changes if you want
+them to be accepted!
+
+When you are a happy for you changes to be reviewed
+and then eventually merged into main, click ready for review.
 
 Your code will now be reviewed and when it is accepted it will be merged into
-develop.
+main.
 
 8. After your branch has been merged, delete the branch from your local
 repository.
