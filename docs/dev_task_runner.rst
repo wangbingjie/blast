@@ -19,8 +19,10 @@ SystemTaskRunner.
 Transient Task
 --------------
 
-There are four methods that need to be implemented when writing a
-TransientTaskRunner, we will go through each below.
+New transient task runners should be implemented in
+the :code:`app/host/transient_tasks.py` module. We will now explain how to
+implement a :code:`TransientTaskRunner`.
+
 
 Process method
 ^^^^^^^^^^^^^^
@@ -118,6 +120,37 @@ status to be the Status with the message 'failed',
     :code:`app/host/fixtures/initial/setup_status.yaml`. If you want to use a new
     status add it to :code:`app/host/fixtures/initial/setup_status.yaml`
 
+Task Frequency
+^^^^^^^^^^^^^^
+
+You can specify the frequency at which as task should be run blast by implementing
+the :code:`task_frequency_seconds` property. This function must return a positive
+integer. If you do not implement this method, it will default to 60 seconds.
+
+.. code:: python
+
+    @property
+    def task_frequency_seconds(self):
+        return 60.0
+
+
+Run on start up
+^^^^^^^^^^^^^^^
+
+You can specify whether your task runs periodically on start up of blast or needs
+to be explicitly trigger from the djano admin by implementing
+the :code:`task_initially_enabled` property. If you do not implement this method
+it will default to true, meaning that the task will launch automatically on
+startup.
+
+.. code:: python
+
+    @property
+    def task_initially_enabled(self):
+        """Will the task be run on start up"""
+        return True
+
+
 Full example class
 ^^^^^^^^^^^^^^^^^^
 
@@ -125,7 +158,7 @@ Putting this all together, the example TaskRunner class would be,
 
 .. code:: python
 
-    from .tasks_base import TransientTaskRunner
+    from .base_tasks import TransientTaskRunner
 
     class ExampleTaskRunner(TransientTaskRunner):
         """An Example TaskRunner"""
@@ -141,8 +174,19 @@ Putting this all together, the example TaskRunner class would be,
         def task_name():
             return 'Host match'
 
+        @property
+        def task_frequency_seconds(self):
+            return 60.0
+
+        @property
+        def task_initially_enabled(self):
+            """Will the task be run on start up"""
+            return True
+
         def _failed_status_message()
             return 'failed'
+
+
 
 
 System Task
@@ -150,14 +194,25 @@ System Task
 
 The SystemTaskRunner is somewhat simpler to implement as there is no chaining
 of prerequisite tasks, and the results do not need to be displayed in the blast
-web interface. Here is an example of the a full SystemTaskRunner
+web interface. New system task runners should be implemented in
+the :code:`app/host/system_tasks.py` module. We will now explain how to
+implement a :code:`SystemTaskRunner`.
 
 .. code:: python
 
-    from .tasks_base import SystemTaskRunner
+    from .base_tasks import SystemTaskRunner
 
     class ExampleTaskRunner(SystemTaskRunner):
         """An Example TaskRunner"""
+
+        @property
+        def task_frequency_seconds(self):
+            return 60.0
+
+        @property
+        def task_initially_enabled(self):
+            """Will the task be run on start up"""
+            return True
 
         def run_process(transient):
             #Put your code here!
@@ -173,7 +228,7 @@ of your Taskrunner to the periodic_tasks list in :code:`app/host/task.py`.
 
 To check that your task has been registered and is being run in blast go to
 `<0.0.0.0/admin/>`_ login and then go to `<0.0.0.0/admin/periodic_tasks/>`_
-and you should see you task and its schedule.
+and you should see your task and its schedule.
 
 You can check if you task is running without error by going to the flower
 dashboard at `<0.0.0.0:8888>`_.
