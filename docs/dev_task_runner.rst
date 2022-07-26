@@ -19,7 +19,7 @@ SystemTaskRunner.
 Transient Task
 --------------
 
-New transient task runners should be implemented in
+A new :code:`TransientTaskRunner` should be implemented in
 the :code:`app/host/transient_tasks.py` module. We will now explain how to
 implement a :code:`TransientTaskRunner`.
 
@@ -154,7 +154,7 @@ startup.
 Full example class
 ^^^^^^^^^^^^^^^^^^
 
-Putting this all together, the example TaskRunner class would be,
+Putting this all together, the example :code:`TransientTaskRunner` class would be,
 
 .. code:: python
 
@@ -168,11 +168,11 @@ Putting this all together, the example TaskRunner class would be,
             return = "processed"
 
         def _prerequisites():
-            return {'Host match': 'processed', 'Cutout download': 'processed'}
+            return {"Host match": "not processed", "Cutout download": "processed"}
 
         @property
         def task_name():
-            return 'Host match'
+            return "Host match"
 
         @property
         def task_frequency_seconds(self):
@@ -184,7 +184,7 @@ Putting this all together, the example TaskRunner class would be,
             return True
 
         def _failed_status_message()
-            return 'failed'
+            return "failed"
 
 
 
@@ -192,11 +192,11 @@ Putting this all together, the example TaskRunner class would be,
 System Task
 -----------
 
-The SystemTaskRunner is somewhat simpler to implement as there is no chaining
+The :code:`SystemTaskRunner` is somewhat simpler to implement as there is no chaining
 of prerequisite tasks, and the results do not need to be displayed in the blast
 web interface. New system task runners should be implemented in
-the :code:`app/host/system_tasks.py` module. We will now explain how to
-implement a :code:`SystemTaskRunner`.
+the :code:`app/host/system_tasks.py` module. A full :code:`SystemTaskRunner`
+would look like:
 
 .. code:: python
 
@@ -223,12 +223,13 @@ Registering your task
 ---------------------
 
 For blast to actually run your task you have to register it within the app. For
-both a SystemTaskRunner and a TransientTaskRunner you have to add the an instance
-of your Taskrunner to the periodic_tasks list in :code:`app/host/task.py`.
+both a :code:`SystemTaskRunner` and a :code:`TransientTaskRunner` you have to
+add an instance of your Taskrunner to the :code:`periodic_tasks`
+list in :code:`app/host/task.py`.
 
 To check that your task has been registered and is being run in blast go to
 `<0.0.0.0/admin/>`_ login and then go to `<0.0.0.0/admin/periodic_tasks/>`_
 and you should see your task and its schedule.
 
-You can check if you task is running without error by going to the flower
+You can check if your task is running without error by going to the flower
 dashboard at `<0.0.0.0:8888>`_.
