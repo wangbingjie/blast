@@ -1,18 +1,10 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
-<<<<<<< HEAD
 from django.contrib.auth.mixins import UserPassesTestMixin
 from revproxy.views import ProxyView
 from django.urls import re_path
-=======
-<<<<<<< HEAD
 from django.shortcuts import render
-=======
-from django.contrib.auth.mixins import UserPassesTestMixin
-from revproxy.views import ProxyView
-from django.urls import re_path
->>>>>>> 4ecb7bc (factoring out .env)
->>>>>>> prospector_rebase
+
 
 from .forms import ImageGetForm
 from .forms import TransientSearchForm
