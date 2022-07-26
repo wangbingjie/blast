@@ -43,8 +43,31 @@ then returns the processed status message.
     The available status messages can be found in
     :code:`app/host/fixtures/initial/setup_status.yaml`. The _run_process method must
     return a string that matches the message field of one of the statuses in
-    :code:`app/host/fixtures/initial/setup_status.yaml`. If you want to use a new s
-    status add it to :code:`app/host/fixtures/initial/status.yaml.
+    :code:`app/host/fixtures/initial/setup_status.yaml`. If you want to use a new
+    status add it to :code:`app/host/fixtures/initial/setup_status.yaml`
+
+Task name
+^^^^^^^^^
+
+The TaskRunner needs to specific which task it operates on. This is done through
+implementing the task_name property. This methods takes no arguments and returns
+a string which is the name of the task. Let's say we are implementing a
+TransientTaskRunner that matches a transient to a host galaxy, this
+TransientTaskRunner will alter the status of the Host match Task,
+
+.. code:: python
+
+    @property
+    def task_name():
+        return 'Host match'
+
+.. note::
+
+    You need add your new task add its name into
+    :code:`app/host/fixtures/initial/setup_tasks.yaml` making sure the return of
+    task_name matches the name field in the fixture. This will ensure blast
+    registers your task on start up.
+
 
 Prerequisites
 ^^^^^^^^^^^^^
@@ -67,25 +90,10 @@ database meeting the prerequisites.
 .. note::
 
     The available tasks can be found in
-    :code:`app/host/fixtures/initial/setup_tasks.yaml`. The _prerequisites method must
+    :code:`app/host/fixtures/initial/setup_tasks.yaml`.  The _prerequisites method must
     return a dictionary with keys that match the name field of one of the tasks in
     :code:`app/host/fixtures/initial/setup_tasks.yaml` and values that match a
     status :code:`app/host/fixtures/initial/setup_status.yaml`.
-
-Task name
-^^^^^^^^^
-
-The TaskRunner needs to specific which task it operates on. This is done through
-implementing the task_name property. This methods takes no arguments and returns
-a string which is the name of the task. Let's say we are implementing a
-TransientTaskRunner that matches a transient to a host galaxy, this
-TransientTaskRunner will alter the status of the Host match Task,
-
-.. code:: python
-
-    @property
-    def task_name():
-        return 'Host match'
 
 Failed Status
 ^^^^^^^^^^^^^
@@ -100,6 +108,14 @@ status to be the Status with the message 'failed',
 
     def _failed_status_message()
         return 'failed'
+
+.. note::
+
+    The available status messages can be found in
+    :code:`app/host/fixtures/initial/setup_status.yaml`. The _failed_status_message
+    method must return a string that matches the message field of one of the statuses in
+    :code:`app/host/fixtures/initial/setup_status.yaml`. If you want to use a new
+    status add it to :code:`app/host/fixtures/initial/setup_status.yaml`
 
 Full example class
 ^^^^^^^^^^^^^^^^^^
