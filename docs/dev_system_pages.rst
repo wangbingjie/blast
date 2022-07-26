@@ -19,6 +19,8 @@ password are set by :code:`DJANGO_SUPERUSER_PASSWORD`
 
 Once logged in, you should see a page like this:
 
+.. image:: _static/django_admin_screenshot.png
+
 Flower
 ------
 
@@ -27,7 +29,6 @@ allows you to monitor the backend computation tasks being run in blast. This all
 you to see which tasks are being run and which tasks are failing.
 
 Once blast is running locally to see the flower dashboard go to `<0.0.0.0:8888>`_.
-The dashboard should look something like this:
 
 RabbitMQ
 --------
@@ -42,3 +43,7 @@ password are set by :code:`RABBITMQ_USERNAME`
 :code:`RABBITMQ_PASSWORD` defined in your :code:`env/.env.dev` file.
 
 Once logged in, you see a page like this:
+
+.. image:: _static/rabbitmq_screenshot.png
+
+
