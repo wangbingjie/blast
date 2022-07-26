@@ -45,5 +45,3 @@ password are set by :code:`RABBITMQ_USERNAME`
 Once logged in, you see a page like this:
 
 .. image:: _static/rabbitmq_screenshot.png
-
-
