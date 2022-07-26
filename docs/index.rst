@@ -32,6 +32,7 @@ Developer Guide
 
    dev_getting_started
    dev_running_blast
+   dev_system_pages
    dev_workflow
    dev_overview_of_repo
    dev_github_issues
