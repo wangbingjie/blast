@@ -42,4 +42,3 @@ password are set by :code:`RABBITMQ_USERNAME`
 :code:`RABBITMQ_PASSWORD` defined in your :code:`env/.env.dev` file.
 
 Once logged in, you see a page like this:
-
