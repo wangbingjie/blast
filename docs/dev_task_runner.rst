@@ -52,7 +52,7 @@ then returns the processed status message.
 Task name
 ^^^^^^^^^
 
-The TaskRunner needs to specific which task it operates on. This is done through
+The TaskRunner needs to specify which task it operates on. This is done through
 implementing the task_name property. This methods takes no arguments and returns
 a string which is the name of the task. Let's say we are implementing a
 TransientTaskRunner that matches a transient to a host galaxy, this
@@ -66,7 +66,7 @@ TransientTaskRunner will alter the status of the Host match Task,
 
 .. note::
 
-    You need add your new task add its name into
+    You need to add your new task and its name into
     :code:`app/host/fixtures/initial/setup_tasks.yaml` making sure the return of
     task_name matches the name field in the fixture. This will ensure blast
     registers your task on start up.
@@ -101,16 +101,18 @@ database meeting the prerequisites.
 Failed Status
 ^^^^^^^^^^^^^
 
-The TaskRunner needs to specify what status happens if your :code:`_run_process` code
+You can specify what status happens if your :code:`_run_process` code
 throws and exception and fails. This is done by implementing the
 :code:`_failed_status_message method`.  This method takes no arguments and returns a
 string which is the message of the failed status. Let's say we want the failed
-status to be the Status with the message 'failed',
+status to be the Status with the message "failed",
 
 .. code:: python
 
     def _failed_status_message()
-        return 'failed'
+        return "failed"
+
+If you do not implement this method it will default to a "failed" status.
 
 .. note::
 
@@ -180,7 +182,6 @@ Putting this all together, the example :code:`TransientTaskRunner` class would b
 
         @property
         def task_initially_enabled(self):
-            """Will the task be run on start up"""
             return True
 
         def _failed_status_message()
@@ -211,7 +212,6 @@ would look like:
 
         @property
         def task_initially_enabled(self):
-            """Will the task be run on start up"""
             return True
 
         def run_process(transient):
