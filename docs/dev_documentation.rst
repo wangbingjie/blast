@@ -16,7 +16,3 @@ the documentation is available. You can view this preview by clicking here in th
 pull request:
 
 .. image:: _static auto_read_the_docs_build.png
-
-
-
-
