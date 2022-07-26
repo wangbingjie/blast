@@ -38,7 +38,7 @@ allows you to see the message broker traffic where blast computation tasks are
 sent to workers.
 
 Once blast is running locally to see the RabbitMQ management dashboard go
-to `<0.0.0.0/rabbitmq>`_. where you will be prompted for a login. The login user and
+to `<0.0.0.0/rabbitmq/>`_. where you will be prompted for a login. The login user and
 password are set by :code:`RABBITMQ_USERNAME`
 :code:`RABBITMQ_PASSWORD` defined in your :code:`env/.env.dev` file.
 
