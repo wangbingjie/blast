@@ -30,50 +30,65 @@ should contain all the necessary computations and saves to the database for your
 task to be completed. It takes a Transient object as an argument and must return
 a status message which indicates the status of the task after computation. As an
 example, let's implement a simple task that just prints 'processing' and
-then returns the processed Status.
+then returns the processed status message.
 
 .. code:: python
-
-    from .models import Status
 
     def _run_process(transient):
         print('processing')
         return = "processed"
 
+.. note::
+
+    The available status messages can be found in
+    :code:`app/host/fixtures/initial/setup_status.yaml`. The _run_process method must
+    return a string that matches the message field of one of the statuses in
+    :code:`app/host/fixtures/initial/setup_status.yaml`. If you want to use a new s
+    status add it to :code:`app/host/fixtures/initial/status.yaml.
+
 Prerequisites
--------------
+^^^^^^^^^^^^^
 
 The TaskRunner needs to also specify which tasks need to be completed before it
 should be run. This is done through implementing the _prerequisites method. This
 function tasks no arguments and should return a dictionary with the name and
-status of prerequisite task. For example, if before running your task you need
-the Host match task and the Cutout download task to be completed, it would look
-like this.
+status of prerequisite tasks. For example, if before running your task you need
+the Host match task to have status "not processed" and the Cutout download task
+to have status "processed", it would look like this.
 
 .. code:: python
 
     def _prerequisites():
-        return {'Host match': 'processed', 'Cutout download': 'processed'}
+        return {'Host match': 'not processed', 'Cutout download': 'processed'}
 
-This will mean that your TaskRunner will only run on transients in the blast
+This ensures that your TaskRunner will only run on transients in the blast
 database meeting the prerequisites.
 
+.. note::
+
+    The available tasks can be found in
+    :code:`app/host/fixtures/initial/setup_tasks.yaml`. The _prerequisites method must
+    return a dictionary with keys that match the name field of one of the tasks in
+    :code:`app/host/fixtures/initial/setup_tasks.yaml` and values that match a
+    status :code:`app/host/fixtures/initial/setup_status.yaml`.
+
 Task name
----------
+^^^^^^^^^
 
 The TaskRunner needs to specific which task it operates on. This is done through
-implementing the _task_name method. This methods takes no arguments and returns
-a string which is the name of the task. Let's say we are implement a task runner
-that matches a transient to a host galaxy, this TaskRunner will alter the status
-of the Host match Task,
+implementing the task_name property. This methods takes no arguments and returns
+a string which is the name of the task. Let's say we are implementing a
+TransientTaskRunner that matches a transient to a host galaxy, this
+TransientTaskRunner will alter the status of the Host match Task,
 
 .. code:: python
 
-    def _task_name():
+    @property
+    def task_name():
         return 'Host match'
 
 Failed Status
--------------
+^^^^^^^^^^^^^
 
 The TaskRunner needs to specify what status happens if your _run_process code
 throws and exception and fails. This is done by implementing the
@@ -87,31 +102,66 @@ status to be the Status with the message 'failed',
         return 'failed'
 
 Full example class
-------------------
+^^^^^^^^^^^^^^^^^^
 
 Putting this all together, the example TaskRunner class would be,
 
 .. code:: python
 
-    from .processing import TaskRunner
-    from .models import Status
+    from .tasks_base import TransientTaskRunner
 
-    class ExampleTaskRunner(TaskRunner):
+    class ExampleTaskRunner(TransientTaskRunner):
         """An Example TaskRunner"""
 
         def _run_process(transient):
             print('processing')
-            return = Status.objects.get(message__exact="processed")
+            return = "processed"
 
         def _prerequisites():
             return {'Host match': 'processed', 'Cutout download': 'processed'}
 
-        def _task_name():
+        @property
+        def task_name():
             return 'Host match'
 
-        def failed_status_message()
+        def _failed_status_message()
             return 'failed'
 
 
+System Task
+-----------
+
+The SystemTaskRunner is somewhat simpler to implement as there is no chaining
+of prerequisite tasks, and the results do not need to be displayed in the blast
+web interface. Here is an example of the a full SystemTaskRunner
+
+.. code:: python
+
+    from .tasks_base import SystemTaskRunner
+
+    class ExampleTaskRunner(SystemTaskRunner):
+        """An Example TaskRunner"""
+
+        def run_process(transient):
+            #Put your code here!
+            return = "processed"
+
+
 Registering your blast task
-===========================
+---------------------------
+
+For blast to actually run your task you have to register it within the app. For
+both a SystemTaskRunner and a TransientTaskRunner you have to add the an instance
+of your Taskrunner to the periodic_tasks list in :code:`app/host/task.py`.
+
+If you are implementing a TransientTaskRunner you also need to add you task name into
+:code:`app/host/fixtures/initial/setup_tasks.yaml` making sure task_name matches the
+name field in the fixture. This will ensure blast loads your task on start up.
+
+To check that your task has been registered and is being run in blast go to
+`<0.0.0.0/admin/>`_ login and then go to `<0.0.0.0/admin/periodic_tasks/>`_
+and you should see you task and its schedule.
+
+You can check if you task is running without error by going to the flower
+dashboard at `<0.0.0.0:8888>`_.
+
