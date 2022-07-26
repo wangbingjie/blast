@@ -163,8 +163,8 @@ web interface. Here is an example of the a full SystemTaskRunner
             return = "processed"
 
 
-Registering your blast task
----------------------------
+Registering your task
+---------------------
 
 For blast to actually run your task you have to register it within the app. For
 both a SystemTaskRunner and a TransientTaskRunner you have to add the an instance
