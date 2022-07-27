@@ -14,6 +14,18 @@ from .models import Transient
 class TaskRunner(ABC):
     """
     Abstract base class for a TaskRunner.
+
+    Attributes:
+        task_frequency_seconds (int): Positive integer defining the frequency
+            the task in run at. Defaults to 60 seconds.
+        task_initially_enabled (bool): True means the task is initially enabled,
+            False means the task is initially disabled. Default is enabled
+            (True).
+        task_name (str): Name of the task the TaskRunner works on.
+        task_type (str): Type of task the TaskRunner works on.
+        task_function_name(str): Name of the function used to register the task
+            in celery.
+
     """
 
     def __init__(self):
@@ -44,10 +56,6 @@ class TaskRunner(ABC):
     def task_frequency_seconds(self) -> int:
         """
         Defines the frequency in seconds the task should be run at.
-
-        Returns
-            frequency (int): Positive integer difining the frequency the task
-            in run at. Defaults to 60 seconds.
         """
         return 60
 
@@ -55,11 +63,6 @@ class TaskRunner(ABC):
     def task_initially_enabled(self):
         """
         Defines if the task should be run on blast startup.
-
-        Returns
-            initially enabled (bool): True means the task is initially enabled,
-                False means the task is initially disabled. Default is enabled
-                (True).
         """
         return True
 
@@ -67,9 +70,6 @@ class TaskRunner(ABC):
     def task_function_name(self) -> str:
         """
         TaskRunner function name to be registered by celery.
-
-        Returns
-            function name (str): name of the celery task function.
         """
         return "host.tasks." + self.task_name.replace(" ", "_").lower()
 
@@ -77,9 +77,6 @@ class TaskRunner(ABC):
     def run_process(self):
         """
         Runs a task runner process. Needs to be implemented.
-
-        Returns:
-            None (None)
         """
         pass
 
@@ -88,9 +85,6 @@ class TaskRunner(ABC):
     def task_name(self) -> str:
         """
         Name of the task the TaskRunner works on.
-
-        Returns:
-            task name (str): Name of the task the TaskRunner works on.
         """
         pass
 
@@ -99,9 +93,6 @@ class TaskRunner(ABC):
     def task_type(self) -> str:
         """
         Type of task the TaskRunner works on.
-
-        Returns:
-            Task type (str): Type of the task
         """
         pass
 
