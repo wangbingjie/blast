@@ -39,7 +39,7 @@ file should be sufficient with the TNS variables left blank. While in the
     cp .env.dev.example .env.dev
 
 If you do need to ingest real TNS for development you will need the details of
-a TNS api bot (see ).
+a TNS api bot (see `<https://www.wis-tns.org/bots>`_).
 
 Run the blast app
 -----------------
