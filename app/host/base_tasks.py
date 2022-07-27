@@ -1,5 +1,6 @@
 from abc import ABC
 from abc import abstractmethod
+from abc import abstractproperty
 from time import process_time
 
 from django.utils import timezone
@@ -12,17 +13,7 @@ from .models import Transient
 
 class TaskRunner(ABC):
     """
-    Abstract base class for a task runner.
-
-    Attributes:
-        processing_status (models.Status): Status of the task while runner is
-            running a task.
-        task_register (model.TaskRegister): Register of task for the runner to
-            process.
-        failed_status (model.Status): Status of the task is if the runner fails.
-        prerequisites (dict): Prerequisite tasks and statuses required for the
-            runner to process.
-        task (str): Name of the task the runner alters the status of.
+    Abstract base class for a TaskRunner.
     """
 
     def __init__(self):
@@ -36,15 +27,10 @@ class TaskRunner(ABC):
         Overwrites or creates new objects in the blast database.
 
         Parameters
-        ----------
-        model: blast model of the object that needs to be updated
-        unique_object_query: query to be passed to model.objects.get that will
-            uniquely identify the object of interest
-        object_data: data to be saved or over written for the object.
-        Returns
-        -------
-        None
-
+            model (dango.model): blast model of the object that needs to be updated
+            unique_object_query (dict): query to be passed to model.objects.get that will
+                uniquely identify the object of interest
+            object_data (dict): data to be saved or overwritten for the object.
         """
 
         try:
@@ -55,44 +41,87 @@ class TaskRunner(ABC):
             model.objects.create(**object_data)
 
     @property
-    def task_frequency_seconds(self):
-        return 60.0
+    def task_frequency_seconds(self) -> int:
+        """
+        Defines the frequency in seconds the task should be run at.
+
+        Returns
+            frequency (int): Positive integer difining the frequency the task
+            in run at. Defaults to 60 seconds.
+        """
+        return 60
 
     @property
     def task_initially_enabled(self):
-        """Will the task be run on start up"""
+        """
+        Defines if the task should be run on blast startup.
+
+        Returns
+            initially enabled (bool): True means the task is initially enabled,
+                False means the task is initially disabled. Default is enabled
+                (True).
+        """
         return True
 
     @property
-    def task_function_name(self):
+    def task_function_name(self) -> str:
+        """
+        TaskRunner function name to be registered by celery.
+
+        Returns
+            function name (str): name of the celery task function.
+        """
         return "host.tasks." + self.task_name.replace(" ", "_").lower()
+
 
     @abstractmethod
     def run_process(self):
         """
-        Runs task runner process.
-        """
-        pass
-
-    @property
-    def task_name(self):
-        """
-        Name of the task the task runner works on.
+        Runs a task runner process. Needs to be implemented.
 
         Returns:
-            task name (str): Name of the task the task runner is to work on.
+            None (None)
         """
         pass
 
     @property
-    def task_type(self):
+    @abstractmethod
+    def task_name(self) -> str:
+        """
+        Name of the task the TaskRunner works on.
+
+        Returns:
+            task name (str): Name of the task the TaskRunner works on.
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def task_type(self) -> str:
+        """
+        Type of task the TaskRunner works on.
+
+        Returns:
+            Task type (str): Type of the task
+        """
         pass
 
 
 class TransientTaskRunner(TaskRunner):
+
     def __init__(self):
         """
         Initialized method which sets up the task runner.
+
+        Attributes:
+        processing_status (models.Status): Status of the task while runner is
+            running a task.
+        task_register (model.TaskRegister): Register of task for the runner to
+            process.
+        failed_status (model.Status): Status of the task is if the runner fails.
+        prerequisites (dict): Prerequisite tasks and statuses required for the
+            runner to process.
+        task (str): Name of the task the runner alters the status of.
         """
         self.processing_status = Status.objects.get(message__exact="processing")
         self.task_register = TaskRegister.objects.all()
@@ -226,6 +255,7 @@ class TransientTaskRunner(TaskRunner):
 
 
 class SystemTaskRunner(TaskRunner):
+
     @property
     def task_type(self):
         return "system"
