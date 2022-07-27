@@ -39,6 +39,8 @@ services:
     volumes:
       - ../data/database/:/var/lib/mysql/
     profiles: ["full", "slim"]
+    env_file:
+      - ../env/.env.dev
   nginx:
     extends:
       file: docker-compose.blast_base.yml
@@ -90,4 +92,7 @@ services:
       default:
         aliases:
           - database
+    environment:
+      - "MYSQL_ROOT_PASSWORD=password"
+      - "MYSQL_DATABASE=blast_db"
     profiles: ["test"]
