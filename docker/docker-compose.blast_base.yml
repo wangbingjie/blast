@@ -31,5 +31,4 @@ services:
     restart: always
     ports:
       - "3306:${DATABASE_PORT}"
-    env_file:
-      - ../env/.env.dev
+
