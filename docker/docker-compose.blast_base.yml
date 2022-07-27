@@ -12,8 +12,6 @@ services:
       - ../data/prospector_output:/prospector_output
       - ../data/tns_staging:/tns_staging
       - ../data/transmission:/transmission
-    env_file:
-      - ../env/.env.dev
   nginx_base:
     restart: always
     image: nginx:1.21-alpine
