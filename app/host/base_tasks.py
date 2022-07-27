@@ -10,6 +10,7 @@ from .models import Task
 from .models import TaskRegister
 from .models import Transient
 
+"""This module contains the base classes for TaskRunner in blast."""
 
 class TaskRunner(ABC):
     """
@@ -98,11 +99,19 @@ class TaskRunner(ABC):
 
 
 class TransientTaskRunner(TaskRunner):
-    def __init__(self):
-        """
-        Initialized method which sets up the task runner.
+    """
+    Abstract base class for a TransientTaskRunner.
 
-        Attributes:
+    Attributes:
+        task_frequency_seconds (int): Positive integer defining the frequency
+            the task in run at. Defaults to 60 seconds.
+        task_initially_enabled (bool): True means the task is initially enabled,
+            False means the task is initially disabled. Default is enabled
+            (True).
+        task_name (str): Name of the task the TaskRunner works on.
+        task_type (str): Type of task the TaskRunner works on.
+        task_function_name(str): Name of the function used to register the task
+            in celery.
         processing_status (models.Status): Status of the task while runner is
             running a task.
         task_register (model.TaskRegister): Register of task for the runner to
@@ -110,8 +119,13 @@ class TransientTaskRunner(TaskRunner):
         failed_status (model.Status): Status of the task is if the runner fails.
         prerequisites (dict): Prerequisite tasks and statuses required for the
             runner to process.
-        task (str): Name of the task the runner alters the status of.
+    """
+
+    def __init__(self):
         """
+        Initialized method which sets up the task runner.
+        """
+
         self.processing_status = Status.objects.get(message__exact="processing")
         self.task_register = TaskRegister.objects.all()
         self.prerequisites = self._prerequisites()
@@ -244,6 +258,21 @@ class TransientTaskRunner(TaskRunner):
 
 
 class SystemTaskRunner(TaskRunner):
+    """
+    Abstract base class for a SystemTaskRunner.
+
+    Attributes:
+        task_frequency_seconds (int): Positive integer defining the frequency
+            the task in run at. Defaults to 60 seconds.
+        task_initially_enabled (bool): True means the task is initially enabled,
+            False means the task is initially disabled. Default is enabled
+            (True).
+        task_name (str): Name of the task the TaskRunner works on.
+        task_type (str): Type of task the TaskRunner works on.
+        task_function_name(str): Name of the function used to register the task
+            in celery.
+    """
+
     @property
     def task_type(self):
         return "system"
