@@ -7,7 +7,7 @@ services:
       context: ../app/
     command: bash entrypoints/docker-entrypoint.app.test.sh
     ports:
-      - "8000:8000"
+      - 8000:8000
     volumes:
       - ../app:/app
       - ../data/cutout_cdn:/cutout_cdn
@@ -15,16 +15,15 @@ services:
       - ../data/ghost_output:/prospector_output
       - ../data/tns_staging:/tns_staging
       - ../data/transmission:/transmission
-    env_file:
-      - ../env/.env.dev
   database:
     image: mysql:5.7
     command: --default-authentication-plugin=mysql_native_password
     restart: always
-    env_file:
-      - ../env/.env.dev
+    environment:
+      - "MYSQL_ROOT_PASSWORD=password"
+      - "MYSQL_DATABASE=blast_db"
     volumes:
       - ../data/test_database/:/var/lib/mysql/
     ports:
-      - "3306:3306"
+      - 3306:3306
     platform: linux/x86_64
