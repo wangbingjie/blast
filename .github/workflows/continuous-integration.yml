@@ -9,9 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
     steps:
       - uses: actions/checkout@v3
       - name: docker compose up
-        run: bash run/blast.tests.github_actions.sh
+        run: |
+          touch env/.env.dev
+          bash run/blast.run.sh ci

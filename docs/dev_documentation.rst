@@ -1,7 +1,7 @@
 Documentation
 =============
 
-A great place to start for a new developer on blast is write or edit
+A great place to start for a new developer on blast is to write or edit
 documentation (pages like the one you are reading right now!). The process for
 editing or adding documentation relatively straight forward and does not require
 you to run the main blast app. All you need is a text editor and git installed.
