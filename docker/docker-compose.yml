@@ -9,18 +9,24 @@ services:
     ports:
       - "8000:${WEB_APP_PORT}"
     profiles: ["full", "slim"]
+    env_file:
+      - ../env/.env.dev
   celery:
     extends:
       file: docker-compose.blast_base.yml
       service: blast_base
     command: bash entrypoints/docker-entrypoint.celery.sh
     profiles: ["full"]
+    env_file:
+      - ../env/.env.dev
   celery_beat:
     extends:
       file: docker-compose.blast_base.yml
       service: blast_base
     command: bash entrypoints/docker-entrypoint.celery_beat.sh
     profiles: ["full"]
+    env_file:
+      - ../env/.env.dev
   rabbitmq:
     restart: always
     image: rabbitmq:3.10.6-management-alpine
@@ -81,7 +87,23 @@ services:
       default:
         aliases:
           - app
+    env_file:
+      - ../env/.env.dev
     profiles: ["test"]
+  app_ci:
+    extends:
+      file: docker-compose.blast_base.yml
+      service: blast_base
+    command: bash entrypoints/docker-entrypoint.app.test.sh
+    ports:
+      - "8000:${WEB_APP_PORT}"
+    networks:
+      default:
+        aliases:
+          - app
+    env_file:
+      - ../env/.env.ci
+    profiles: ["ci"]
   database_test:
     extends:
       file: docker-compose.blast_base.yml
@@ -95,4 +117,4 @@ services:
     environment:
       - "MYSQL_ROOT_PASSWORD=password"
       - "MYSQL_DATABASE=blast_db"
-    profiles: ["test"]
+    profiles: ["test", "ci"]
