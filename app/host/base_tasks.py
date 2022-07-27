@@ -73,7 +73,6 @@ class TaskRunner(ABC):
         """
         return "host.tasks." + self.task_name.replace(" ", "_").lower()
 
-
     @abstractmethod
     def run_process(self):
         """
@@ -108,7 +107,6 @@ class TaskRunner(ABC):
 
 
 class TransientTaskRunner(TaskRunner):
-
     def __init__(self):
         """
         Initialized method which sets up the task runner.
@@ -255,7 +253,6 @@ class TransientTaskRunner(TaskRunner):
 
 
 class SystemTaskRunner(TaskRunner):
-
     @property
     def task_type(self):
         return "system"
