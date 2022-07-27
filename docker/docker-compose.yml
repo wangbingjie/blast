@@ -7,10 +7,14 @@ services:
       service: blast_base
     command: bash entrypoints/docker-entrypoint.app.sh
     ports:
-      - "8000:${WEB_APP_PORT}"
+      - 8000:${WEB_APP_PORT}
     profiles: ["full", "slim"]
     env_file:
       - ../env/.env.dev
+    networks:
+      default:
+        aliases:
+          - ${WEB_APP_HOST}
   celery:
     extends:
       file: docker-compose.blast_base.yml
@@ -96,11 +100,11 @@ services:
       service: blast_base
     command: bash entrypoints/docker-entrypoint.app.test.sh
     ports:
-      - "8000:${WEB_APP_PORT}"
+      - 8000:${WEB_APP_PORT}
     networks:
       default:
         aliases:
-          - app
+          - ${WEB_APP_HOST}
     env_file:
       - ../env/.env.ci
     profiles: ["ci"]
@@ -113,7 +117,7 @@ services:
     networks:
       default:
         aliases:
-          - database
+          - ${DATABASE_HOST}
     environment:
       - "MYSQL_ROOT_PASSWORD=password"
       - "MYSQL_DATABASE=blast_db"
