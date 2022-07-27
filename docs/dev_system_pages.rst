@@ -35,6 +35,9 @@ you to see which tasks are being run and which tasks are failing.
 
 Once blast is running locally to see the flower dashboard go to `<0.0.0.0:8888>`_.
 
+.. image:: _static/flower_dashboard.png
+
+
 RabbitMQ
 --------
 
