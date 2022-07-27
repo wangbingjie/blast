@@ -12,6 +12,7 @@ from .models import Transient
 
 """This module contains the base classes for TaskRunner in blast."""
 
+
 class TaskRunner(ABC):
     """
     Abstract base class for a TaskRunner.
