@@ -44,17 +44,25 @@ a TNS api bot (see ).
 Run the blast app
 -----------------
 
-Once in the top level blast directory, start the docker container.
+Once in the top level blast directory, start the docker containers. This command
+brings upp the full blast stack,
 
 .. code:: none
 
-    bash run/blast.run.local.sh
+    bash run/blast.run.sh full
+
+If you are only interested in running the web server and database, which is
+usually sufficient for front end web development, you can run:
+
+.. code:: none
+
+    bash run/blast.run.sh slim
 
 Then go to `https://0.0.0.0/ <https://0.0.0.0/>`_  in your web browser,
 after all the containers have started, and blast should be running.
 
 .. warning::
-    Stating the web app via the :code:`run/blast.run.local.sh` script deletes
+    Stating the web app via the :code:`run/blast.run.sh` script deletes
     your local copy of the database in :code:`data/database/` and the app runs
     with an empty database.
 
@@ -71,4 +79,4 @@ To run tests with the blast app, run
 
 .. code:: none
 
-    bash run/blast.tests.local.sh
+    bash run/blast.run.sh test

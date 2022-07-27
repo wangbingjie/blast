@@ -12,4 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: docker compose up
-        run: bash run/blast.run.sh ci
+        run: |
+          touch env/.env.dev
+          bash run/blast.run.sh ci

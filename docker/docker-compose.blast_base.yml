@@ -18,8 +18,6 @@ services:
     volumes:
       - ../app/static:/static
       - ../data/cutout_cdn:/cutout_cdn
-    env_file:
-      - ../env/.env.dev
     ports:
       - "80:${WEB_SERVER_PORT}"
   database_base:
