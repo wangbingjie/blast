@@ -21,6 +21,11 @@ Once logged in, you should see a page like this:
 
 .. image:: _static/django_admin_screenshot.png
 
+.. note::
+
+    To see the following system pages you will need to be running the full
+    blast stack with :code:`bash run/blast.run.sh full`, and not the slim version.
+
 Flower
 ------
 

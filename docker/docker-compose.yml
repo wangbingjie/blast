@@ -75,7 +75,7 @@ services:
       - ../app/entrypoints:/data/entrypoints
     env_file:
       - ../env/.env.dev
-    profiles: ["run"]
+    profiles: ["full"]
   app_test:
     extends:
       file: docker-compose.blast_base.yml
