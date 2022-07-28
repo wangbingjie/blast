@@ -115,8 +115,6 @@ class TransientTaskRunner(TaskRunner):
             in celery.
         processing_status (models.Status): Status of the task while runner is
             running a task.
-        task_register (model.TaskRegister): Register of task for the runner to
-            process.
         failed_status (model.Status): Status of the task is if the runner fails.
         prerequisites (dict): Prerequisite tasks and statuses required for the
             runner to process.
@@ -127,10 +125,8 @@ class TransientTaskRunner(TaskRunner):
         Initialized method which sets up the task runner.
         """
 
-        self.processing_status = Status.objects.get(message__exact="processing")
-        self.task_register = TaskRegister.objects.all()
         self.prerequisites = self._prerequisites()
-        # self.task = Task.objects.get(name__exact=self.task_name)
+
 
     def find_register_items_meeting_prerequisites(self):
         """
@@ -141,6 +137,7 @@ class TransientTaskRunner(TaskRunner):
         """
         task = Task.objects.get(name__exact=self.task_name)
         current_transients = Transient.objects.all()
+        task_register = TaskRegister.objects.all()
 
         for task_name, status_message in self.prerequisites.items():
             task = Task.objects.get(name__exact=task_name)
@@ -150,7 +147,7 @@ class TransientTaskRunner(TaskRunner):
                 taskregister__task=task, taskregister__status=status
             )
 
-        return self.task_register.filter(
+        return task_register.filter(
             transient__in=list(current_transients), task=task
         )
 
@@ -199,9 +196,10 @@ class TransientTaskRunner(TaskRunner):
         # self.task = Task.objects.get(name__exact=self.task_name)
 
         task_register_item = self.select_register_item()
+        processing_status = Status.objects.get(message__exact="processing")
 
         if task_register_item is not None:
-            self._update_status(task_register_item, self.processing_status)
+            self._update_status(task_register_item, processing_status)
             transient = task_register_item.transient
 
             start_time = process_time()
