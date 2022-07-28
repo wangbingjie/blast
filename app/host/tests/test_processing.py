@@ -9,9 +9,9 @@ from ..models import Status
 from ..models import Task
 from ..models import TaskRegister
 from ..models import Transient
+from ..tasks import periodic_tasks
 from ..transient_tasks import Ghost
 from ..transient_tasks import ImageDownload
-from ..tasks import periodic_tasks
 
 
 class TaskRunnerTest(TestCase):
@@ -343,7 +343,7 @@ class TestAllRegisteredTaskRunners(TestCase):
     fixtures = [
         "../fixtures/initial/setup_tasks.yaml",
         "../fixtures/initial/setup_status.yaml",
-        ]
+    ]
 
     def test_task_type(self):
         for task_runner in periodic_tasks:
@@ -371,5 +371,3 @@ class TestAllRegisteredTaskRunners(TestCase):
                 self.assertTrue(type(failed_message) == str)
                 db_status = Status.objects.get(message__exact=failed_message)
                 self.assertTrue(db_status.message == failed_message)
-
-
