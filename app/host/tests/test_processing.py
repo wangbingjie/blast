@@ -361,7 +361,6 @@ class TestAllRegisteredTaskRunners(TestCase):
                 for name, status in prereq.items():
                     db_status = Status.objects.get(message__exact=status)
                     self.assertTrue(db_status.message == status,f"{task_runner.task_name}: {db_status.message} == {status}")
-
                     db_task = Task.objects.get(name__exact=name)
                     self.assertTrue(db_task.name == name, f"{task_runner.task_name}: {db_task.name} == {name}")
 
