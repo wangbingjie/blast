@@ -17,6 +17,8 @@ from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
 
+"""This module contains all of the TransientTaskRunners in blast."""
+
 
 class Ghost(TransientTaskRunner):
     """

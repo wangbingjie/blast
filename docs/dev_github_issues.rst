@@ -35,5 +35,30 @@ or involve project level structural changes. These issues are great for
 developers who are confident with python and django and have completed
 many intermediate level issues.
 
+Documentation
+-------------
+
+Any issues tagged with :code:`Documentation` only requires editing
+documentation, you don't even need to run the blast app locally to work on these.
+See the :doc:`Documentation <dev_documentation>` developer guide docs to get started.
+
+Slim stack
+----------
+
+An issues tagged with :code:`Slim stack` only requires the blast web app and
+database, so you can work on these issues by running :code:`bash run/blast.run.sh slim`
+See :doc:`Running blast <dev_running_blast>` documentation for more details.
+
+Full stack
+----------
+
+An issue tagged with :code:`Full stack` requires all the blast services to
+be worked on which means you will need to run :code:`bash run/blast.run.sh full`
+to work on them. See :doc:`Running blast <dev_running_blast>` documentation
+for more details.
+
+
+
+
 
 You are now ready to get stuck in, pick an issue and good luck! :-)
