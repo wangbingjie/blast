@@ -29,7 +29,7 @@ class Ghost(TransientTaskRunner):
         """
         Only prerequisite is that the host match task is not processed.
         """
-        return {"Host Match": "not processed"}
+        return {"Host match": "not processed"}
 
     @property
     def task_name(self):
@@ -100,7 +100,7 @@ class GlobalApertureConstruction(TransientTaskRunner):
         """
         return {
             "Cutout download": "processed",
-            "Host Match": "processed",
+            "Host match": "processed",
             "Global aperture construction": "not processed",
         }
 

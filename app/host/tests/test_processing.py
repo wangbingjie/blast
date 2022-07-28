@@ -286,7 +286,7 @@ class GHOSTRunnerTest(TestCase):
 
     def test_prereqs(self):
         self.assertTrue(
-            self.ghost_runner._prerequisites() == {"Host Match": "not processed"}
+            self.ghost_runner._prerequisites() == {"Host match": "not processed"}
         )
 
     def test_failed_status(self):
@@ -360,12 +360,10 @@ class TestAllRegisteredTaskRunners(TestCase):
 
                 for name, status in prereq.items():
                     db_status = Status.objects.get(message__exact=status)
-                    self.assertTrue(db_status.message == status)
+                    self.assertTrue(db_status.message == status,f"{task_runner.task_name}: {db_status.message} == {status}")
 
                     db_task = Task.objects.get(name__exact=name)
-                    self.assertTrue(db_task.name == name)
-
-
+                    self.assertTrue(db_task.name == name, f"{task_runner.task_name}: {db_task.name} == {name}")
 
 
     def test_transient_task_name(self):
