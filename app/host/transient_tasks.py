@@ -19,6 +19,7 @@ from .prospector import fit_model
 
 """This module contains all of the TransientTaskRunners in blast."""
 
+
 class Ghost(TransientTaskRunner):
     """
     TaskRunner to run the GHOST matching algorithm.
