@@ -355,7 +355,18 @@ class TestAllRegisteredTaskRunners(TestCase):
     def test_transient_task_prerequisites(self):
         for task_runner in periodic_tasks:
             if task_runner.task_type == "transient":
-                self.assertTrue(type(task_runner.prerequisites) == dict)
+                prereq = task_runner.prerequisites
+                self.assertTrue(type(prereq) == dict)
+
+                for name, status in prereq.items():
+                    db_status = Status.objects.get(message__exact=status)
+                    self.assertTrue(db_status.message == status)
+
+                    db_task = Task.objects.get(name__exact=name)
+                    self.assertTrue(db_task.name == name)
+
+
+
 
     def test_transient_task_name(self):
         for task_runner in periodic_tasks:
