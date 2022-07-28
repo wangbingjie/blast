@@ -9,14 +9,9 @@ from ..models import Status
 from ..models import Task
 from ..models import TaskRegister
 from ..models import Transient
+from ..tasks import periodic_tasks
 from ..transient_tasks import Ghost
 from ..transient_tasks import ImageDownload
-
-# from ..processing import GhostRunner
-# from ..processing import ImageDownloadRunner
-# from ..processing import initialise_all_tasks_status
-# from ..processing import TaskRunner
-# from ..processing import update_status
 
 
 class TaskRunnerTest(TestCase):
@@ -291,7 +286,7 @@ class GHOSTRunnerTest(TestCase):
 
     def test_prereqs(self):
         self.assertTrue(
-            self.ghost_runner._prerequisites() == {"Host Match": "not processed"}
+            self.ghost_runner._prerequisites() == {"Host match": "not processed"}
         )
 
     def test_failed_status(self):
@@ -342,3 +337,50 @@ class ImageDownloadTest(TestCase):
         task = Task.objects.get(name__exact="Cutout download")
         task_register = TaskRegister.objects.get(transient=transient, task=task)
         self.assertTrue(task_register.status.message == "processed")
+
+
+class TestAllRegisteredTaskRunners(TestCase):
+    fixtures = [
+        "../fixtures/initial/setup_tasks.yaml",
+        "../fixtures/initial/setup_status.yaml",
+    ]
+
+    def test_task_type(self):
+        for task_runner in periodic_tasks:
+            transient_type = task_runner.task_type == "transient"
+            system_type = task_runner.task_type == "system"
+            self.assertTrue(system_type or transient_type)
+            self.assertTrue(type(task_runner.task_type) == str)
+
+    def test_transient_task_prerequisites(self):
+        for task_runner in periodic_tasks:
+            if task_runner.task_type == "transient":
+                prereq = task_runner.prerequisites
+                self.assertTrue(type(prereq) == dict)
+
+                for name, status in prereq.items():
+                    db_status = Status.objects.get(message__exact=status)
+                    self.assertTrue(
+                        db_status.message == status,
+                        f"{task_runner.task_name}: {db_status.message} == {status}",
+                    )
+                    db_task = Task.objects.get(name__exact=name)
+                    self.assertTrue(
+                        db_task.name == name,
+                        f"{task_runner.task_name}: {db_task.name} == {name}",
+                    )
+
+    def test_transient_task_name(self):
+        for task_runner in periodic_tasks:
+            if task_runner.task_type == "transient":
+                self.assertTrue(type(task_runner.task_name) == str)
+                db_task = Task.objects.get(name__exact=task_runner.task_name)
+                self.assertTrue(db_task.name == task_runner.task_name)
+
+    def test_transient_task_failed_status(self):
+        for task_runner in periodic_tasks:
+            if task_runner.task_type == "transient":
+                failed_message = task_runner._failed_status_message()
+                self.assertTrue(type(failed_message) == str)
+                db_status = Status.objects.get(message__exact=failed_message)
+                self.assertTrue(db_status.message == failed_message)
