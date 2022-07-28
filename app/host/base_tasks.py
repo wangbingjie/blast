@@ -127,7 +127,6 @@ class TransientTaskRunner(TaskRunner):
 
         self.prerequisites = self._prerequisites()
 
-
     def find_register_items_meeting_prerequisites(self):
         """
         Finds the register items meeting the prerequisites.
@@ -147,9 +146,7 @@ class TransientTaskRunner(TaskRunner):
                 taskregister__task=task, taskregister__status=status
             )
 
-        return task_register.filter(
-            transient__in=list(current_transients), task=task
-        )
+        return task_register.filter(transient__in=list(current_transients), task=task)
 
     def _select_highest_priority(self, register):
         """
