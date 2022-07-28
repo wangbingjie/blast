@@ -365,9 +365,6 @@ class TestAllRegisteredTaskRunners(TestCase):
                     db_task = Task.objects.get(name__exact=name)
                     self.assertTrue(db_task.name == name)
 
-
-
-
     def test_transient_task_name(self):
         for task_runner in periodic_tasks:
             if task_runner.task_type == "transient":
