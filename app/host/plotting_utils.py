@@ -14,6 +14,7 @@ from bokeh.models import ColumnDataSource
 from bokeh.models import Cross
 from bokeh.models import Ellipse
 from bokeh.models import Grid
+from bokeh.models import LabelSet
 from bokeh.models import LinearAxis
 from bokeh.models import LogColorMapper
 from bokeh.models import Plot
@@ -24,7 +25,7 @@ from bokeh.plotting import show
 from bokeh.transform import cumsum
 from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
-from bokeh.models import LabelSet, ColumnDataSource
+
 from .models import Aperture
 
 
@@ -283,12 +284,12 @@ def plot_pie_chart(data_dict):
         source=data,
     )
 
-    #data["value"] = data['value'].astype(str)
-    #data["value"] = data["value"].str.pad(35, side="left")
-    #source = ColumnDataSource(data)
-    #labels = LabelSet(x=0, y=1, text='value',
+    # data["value"] = data['value'].astype(str)
+    # data["value"] = data["value"].str.pad(35, side="left")
+    # source = ColumnDataSource(data)
+    # labels = LabelSet(x=0, y=1, text='value',
     #                  angle=cumsum('angle', include_zero=True), source=source, render_mode='canvas')
-    #p.add_layout(labels)
+    # p.add_layout(labels)
 
     p.axis.axis_label = None
     p.axis.visible = False
