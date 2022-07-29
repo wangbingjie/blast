@@ -203,8 +203,8 @@
       cutout: [2010h_PanSTARRS_g]
       transient: [2010h]
       orientation_deg: 0.0
-      ra_deg: 121.6004583
-      dec_deg: 1.0359861
+      ra_deg: 121.6015
+      dec_deg: 1.03586
       semi_major_axis_arcsec: 1.0
       semi_minor_axis_arcsec: 1.0
       type: local
