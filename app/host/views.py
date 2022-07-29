@@ -144,31 +144,28 @@ def acknowledgements(request):
 
 def home(request):
 
-    # analytics_results = {}
+    analytics_results = {}
 
-    # for aggregate in ["total", "not completed", "completed", "waiting"]:
+    for aggregate in ["total", "not completed", "completed", "waiting"]:
 
-    #    transients = TaskRegisterSnapshot.objects.filter(
-    #        aggregate_type__exact=aggregate
-    #    )
-    #    transients_ordered = transients.order_by("-time")
+        transients = TaskRegisterSnapshot.objects.filter(
+            aggregate_type__exact=aggregate
+        )
 
-    #    if transients_ordered.exists():
-    #        transients_current = transients_ordered[0]
-    #    else:
-    #        transients_current = None
+        transients_ordered = transients.order_by("-time")
 
-    #    analytics_results[
-    #        f"{aggregate}_transients_current".replace(" ", "_")
-    #    ] = transients_current
-    # bokeh_processing_context = plot_timeseries()
+        if transients_ordered.exists():
+            transients_current = transients_ordered[0].number_of_transients
+        else:
+            transients_current = None
 
-    # bokeh_processing_context =  plot_pie_chart(analytics_results)
+        analytics_results[f"{aggregate}".replace("_", " ")] = transients_current
 
-    return render(
-        request, "index.html"
-    )  # , #{**analytics_results, **bokeh_processing_context}
-    # )
+    total = analytics_results["total"]
+    del analytics_results["total"]
+    bokeh_processing_context = plot_pie_chart(analytics_results)
+
+    return render(request, "index.html", {"total": total, **bokeh_processing_context})
 
 
 # @user_passes_test(lambda u: u.is_staff and u.is_superuser)
@@ -183,7 +180,7 @@ def flower_view(request):
 
 class FlowerProxyView(UserPassesTestMixin, ProxyView):
     # `flower` is Docker container, you can use `localhost` instead
-    upstream = "http://{}:{}".format("flower", 8888)
+    upstream = "http://{}:{}".format("0.0.0.0", 8888)
     url_prefix = "flower"
     rewrite = ((r"^/{}$".format(url_prefix), r"/{}/".format(url_prefix)),)
 
