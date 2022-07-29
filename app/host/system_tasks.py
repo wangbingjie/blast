@@ -134,7 +134,7 @@ class SnapshotTaskRegister(SystemTaskRunner):
                 completed += 1
             if transient.progress == 0:
                 waiting += 1
-            if transient.progress < 100:
+            if transient.progress < 100 and transient.progress > 0:
                 not_completed += 1
 
         now = timezone.now()

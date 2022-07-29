@@ -1,11 +1,8 @@
  <div class="card">
-     <h5 class="card-header">Information</h5>
+     <h5 class="card-header">Database Snapshot</h5>
      <div class="card-body">
-        transients ingested: {{total_transients_current.number_of_transients}}<br>
-         transients not completed : {{not_completed_transients_current.number_of_transients}}<br>
-         transients waiting : {{waiting_transients_current.number_of_transients}}<br>
-         transients completed : {{completed_transients_current.number_of_transients}}<br>
-
+         <b>Total transients ingested:</b> {{total}}
+         {{ bokeh_cutout_div | safe }}
      </div>
  </div>
 <div>&nbsp;</div>
