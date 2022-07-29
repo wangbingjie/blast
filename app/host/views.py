@@ -149,8 +149,8 @@ def home(request):
     for aggregate in ["total", "not completed", "completed", "waiting"]:
 
         transients = TaskRegisterSnapshot.objects.filter(
-                aggregate_type__exact=aggregate
-            )
+            aggregate_type__exact=aggregate
+        )
 
         transients_ordered = transients.order_by("-time")
 
@@ -165,8 +165,7 @@ def home(request):
     del analytics_results["total"]
     bokeh_processing_context = plot_pie_chart(analytics_results)
 
-    return render(request, "index.html",
-                  {'total': total, **bokeh_processing_context})
+    return render(request, "index.html", {"total": total, **bokeh_processing_context})
 
 
 # @user_passes_test(lambda u: u.is_staff and u.is_superuser)
