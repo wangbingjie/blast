@@ -18,13 +18,13 @@ from bokeh.models import LinearAxis
 from bokeh.models import LogColorMapper
 from bokeh.models import Plot
 from bokeh.models import Scatter
-from bokeh.palettes import Category20c
+from bokeh.palettes import Category20
 from bokeh.plotting import figure
 from bokeh.plotting import show
 from bokeh.transform import cumsum
 from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
-
+from bokeh.models import LabelSet, ColumnDataSource
 from .models import Aperture
 
 
@@ -259,11 +259,12 @@ def plot_pie_chart(data_dict):
         .rename(columns={"index": "country"})
     )
     data["angle"] = data["value"] / data["value"].sum() * 2 * pi
-    data["color"] = Category20c[len(data)]
+    data["color"] = Category20[len(data)]
 
     p = figure(
         height=350,
-        title="Pie Chart",
+        width=650,
+        title="",
         toolbar_location=None,
         tools="hover",
         tooltips="@country: @value",
@@ -281,6 +282,13 @@ def plot_pie_chart(data_dict):
         legend_field="country",
         source=data,
     )
+
+    #data["value"] = data['value'].astype(str)
+    #data["value"] = data["value"].str.pad(35, side="left")
+    #source = ColumnDataSource(data)
+    #labels = LabelSet(x=0, y=1, text='value',
+    #                  angle=cumsum('angle', include_zero=True), source=source, render_mode='canvas')
+    #p.add_layout(labels)
 
     p.axis.axis_label = None
     p.axis.visible = False
