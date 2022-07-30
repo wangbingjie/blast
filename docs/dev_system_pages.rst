@@ -13,7 +13,7 @@ to view, edit, and launch periodic tasks, and add data to the database through
 a web interface.
 
 Once blast is running locally to see the django admin dashboard go to
-`<0.0.0.0/admin/>`_ where you will be prompted for a login. The login user and
+`<0.0.0.0:8000/admin/>`_ where you will be prompted for a login. The login user and
 password are set by :code:`DJANGO_SUPERUSER_PASSWORD`
 :code:`DJANGO_SUPERUSER_USERNAME` defined in your :code:`env/.env.dev` file.
 
@@ -24,7 +24,7 @@ Once logged in, you should see a page like this:
 .. note::
 
     To see the following system pages you will need to be running the full
-    blast stack with :code:`bash run/blast.run.sh full`, and not the slim version.
+    blast stack with :code:`bash run/blast.run.sh full_dev`, and not the slim version.
 
 Flower
 ------
@@ -46,7 +46,7 @@ allows you to see the message broker traffic where blast computation tasks are
 sent to workers.
 
 Once blast is running locally to see the RabbitMQ management dashboard go
-to `<0.0.0.0/rabbitmq/>`_. where you will be prompted for a login. The login user and
+to `<0.0.0.0:15672>`_. where you will be prompted for a login. The login user and
 password are set by :code:`RABBITMQ_USERNAME`
 :code:`RABBITMQ_PASSWORD` defined in your :code:`env/.env.dev` file.
 
