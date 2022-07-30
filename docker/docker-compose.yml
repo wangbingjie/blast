@@ -136,4 +136,3 @@ services:
       default:
         aliases:
           - ${WEB_APP_HOST}
-
