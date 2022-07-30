@@ -61,6 +61,9 @@ usually sufficient for front end web development, you can run:
 Then go to `https://0.0.0.0:8000/ <https://0.0.0.0:8000/>`_  in your web browser,
 after all the containers have started, and blast should be running.
 
+Running blast in these two modes means you can edit most code and you will see
+the resulting live changes in the web interface.
+
 .. warning::
     Stating the web app via the :code:`run/blast.run.sh` script deletes
     your local copy of the database in :code:`data/database/` and the app runs
@@ -71,6 +74,11 @@ To stop blast from running, open a new terminal window and run.
 .. code:: none
 
     docker compose down
+
+.. warning::
+
+    When you stop the blast container make sure all services are stopped. You can see which
+    services are running in the docker desktop app and stop services manually there.
 
 Testing the blast app
 ---------------------
