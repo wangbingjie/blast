@@ -49,16 +49,16 @@ brings upp the full blast stack,
 
 .. code:: none
 
-    bash run/blast.run.sh full
+    bash run/blast.run.sh full_dev
 
 If you are only interested in running the web server and database, which is
 usually sufficient for front end web development, you can run:
 
 .. code:: none
 
-    bash run/blast.run.sh slim
+    bash run/blast.run.sh slim_dev
 
-Then go to `https://0.0.0.0/ <https://0.0.0.0/>`_  in your web browser,
+Then go to `https://0.0.0.0:8000/ <https://0.0.0.0:8000/>`_  in your web browser,
 after all the containers have started, and blast should be running.
 
 .. warning::
