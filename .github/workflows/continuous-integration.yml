@@ -15,5 +15,5 @@ jobs:
         run: |
           touch env/.env.dev
           bash run/blast.run.sh ci
-          cd app/ 
+          cd app/
           ls -a
