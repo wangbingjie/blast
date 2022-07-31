@@ -12,7 +12,8 @@ The recommended option for installing and running blast locally is to
 use docker. It is so strongly recommended in fact, that I'm not going to write
 documentation on how to install and run blast any other way. The first step is to
 install the docker desktop application, which can be found
-`here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux.
+`here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux. Make
+sure you have Docker Compose version 1.28.0 or later.
 
 Clone the blast repository
 --------------------------
@@ -45,7 +46,7 @@ Run the blast app
 -----------------
 
 Once in the top level blast directory, start the docker containers. This command
-brings upp the full blast stack,
+brings up the full blast stack,
 
 .. code:: none
 
@@ -74,7 +75,7 @@ blast directory run,
 
 .. code:: none
 
-    docker compose --project-name blast -f docker/docker-compose.yml --env-file env/.env.dev down
+    docker compose --project-name blast --env-file env/.env.dev down
 
 
 .. warning::
