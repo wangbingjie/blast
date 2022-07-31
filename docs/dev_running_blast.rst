@@ -12,7 +12,8 @@ The recommended option for installing and running blast locally is to
 use docker. It is so strongly recommended in fact, that I'm not going to write
 documentation on how to install and run blast any other way. The first step is to
 install the docker desktop application, which can be found
-`here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux.
+`here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux. Make
+sure you have Docker Compose version 1.28.0 or later.
 
 Clone the blast repository
 --------------------------
@@ -45,7 +46,7 @@ Run the blast app
 -----------------
 
 Once in the top level blast directory, start the docker containers. This command
-brings upp the full blast stack,
+brings up the full blast stack,
 
 .. code:: none
 
@@ -58,7 +59,7 @@ usually sufficient for front end web development, you can run:
 
     bash run/blast.run.sh slim_dev
 
-Then go to `https://0.0.0.0:8000/ <https://0.0.0.0:8000/>`_  in your web browser,
+Then go to `http://0.0.0.0:8000/ <http://0.0.0.0:8000/>`_  in your web browser,
 after all the containers have started, and blast should be running.
 
 Running blast in these two modes means you can edit most code and you will see
@@ -69,11 +70,13 @@ the resulting live changes in the web interface.
     your local copy of the database in :code:`data/database/` and the app runs
     with an empty database.
 
-To stop blast from running, open a new terminal window and run.
+To stop blast from running, open a new terminal window and run and from the root
+blast directory run,
 
 .. code:: none
 
-    docker compose down
+    docker compose --project-name blast --env-file env/.env.dev down
+
 
 .. warning::
 
@@ -83,7 +86,15 @@ To stop blast from running, open a new terminal window and run.
 Testing the blast app
 ---------------------
 
-To run tests with the blast app, run
+To run tests with the blast app, while the full_dev or slim_dev containers are
+up, in a separate terminal run
+
+.. code:: none
+
+    bash run/blast.test.up.sh
+
+This allows you to run the tests without stopping the containers. If you would
+like to run the tests from scratch, (when the blast app is not up) run,
 
 .. code:: none
 
