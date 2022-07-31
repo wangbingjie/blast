@@ -69,11 +69,13 @@ the resulting live changes in the web interface.
     your local copy of the database in :code:`data/database/` and the app runs
     with an empty database.
 
-To stop blast from running, open a new terminal window and run.
+To stop blast from running, open a new terminal window and run and from the root
+blast directory run,
 
 .. code:: none
 
-    docker compose down
+    docker compose --project-name blast -f docker/docker-compose.yml --env-file env/.env.dev down
+
 
 .. warning::
 
@@ -84,7 +86,7 @@ Testing the blast app
 ---------------------
 
 To run tests with the blast app, while the full_dev or slim_dev containers are
-up, in a separate terminal run,
+up, in a separate terminal run
 
 .. code:: none
 
