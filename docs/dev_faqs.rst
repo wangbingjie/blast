@@ -10,4 +10,3 @@ the docker containers.
 
 You need to update your docker version to a more recent one which supports
 --profiles flag. You need Docker Compose version 1.28.0 or later.
-
