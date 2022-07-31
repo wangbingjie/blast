@@ -83,7 +83,15 @@ To stop blast from running, open a new terminal window and run.
 Testing the blast app
 ---------------------
 
-To run tests with the blast app, run
+To run tests with the blast app, while the full_dev or slim_dev containers are
+up, in a separate terminal run,
+
+.. code:: none
+
+    bash run/blast.test.up.sh
+
+This allows you to run the tests without stopping the containers. If you would
+like to run the tests from scratch, (when the blast app is not up) run,
 
 .. code:: none
 
