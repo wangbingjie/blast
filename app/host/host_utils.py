@@ -31,10 +31,14 @@ from .photometric_calibration import flux_to_mJy_flux
 from .photometric_calibration import fluxerr_to_magerr
 from .photometric_calibration import fluxerr_to_mJy_fluxerr
 
-# from dustmaps.config import config
-# import dustmaps.sfd
-# from dustmaps.sfd import SFDQuery
-# import dustmaps.sfd
+media_root=settings.MEDIA_ROOT
+from dustmaps.config import config
+import dustmaps.sfd
+config.reset()
+config["data_dir"] = f"{media_root}/../dustmaps/"
+dustmaps.sfd.fetch()
+from dustmaps.sfd import SFDQuery
+
 
 # from astro_ghost.ghostHelperFunctions import getTransientHosts
 
@@ -203,11 +207,9 @@ def do_aperture_photometry(image, sky_aperture, filter):
 
 def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
     """Gets milkyway reddening value"""
-    config.reset()
-    config["data_dir"] = f"{media_root}../dustmaps/"
-    dustmaps.sfd.fetch()
-    ebv = SFDQuery().sfd(position)
-    # see Schlegel, Finkbeiner 2011 for the 0.86 correction term
+
+    ebv = SFDQuery()(position)
+    # see Schlafly & Finkbeiner 2011 for the 0.86 correction term
     return 0.86 * ebv
 
 
