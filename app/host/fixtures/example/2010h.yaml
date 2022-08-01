@@ -18,10 +18,24 @@
 - model: host.TaskRegister
   fields:
     transient: [2010h]
+    task: [Transient MWEBV]
+    status: [not processed]
+    last_modified: 1999-01-23 01:23:45.678+00:00
+    last_processing_time_seconds: 45.0
+- model: host.TaskRegister
+  fields:
+    transient: [2010h]
     task: [Host match]
     status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 1.0
+- model: host.TaskRegister
+  fields:
+    transient: [2010h]
+    task: [Host MWEBV]
+    status: [not processed]
+    last_modified: 1998-01-23 01:23:45.678+00:00
+    last_processing_time_seconds: 35.0
 - model: host.TaskRegister
   fields:
     transient: [2010h]

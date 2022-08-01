@@ -25,3 +25,9 @@
 - model: host.Task
   fields:
     name: Transient information
+- model: host.Task
+  fields:
+    name: Transient MWEBV
+- model: host.Task
+  fields:
+    name: Host MWEBV

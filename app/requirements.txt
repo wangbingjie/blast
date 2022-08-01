@@ -44,7 +44,7 @@ kombu==5.2.3
 MarkupSafe==2.0.1
 matplotlib==3.5.0
 mimeparse==0.1.3
-numpy==1.21.4
+numpy==1.23.1
 packaging==21.3
 pandas==1.3.4
 photutils==1.2.0
@@ -63,7 +63,7 @@ PyYAML==6.0
 requests==2.26.0
 rfpimp==1.3.7
 scikit-learn==1.0.1
-scipy==1.7.3
+scipy==1.9.0
 seaborn==0.11.2
 setuptools==59.4.0
 setuptools-scm==6.3.2
@@ -97,6 +97,7 @@ mysqlclient
 gunicorn==20.1.0
 coverage
 scikit-image
+healpy==1.14.0
 dustmaps
 astro-sedpy
 django-revproxy
