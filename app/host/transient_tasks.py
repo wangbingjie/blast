@@ -8,9 +8,9 @@ from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
 from .host_utils import construct_aperture
 from .host_utils import do_aperture_photometry
+from .host_utils import get_dust_maps
 from .host_utils import query_ned
 from .host_utils import query_sdss
-from .host_utils import get_dust_maps
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
@@ -61,6 +61,7 @@ class Ghost(TransientTaskRunner):
 
         return status_message
 
+
 class MWEBV_Transient(TransientTaskRunner):
     """
     TaskRunner to run get Milky Way E(B-V) values at the transient location.
@@ -84,7 +85,7 @@ class MWEBV_Transient(TransientTaskRunner):
         Failed status - not sure why this would ever fail so just a placeholder.
         """
         return "failed"
-    
+
     def _run_process(self, transient):
         """
         Run the E(B-V) script.
@@ -100,10 +101,12 @@ class MWEBV_Transient(TransientTaskRunner):
 
         return status_message
 
+
 class MWEBV_Host(TransientTaskRunner):
     """
     TaskRunner to run get Milky Way E(B-V) values at the host location.
     """
+
     def _prerequisites(self):
         """
         Only prerequisite is that the host match task is not processed.
@@ -123,7 +126,6 @@ class MWEBV_Host(TransientTaskRunner):
         """
         return "failed"
 
-    
     def _run_process(self, transient):
         """
         Run the E(B-V) script.
@@ -133,7 +135,7 @@ class MWEBV_Host(TransientTaskRunner):
         else:
             status_message = "no Host MWEBV"
             return status_message
-            
+
         if mwebv is not None:
             transient.host.milkyway_dust_reddening = mwebv
             transient.host.save()
@@ -142,6 +144,7 @@ class MWEBV_Host(TransientTaskRunner):
             status_message = "no Host MWEBV"
 
         return status_message
+
 
 class ImageDownload(TransientTaskRunner):
     """Task runner to download cutout images"""
