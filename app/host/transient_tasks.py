@@ -139,16 +139,13 @@ class MWEBV_Host(TransientTaskRunner):
                 mwebv = get_dust_maps(transient.host.sky_coord)
             except:
                 mwebv = None
-        else:
-            status_message = "no Host MWEBV"
-            return status_message
 
-        if mwebv is not None:
-            transient.host.milkyway_dust_reddening = mwebv
-            transient.host.save()
-            status_message = "processed"
-        else:
-            status_message = "no Host MWEBV"
+            if mwebv is not None:
+                transient.host.milkyway_dust_reddening = mwebv
+                transient.host.save()
+                status_message = "processed"
+            else:
+                status_message = "no host MWEBV"
 
         return status_message
 
