@@ -69,20 +69,20 @@ class MWEBV_Transient(TransientTaskRunner):
 
     def _prerequisites(self):
         """
-        Only prerequisite is that the host match task is not processed.
+        Only prerequisite is that the transient MWEBV task is not processed.
         """
         return {"Transient MWEBV": "not processed"}
 
     @property
     def task_name(self):
         """
-        Task status to be altered is host match.
+        Task status to be altered is transient MWEBV.
         """
         return "Transient MWEBV"
 
     def _failed_status_message(self):
         """
-        Failed status - not sure why this would ever fail so just a placeholder.
+        Failed status - not sure why this would ever fail so keeping it vague.
         """
         return "failed"
 
@@ -90,7 +90,11 @@ class MWEBV_Transient(TransientTaskRunner):
         """
         Run the E(B-V) script.
         """
-        mwebv = get_dust_maps(transient.sky_coord)
+
+        try:
+            mwebv = get_dust_maps(transient.sky_coord)
+        except:
+            mwebv = None
 
         if mwebv is not None:
             transient.milkyway_dust_reddening = mwebv
@@ -109,20 +113,21 @@ class MWEBV_Host(TransientTaskRunner):
 
     def _prerequisites(self):
         """
-        Only prerequisite is that the host match task is not processed.
+        Only prerequisite is that the host MWEBV task is not processed.
         """
-        return {"Host MWEBV": "not processed"}
+        return {"Host match": "processed",
+                "Host MWEBV": "not processed"}
 
     @property
     def task_name(self):
         """
-        Task status to be altered is host match.
+        Task status to be altered is host MWEBV.
         """
         return "Host MWEBV"
 
     def _failed_status_message(self):
         """
-        Failed status - not sure why this would ever fail so just a placeholder.
+        Failed status - not sure why this would ever fail so keeping it vague.
         """
         return "failed"
 
@@ -131,7 +136,10 @@ class MWEBV_Host(TransientTaskRunner):
         Run the E(B-V) script.
         """
         if transient.host is not None:
-            mwebv = get_dust_maps(transient.host.sky_coord)
+            try:
+                mwebv = get_dust_maps(transient.host.sky_coord)
+            except:
+                mwebv = None
         else:
             status_message = "no Host MWEBV"
             return status_message
