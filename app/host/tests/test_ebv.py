@@ -40,7 +40,7 @@ class EBVTest(TestCase):
         status_message = mwebv_cls._run_process(transient)
         assert status_message == 'not processed'
 
-        transient.host.ra_deg = -99
+        transient.host.dec_deg = -99
         status_message = mwebv_host_cls._run_process(transient)
         assert status_message == 'not processed'
 
