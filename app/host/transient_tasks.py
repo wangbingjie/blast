@@ -8,6 +8,7 @@ from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
 from .host_utils import construct_aperture
 from .host_utils import do_aperture_photometry
+from .host_utils import get_dust_maps
 from .host_utils import query_ned
 from .host_utils import query_sdss
 from .models import Aperture
@@ -57,6 +58,94 @@ class Ghost(TransientTaskRunner):
             status_message = "processed"
         else:
             status_message = "no ghost match"
+
+        return status_message
+
+
+class MWEBV_Transient(TransientTaskRunner):
+    """
+    TaskRunner to run get Milky Way E(B-V) values at the transient location.
+    """
+
+    def _prerequisites(self):
+        """
+        Only prerequisite is that the transient MWEBV task is not processed.
+        """
+        return {"Transient MWEBV": "not processed"}
+
+    @property
+    def task_name(self):
+        """
+        Task status to be altered is transient MWEBV.
+        """
+        return "Transient MWEBV"
+
+    def _failed_status_message(self):
+        """
+        Failed status - not sure why this would ever fail so keeping it vague.
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """
+        Run the E(B-V) script.
+        """
+
+        try:
+            mwebv = get_dust_maps(transient.sky_coord)
+        except:
+            mwebv = None
+
+        if mwebv is not None:
+            transient.milkyway_dust_reddening = mwebv
+            transient.save()
+            status_message = "processed"
+        else:
+            status_message = "no transient MWEBV"
+
+        return status_message
+
+
+class MWEBV_Host(TransientTaskRunner):
+    """
+    TaskRunner to run get Milky Way E(B-V) values at the host location.
+    """
+
+    def _prerequisites(self):
+        """
+        Only prerequisite is that the host MWEBV task is not processed.
+        """
+        return {"Host match": "processed", "Host MWEBV": "not processed"}
+
+    @property
+    def task_name(self):
+        """
+        Task status to be altered is host MWEBV.
+        """
+        return "Host MWEBV"
+
+    def _failed_status_message(self):
+        """
+        Failed status - not sure why this would ever fail so keeping it vague.
+        """
+        return "failed"
+
+    def _run_process(self, transient):
+        """
+        Run the E(B-V) script.
+        """
+        if transient.host is not None:
+            try:
+                mwebv = get_dust_maps(transient.host.sky_coord)
+            except:
+                mwebv = None
+
+            if mwebv is not None:
+                transient.host.milkyway_dust_reddening = mwebv
+                transient.host.save()
+                status_message = "processed"
+            else:
+                status_message = "no host MWEBV"
 
         return status_message
 

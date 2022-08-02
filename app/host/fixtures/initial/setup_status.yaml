@@ -22,3 +22,11 @@
   fields:
     message: no host redshift
     type: error
+- model: host.Status
+  fields:
+    message: no transient MWEBV
+    type: error
+- model: host.Status
+  fields:
+    message: no host MWEBV
+    type: error

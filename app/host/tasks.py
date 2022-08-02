@@ -15,10 +15,14 @@ from .transient_tasks import HostInformation
 from .transient_tasks import HostSEDFitting
 from .transient_tasks import ImageDownload
 from .transient_tasks import LocalAperturePhotometry
+from .transient_tasks import MWEBV_Host
+from .transient_tasks import MWEBV_Transient
 from .transient_tasks import TransientInformation
 
 periodic_tasks = [
+    MWEBV_Transient(),
     Ghost(),
+    MWEBV_Host(),
     ImageDownload(),
     GlobalApertureConstruction(),
     LocalAperturePhotometry(),

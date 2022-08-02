@@ -77,6 +77,7 @@ class Host(SkyObject):
 
     name = models.CharField(max_length=100, blank=True, null=True)
     redshift = models.FloatField(null=True, blank=True)
+    milkyway_dust_reddening = models.FloatField(null=True, blank=True)
     objects = HostManager()
 
 
