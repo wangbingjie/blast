@@ -12,3 +12,5 @@ RUN mkdir /cutout_cdn
 RUN mkdir /ghost_output
 COPY . /app
 WORKDIR /app
+
+RUN export SPS_HOME=/fsps
