@@ -38,8 +38,8 @@ class EBVTest(TestCase):
         # check the failure mode of a bad ra/dec
         transient.dec_deg = -99
         status_message = mwebv_cls._run_process(transient)
-        assert status_message == "not processed"
+        assert status_message == "no transient MWEBV"
 
         transient.host.dec_deg = -99
         status_message = mwebv_host_cls._run_process(transient)
-        assert status_message == "not processed"
+        assert status_message == "no host MWEBV"
