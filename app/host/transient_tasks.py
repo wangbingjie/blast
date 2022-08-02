@@ -115,8 +115,7 @@ class MWEBV_Host(TransientTaskRunner):
         """
         Only prerequisite is that the host MWEBV task is not processed.
         """
-        return {"Host match": "processed",
-                "Host MWEBV": "not processed"}
+        return {"Host match": "processed", "Host MWEBV": "not processed"}
 
     @property
     def task_name(self):
