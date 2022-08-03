@@ -8,6 +8,8 @@ on:
     paths:
       - "app/Dockerfile"
       - "app/requirements.txt"
+    tags:
+      - *
   pull_request:
     branches: [ main ]
     paths:
