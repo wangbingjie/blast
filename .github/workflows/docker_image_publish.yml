@@ -5,8 +5,14 @@ name: Publish Docker image
 on:
   push:
     branches: main
+    paths:
+      - "app/Dockerfile"
+      - "app/requirements.txt"
   pull_request:
     branches: [ main ]
+    paths:
+      - "app/Dockerfile"
+      - "app/requirements.txt"
 
 jobs:
   docker:
