@@ -8,4 +8,4 @@ Being an open source contributor doesn’t just mean writing code, either. You c
 
 (This text was originally written by Adrienne Lowe for a PyCon talk, and was adapted by blast based on its use in the README file for the MetPy project and Astropy project.)
 
-Please see the developer workflow in the blast documentation to get started. 
+Please see the developer workflow in the blast documentation to get started.
