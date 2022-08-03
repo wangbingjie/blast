@@ -39,16 +39,16 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Test
-        id: docker_test
-        uses: docker/build-push-action@v2
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: ./app
-          file: ./app/Dockerfile
-          target: test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      #- name: Test
+      #  id: docker_test
+      #  uses: docker/build-push-action@v2
+      #  with:
+      #    builder: ${{ steps.buildx.outputs.name }}
+      #    context: ./app
+      #    file: ./app/Dockerfile
+      #    target: test
+      #    cache-from: type=gha
+      #    cache-to: type=gha,mode=max
 
       - name: Build and push
         id: docker_build
@@ -57,7 +57,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: ./app
           file: ./app/Dockerfile
-          target: prod
+          #target: prod
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.prep.outputs.tags }}
           cache-from: type=gha
