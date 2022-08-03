@@ -28,3 +28,14 @@ services:
     restart: always
     ports:
       - 3306:${DATABASE_PORT}
+  blast_latest:
+    #restart: always
+    image: ghcr.io/astrophpeter/blast:edge
+    volumes:
+      - ../app:/app
+      - ../data/cutout_cdn:/cutout_cdn
+      - ../data/ghost_output:/ghost_output
+      - ../data/prospector_output:/prospector_output
+      - ../data/tns_staging:/tns_staging
+      - ../data/transmission:/transmission
+      - ../data/dustmaps:/dustmaps
