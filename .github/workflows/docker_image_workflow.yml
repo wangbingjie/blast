@@ -1,17 +1,21 @@
 name: Publish Docker image
 
-# For all pushes to the main branch run the tests and push the image to the
-# GitHub registry under an edge tag
+# This workflow manages the testing, building, and publishing of docker images
+# On a pull request to main:
+#   If docker related files are changed, the image is test built and not published
+# On a push to main (or a new tag is created on master):
+#   The docker image is built and tagged with latest and and / or new tag version
+
 on:
   push:
-    branches: main
+    branches: [main]
     paths:
       - "app/Dockerfile"
       - "app/requirements.txt"
     tags:
       - "*"
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
       - "app/Dockerfile"
       - "app/requirements.txt"
