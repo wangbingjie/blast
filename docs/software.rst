@@ -45,3 +45,6 @@ please raise an `issue on github <https://github.com/astrophpeter/blast/issues>`
    * - SVO Filter Profile Service
      - `<https://svo.cab.inta-csic.es/main/index.php>`_
      - `<https://ui.adsabs.harvard.edu/abs/2020sea..confE.182R/abstract>`_
+   * - Healpy
+     - `<https://github.com/healpy/healpy>`_
+     - `<https://ui.adsabs.harvard.edu/abs/2019JOSS....4.1298Z/abstract>`_
