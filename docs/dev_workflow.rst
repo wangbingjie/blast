@@ -44,7 +44,9 @@ code and push changes to github.
 4. Next go to to the blast github repository page and go to the pull requests tab.
 Then open a new draft pull request.
 
+.. image:: _static/![](../../../../Desktop/1st .png)
 5. Create a pull request with your branch and main.
+
 
 6. Fill in the title and describe what you are trying to do in the description, and
 open a draft pull request.
