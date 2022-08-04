@@ -58,3 +58,14 @@ Code API
    API/models
    API/transient_name_server
    API/base_tasks
+
+
+Acknowledgements
+----------------
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Acknowledgements
+
+   software
+   contributors
