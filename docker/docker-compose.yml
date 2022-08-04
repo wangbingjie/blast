@@ -4,7 +4,7 @@ services:
   app:
     extends:
       file: docker-compose.blast_base.yml
-      service: blast_base
+      service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.app.sh
     ports:
       - 8000:${WEB_APP_PORT}
@@ -18,7 +18,7 @@ services:
   celery:
     extends:
       file: docker-compose.blast_base.yml
-      service: blast_base
+      service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.celery.sh
     profiles: ["full_prod", "full_dev"]
     env_file:
@@ -26,7 +26,7 @@ services:
   celery_beat:
     extends:
       file: docker-compose.blast_base.yml
-      service: blast_base
+      service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.celery_beat.sh
     profiles: ["full_prod", "full_dev"]
     env_file:
@@ -83,7 +83,7 @@ services:
   app_test:
     extends:
       file: docker-compose.blast_base.yml
-      service: blast_base
+      service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.app.test.sh
     ports:
       - "8000:${WEB_APP_PORT}"
@@ -97,7 +97,7 @@ services:
   app_ci:
     extends:
       file: docker-compose.blast_base.yml
-      service: blast_base
+      service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.app.test.sh
     ports:
       - 8000:${WEB_APP_PORT}
@@ -125,7 +125,7 @@ services:
   app_dev:
     extends:
       file: docker-compose.blast_base.yml
-      service: blast_base
+      service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.app.dev.sh
     ports:
       - 8000:${WEB_APP_PORT}
@@ -139,7 +139,7 @@ services:
   docs:
     extends:
       file: docker-compose.blast_base.yml
-      service: blast_base
+      service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.docs.sh
     volumes:
       - ../docs:/docs
