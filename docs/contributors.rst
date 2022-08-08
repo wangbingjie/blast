@@ -11,4 +11,3 @@ contributed to blast's development.
 * Lila Braff
 * Kayla Loertscher
 * Zhisen Lai
-
