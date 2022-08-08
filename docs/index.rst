@@ -45,6 +45,7 @@ Developer Guide
    dev_github_issues
    dev_documentation
    dev_task_runner
+   dev_installing_packages
    dev_faqs
 
 
