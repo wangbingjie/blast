@@ -10,3 +10,5 @@ contributed to blast's development.
 * Dave Coulter
 * Lila Braff
 * Kayla Loertscher
+* Zhisen Lai
+
