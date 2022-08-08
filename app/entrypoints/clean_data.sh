@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+for dir in "ghost_output" "database" "test_database" "tns_staging" "static" "rabbitmq"
+do
+  if [ -d "data/$dir" ]; then
+  echo "data/$dir/*"
+  fi
+done
+
 rm -r data/ghost_output/*
 rm -r data/database/*
 rm -r data/test_database/*
