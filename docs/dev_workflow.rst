@@ -44,17 +44,17 @@ code and push changes to github.
 4. Next go to to the blast github repository page and go to the pull requests tab.
 Then open a new draft pull request.
 
-.. image:: _static/1st.png
-.. image:: _static/2nd.png
+.. image:: _static/Pull_Request_button_1.png
+.. image:: _static/New_Pull_Request_button_2.png
 
 5. Create a pull request with your branch and main.
 
-.. image:: _static/3rd.png
+.. image:: _static/Develop_Branch_Create_Pull_Request_buttons_3.png
 
 6. Fill in the title and describe what you are trying to do in the description, and
 open a draft pull request.
 
-.. image:: _static/4th.png
+.. image:: _static/Create_Draft_Pull_Request_button_4.png
 
 7. As you commit and push changes to your branch on github they will show up
 in the draft pull request. On every commit some checks will be performed on
@@ -73,7 +73,7 @@ them to be accepted!
 When you are a happy for you changes to be reviewed
 and then eventually merged into main, click ready for review.
 
-.. image:: _static/5th.png
+.. image:: _static/Ready_For_Review_button_5.png
 
 Your code will now be reviewed and when it is accepted it will be merged into
 main.
