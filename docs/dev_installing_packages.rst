@@ -1,5 +1,5 @@
-Adding new dependencies
-=======================
+New dependencies
+================
 
 Blast and all it's associated services are run in `docker <https://www.docker.com/>`_
 containers. This allows the application to be portable. You may be working on
