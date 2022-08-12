@@ -6,11 +6,6 @@ from host.models import Transient
 
 @api_view(["Get"])
 def transient_data(request, slug):
-
-    try:
-        transient = Transient.objects.get(name__exact=slug)
-        data = serializers.serialize_transient_data(transient)
-    except:
-        data = {"Transient not in blast database"}
-
+    transient = Transient.objects.get(name__exact=slug)
+    data = serializers.serialize_blast_science_data(transient)
     return Response(data)
