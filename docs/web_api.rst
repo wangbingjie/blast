@@ -18,8 +18,3 @@ Here is am example python snippet to load data as a python dictionary for the tr
 
     response = urlopen('<base_blast_url>/api/transient/2010h?format=json')
     data = json.loads(response.read())
-
-
-
-
-
