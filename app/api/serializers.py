@@ -17,11 +17,11 @@ class HostSerializer(serializers.ModelSerializer):
                   'milkyway_dust_reddening']
 
 
-class ApertureSerializer(serializers.ModelSerializer):
+class AperturePhotometrySerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Aperture
-        fields = ['orientation_deg', 'semi_major_axis_arcsec',
-                  'semi_minor_axis_arcsec']
+        model = models.AperturePhotometry
+        fields = ['flux', 'flux_error', 'magnitude', 'magnitude_error']
+
 
 def serialize_blast_science_data(transient) -> dict:
     """

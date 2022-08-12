@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "crispy_forms",
     "django_celery_beat",
     "revproxy",
+    "rest_framework",
+    "api",
 ]
 
 MIDDLEWARE = [
