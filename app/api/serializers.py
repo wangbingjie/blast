@@ -10,16 +10,22 @@ class CutoutField(serializers.RelatedField):
 class TransientSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Transient
-        fields = ['name', 'ra_deg', 'dec_deg', 'public_timestamp', 'redshift',
-                  'milkyway_dust_reddening', 'spectroscopic_class',
-                  'photometric_class']
+        fields = [
+            "name",
+            "ra_deg",
+            "dec_deg",
+            "public_timestamp",
+            "redshift",
+            "milkyway_dust_reddening",
+            "spectroscopic_class",
+            "photometric_class",
+        ]
 
 
 class HostSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Host
-        fields = ['name', 'ra_deg', 'dec_deg', 'redshift',
-                  'milkyway_dust_reddening']
+        fields = ["name", "ra_deg", "dec_deg", "redshift", "milkyway_dust_reddening"]
 
 
 class ApertureSerializer(serializers.ModelSerializer):
@@ -34,7 +40,7 @@ class ApertureSerializer(serializers.ModelSerializer):
 class AperturePhotometrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.AperturePhotometry
-        fields = ['flux', 'flux_error', 'magnitude', 'magnitude_error']
+        fields = ["flux", "flux_error", "magnitude", "magnitude_error"]
 
 
 def serialize_blast_science_data(transient_name) -> dict:
@@ -72,10 +78,3 @@ def serialize_blast_science_data(transient_name) -> dict:
         science_payload = {**science_payload, **object_dict}
 
     return science_payload
-
-
-
-
-
-
-
