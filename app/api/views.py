@@ -6,6 +6,5 @@ from host.models import Transient
 
 @api_view(["Get"])
 def transient_data(request, slug):
-    transient = Transient.objects.get(name__exact=slug)
-    data = serializers.serialize_blast_science_data(transient)
+    data = serializers.serialize_blast_science_data(slug)
     return Response(data)
