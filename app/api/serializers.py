@@ -1,6 +1,7 @@
+from dataclasses import dataclass
+
 from host import models
 from rest_framework import serializers
-from dataclasses import dataclass
 
 
 class CutoutField(serializers.RelatedField):
@@ -47,4 +48,3 @@ class AperturePhotometrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.AperturePhotometry
         fields = ["flux", "flux_error", "magnitude", "magnitude_error"]
-
