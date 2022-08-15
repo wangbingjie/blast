@@ -469,10 +469,10 @@ class HostSEDFitting(TransientTaskRunner):
 
     def _run_process(self, transient, fast_mode=False):
 
-        super()._run_process(transient,aperture_type="global",fast_mode=fast_mode)
+        super()._run_process(transient, aperture_type="global", fast_mode=fast_mode)
 
         return "processed"
-    
+
     def _failed_status_message(self):
         """
         Failed status if not aperture is found
@@ -482,36 +482,44 @@ class HostSEDFitting(TransientTaskRunner):
     def _run_process(self, transient, aperture_type="global", fast_mode=False):
         """Run the prospector task"""
 
-        query = {"transient__name__exact": f"{transient.name}",
-                 "type__exact":aperture_type}
+        query = {
+            "transient__name__exact": f"{transient.name}",
+            "type__exact": aperture_type,
+        }
         try:
             aperture = Aperture.objects.get(**query)
         except Aperture.DoesNotExist or Aperture.MultipleObjectsReturned:
             raise
-            
+
         observations = build_obs(transient, aperture_type)
         model_components = build_model(observations)
         if fast_mode:
             # 3000 - "reasonable but approximate posteriors"
-            print('running in fast mode')
+            print("running in fast mode")
             fitting_settings = dict(
-                nlive_init=400, nested_method="rwalk", nested_target_n_effective=3000,
+                nlive_init=400,
+                nested_method="rwalk",
+                nested_target_n_effective=3000,
             )
         else:
             # 10000 - "high-quality posteriors"
             fitting_settings = dict(
-                nlive_init=400, nested_method="rwalk", nested_target_n_effective=10000,
+                nlive_init=400,
+                nested_method="rwalk",
+                nested_target_n_effective=10000,
             )
 
         posterior = fit_model(observations, model_components, fitting_settings)
-        prosp_results = prospector_result_to_blast(transient,aperture,posterior,model_components,observations)
+        prosp_results = prospector_result_to_blast(
+            transient, aperture, posterior, model_components, observations
+        )
 
         pr = ProspectorResult.objects.create(**prosp_results)
-        
+
         return "processed"
 
-class GlobalHostSEDFitting(HostSEDFitting):
 
+class GlobalHostSEDFitting(HostSEDFitting):
     def _prerequisites(self):
         """
         Need both the Cutout and Host match to be processed
@@ -531,12 +539,12 @@ class GlobalHostSEDFitting(HostSEDFitting):
 
     def _run_process(self, transient, fast_mode=False):
 
-        super()._run_process(transient,aperture_type="global",fast_mode=fast_mode)
+        super()._run_process(transient, aperture_type="global", fast_mode=fast_mode)
 
         return "processed"
 
-class LocalHostSEDFitting(HostSEDFitting):
 
+class LocalHostSEDFitting(HostSEDFitting):
     def _prerequisites(self):
         """
         Need both the Cutout and Host match to be processed
@@ -556,6 +564,6 @@ class LocalHostSEDFitting(HostSEDFitting):
 
     def _run_process(self, transient, fast_mode=False):
 
-        super()._run_process(transient,aperture_type="local",fast_mode=fast_mode)
+        super()._run_process(transient, aperture_type="local", fast_mode=fast_mode)
 
         return "processed"
