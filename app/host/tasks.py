@@ -12,7 +12,7 @@ from .transient_tasks import Ghost
 from .transient_tasks import GlobalApertureConstruction
 from .transient_tasks import GlobalAperturePhotometry
 from .transient_tasks import HostInformation
-from .transient_tasks import HostSEDFitting
+from .transient_tasks import GlobalHostSEDFitting, LocalHostSEDFitting
 from .transient_tasks import ImageDownload
 from .transient_tasks import LocalAperturePhotometry
 from .transient_tasks import MWEBV_Host
@@ -29,7 +29,8 @@ periodic_tasks = [
     GlobalAperturePhotometry(),
     TransientInformation(),
     HostInformation(),
-    HostSEDFitting(),
+    GlobalHostSEDFitting(),
+    LocalHostSEDFitting(),
     TNSDataIngestion(),
     InitializeTransientTasks(),
     IngestMissedTNSTransients(),
