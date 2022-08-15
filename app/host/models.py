@@ -287,6 +287,7 @@ def fits_file_path(instance):
     """
     return f"{instance.host}/{instance.filter.survey}/{instance.filter}.fits"
 
+
 def hdf5_file_path(instance):
     """
     Constructs a file path for a HDF5 image
@@ -378,7 +379,9 @@ class ProspectorResult(models.Model):
     """Model to store prospector results"""
 
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
-    aperture = models.ForeignKey(Aperture, on_delete=models.CASCADE, null=True, blank=True)
+    aperture = models.ForeignKey(
+        Aperture, on_delete=models.CASCADE, null=True, blank=True
+    )
     posterior = models.FileField(upload_to=hdf5_file_path, null=True, blank=True)
     log_mass_16 = models.FloatField(null=True, blank=True)
     log_mass_50 = models.FloatField(null=True, blank=True)
@@ -387,7 +390,7 @@ class ProspectorResult(models.Model):
     log_sfr_16 = models.FloatField(null=True, blank=True)
     log_sfr_50 = models.FloatField(null=True, blank=True)
     log_sfr_84 = models.FloatField(null=True, blank=True)
-    
+
     log_ssfr_16 = models.FloatField(null=True, blank=True)
     log_ssfr_50 = models.FloatField(null=True, blank=True)
     log_ssfr_84 = models.FloatField(null=True, blank=True)
@@ -402,7 +405,6 @@ class ProspectorResult(models.Model):
     log_tau_50 = models.FloatField(null=True, blank=True)
     log_tau_84 = models.FloatField(null=True, blank=True)
 
-    
 
 class TaskRegisterSnapshot(models.Model):
     """

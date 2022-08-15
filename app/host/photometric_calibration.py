@@ -56,11 +56,13 @@ def jansky_to_maggies(flux_density_jansky):
     """
     return flux_density_jansky / 3631.0
 
+
 def mJy_to_maggies(flux_mJy):
     """
     Converts spectral flux density from mJy to units of maggies.
     """
-    return flux_mJy*10**(-0.4*23.9)
+    return flux_mJy * 10 ** (-0.4 * 23.9)
+
 
 def magnitude_to_flux_density(magnitude, survey):
     return 0.0
