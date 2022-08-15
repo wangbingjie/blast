@@ -1,7 +1,9 @@
 from dataclasses import dataclass
+
+from django.db import models
 from host import models
 from rest_framework import serializers
-from django.db import models
+
 
 @dataclass
 class DataModelComponent:
