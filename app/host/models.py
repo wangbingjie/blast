@@ -77,6 +77,7 @@ class Host(SkyObject):
 
     name = models.CharField(max_length=100, blank=True, null=True)
     redshift = models.FloatField(null=True, blank=True)
+    photometric_redshift = models.FloatField(null=True, blank=True)
     milkyway_dust_reddening = models.FloatField(null=True, blank=True)
     objects = HostManager()
 
@@ -280,11 +281,17 @@ class CatalogPhotometry(models.Model):
     catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE)
 
 
-def fits_file_path(instance, filename):
+def fits_file_path(instance):
     """
     Constructs a file path for a fits image
     """
     return f"{instance.host}/{instance.filter.survey}/{instance.filter}.fits"
+
+def hdf5_file_path(instance):
+    """
+    Constructs a file path for a HDF5 image
+    """
+    return f"{instance.transient.name}/{instance.host.name}/{instance.aperture.type}.h5"
 
 
 class Cutout(models.Model):
@@ -371,15 +378,31 @@ class ProspectorResult(models.Model):
     """Model to store prospector results"""
 
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
-    posterior = models.FileField(upload_to=fits_file_path, null=True, blank=True)
+    aperture = models.ForeignKey(Aperture, on_delete=models.CASCADE, null=True, blank=True)
+    posterior = models.FileField(upload_to=hdf5_file_path, null=True, blank=True)
     log_mass_16 = models.FloatField(null=True, blank=True)
     log_mass_50 = models.FloatField(null=True, blank=True)
     log_mass_84 = models.FloatField(null=True, blank=True)
 
+    log_sfr_16 = models.FloatField(null=True, blank=True)
+    log_sfr_50 = models.FloatField(null=True, blank=True)
+    log_sfr_84 = models.FloatField(null=True, blank=True)
+    
     log_ssfr_16 = models.FloatField(null=True, blank=True)
     log_ssfr_50 = models.FloatField(null=True, blank=True)
     log_ssfr_84 = models.FloatField(null=True, blank=True)
 
+    # SFR ~ exp(-age/tau)
+    # https://prospect.readthedocs.io/en/latest/sfhs.html?highlight=tau#parametric-sfh
+    log_age_16 = models.FloatField(null=True, blank=True)
+    log_age_50 = models.FloatField(null=True, blank=True)
+    log_age_84 = models.FloatField(null=True, blank=True)
+
+    log_tau_16 = models.FloatField(null=True, blank=True)
+    log_tau_50 = models.FloatField(null=True, blank=True)
+    log_tau_84 = models.FloatField(null=True, blank=True)
+
+    
 
 class TaskRegisterSnapshot(models.Model):
     """

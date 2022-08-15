@@ -14,9 +14,11 @@ from .host_utils import query_sdss
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
+from .models import ProspectorResult
 from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
+from .prospector import prospector_result_to_blast
 
 """This module contains all of the TransientTaskRunners in blast."""
 
@@ -465,6 +467,51 @@ class HostInformation(TransientTaskRunner):
 class HostSEDFitting(TransientTaskRunner):
     """Task Runner to run host galaxy inference with prospector"""
 
+    def _run_process(self, transient, fast_mode=False):
+
+        super()._run_process(transient,aperture_type="global",fast_mode=fast_mode)
+
+        return "processed"
+    
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _run_process(self, transient, aperture_type="global", fast_mode=False):
+        """Run the prospector task"""
+
+        query = {"transient__name__exact": f"{transient.name}",
+                 "type__exact":aperture_type}
+        try:
+            aperture = Aperture.objects.get(**query)
+        except Aperture.DoesNotExist or Aperture.MultipleObjectsReturned:
+            raise
+            
+        observations = build_obs(transient, aperture_type)
+        model_components = build_model(observations)
+        if fast_mode:
+            # 3000 - "reasonable but approximate posteriors"
+            print('running in fast mode')
+            fitting_settings = dict(
+                nlive_init=400, nested_method="rwalk", nested_target_n_effective=3000,
+            )
+        else:
+            # 10000 - "high-quality posteriors"
+            fitting_settings = dict(
+                nlive_init=400, nested_method="rwalk", nested_target_n_effective=10000,
+            )
+
+        posterior = fit_model(observations, model_components, fitting_settings)
+        prosp_results = prospector_result_to_blast(transient,aperture,posterior,model_components,observations)
+
+        pr = ProspectorResult.objects.create(**prosp_results)
+        
+        return "processed"
+
+class GlobalHostSEDFitting(HostSEDFitting):
+
     def _prerequisites(self):
         """
         Need both the Cutout and Host match to be processed
@@ -482,19 +529,33 @@ class HostSEDFitting(TransientTaskRunner):
         """
         return "Global host SED inference"
 
-    def _failed_status_message(self):
-        """
-        Failed status if not aperture is found
-        """
-        return "failed"
+    def _run_process(self, transient, fast_mode=False):
 
-    def _run_process(self, transient):
-        """Code goes here"""
-        observations = build_obs(transient, "global")
-        model_components = build_model(observations)
-        fitting_settings = dict(
-            nlive_init=400, nested_method="rwalk", nested_target_n_effective=10000
-        )
-        posterior = fit_model(observations, model_components, fitting_settings)
+        super()._run_process(transient,aperture_type="global",fast_mode=fast_mode)
+
+        return "processed"
+
+class LocalHostSEDFitting(HostSEDFitting):
+
+    def _prerequisites(self):
+        """
+        Need both the Cutout and Host match to be processed
+        """
+        return {
+            "Host match": "processed",
+            "Host information": "processed",
+            "Local aperture photometry": "processed",
+        }
+
+    @property
+    def task_name(self):
+        """
+        Task status to be altered is Local Aperture photometry
+        """
+        return "Local host SED inference"
+
+    def _run_process(self, transient, fast_mode=False):
+
+        super()._run_process(transient,aperture_type="local",fast_mode=fast_mode)
 
         return "processed"
