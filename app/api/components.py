@@ -1,7 +1,10 @@
+from typing import List
+
+from host import models
+
 from . import serializers
 from .datamodel import DataModelComponent
-from host import models
-from typing import List
+
 
 def transient_component(transient_name) -> List[DataModelComponent]:
     component = DataModelComponent(
