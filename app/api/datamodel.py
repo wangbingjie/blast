@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from django.db import models
+import django
 from host import models
 from rest_framework import serializers
 
@@ -9,7 +9,7 @@ from rest_framework import serializers
 class DataModelComponent:
     prefix: str
     query: dict
-    model: models.Model
+    model: django.db.models.Model
     serializer: serializers.Serializer
 
 
