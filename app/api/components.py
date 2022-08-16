@@ -1,9 +1,9 @@
-import serializers
-from datamodel import DataModelComponent
+from . import serializers
+from .datamodel import DataModelComponent
 from host import models
+from typing import List
 
-
-def transient_component(transient_name) -> list[DataModelComponent]:
+def transient_component(transient_name) -> List[DataModelComponent]:
     component = DataModelComponent(
         prefix="transient_",
         query={"name__exact": transient_name},
@@ -13,7 +13,7 @@ def transient_component(transient_name) -> list[DataModelComponent]:
     return [component]
 
 
-def host_component(transient_name) -> list[DataModelComponent]:
+def host_component(transient_name) -> List[DataModelComponent]:
     component = DataModelComponent(
         prefix="host_",
         query={"transient__name__exact": transient_name},
@@ -23,17 +23,17 @@ def host_component(transient_name) -> list[DataModelComponent]:
     return [component]
 
 
-def aperture_component(transient_name) -> list[DataModelComponent]:
+def aperture_component(transient_name) -> List[DataModelComponent]:
     components = []
     for aperture_type in ["local", "global"]:
         components.append(
             DataModelComponent(
-                prefix=f"{aperture_type}_",
+                prefix=f"{aperture_type}_aperture_",
                 query={
                     "transient__name__exact": transient_name,
                     "type__exact": aperture_type,
                 },
-                model=models.Apertuere,
+                model=models.Aperture,
                 serializer=serializers.ApertureSerializer,
             )
         )
@@ -41,14 +41,14 @@ def aperture_component(transient_name) -> list[DataModelComponent]:
     return components
 
 
-def photometry_component(transient_name) -> list[DataModelComponent]:
+def photometry_component(transient_name) -> List[DataModelComponent]:
     components = []
     filters = models.Filter.objects.all()
     for aperture_type in ["local", "global"]:
         for filter in filters:
             components.append(
                 DataModelComponent(
-                    prefix=f"{aperture_type}_{filter.name}_",
+                    prefix=f"{aperture_type}_aperture_{filter.name}_",
                     query={
                         "transient__name__exact": transient_name,
                         "filter__name__exact": filter.name,
