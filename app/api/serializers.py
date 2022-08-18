@@ -48,3 +48,4 @@ class AperturePhotometrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.AperturePhotometry
         fields = ["flux", "flux_error", "magnitude", "magnitude_error"]
+
