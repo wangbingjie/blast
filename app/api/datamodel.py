@@ -1,6 +1,6 @@
+import itertools
 from dataclasses import dataclass
 from typing import List
-import itertools
 
 import django
 from host import models
@@ -43,7 +43,7 @@ def unpack_component_groups(component_groups) -> List[DataModelComponent]:
         flat_components (List[DataModelComponents]): flattened list of components
     """
     is_nested = any(isinstance(item, list) for item in component_groups)
-    flat_list = list(itertools.chain(*component_groups)) if is_nested else component_groups
+    flat_list = (
+        list(itertools.chain(*component_groups)) if is_nested else component_groups
+    )
     return flat_list
-
-
