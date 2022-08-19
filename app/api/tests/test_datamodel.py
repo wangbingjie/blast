@@ -2,9 +2,10 @@ from django.test import TestCase
 from host import models
 
 from .. import serializers
-from ..datamodel import serialize_blast_science_data
 from ..components import host_component
 from ..components import transient_component
+from ..datamodel import serialize_blast_science_data
+
 
 class DatamodelConstructionTest(TestCase):
     fixtures = ["../fixtures/test/filters.yaml", "../fixtures/test/test_transient.yaml"]
@@ -22,5 +23,3 @@ class DatamodelConstructionTest(TestCase):
         data = serialize_blast_science_data(host+transient)
         self.assertTrue(data["transient_name"] is None)
         self.assertTrue(data["host_name"] is None)
-
-
