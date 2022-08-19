@@ -102,3 +102,5 @@ dustmaps
 astro-sedpy
 django-revproxy
 djangorestframework
+fsps==0.4.1
+
