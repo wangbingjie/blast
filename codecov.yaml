@@ -7,3 +7,4 @@ ignore:
   - "app/host/apps.py"
   - "app/host/__init__.py"
   - "app/manage.py"
+  - "app/api/tests/*"
