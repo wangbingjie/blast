@@ -1,14 +1,18 @@
 from django.test import TestCase
 from host import models
+import itertools
+from typing import List
 
 from .. import serializers
 from ..components import host_component
 from ..components import transient_component
 from ..datamodel import serialize_blast_science_data
-
+from ..components import data_model_components
+from ..datamodel import DataModelComponent
+from ..datamodel import unpack_component_groups
 
 class DatamodelConstructionTest(TestCase):
-    fixtures = ["../fixtures/test/filters.yaml", "../fixtures/test/test_transient.yaml"]
+    fixtures = ["../fixtures/test/test_transient_data.yaml"]
 
     def test_datamodel_build_with_data(self):
         host = host_component("2022testone")
@@ -23,3 +27,25 @@ class DatamodelConstructionTest(TestCase):
         data = serialize_blast_science_data(host+transient)
         self.assertTrue(data["transient_name"] is None)
         self.assertTrue(data["host_name"] is None)
+
+
+class DataModelComponentTests(TestCase):
+
+    def test_all_datamodel_components_output_type(self):
+        for component in data_model_components:
+            output = component("thisTransientDoesNotExist")
+            self.assertIsInstance(output, List)
+            unpacked_output = list(itertools.chain(*output))
+            print(unpacked_output)
+            for model_component in unpacked_output:
+                self.assertIsInstance(model_component, DataModelComponent)
+
+
+class UnpackTest(TestCase):
+    def test_component_group_unpacking(self):
+        nested = [1,2,[3,4]]
+        flat = [1,2,3,4]
+        unpack_nested = unpack_component_groups(nested)
+        self.assertTrue(flat == unpack_nested)
+        unpack_flat = unpack_component_groups(flat)
+        self.asserTrue(flat == unpack_flat)
