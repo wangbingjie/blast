@@ -9,6 +9,7 @@ from rest_framework import serializers
 """This module contains helper functions to serialize blast data into a flat
 science payload to be delivered by the blast web API."""
 
+
 @dataclass
 class DataModelComponent:
     """
@@ -56,7 +57,9 @@ def serialize_blast_science_data(datamodel: List[DataModelComponent]) -> dict:
     return science_payload
 
 
-def unpack_component_groups(component_groups: List[List[DataModelComponent]]) -> List[DataModelComponent]:
+def unpack_component_groups(
+    component_groups: List[List[DataModelComponent]],
+) -> List[DataModelComponent]:
     """
     Unpacks list of datamodel component groups into a flat structure
 
