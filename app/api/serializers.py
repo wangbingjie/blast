@@ -36,10 +36,11 @@ class ApertureSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Aperture
         fields = [
+            "ra_deg",
+            "dec_deg",
             "orientation_deg",
             "semi_major_axis_arcsec",
             "semi_minor_axis_arcsec",
-            "type",
             "cutout",
         ]
 
