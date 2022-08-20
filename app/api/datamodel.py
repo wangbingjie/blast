@@ -9,6 +9,20 @@ from rest_framework import serializers
 
 @dataclass
 class DataModelComponent:
+    """
+    A dataclass to store all information on how to
+    serialise a blast model into the blast science payload.
+
+    Attributes:
+        prefix (str): What will be appended to the column name in the blast
+            science payload
+        query (dict): A django query that will uniquely identify the data for
+            the blast science payload
+        model (django.db.models.Model): The blast model that the query will be
+            passed to
+        serializer (rest_framework.serializers.Serializer) The serializer
+            associated with the model
+    """
     prefix: str
     query: dict
     model: django.db.models.Model
