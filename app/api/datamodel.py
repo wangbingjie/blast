@@ -6,6 +6,8 @@ import django
 from host import models
 from rest_framework import serializers
 
+"""This module contains helper functions to serialize blast data into a flat
+science payload to be delivered by the blast web API."""
 
 @dataclass
 class DataModelComponent:
@@ -29,7 +31,7 @@ class DataModelComponent:
     serializer: serializers.Serializer
 
 
-def serialize_blast_science_data(datamodel) -> dict:
+def serialize_blast_science_data(datamodel: List[DataModelComponent]) -> dict:
     """
     Serializes all data associated with a transient into a flat structure.
 
@@ -53,13 +55,13 @@ def serialize_blast_science_data(datamodel) -> dict:
     return science_payload
 
 
-def unpack_component_groups(component_groups) -> List[DataModelComponent]:
+def unpack_component_groups(component_groups: List[List[DataModelComponent]]) -> List[DataModelComponent]:
     """
     Unpacks list of datamodel component groups into a flat structure
 
     parameters:
-        component_groups (List[DataModelComponents]): list of groups to be unpacked
+        component_groups (List[List[DataModelComponent]]): list of groups to be unpacked
     returns:
-        flat_components (List[DataModelComponents]): flattened list of components
+        flat_components (List[DataModelComponent]): flattened list of components
     """
     return list(itertools.chain(*component_groups))
