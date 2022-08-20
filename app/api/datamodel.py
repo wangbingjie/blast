@@ -25,6 +25,7 @@ class DataModelComponent:
         serializer (rest_framework.serializers.Serializer) The serializer
             associated with the model
     """
+
     prefix: str
     query: dict
     model: django.db.models.Model
