@@ -36,17 +36,16 @@ class DataModelComponentTests(TestCase):
         for component in data_model_components:
             output = component("thisTransientDoesNotExist")
             self.assertIsInstance(output, List)
-            unpacked_output = list(itertools.chain(*output))
-            print(unpacked_output)
-            for model_component in unpacked_output:
+            for model_component in output:
                 self.assertIsInstance(model_component, DataModelComponent)
 
 
-class UnpackTest(TestCase):
+class GroupComponentUnpackTest(TestCase):
     def test_component_group_unpacking(self):
-        nested = [1, 2, [3, 4]]
+        nested = [[1], [2], [3, 4]]
+        nested_two = [[1], [2], [3], [4]]
         flat = [1, 2, 3, 4]
         unpack_nested = unpack_component_groups(nested)
         self.assertTrue(flat == unpack_nested)
-        unpack_flat = unpack_component_groups(flat)
-        self.asserTrue(flat == unpack_flat)
+        unpack_flat = unpack_component_groups(nested_two)
+        self.assertTrue(flat == unpack_flat)
