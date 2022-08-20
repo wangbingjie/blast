@@ -18,6 +18,12 @@ class DataModelComponent:
 def serialize_blast_science_data(datamodel) -> dict:
     """
     Serializes all data associated with a transient into a flat structure.
+
+    parameters:
+        datamodel: (List[DataModelComponent]): datamodel to be serialized.
+    returns:
+        science_payload: Flat dictionary containing science data fields and
+            values.
     """
     science_payload = {}
     for component in datamodel:
@@ -35,15 +41,11 @@ def serialize_blast_science_data(datamodel) -> dict:
 
 def unpack_component_groups(component_groups) -> List[DataModelComponent]:
     """
-    Unpacks list of datamodel component groups into a flat strcuture
+    Unpacks list of datamodel component groups into a flat structure
 
-    paramters:
-        component_groups (List[DataModelComponents]): list of grops to be unpacked
+    parameters:
+        component_groups (List[DataModelComponents]): list of groups to be unpacked
     returns:
         flat_components (List[DataModelComponents]): flattened list of components
     """
-    is_nested = any(isinstance(item, list) for item in component_groups)
-    flat_list = (
-        list(itertools.chain(*component_groups)) if is_nested else component_groups
-    )
-    return flat_list
+    return list(itertools.chain(*component_groups))
