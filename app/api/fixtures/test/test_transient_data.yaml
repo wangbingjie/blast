@@ -47,3 +47,72 @@
     magnitude_zero_point: 20.9044
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'twomass_J'
+- model: host.Cutout
+  fields:
+      name: 2022testone_2MASS_J
+      filter: [2MASS_J]
+      transient: [2022testone]
+      fits: /../cutout_cdn/2010h/2MASS/2MASS_J.fits
+- model: host.Cutout
+  fields:
+      name: 2022testone_2MASS_H
+      filter: [2MASS_H]
+      transient: [2022testone]
+      fits: /../cutout_cdn/2010h/2MASS/2MASS_H.fits
+- model: host.Aperture
+  fields:
+      name: 2022testone_local
+      transient: [2022testone]
+      orientation_deg: 0.0
+      ra_deg: 121.6015
+      dec_deg: 1.03586
+      semi_major_axis_arcsec: 1.0
+      semi_minor_axis_arcsec: 1.0
+      type: local
+- model: host.Aperture
+  fields:
+      name: 2022testone_2MASS_H_global
+      cutout: [2022testone_2MASS_J]
+      transient: [2022testone]
+      orientation_deg: 0.0
+      ra_deg: 11.6015
+      dec_deg: 10.03586
+      semi_major_axis_arcsec: 0.4
+      semi_minor_axis_arcsec: 0.5
+      type: global
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2022testone_local]
+      filter: [2MASS_J]
+      transient: [2022testone]
+      flux: 1091.48
+      flux_error: 130.38
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2022testone_local]
+      filter: [2MASS_H]
+      transient: [2022testone]
+      flux: 2183.8
+      flux_error: 224.97
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2022testone_2MASS_H_global]
+      filter: [2MASS_J]
+      transient: [2022testone]
+      flux: 99
+      flux_error: 99
+      magnitude: 0.0
+      magnitude_error: 0.0
+- model: host.AperturePhotometry
+  fields:
+      aperture: [2022testone_2MASS_H_global]
+      filter: [2MASS_H]
+      transient: [2022testone]
+      flux: 1.0
+      flux_error: 1.0
+      magnitude: 10
+      magnitude_error: 0.2

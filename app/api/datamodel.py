@@ -1,3 +1,8 @@
+"""
+This module contains helper functions to serialize blast data into a flat
+science payload to be delivered by the blast web API.
+"""
+
 import itertools
 from dataclasses import dataclass
 from typing import List
@@ -5,9 +10,6 @@ from typing import List
 import django
 from host import models
 from rest_framework import serializers
-
-"""This module contains helper functions to serialize blast data into a flat
-science payload to be delivered by the blast web API."""
 
 
 @dataclass
