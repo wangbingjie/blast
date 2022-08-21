@@ -154,3 +154,10 @@ CELERY_BROKER_URL = (
 
 CELERYD_REDIRECT_STDOUTS_LEVEL = "INFO"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+######API########
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        f'rest_framework.permissions.{os.environ.get("API_AUTHENTICATION")}',
+    ]
+}
