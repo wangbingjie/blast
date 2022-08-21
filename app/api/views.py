@@ -9,6 +9,7 @@ from . import datamodel
 from .components import data_model_components
 from astropy.coordinates import SkyCoord
 
+
 def transient_exists(transient_name: str) -> bool:
     """
     Checks if a transient exists in the database.
@@ -67,4 +68,5 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
     data_string = f"{transient_name}: ra = {float(transient_ra)}, dec= {float(transient_dec)}"
     return Response({"message": f"transient successfully posted: {data_string}"},
                     status=status.HTTP_201_CREATED)
+
 
