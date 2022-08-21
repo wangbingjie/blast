@@ -9,6 +9,7 @@ from .base_tasks import initialise_all_tasks_status
 from .base_tasks import SystemTaskRunner
 from .models import TaskRegisterSnapshot
 from .models import Transient
+from .models import TaskRegister
 from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
@@ -150,3 +151,32 @@ class SnapshotTaskRegister(SystemTaskRunner):
     @property
     def task_name(self):
         return "Snapshot task register"
+
+
+class TransientProgress(SystemTaskRunner):
+    def run_process(self):
+        transients = Transient.objects.all()
+
+        for transient in transients:
+            tasks = TaskRegister.objects.filter(transient__name__exact=transient.name)
+
+            total_tasks = len(tasks)
+            completed_tasks = len(
+                [task for task in tasks if task.status.message == "processed"]
+            )
+            blocked = len([task for task in tasks if task.status.type == "error"])
+
+            if total_tasks == 0:
+                progress = "processing"
+            elif total_tasks == completed_tasks:
+                progress = "completed"
+            elif blocked > 0:
+                progress = "blocked"
+
+            transient.progress = progress
+            transient.save()
+
+
+
+
+
