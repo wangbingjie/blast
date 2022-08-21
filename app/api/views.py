@@ -12,8 +12,8 @@ from rest_framework.views import APIView
 from . import datamodel
 from .components import data_model_components
 
-class TransientSciencePayload(APIView):
 
+class TransientSciencePayload(APIView):
     def get(self, request, slug):
         component_groups = [
             component_group(slug) for component_group in data_model_components
