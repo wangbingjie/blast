@@ -54,7 +54,10 @@ class APITest(TestCase):
         request = client.post("/api/transient/post/name=2022testnew&ra=-1.0&dec=-5.0")
         data = json.loads(request.content)
         self.assertTrue(request.status_code == 201)
-        self.assertTrue(data["message"] == "transient successfully posted: 2022testnew: ra = -1.0, dec= -5.0")
+        self.assertTrue(
+            data["message"]
+            == "transient successfully posted: 2022testnew: ra = -1.0, dec= -5.0"
+        )
 
     def test_transient_bad_post(self):
         client = APIClient()
@@ -63,7 +66,9 @@ class APITest(TestCase):
         self.assertTrue(request.status_code == 400)
         self.assertTrue(data["message"] == "bad ra and dec: ra=-*1.0, dec=-5.0")
 
-        request = client.post("/api/transient/post/name=2022new&ra=-999999&dec=-78895.0")
+        request = client.post(
+            "/api/transient/post/name=2022new&ra=-999999&dec=-78895.0"
+        )
         data = json.loads(request.content)
         self.assertTrue(request.status_code == 400)
 
