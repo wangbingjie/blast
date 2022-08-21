@@ -73,3 +73,10 @@ class APITest(TestCase):
         data = json.loads(request.content)
         self.assertTrue(request.status_code == 409)
         self.assertTrue(data["message"] == "2022testone already in database")
+
+    def test_get_no_transient(self):
+        client = APIClient()
+        request = client.get("/api/transient/get/2022NotInDatabase?format=json")
+        data = json.loads(request.content)
+        self.assertTrue(request.status_code == 404)
+        self.assertTrue(data["message"] == "2022NotInDatabase not in database")
