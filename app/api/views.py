@@ -21,3 +21,4 @@ class TransientSciencePayload(APIView):
         return Response(data)
 
     def post(self, request, slug):
+        return 0.0
