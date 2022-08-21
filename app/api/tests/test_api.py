@@ -9,7 +9,7 @@ class APITest(TestCase):
 
     def test_transient_get(self):
         client = APIClient()
-        request = client.get("/api/transient/2022testone/?format=json")
+        request = client.get("/api/transient/get/2022testone?format=json")
         data = json.loads(request.content)
 
         self.assertTrue(data["local_aperture_2MASS_H_flux"] == 2183.8)
@@ -47,5 +47,29 @@ class APITest(TestCase):
         self.assertTrue(data["transient_name"] == "2022testone")
         self.assertTrue(data["host_name"] == "PSO J080624.103+010209.859")
 
+        self.assertTrue(request.status_code == 200)
+
     def test_transient_post(self):
         client = APIClient()
+        request = client.post("/api/transient/post/name=2022testnew&ra=-1.0&dec=-5.0")
+        data = json.loads(request.content)
+        self.assertTrue(request.status_code == 201)
+        self.assertTrue(data["message"] == "transient successfully posted: 2022testnew: ra = -1.0, dec= -5.0")
+
+    def test_transient_bad_post(self):
+        client = APIClient()
+        request = client.post("/api/transient/post/name=2022new&ra=-*1.0&dec=-5.0")
+        data = json.loads(request.content)
+        self.assertTrue(request.status_code == 400)
+        self.assertTrue(data["message"] == "bad ra and dec: ra=-*1.0, dec=-5.0")
+
+        request = client.post("/api/transient/post/name=2022new&ra=-999999&dec=-78895.0")
+        data = json.loads(request.content)
+        self.assertTrue(request.status_code == 400)
+
+    def test_transient_already_in_database(self):
+        client = APIClient()
+        request = client.post("/api/transient/post/name=2022testone&ra=-1.0&dec=-5.0")
+        data = json.loads(request.content)
+        self.assertTrue(request.status_code == 409)
+        self.assertTrue(data["message"] == "2022testone already in database")
