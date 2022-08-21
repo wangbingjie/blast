@@ -1,13 +1,15 @@
+import json
+
 from django.test import TestCase
 from rest_framework.test import APIClient
-import json
+
 
 class APITest(TestCase):
     fixtures = ["../fixtures/test/test_transient_data.yaml"]
 
     def test_transient_get(self):
         client = APIClient()
-        request = client.get('/api/transient/2022testone/?format=json')
+        request = client.get("/api/transient/2022testone/?format=json")
         data = json.loads(request.content)
 
         self.assertTrue(data["local_aperture_2MASS_H_flux"] == 2183.8)
