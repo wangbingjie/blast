@@ -157,7 +157,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 ######API########
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
+    "DEFAULT_PERMISSION_CLASSES": [
         f'rest_framework.permissions.{os.environ.get("API_AUTHENTICATION")}',
     ]
 }
