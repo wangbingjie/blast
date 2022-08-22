@@ -77,6 +77,7 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
     data_string = (
         f"{transient_name}: ra = {float(transient_ra)}, dec= {float(transient_dec)}"
     )
+    Transient.create(name=transient_name, ra_deg=float(transient_ra), dec_deg=float(transient_dec))
     return Response(
         {"message": f"transient successfully posted: {data_string}"},
         status=status.HTTP_201_CREATED,
