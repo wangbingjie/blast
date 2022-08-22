@@ -81,8 +81,12 @@
   fields:
     name: Python FSPS
     description: Used to generate spectra and magnitude for arbitrary stellar populations
+<<<<<<< HEAD
     repository_url: https://github.com/dfm/python-fsps/tree/v0.4.1rc1
     website_url: https://dfm.io/python-fsps/current/
     doi: 10.5281/zenodo.4737461
 
 
+=======
+    website_url: https://www.astropy.org
+>>>>>>> e11f8ee20491473a5853a1e00a2f47feecad68ec
