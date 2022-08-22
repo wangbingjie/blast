@@ -154,7 +154,6 @@ class SnapshotTaskRegister(SystemTaskRunner):
 
 
 class LogTransientProgress(SystemTaskRunner):
-
     def run_process(self):
         """
         Updates the processing status for all transients.
@@ -187,8 +186,3 @@ class LogTransientProgress(SystemTaskRunner):
     @property
     def task_name(self):
         return "Log transient processing status"
-
-
-
-
-
