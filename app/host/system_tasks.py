@@ -7,9 +7,9 @@ from django.utils import timezone
 
 from .base_tasks import initialise_all_tasks_status
 from .base_tasks import SystemTaskRunner
+from .models import TaskRegister
 from .models import TaskRegisterSnapshot
 from .models import Transient
-from .models import TaskRegister
 from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
