@@ -1,5 +1,5 @@
 # Utils and wrappers for the prospector SED fitting code
-from io import BytesIO
+import os
 
 import numpy as np
 import prospect.io.read_results as reader
@@ -17,7 +17,7 @@ from .models import AperturePhotometry
 from .models import Filter
 from .models import hdf5_file_path
 from .photometric_calibration import mJy_to_maggies  ##jansky_to_maggies
-
+from django.conf import settings
 
 def get_CI(chain):
     chainlen = len(chain)
@@ -126,12 +126,14 @@ def fit_model(observations, model_components, fitting_kwargs):
 
 
 def prospector_result_to_blast(
-    transient, aperture, prospector_output, model_components, observations
-):
+        transient, aperture, prospector_output, model_components, observations,
+        sed_output_root=settings.SED_OUTPUT_ROOT):
 
     # write the results
-    hdf5_file = f"/tmp/{transient.host.name}_{aperture.type}.h5"
-
+    hdf5_file = f"{sed_output_root}/{transient.name}/{transient.host.name}_{aperture.type}.h5"
+    if not os.path.exists(f"{sed_output_root}/{transient.name}"):
+        os.makedirs(f"{sed_output_root}/{transient.name}/")
+        
     writer.write_hdf5(
         hdf5_file,
         {},
