@@ -561,7 +561,7 @@ class GlobalHostSEDFitting(TransientTaskRunner):
         """
         return "failed"
 
-    def _run_process(self, transient, aperture_type="global", fast_mode=False):
+    def _run_process(self, transient, aperture_type="global", mode="fast"):
         """Run the prospector task"""
 
         query = {
@@ -576,8 +576,16 @@ class GlobalHostSEDFitting(TransientTaskRunner):
 
         observations = build_obs(transient, aperture_type)
         model_components = build_model(observations)
-        import pdb; pdb.set_trace()
-        if fast_mode:
+
+        if mode == "test":
+            # garbage results but the test runs
+            print("running in fast mode")
+            fitting_settings = dict(
+                nlive_init=1,
+                nested_method="rwalk",
+                nested_target_n_effective=1,
+            )            
+        elif mode == "fast":
             # 3000 - "reasonable but approximate posteriors"
             print("running in fast mode")
             fitting_settings = dict(
