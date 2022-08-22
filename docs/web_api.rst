@@ -28,8 +28,8 @@ Science payload data model
 
 The data model for a single transient contains the following components.
 
-Transient component fields
-++++++++++++++++++++++++++
+Transient fields
+++++++++++++++++
 
 * :code:`transient_name` - name of the transient e.g., 2022abc
 * :code:`transient_ra_deg` - transient Right Ascension in decimal degrees e.g., 132.34564
@@ -44,8 +44,8 @@ Transient component fields
     successfully fully processed by blast and some parts of the science payload
     will not be populated.
 
-Host component fields:
-++++++++++++++++++++++
+Host fields
++++++++++++
 
 * :code:`host_name` - name of the host e.g., NGC123
 * :code:`host_ra_deg` - host Right Ascension in decimal degrees e.g., 132.34564
@@ -53,8 +53,8 @@ Host component fields:
 * :code:`host_redshift` - transient redshift e.g., 0.01
 * :code:`host_milkyway_dust_reddening` - host E(B-V) e.g, 0.2
 
-Aperture component fields:
-++++++++++++++++++++++++++
+Aperture fields
++++++++++++++++
 
 <aperture_type> can either be "local" or "global".
 
@@ -65,8 +65,8 @@ Aperture component fields:
 * :code:`<aperture_type>_semi_minor_axis_arcsec` - semi minor axis of the aperture in arcseconds
 * :code:`<aperture_type>_cutout` - name of the cutout used to create aperture e.g, 2MASS_H, None if not cutout was used
 
-Photometry component fields:
-++++++++++++++++++++++++++++
+Photometry fields
++++++++++++++++++
 
 <aperture_type> can either be "local" or "global". <filter> can be any of the
 filters blast downloads cutouts for e.g., 2MASS_H, 2MASS_J, SDSS_g ... . If the
