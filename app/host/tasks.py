@@ -6,6 +6,7 @@ from celery import shared_task
 from .system_tasks import DeleteGHOSTFiles
 from .system_tasks import IngestMissedTNSTransients
 from .system_tasks import InitializeTransientTasks
+from .system_tasks import LogTransientProgress
 from .system_tasks import SnapshotTaskRegister
 from .system_tasks import TNSDataIngestion
 from .transient_tasks import Ghost
@@ -35,6 +36,7 @@ periodic_tasks = [
     IngestMissedTNSTransients(),
     DeleteGHOSTFiles(),
     SnapshotTaskRegister(),
+    LogTransientProgress(),
 ]
 
 for task in periodic_tasks:
