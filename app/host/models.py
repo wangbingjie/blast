@@ -256,7 +256,9 @@ class Filter(models.Model):
 
         wavelength = transmission_curve[0].to_numpy()
         transmission = transmission_curve[1].to_numpy()
-        return observate.Filter(kname=self.name, nick=self.name, data=(wavelength, transmission))
+        return observate.Filter(
+            kname=self.name, nick=self.name, data=(wavelength, transmission)
+        )
 
 
 class Catalog(models.Model):

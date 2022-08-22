@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 import prospect.io.read_results as reader
+from django.conf import settings
 from prospect.fitting import fit_model as fit_model_prospect
 from prospect.fitting import lnprobfn
 from prospect.io import write_results as writer
@@ -17,7 +18,7 @@ from .models import AperturePhotometry
 from .models import Filter
 from .models import hdf5_file_path
 from .photometric_calibration import mJy_to_maggies  ##jansky_to_maggies
-from django.conf import settings
+
 
 def get_CI(chain):
     chainlen = len(chain)
@@ -126,14 +127,20 @@ def fit_model(observations, model_components, fitting_kwargs):
 
 
 def prospector_result_to_blast(
-        transient, aperture, prospector_output, model_components, observations,
-        sed_output_root=settings.SED_OUTPUT_ROOT):
+    transient,
+    aperture,
+    prospector_output,
+    model_components,
+    observations,
+    sed_output_root=settings.SED_OUTPUT_ROOT,
+):
 
     # write the results
     hdf5_file = f"{sed_output_root}/{transient.name}/{transient.name}_{aperture.type}.h5"
+    
     if not os.path.exists(f"{sed_output_root}/{transient.name}"):
         os.makedirs(f"{sed_output_root}/{transient.name}/")
-        
+
     writer.write_hdf5(
         hdf5_file,
         {},
