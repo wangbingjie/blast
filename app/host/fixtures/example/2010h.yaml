@@ -528,11 +528,11 @@
       flux_error: 2666271.5
       magnitude: 0.0
       magnitude_error: 0.0
-- model: host.ProspectorResult
+- model: host.SEDFittingResult
   fields:
-      host: [IC 494]
+      transient: [2010h]
       aperture: [2010h_PanSTARRS_g_global]
-      posterior: /sed_output/2010h/IC 494_global.h5
+      posterior: /sed_output/2010h/2010h_global.h5
       log_mass_16: 11.11623006468808
       log_mass_50: 11.119444597406906
       log_mass_84: 11.122195767038848
@@ -548,11 +548,11 @@
       log_tau_16: 0.10096442863244388
       log_tau_50: 0.1046197140354783
       log_tau_84: 0.1261118048050916
-- model: host.ProspectorResult
+- model: host.SEDFittingResult
   fields:
-      host: [IC 494]
+      transient: [2010h]
       aperture: [2010h_local]
-      posterior: /sed_output/2010h/IC 494_local.h5
+      posterior: /sed_output/2010h/2010h_local.h5
       log_mass_16: 8.849994109986605
       log_mass_50: 8.894097969541852
       log_mass_84: 8.96004598530449
