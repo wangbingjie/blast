@@ -76,6 +76,3 @@ data for a particular filter and transient does not exist the values will be Non
 <aperture_type>_aperture_<filter>_flux_error - Aperture photometry flux error in mJy
 <aperture_type>_aperture_<filter>_magnitude - Aperture photometry magnitude
 <aperture_type>_aperture_<filter>_magnitude_error - Aperture photometry magnitude error
-
-
-
