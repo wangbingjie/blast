@@ -10,6 +10,9 @@ RUN pip install -r /requirements.txt
 RUN mkdir /app
 RUN mkdir /cutout_cdn
 RUN mkdir /ghost_output
+RUN mkdir /fsps
+
+RUN
 COPY . /app
 WORKDIR /app
 RUN export SPS_HOME=/fsps
