@@ -39,16 +39,16 @@ def download_data_snapshot(path_to_input_csv: str, path_to_output_csv: str, base
     """
     payloads = []
     with open(path_to_input_csv, newline='') as csv_file:
-    reader = csv.DictReader(csv_file)
-    for transient in reader:
-        transient_name = transient['name']
-        post_url = f"{base_url}{transient_name}?format=json"
-        response = urlopen(post_url)
-        data = json.loads(response.read())
-        post_message = data.content.get("message", "no message returned by blast")
-        post_status = f"HTTP status: {data.status_message}"
-        print(f"{post_status} | {post_message}")
-        payloads.append(data.content)
+        reader = csv.DictReader(csv_file)
+        for transient in reader:
+            transient_name = transient['name']
+            post_url = f"{base_url}{transient_name}?format=json"
+            response = urlopen(post_url)
+            data = json.loads(response.read())
+            post_message = data.content.get("message", "no message returned by blast")
+            post_status = f"HTTP status: {data.status_message}"
+            print(f"{post_status} | {post_message}")
+            payloads.append(data.content)
 
     with open(path_to_output_csv, 'w', newline='') as csv_file:
         fieldnames = payloads[0].keys()
