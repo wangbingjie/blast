@@ -12,7 +12,7 @@ from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
 from .models import Filter
-from .models import ProspectorResult
+from .models import SEDFittingResult
 from .models import TaskRegisterSnapshot
 from .models import Transient
 from .models import SEDFittingResult
