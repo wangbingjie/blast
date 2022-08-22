@@ -114,6 +114,7 @@ class Transient(SkyObject):
     spectroscopic_class = models.CharField(max_length=20, null=True, blank=True)
     photometric_class = models.CharField(max_length=20, null=True, blank=True)
     milkyway_dust_reddening = models.FloatField(null=True, blank=True)
+    processing_status = models.CharField(max_length=20, default="processing")
 
     @property
     def progress(self):
@@ -428,31 +429,3 @@ class Acknowledgement(models.Model):
     paper_url = models.CharField(max_length=100, null=True, blank=True)
     doi = models.CharField(max_length=1000, null=True, blank=True)
     acknowledgement_text = models.CharField(max_length=1000, null=True, blank=True)
-
-
-# class Image(models.Model):
-#    """
-#    Model to represent an image
-#    """
-#    host = models.ForeignKey(Host, on_delete=models.CASCADE)
-#    filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
-#    file_path = models.CharField()
-
-
-# class Match(models.Model):
-#    """
-#    Model to track the matches between and host and transient
-#    """
-
-# class HostApeturePhotometry(models.Model):
-#    """
-#    Model to represent forced apeture host photometry
-#    """
-#    pass
-
-
-# class HostCatalogPhotometry(models.Model):
-#    """
-#    Model to represent catalog photometry of a known host
-#    """
-#    pass
