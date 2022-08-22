@@ -14,7 +14,7 @@ from .host_utils import query_sdss
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
-from .models import ProspectorResult
+from .models import SEDFittingResult
 from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
@@ -494,7 +494,7 @@ class LocalHostSEDFitting(TransientTaskRunner):
         return "failed"
 
     def _run_process(self, transient, aperture_type="local", fast_mode=False):
-        """Run the prospector task"""
+        """Run the SED-fitting task"""
 
         query = {
             "transient__name__exact": f"{transient.name}",
@@ -529,12 +529,12 @@ class LocalHostSEDFitting(TransientTaskRunner):
             transient, aperture, posterior, model_components, observations
         )
 
-        pr = ProspectorResult.objects.create(**prosp_results)
+        pr = SEDFittingResult.objects.create(**prosp_results)
 
         return "processed"
 
 class GlobalHostSEDFitting(TransientTaskRunner):
-    """Task Runner to run global host galaxy inference with prospector"""
+    """Task Runner to run global host galaxy inference"""
 
     def _prerequisites(self):
         """
@@ -562,7 +562,7 @@ class GlobalHostSEDFitting(TransientTaskRunner):
         return "failed"
 
     def _run_process(self, transient, aperture_type="global", mode="fast"):
-        """Run the prospector task"""
+        """Run the SED-fitting task"""
 
         query = {
             "transient__name__exact": f"{transient.name}",
@@ -606,6 +606,6 @@ class GlobalHostSEDFitting(TransientTaskRunner):
             transient, aperture, posterior, model_components, observations
         )
 
-        pr = ProspectorResult.objects.create(**prosp_results)
+        pr = SEDFittingResult.objects.create(**prosp_results)
 
         return "processed"
