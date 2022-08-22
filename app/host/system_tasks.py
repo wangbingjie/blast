@@ -153,8 +153,12 @@ class SnapshotTaskRegister(SystemTaskRunner):
         return "Snapshot task register"
 
 
-class TransientProgress(SystemTaskRunner):
+class LogTransientProgress(SystemTaskRunner):
+
     def run_process(self):
+        """
+        Updates the processing status for all transients.
+        """
         transients = Transient.objects.all()
 
         for transient in transients:
@@ -166,15 +170,23 @@ class TransientProgress(SystemTaskRunner):
             )
             blocked = len([task for task in tasks if task.status.type == "error"])
 
+            progress = "processing"
+
             if total_tasks == 0:
                 progress = "processing"
             elif total_tasks == completed_tasks:
                 progress = "completed"
+            elif total_tasks < completed_tasks:
+                progress = "processing"
             elif blocked > 0:
                 progress = "blocked"
 
-            transient.progress = progress
+            transient.processing_status = progress
             transient.save()
+
+    @property
+    def task_name(self):
+        return "Log transient processing status"
 
 
 

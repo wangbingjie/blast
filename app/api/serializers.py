@@ -21,6 +21,7 @@ class TransientSerializer(serializers.ModelSerializer):
             "milkyway_dust_reddening",
             "spectroscopic_class",
             "photometric_class",
+            "processing_status",
         ]
 
 
