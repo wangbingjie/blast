@@ -90,13 +90,13 @@ def transient_processing_progress(path_to_output_csv: str) -> float:
 if __name__ == "__main__":
     print(str(sys.argv[1]))
 
-    #post transients
+    # post transients
 
-    #download data
-    #check progress
+    # download data
+    # check progress
 
-    #while progress not completed
-        #wait some time
-        #download_data
-        #check progress
-        #print progress
+    # while progress not completed
+    # wait some time
+    # download_data
+    # check progress
+    # print progress
