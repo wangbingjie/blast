@@ -18,6 +18,7 @@ from .transient_tasks import LocalAperturePhotometry
 from .transient_tasks import MWEBV_Host
 from .transient_tasks import MWEBV_Transient
 from .transient_tasks import TransientInformation
+from .system_tasks import LogTransientProgress
 
 periodic_tasks = [
     MWEBV_Transient(),
@@ -35,6 +36,8 @@ periodic_tasks = [
     IngestMissedTNSTransients(),
     DeleteGHOSTFiles(),
     SnapshotTaskRegister(),
+    LogTransientProgress()
+
 ]
 
 for task in periodic_tasks:
