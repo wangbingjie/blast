@@ -31,3 +31,6 @@
 - model: host.Task
   fields:
     name: Host MWEBV
+- model: host.Task
+  fields:
+    name: Log transient processing status
