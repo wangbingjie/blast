@@ -27,7 +27,7 @@ from sedpy.observate import load_filters
 from ..models import AperturePhotometry
 from ..models import Filter
 from ..models import Host
-from ..models import ProspectorResult
+from ..models import SEDFittingResult
 from ..models import Transient
 from ..prospector import build_model
 from ..prospector import build_obs
@@ -66,7 +66,7 @@ class PropsectorBuildObsTest(TestCase):
         pass
 
 
-class ProspectorFullTest(TestCase):
+class SEDFittingFullTest(TestCase):
 
     fixtures = [
         "../fixtures/initial/setup_survey_data.yaml",
@@ -82,8 +82,8 @@ class ProspectorFullTest(TestCase):
 
         transient = Transient.objects.get(name="2010H")
         sed_cls = GlobalHostSEDFitting()
-        status_message = sed_cls._run_process(transient, fast_mode=True)
+        status_message = sed_cls._run_process(transient, mode="test")
 
-        pr = ProspectorResult.objects.get(host=transient.host)
+        pr = SEDFittingResult.objects.get(transient=transient)
         self.assertTrue(status_message == "processed")
         self.assertTrue(pr.log_ssfr_50 != None)
