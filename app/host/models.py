@@ -289,13 +289,6 @@ def fits_file_path(instance):
     return f"{instance.host}/{instance.filter.survey}/{instance.filter}.fits"
 
 
-def hdf5_file_path(instance):
-    """
-    Constructs a file path for a HDF5 image
-    """
-    return f"{instance.transient.name}/{instance.host.name}/{instance.aperture.type}.h5"
-
-
 class Cutout(models.Model):
     """
     Model to represent a cutout image of a host galaxy
@@ -376,10 +369,10 @@ class AperturePhotometry(models.Model):
         return round(self.flux_error, 2)
 
 
-class ProspectorResult(models.Model):
+class SEDFittingResult(models.Model):
     """Model to store prospector results"""
 
-    host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
+    transient = models.ForeignKey(Transient, on_delete=models.CASCADE, null=True, blank=True)
     aperture = models.ForeignKey(
         Aperture, on_delete=models.CASCADE, null=True, blank=True
     )

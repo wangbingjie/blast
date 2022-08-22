@@ -130,7 +130,7 @@ def prospector_result_to_blast(
         sed_output_root=settings.SED_OUTPUT_ROOT):
 
     # write the results
-    hdf5_file = f"{sed_output_root}/{transient.name}/{transient.host.name}_{aperture.type}.h5"
+    hdf5_file = f"{sed_output_root}/{transient.name}/{transient.name}_{aperture.type}.h5"
     if not os.path.exists(f"{sed_output_root}/{transient.name}"):
         os.makedirs(f"{sed_output_root}/{transient.name}/")
         
