@@ -1,6 +1,7 @@
 import csv
 import json
 from urllib.request import urlopen
+import sys
 
 input_csv_file_path = ''
 api_endpoint = response = '/api/transient/post/'
@@ -17,15 +18,15 @@ def post_transient_from_csv(path_to_input_csv: str, base_url: str) -> None:
         None, prints the status of each posted transient
     """
     with open(path_to_input_csv, newline='') as csv_file:
-    reader = csv.DictReader(csv_file)
-    for transient in reader:
-        ra, dec = transient['ra'], transient['dec']
-        post_url = f"{base_url}name={transient['name']}&ra={ra}&dec={dec}"
-        response = urlopen(post_url)
-        data = json.loads(response.read())
-        post_message = data.content.get("message", "no message returned by blast")
-        post_status = f"HTTP status: {data.status_message}"
-        print(f"{post_status} | {post_message}")
+        reader = csv.DictReader(csv_file)
+        for transient in reader:
+            ra, dec = transient['ra'], transient['dec']
+            post_url = f"{base_url}name={transient['name']}&ra={ra}&dec={dec}"
+            response = urlopen(post_url)
+            data = json.loads(response.read())
+            post_message = data.content.get("message", "no message returned by blast")
+            post_status = f"HTTP status: {data.status_message}"
+            print(f"{post_status} | {post_message}")
 
 def download_data_snapshot(path_to_input_csv: str, path_to_output_csv: str, base_url: str) -> None:
     """
@@ -57,22 +58,30 @@ def download_data_snapshot(path_to_input_csv: str, path_to_output_csv: str, base
         for payload in payloads:
             writer.writerow(payload)
 
-def transient_processing_completed(path_to_output_csv: str) -> bool:
+def transient_processing_progress(path_to_output_csv: str) -> float:
     """
-    Checks if a batch of transients have had their processing completed.
+    Calculates the processing status of a batch of transients
 
     Parameters
         path_to_output_csv (str): Path to output csv file.
     Returns:
-        processed_statis (bool): True if all transients have been processed or blocked,
-            false otherwise.
+        processed_progress (float): Fraction of transients that have been
+        completed (processed or blocked)
     """
-    processed_status = True
+
+    processing, completed = 0, 0
     with open(path_to_output_csv, newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         for transient in reader:
             status = transient['transient_processing_status']
+
             if status == "processing":
-                processed_status = False
-                break
-    return processed_status
+                processing =+ 1
+            else:
+                completed =+ 1
+
+    return completed / (processing + completed)
+
+
+if __name__ == "__main__":
+    print(str(sys.argv[1]))
