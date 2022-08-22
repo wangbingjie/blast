@@ -4,7 +4,6 @@ import fsps
 import h5py
 import numpy as np
 import pandas as pd
-import prospect.io.read_results as reader
 import pylab as plt
 import sedpy
 from astropy.coordinates import SkyCoord
@@ -12,15 +11,6 @@ from astroquery.sdss import SDSS
 from django.conf import settings
 from django.test import TestCase
 from numpy.testing import assert_array_equal
-from prospect.fitting import fit_model
-from prospect.fitting import lnprobfn
-from prospect.io import write_results as writer
-from prospect.models import SpecModel
-from prospect.models.templates import TemplateLibrary
-from prospect.sources import CSPSpecBasis
-from prospect.utils.obsutils import fix_obs
-from scipy.special import gamma
-from scipy.special import gammainc
 from sedpy.observate import Filter as SedpyFilter
 from sedpy.observate import load_filters
 
@@ -29,8 +19,6 @@ from ..models import Filter
 from ..models import Host
 from ..models import SEDFittingResult
 from ..models import Transient
-from ..prospector import build_model
-from ..prospector import build_obs
 from ..transient_tasks import GlobalHostSEDFitting
 
 
