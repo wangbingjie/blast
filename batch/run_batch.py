@@ -1,6 +1,6 @@
 import csv
-from urllib.request import urlopen
 import json
+from urllib.request import urlopen
 
 input_csv_file_path = ''
 api_endpoint = response = '/api/transient/post/'
@@ -76,14 +76,3 @@ def transient_processing_completed(path_to_output_csv: str) -> bool:
                 processed_status = False
                 break
     return processed_status
-
-
-
-
-
-
-
-
-
-
-
