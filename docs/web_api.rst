@@ -61,6 +61,3 @@ Aperture component fields:
 * <aperture_type>_cutout - name of the cutout used to create aperture e.g, 2MASS_H, None if not cutout was used
 
 Photometry component fields:
-
-
-
