@@ -150,7 +150,7 @@ class MWEBV_Host(TransientTaskRunner):
                 status_message = "failed"
         else:
             status_message = "failed"
-        
+
         return status_message
 
 
@@ -486,7 +486,7 @@ class LocalHostSEDFitting(TransientTaskRunner):
         Task status to be altered is Local Aperture photometry
         """
         return "Local host SED inference"
-    
+
     def _failed_status_message(self):
         """
         Failed status if not aperture is found
@@ -533,6 +533,7 @@ class LocalHostSEDFitting(TransientTaskRunner):
 
         return "processed"
 
+
 class GlobalHostSEDFitting(TransientTaskRunner):
     """Task Runner to run global host galaxy inference with prospector"""
 
@@ -544,7 +545,7 @@ class GlobalHostSEDFitting(TransientTaskRunner):
             "Host match": "processed",
             "Host information": "processed",
             "Global aperture photometry": "processed",
-            "Global host SED inference":"not processed"
+            "Global host SED inference": "not processed",
         }
 
     @property
@@ -554,7 +555,6 @@ class GlobalHostSEDFitting(TransientTaskRunner):
         """
         return "Global host SED inference"
 
-    
     def _failed_status_message(self):
         """
         Failed status if not aperture is found
@@ -576,7 +576,9 @@ class GlobalHostSEDFitting(TransientTaskRunner):
 
         observations = build_obs(transient, aperture_type)
         model_components = build_model(observations)
-        import pdb; pdb.set_trace()
+        import pdb
+
+        pdb.set_trace()
         if fast_mode:
             # 3000 - "reasonable but approximate posteriors"
             print("running in fast mode")

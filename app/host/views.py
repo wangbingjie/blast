@@ -12,9 +12,9 @@ from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
 from .models import Filter
+from .models import ProspectorResult
 from .models import TaskRegisterSnapshot
 from .models import Transient
-from .models import ProspectorResult
 from .plotting_utils import plot_cutout_image
 from .plotting_utils import plot_pie_chart
 from .plotting_utils import plot_sed
@@ -86,25 +86,35 @@ def results(request, slug):
         host__transient=transient, aperture__type__exact="global"
     )
     # ugly, but effective?
-    local_sed_results,global_sed_results = (),()
-    for param in ['mass','sfr','ssfr','age','tau']:
+    local_sed_results, global_sed_results = (), ()
+    for param in ["mass", "sfr", "ssfr", "age", "tau"]:
         if local_sed_obj.exists():
-            local_sed_results += ((
-                param,
-                local_sed_obj[0].__dict__[f'log_{param}_16'],
-                local_sed_obj[0].__dict__[f'log_{param}_50'],
-                local_sed_obj[0].__dict__[f'log_{param}_84']),)
+            local_sed_results += (
+                (
+                    param,
+                    local_sed_obj[0].__dict__[f"log_{param}_16"],
+                    local_sed_obj[0].__dict__[f"log_{param}_50"],
+                    local_sed_obj[0].__dict__[f"log_{param}_84"],
+                ),
+            )
         if global_sed_obj.exists():
-            global_sed_results += ((
-                param,
-                global_sed_obj[0].__dict__[f'log_{param}_16'],
-                global_sed_obj[0].__dict__[f'log_{param}_50'],
-                global_sed_obj[0].__dict__[f'log_{param}_84']),)
-    if local_sed_obj.exists(): local_sed_file = local_sed_obj[0].posterior.name
-    else: local_sed_file=None
-    if global_sed_obj.exists(): global_sed_file = global_sed_obj[0].posterior.name
-    else: global_sed_file=None
-    
+            global_sed_results += (
+                (
+                    param,
+                    global_sed_obj[0].__dict__[f"log_{param}_16"],
+                    global_sed_obj[0].__dict__[f"log_{param}_50"],
+                    global_sed_obj[0].__dict__[f"log_{param}_84"],
+                ),
+            )
+    if local_sed_obj.exists():
+        local_sed_file = local_sed_obj[0].posterior.name
+    else:
+        local_sed_file = None
+    if global_sed_obj.exists():
+        global_sed_file = global_sed_obj[0].posterior.name
+    else:
+        global_sed_file = None
+
     all_cutouts = Cutout.objects.filter(transient__name__exact=slug)
     filters = [cutout.filter.name for cutout in all_cutouts]
     all_filters = Filter.objects.all()
@@ -130,10 +140,14 @@ def results(request, slug):
         local_aperture=local_aperture,
     )
     bokeh_sed_local_context = plot_sed(
-        aperture_photometry=local_aperture_photometry, type="local", sed_results_file=local_sed_file
+        aperture_photometry=local_aperture_photometry,
+        type="local",
+        sed_results_file=local_sed_file,
     )
     bokeh_sed_global_context = plot_sed(
-        aperture_photometry=global_aperture_photometry, type="global", sed_results_file=global_sed_file
+        aperture_photometry=global_aperture_photometry,
+        type="global",
+        sed_results_file=global_sed_file,
     )
 
     if local_aperture.exists():
