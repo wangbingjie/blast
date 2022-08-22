@@ -6,6 +6,7 @@ from celery import shared_task
 from .system_tasks import DeleteGHOSTFiles
 from .system_tasks import IngestMissedTNSTransients
 from .system_tasks import InitializeTransientTasks
+from .system_tasks import LogTransientProgress
 from .system_tasks import SnapshotTaskRegister
 from .system_tasks import TNSDataIngestion
 from .transient_tasks import Ghost
@@ -18,7 +19,6 @@ from .transient_tasks import LocalAperturePhotometry
 from .transient_tasks import MWEBV_Host
 from .transient_tasks import MWEBV_Transient
 from .transient_tasks import TransientInformation
-from .system_tasks import LogTransientProgress
 
 periodic_tasks = [
     MWEBV_Transient(),
@@ -36,8 +36,7 @@ periodic_tasks = [
     IngestMissedTNSTransients(),
     DeleteGHOSTFiles(),
     SnapshotTaskRegister(),
-    LogTransientProgress()
-
+    LogTransientProgress(),
 ]
 
 for task in periodic_tasks:
