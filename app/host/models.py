@@ -288,6 +288,11 @@ def fits_file_path(instance):
     """
     return f"{instance.host}/{instance.filter.survey}/{instance.filter}.fits"
 
+def hdf5_file_path(instance):
+    """
+    Constructs a file path for a HDF5 image
+    """
+    return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}.h5"
 
 class Cutout(models.Model):
     """
