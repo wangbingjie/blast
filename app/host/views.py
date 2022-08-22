@@ -14,7 +14,7 @@ from .models import Cutout
 from .models import Filter
 from .models import TaskRegisterSnapshot
 from .models import Transient
-from .models import ProspectorResult
+from .models import SEDFittingResult
 from .plotting_utils import plot_cutout_image
 from .plotting_utils import plot_pie_chart
 from .plotting_utils import plot_sed
@@ -79,10 +79,10 @@ def results(request, slug):
         transient=transient, aperture__type__exact="global"
     )
 
-    local_sed_obj = ProspectorResult.objects.filter(
+    local_sed_obj = SEDFittingResult.objects.filter(
         host__transient=transient, aperture__type__exact="local"
     )
-    global_sed_obj = ProspectorResult.objects.filter(
+    global_sed_obj = SEDFittingResult.objects.filter(
         host__transient=transient, aperture__type__exact="global"
     )
     # ugly, but effective?
