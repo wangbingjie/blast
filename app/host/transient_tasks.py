@@ -579,11 +579,16 @@ class GlobalHostSEDFitting(TransientTaskRunner):
         
         if mode == "test":
             # garbage results but the test runs
-            print("running in fast mode")
+            print("running in test mode")
             fitting_settings = dict(
                 nlive_init=1,
                 nested_method="rwalk",
                 nested_target_n_effective=1,
+                nested_maxcall_init=1,
+                nested_maxiter_init=1,
+                nested_maxcall=1,
+                nested_maxiter=1,
+                verbose=True
             )            
         elif mode == "fast":
             # 3000 - "reasonable but approximate posteriors"
@@ -600,11 +605,18 @@ class GlobalHostSEDFitting(TransientTaskRunner):
                 nested_method="rwalk",
                 nested_target_n_effective=10000,
             )
-
+        
+        print('starting model fit')
         posterior = fit_model(observations, model_components, fitting_settings)
-        prosp_results = prospector_result_to_blast(
-            transient, aperture, posterior, model_components, observations
-        )
+        if mode == "test":
+            prosp_results = prospector_result_to_blast(
+                transient, aperture, posterior, model_components, observations,
+                sed_output_root='/tmp'
+            )
+        else:
+            prosp_results = prospector_result_to_blast(
+                transient, aperture, posterior, model_components, observations
+            )
 
         pr = SEDFittingResult.objects.create(**prosp_results)
 
