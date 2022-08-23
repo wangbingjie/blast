@@ -15,7 +15,6 @@ from .models import Filter
 from .models import SEDFittingResult
 from .models import TaskRegisterSnapshot
 from .models import Transient
-from .models import SEDFittingResult
 from .plotting_utils import plot_cutout_image
 from .plotting_utils import plot_pie_chart
 from .plotting_utils import plot_sed

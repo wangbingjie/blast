@@ -576,7 +576,7 @@ class GlobalHostSEDFitting(TransientTaskRunner):
 
         observations = build_obs(transient, aperture_type)
         model_components = build_model(observations)
-        
+
         if mode == "test":
             # garbage results but the test runs
             print("running in test mode")
@@ -589,7 +589,7 @@ class GlobalHostSEDFitting(TransientTaskRunner):
                 nested_maxcall=1,
                 nested_maxiter=1,
                 verbose=True
-            )            
+            )
         elif mode == "fast":
             # 3000 - "reasonable but approximate posteriors"
             print("running in fast mode")
