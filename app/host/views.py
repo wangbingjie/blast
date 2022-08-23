@@ -81,10 +81,10 @@ def results(request, slug):
     )
 
     local_sed_obj = SEDFittingResult.objects.filter(
-        host__transient=transient, aperture__type__exact="local"
+        transient=transient, aperture__type__exact="local"
     )
     global_sed_obj = SEDFittingResult.objects.filter(
-        host__transient=transient, aperture__type__exact="global"
+        transient=transient, aperture__type__exact="global"
     )
     # ugly, but effective?
     local_sed_results, global_sed_results = (), ()
