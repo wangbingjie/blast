@@ -15,4 +15,3 @@ RUN mkdir /fsps
 RUN
 COPY . /app
 WORKDIR /app
-RUN export SPS_HOME=/fsps
