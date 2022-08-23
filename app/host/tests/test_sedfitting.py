@@ -69,6 +69,7 @@ class SEDFittingFullTest(TestCase):
     def test_prospector(self):
 
         transient = Transient.objects.get(name="2010H")
+
         sed_cls = GlobalHostSEDFitting()
         status_message = sed_cls._run_process(transient, mode="test")
 

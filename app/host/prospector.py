@@ -113,6 +113,7 @@ def build_model(observations):
 
 def fit_model(observations, model_components, fitting_kwargs):
     """Fit the model"""
+
     output = fit_model_prospect(
         observations,
         model_components["model"],
@@ -190,7 +191,7 @@ def prospector_result_to_blast(
     logssfr16, logssfr50, logssfr84 = get_CI(logssfr)
 
     prosp_results = {
-        "host": transient.host,
+        "transient": transient,
         "aperture": aperture,
         "posterior": hdf5_file,
         "log_mass_16": logmass16,
