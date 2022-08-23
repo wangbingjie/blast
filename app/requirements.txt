@@ -1,4 +1,4 @@
-git+https://github.com/dfm/python-fsps.git
+###git+https://github.com/dfm/python-fsps.git
 numpy==1.23.2
 dynesty
 alabaster==0.7.12
