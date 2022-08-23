@@ -147,9 +147,9 @@ class MWEBV_Host(TransientTaskRunner):
                 transient.host.save()
                 status_message = "processed"
             else:
-                status_message = "failed"
+                status_message = "no host MWEBV"
         else:
-            status_message = "failed"
+            status_message = "no host MWEBV"
 
         return status_message
 
