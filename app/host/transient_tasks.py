@@ -479,7 +479,6 @@ class HostSEDFitting(TransientTaskRunner):
         try:
             aperture = Aperture.objects.get(**query)
         except Aperture.DoesNotExist or Aperture.MultipleObjectsReturned:
-            print(query)
             raise
 
         observations = build_obs(transient, aperture_type)
