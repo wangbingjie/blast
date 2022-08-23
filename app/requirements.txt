@@ -1,6 +1,5 @@
-###git+https://github.com/dfm/python-fsps.git
 numpy==1.23.2
-dynesty
+dynesty==1.2.3
 alabaster==0.7.12
 amqp==5.0.9
 asgiref==3.4.1
