@@ -15,14 +15,15 @@ class ViewTest(TestCase):
         response = self.client.get("/transients/2022testtwo/")
         self.assertEqual(response.status_code, 200)
 
+
 class SEDPlotTest(TestCase):
     fixtures = [
         "../fixtures/initial/setup_survey_data.yaml",
-	    "../fixtures/initial/setup_filter_data.yaml",
-	    "../fixtures/initial/setup_catalog_data.yaml",
+        "../fixtures/initial/setup_filter_data.yaml",
+        "../fixtures/initial/setup_catalog_data.yaml",
         "../fixtures/initial/setup_status.yaml",
-	    "../fixtures/initial/setup_tasks.yaml",
-	    "../fixtures/initial/setup_acknowledgements.yaml",
+        "../fixtures/initial/setup_tasks.yaml",
+        "../fixtures/initial/setup_acknowledgements.yaml",
         "../fixtures/test/test_2010h.yaml",
     ]
 
