@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import pylab as plt
 import sedpy
+from django.db.models import Q
 from astropy.coordinates import SkyCoord
 from astroquery.sdss import SDSS
 from django.conf import settings
@@ -20,7 +21,7 @@ from ..models import Host
 from ..models import SEDFittingResult
 from ..models import Transient
 from ..transient_tasks import GlobalHostSEDFitting
-
+from ..transient_tasks import LocalHostSEDFitting
 
 class FilterTest(TestCase):
     fixtures = [
@@ -66,13 +67,25 @@ class SEDFittingFullTest(TestCase):
         "../fixtures/test/test_2010h.yaml",
     ]
 
-    def test_prospector(self):
+    def test_prospector_global(self):
 
         transient = Transient.objects.get(name="2010H")
 
         sed_cls = GlobalHostSEDFitting()
         status_message = sed_cls._run_process(transient, mode="test")
 
-        pr = SEDFittingResult.objects.get(transient=transient)
+        pr = SEDFittingResult.objects.filter(Q(transient=transient) & Q(aperture__type='global') & Q(posterior__contains='/tmp'))
+        self.assertTrue(len(pr) == 1)
         self.assertTrue(status_message == "processed")
-        self.assertTrue(pr.log_ssfr_50 != None)
+        self.assertTrue(pr[0].log_ssfr_50 != None)
+
+    def test_prospector_local(self):
+
+        transient = Transient.objects.get(name="2010H")
+
+        sed_cls = LocalHostSEDFitting()
+        status_message = sed_cls._run_process(transient, mode="test")
+        pr = SEDFittingResult.objects.filter(Q(transient=transient) & Q(aperture__type='local') & Q(posterior__contains='/tmp'))
+        self.assertTrue(len(pr) == 1)
+        self.assertTrue(status_message == "processed")
+        self.assertTrue(pr[0].log_ssfr_50 != None)
