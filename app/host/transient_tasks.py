@@ -465,6 +465,7 @@ class HostInformation(TransientTaskRunner):
         host.save()
         return status_message
 
+
 class HostSEDFitting(TransientTaskRunner):
     """Task Runner to run host galaxy inference with prospector"""
 
@@ -533,7 +534,7 @@ class HostSEDFitting(TransientTaskRunner):
 
         return "processed"
 
-    
+
 class LocalHostSEDFitting(HostSEDFitting):
     """Task Runner to run local host galaxy inference with prospector"""
 
@@ -564,11 +565,11 @@ class LocalHostSEDFitting(HostSEDFitting):
     def _run_process(self, transient, mode="fast"):
         """Run the SED-fitting task"""
 
-        super()._run_process(transient,aperture_type="local",mode=mode)
-        
+        super()._run_process(transient, aperture_type="local", mode=mode)
+
         return "processed"
 
-    
+
 class GlobalHostSEDFitting(HostSEDFitting):
     """Task Runner to run global host galaxy inference"""
 
@@ -599,6 +600,6 @@ class GlobalHostSEDFitting(HostSEDFitting):
     def _run_process(self, transient, mode="fast"):
         """Run the SED-fitting task"""
 
-        super()._run_process(transient,aperture_type="global",mode=mode)
-        
+        super()._run_process(transient, aperture_type="global", mode=mode)
+
         return "processed"

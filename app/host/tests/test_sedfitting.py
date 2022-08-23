@@ -6,10 +6,10 @@ import numpy as np
 import pandas as pd
 import pylab as plt
 import sedpy
-from django.db.models import Q
 from astropy.coordinates import SkyCoord
 from astroquery.sdss import SDSS
 from django.conf import settings
+from django.db.models import Q
 from django.test import TestCase
 from numpy.testing import assert_array_equal
 from sedpy.observate import Filter as SedpyFilter
@@ -22,6 +22,7 @@ from ..models import SEDFittingResult
 from ..models import Transient
 from ..transient_tasks import GlobalHostSEDFitting
 from ..transient_tasks import LocalHostSEDFitting
+
 
 class FilterTest(TestCase):
     fixtures = [
@@ -74,7 +75,11 @@ class SEDFittingFullTest(TestCase):
         sed_cls = GlobalHostSEDFitting()
         status_message = sed_cls._run_process(transient, mode="test")
 
-        pr = SEDFittingResult.objects.filter(Q(transient=transient) & Q(aperture__type='global') & Q(posterior__contains='/tmp'))
+        pr = SEDFittingResult.objects.filter(
+            Q(transient=transient)
+            & Q(aperture__type="global")
+            & Q(posterior__contains="/tmp")
+        )
         self.assertTrue(len(pr) == 1)
         self.assertTrue(status_message == "processed")
         self.assertTrue(pr[0].log_ssfr_50 != None)
@@ -85,7 +90,11 @@ class SEDFittingFullTest(TestCase):
 
         sed_cls = LocalHostSEDFitting()
         status_message = sed_cls._run_process(transient, mode="test")
-        pr = SEDFittingResult.objects.filter(Q(transient=transient) & Q(aperture__type='local') & Q(posterior__contains='/tmp'))
+        pr = SEDFittingResult.objects.filter(
+            Q(transient=transient)
+            & Q(aperture__type="local")
+            & Q(posterior__contains="/tmp")
+        )
         self.assertTrue(len(pr) == 1)
         self.assertTrue(status_message == "processed")
         self.assertTrue(pr[0].log_ssfr_50 != None)
