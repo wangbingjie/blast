@@ -82,7 +82,7 @@
   fields:
     transient: [2010h]
     task: [Local host SED inference]
-    status: [not processed]
+    status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 100.0
 - model: host.TaskRegister
