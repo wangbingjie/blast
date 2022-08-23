@@ -290,11 +290,13 @@ def fits_file_path(instance):
     """
     return f"{instance.host}/{instance.filter.survey}/{instance.filter}.fits"
 
+
 def hdf5_file_path(instance):
     """
     Constructs a file path for a HDF5 image
     """
     return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}.h5"
+
 
 class Cutout(models.Model):
     """
@@ -379,7 +381,9 @@ class AperturePhotometry(models.Model):
 class SEDFittingResult(models.Model):
     """Model to store prospector results"""
 
-    transient = models.ForeignKey(Transient, on_delete=models.CASCADE, null=True, blank=True)
+    transient = models.ForeignKey(
+        Transient, on_delete=models.CASCADE, null=True, blank=True
+    )
     aperture = models.ForeignKey(
         Aperture, on_delete=models.CASCADE, null=True, blank=True
     )
