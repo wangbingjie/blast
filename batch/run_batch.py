@@ -1,7 +1,8 @@
 import csv
 import json
 import sys
-from urllib.request import urlopen, Request
+from urllib.request import Request
+from urllib.request import urlopen
 
 input_csv_file_path = ""
 api_endpoint = response = "/api/transient/post/"
@@ -90,7 +91,9 @@ if __name__ == "__main__":
 
     input_csv = str(sys.argv[1])
     post_transient_from_csv(input_csv, f"http://0.0.0.0:8000{api_endpoint}")
-    download_data_snapshot(input_csv, './results.csv' f"http://0.0.0.0:8000/api/transient/get/")
+    download_data_snapshot(
+        input_csv, "./results.csv" f"http://0.0.0.0:8000/api/transient/get/"
+    )
 
     # check progress
 

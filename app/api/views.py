@@ -78,8 +78,10 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
         f"{transient_name}: ra = {float(transient_ra)}, dec= {float(transient_dec)}"
     )
     Transient.objects.create(
-        name=transient_name, ra_deg=float(transient_ra), dec_deg=float(transient_dec),
-        tns_id=1
+        name=transient_name,
+        ra_deg=float(transient_ra),
+        dec_deg=float(transient_dec),
+        tns_id=1,
     )
     return Response(
         {"message": f"transient successfully posted: {data_string}"},
