@@ -1,7 +1,7 @@
 import csv
 import json
 import sys
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 
 input_csv_file_path = ""
 api_endpoint = response = "/api/transient/post/"
@@ -22,11 +22,10 @@ def post_transient_from_csv(path_to_input_csv: str, base_url: str) -> None:
         for transient in reader:
             ra, dec = transient["ra"], transient["dec"]
             post_url = f"{base_url}name={transient['name']}&ra={ra}&dec={dec}"
-            response = urlopen(post_url)
+            response = urlopen(Request(post_url, method="POST"))
             data = json.loads(response.read())
-            post_message = data.content.get("message", "no message returned by blast")
-            post_status = f"HTTP status: {data.status_message}"
-            print(f"{post_status} | {post_message}")
+            post_message = data.get("message", "no message returned by blast")
+            print(f"{post_message}")
 
 
 def download_data_snapshot(
@@ -47,7 +46,7 @@ def download_data_snapshot(
         for transient in reader:
             transient_name = transient["name"]
             post_url = f"{base_url}{transient_name}?format=json"
-            response = urlopen(post_url)
+            response = urlopen(Request(post_url, method="POST"))
             data = json.loads(response.read())
             post_message = data.content.get("message", "no message returned by blast")
             post_status = f"HTTP status: {data.status_message}"
@@ -88,11 +87,11 @@ def transient_processing_progress(path_to_output_csv: str) -> float:
 
 
 if __name__ == "__main__":
-    print(str(sys.argv[1]))
 
-    # post transients
+    input_csv = str(sys.argv[1])
+    post_transient_from_csv(input_csv, f"http://0.0.0.0:8000{api_endpoint}")
+    download_data_snapshot(input_csv, './results.csv' f"http://0.0.0.0:8000/api/transient/get/")
 
-    # download data
     # check progress
 
     # while progress not completed
