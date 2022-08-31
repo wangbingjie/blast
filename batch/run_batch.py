@@ -3,9 +3,7 @@ import json
 import sys
 from urllib.request import Request
 from urllib.request import urlopen
-
-input_csv_file_path = ""
-api_endpoint = response = "/api/transient/post/"
+import time
 
 
 def post_transient_from_csv(path_to_input_csv: str, base_url: str) -> None:
@@ -22,12 +20,15 @@ def post_transient_from_csv(path_to_input_csv: str, base_url: str) -> None:
         reader = csv.DictReader(csv_file)
         for transient in reader:
             ra, dec = transient["ra"], transient["dec"]
-            post_url = f"{base_url}name={transient['name']}&ra={ra}&dec={dec}"
-            response = urlopen(Request(post_url, method="POST"))
-            data = json.loads(response.read())
-            post_message = data.get("message", "no message returned by blast")
-            print(f"{post_message}")
-
+            name = transient['name']
+            post_url = f"{base_url}name={name}&ra={ra}&dec={dec}"
+            try:
+                response = urlopen(Request(post_url, method="POST"))
+                data = json.loads(response.read())
+                post_message = data.get("message", "no message returned by blast")
+                print(f"{post_message}")
+            except Exception as e:
+                print(f"{name}: {e}")
 
 def download_data_snapshot(
     path_to_input_csv: str, path_to_output_csv: str, base_url: str
@@ -47,12 +48,9 @@ def download_data_snapshot(
         for transient in reader:
             transient_name = transient["name"]
             post_url = f"{base_url}{transient_name}?format=json"
-            response = urlopen(Request(post_url, method="POST"))
+            response = urlopen(Request(post_url, method="GET"))
             data = json.loads(response.read())
-            post_message = data.content.get("message", "no message returned by blast")
-            post_status = f"HTTP status: {data.status_message}"
-            print(f"{post_status} | {post_message}")
-            payloads.append(data.content)
+            payloads.append(data)
 
     with open(path_to_output_csv, "w", newline="") as csv_file:
         fieldnames = payloads[0].keys()
@@ -88,17 +86,22 @@ def transient_processing_progress(path_to_output_csv: str) -> float:
 
 
 if __name__ == "__main__":
+    localhost = "http://0.0.0.0:8000"
+    post_endpoint = "/api/transient/post/"
+    get_endpoint = "/api/transient/get/"
 
     input_csv = str(sys.argv[1])
-    post_transient_from_csv(input_csv, f"http://0.0.0.0:8000{api_endpoint}")
+    post_transient_from_csv(input_csv, f"{localhost}{post_endpoint}")
     download_data_snapshot(
-        input_csv, "./results.csv" f"http://0.0.0.0:8000/api/transient/get/"
+        input_csv, "/results.csv", f"{localhost}{get_endpoint}"
     )
+    batch_progress = transient_processing_progress("/results.csv")
 
-    # check progress
+    while batch_progress < 1.0:
+        print(batch_progress)
+        time.sleep(10)
+        download_data_snapshot(
+            input_csv, "/results.csv", f"{localhost}{get_endpoint}"
+        )
+        batch_progress = transient_processing_progress("/results.csv")
 
-    # while progress not completed
-    # wait some time
-    # download_data
-    # check progress
-    # print progress
