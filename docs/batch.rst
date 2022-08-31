@@ -35,7 +35,7 @@ Environment setup
 In addition to all the environment variables default setup you must specify the
 path to you input batch file, absolute or relative to the docker-compose.yml file,
 
-.. code::: None
+.. code:: None
 
     BATCH_CSV=<path_to_your_transient_input_file>
 
