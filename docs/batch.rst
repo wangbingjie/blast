@@ -9,7 +9,7 @@ First, read and follow the instructions on how to run blast locally :doc:`here <
 up to and including the Setup environment file section.
 
 Input transient file
-====================
+--------------------
 
 First, create an input file with a batch of transients to be processed. This file
 must be a csv following the the format with the transient name and sky position.
@@ -24,13 +24,13 @@ The Right ascension and declination of the transient must be in decimal degrees.
 The column names must match exactly.
 
 Output results file
-===================
+-------------------
 
 You must also create an empty results csv file. This is where the results of
 blast will be written to as the batch of transients is processed.
 
 Environment setup
-=================
+-----------------
 
 In addition to all the environment variables default setup you must specify the
 path to you input batch file, absolute or relative to the docker-compose.yml file,
@@ -46,7 +46,7 @@ You must also specify the path to the empty results file
     OUTPUT_CSV=<path_to_your_results_file>
 
 Running in batch mode
-=====================
+---------------------
 
 With the environment variables set, you can run blast in batch mode from the base
 blast directory,
