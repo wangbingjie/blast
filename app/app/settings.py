@@ -134,6 +134,7 @@ MEDIA_URL = "/cutouts/"
 # os.path.join(os.path.dirname(BASE_DIR), '../cutout_cdn')
 
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../cutout_cdn")
+SED_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../sed_output")
 GHOST_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../ghost_output")
 TNS_STAGING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../tns_staging")
 TRANSMISSION_CURVES_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../transmission")
