@@ -151,6 +151,7 @@ services:
       - ../app/entrypoints/wait-for-it.sh:/wait-for-it.sh
       - ../batch/docker-entrypoint.batch.sh:/docker-entrypoint.batch.sh
       - ${BATCH_CSV}:/input.csv
+      - ${OUTPUT_CSV}:/results.csv
     profiles: ["batch"]
     command: bash docker-entrypoint.batch.sh
     network_mode: "host"
