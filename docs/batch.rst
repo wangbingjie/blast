@@ -59,6 +59,3 @@ This will spin up a local version of blast that will take your batch of transien
 as input and process them. Results will be periodically written to your results
 file. When all transients have been processed or are blocked the containers will
 all exit. The format of the results file is specified by the :doc:`blast API <web_api>`.
-
-
-
