@@ -1,9 +1,9 @@
 import csv
 import json
 import sys
+import time
 from urllib.request import Request
 from urllib.request import urlopen
-import time
 
 
 def post_transient_from_csv(path_to_input_csv: str, base_url: str) -> None:
@@ -20,7 +20,7 @@ def post_transient_from_csv(path_to_input_csv: str, base_url: str) -> None:
         reader = csv.DictReader(csv_file)
         for transient in reader:
             ra, dec = transient["ra"], transient["dec"]
-            name = transient['name']
+            name = transient["name"]
             post_url = f"{base_url}name={name}&ra={ra}&dec={dec}"
             try:
                 response = urlopen(Request(post_url, method="POST"))
@@ -29,6 +29,7 @@ def post_transient_from_csv(path_to_input_csv: str, base_url: str) -> None:
                 print(f"{post_message}")
             except Exception as e:
                 print(f"{name}: {e}")
+
 
 def download_data_snapshot(
     path_to_input_csv: str, path_to_output_csv: str, base_url: str
@@ -92,16 +93,11 @@ if __name__ == "__main__":
 
     input_csv = str(sys.argv[1])
     post_transient_from_csv(input_csv, f"{localhost}{post_endpoint}")
-    download_data_snapshot(
-        input_csv, "/results.csv", f"{localhost}{get_endpoint}"
-    )
+    download_data_snapshot(input_csv, "/results.csv", f"{localhost}{get_endpoint}")
     batch_progress = transient_processing_progress("/results.csv")
 
     while batch_progress < 1.0:
         print(batch_progress)
         time.sleep(10)
-        download_data_snapshot(
-            input_csv, "/results.csv", f"{localhost}{get_endpoint}"
-        )
+        download_data_snapshot(input_csv, "/results.csv", f"{localhost}{get_endpoint}")
         batch_progress = transient_processing_progress("/results.csv")
-
