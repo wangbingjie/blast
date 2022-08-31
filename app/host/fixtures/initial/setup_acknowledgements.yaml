@@ -77,3 +77,10 @@
     description: Used in the inference of host galaxy parameters
     website_url: https://svo.cab.inta-csic.es/main/index.php
     paper_url: https://ui.adsabs.harvard.edu/abs/2020sea..confE.182R/abstract
+- model: host.Acknowledgement
+  fields:
+    name: Python FSPS
+    description: Used to generate spectra and magnitude for arbitrary stellar populations
+    repository_url: https://github.com/dfm/python-fsps/tree/v0.4.1rc1
+    website_url: https://dfm.io/python-fsps/current/
+    doi: 10.5281/zenodo.4737461

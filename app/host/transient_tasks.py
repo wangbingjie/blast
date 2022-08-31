@@ -14,9 +14,11 @@ from .host_utils import query_sdss
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
+from .models import SEDFittingResult
 from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
+from .prospector import prospector_result_to_blast
 
 """This module contains all of the TransientTaskRunners in blast."""
 
@@ -146,6 +148,8 @@ class MWEBV_Host(TransientTaskRunner):
                 status_message = "processed"
             else:
                 status_message = "no host MWEBV"
+        else:
+            status_message = "no host MWEBV"
 
         return status_message
 
@@ -328,7 +332,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
 
                 self._overwrite_or_create_object(AperturePhotometry, query, data)
             except Exception as e:
-                print(e)
+                raise
         return "processed"
 
 
@@ -390,7 +394,7 @@ class GlobalAperturePhotometry(TransientTaskRunner):
 
                 self._overwrite_or_create_object(AperturePhotometry, query, data)
             except Exception as e:
-                print(e)
+                raise
 
         return "processed"
 
@@ -465,6 +469,109 @@ class HostInformation(TransientTaskRunner):
 class HostSEDFitting(TransientTaskRunner):
     """Task Runner to run host galaxy inference with prospector"""
 
+    def _run_process(self, transient, aperture_type="global", mode="fast"):
+        """Run the SED-fitting task"""
+
+        query = {
+            "transient__name__exact": f"{transient.name}",
+            "type__exact": aperture_type,
+        }
+        try:
+            aperture = Aperture.objects.get(**query)
+        except Aperture.DoesNotExist or Aperture.MultipleObjectsReturned:
+            raise
+
+        observations = build_obs(transient, aperture_type)
+        model_components = build_model(observations)
+
+        if mode == "test":
+            # garbage results but the test runs
+            print("running in test mode")
+            fitting_settings = dict(
+                nlive_init=1,
+                nested_method="rwalk",
+                nested_target_n_effective=1,
+                nested_maxcall_init=1,
+                nested_maxiter_init=1,
+                nested_maxcall=1,
+                nested_maxiter=1,
+                verbose=True,
+            )
+        elif mode == "fast":
+            # 3000 - "reasonable but approximate posteriors"
+            print("running in fast mode")
+            fitting_settings = dict(
+                nlive_init=400,
+                nested_method="rwalk",
+                nested_target_n_effective=3000,
+            )
+        else:
+            # 10000 - "high-quality posteriors"
+            fitting_settings = dict(
+                nlive_init=400,
+                nested_method="rwalk",
+                nested_target_n_effective=10000,
+            )
+
+        print("starting model fit")
+        posterior = fit_model(observations, model_components, fitting_settings)
+        if mode == "test":
+            prosp_results = prospector_result_to_blast(
+                transient,
+                aperture,
+                posterior,
+                model_components,
+                observations,
+                sed_output_root="/tmp",
+            )
+        else:
+            prosp_results = prospector_result_to_blast(
+                transient, aperture, posterior, model_components, observations
+            )
+
+        pr = SEDFittingResult.objects.create(**prosp_results)
+
+        return "processed"
+
+
+class LocalHostSEDFitting(HostSEDFitting):
+    """Task Runner to run local host galaxy inference with prospector"""
+
+    def _prerequisites(self):
+        """
+        Need both the Cutout and Host match to be processed
+        """
+        return {
+            "Host match": "processed",
+            "Host information": "processed",
+            "Local aperture photometry": "processed",
+            "Local host SED inference": "not processed",
+        }
+
+    @property
+    def task_name(self):
+        """
+        Task status to be altered is Local Aperture photometry
+        """
+        return "Local host SED inference"
+
+    def _failed_status_message(self):
+        """
+        Failed status if not aperture is found
+        """
+        return "failed"
+
+    def _run_process(self, transient, mode="fast"):
+        """Run the SED-fitting task"""
+
+        super()._run_process(transient, aperture_type="local", mode=mode)
+
+        return "processed"
+
+
+class GlobalHostSEDFitting(HostSEDFitting):
+    """Task Runner to run global host galaxy inference"""
+
     def _prerequisites(self):
         """
         Need both the Cutout and Host match to be processed
@@ -473,6 +580,7 @@ class HostSEDFitting(TransientTaskRunner):
             "Host match": "processed",
             "Host information": "processed",
             "Global aperture photometry": "processed",
+            "Global host SED inference": "not processed",
         }
 
     @property
@@ -488,13 +596,9 @@ class HostSEDFitting(TransientTaskRunner):
         """
         return "failed"
 
-    def _run_process(self, transient):
-        """Code goes here"""
-        observations = build_obs(transient, "global")
-        model_components = build_model(observations)
-        fitting_settings = dict(
-            nlive_init=400, nested_method="rwalk", nested_target_n_effective=10000
-        )
-        posterior = fit_model(observations, model_components, fitting_settings)
+    def _run_process(self, transient, mode="fast"):
+        """Run the SED-fitting task"""
+
+        super()._run_process(transient, aperture_type="global", mode=mode)
 
         return "processed"
