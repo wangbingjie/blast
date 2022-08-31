@@ -27,7 +27,7 @@ Usage
 
 .. toctree::
    :maxdepth: 2
-   :caption: Web interface
+   :caption: Usage
 
    web_pages
    web_api
