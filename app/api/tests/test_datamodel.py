@@ -9,11 +9,11 @@ from ..components import aperture_component
 from ..components import data_model_components
 from ..components import host_component
 from ..components import photometry_component
+from ..components import sed_fit_component
 from ..components import transient_component
 from ..datamodel import DataModelComponent
 from ..datamodel import serialize_blast_science_data
 from ..datamodel import unpack_component_groups
-from ..components import sed_fit_component
 
 
 class DatamodelConstructionTest(TestCase):
@@ -78,11 +78,11 @@ class DatamodelConstructionTest(TestCase):
         self.assertTrue(data["local_aperture_host_log_mass_16"] == 10.0)
         self.assertTrue(data["local_aperture_host_log_mass_50"] == 20.0)
         self.assertTrue(data["local_aperture_host_log_mass_84"] == 30.0)
-        self.assertTrue(data["local_aperture_host_log_sfr_16"] ==123.4546)
-        self.assertTrue(data["local_aperture_host_log_sfr_50"] ==123.4566)
-        self.assertTrue(data["local_aperture_host_log_sfr_84"] ==56.564565)
-        self.assertTrue(data["local_aperture_host_log_ssfr_16"] ==15.676)
-        self.assertTrue(data["local_aperture_host_log_ssfr_50"] ==12.34343)
+        self.assertTrue(data["local_aperture_host_log_sfr_16"] == 123.4546)
+        self.assertTrue(data["local_aperture_host_log_sfr_50"] == 123.4566)
+        self.assertTrue(data["local_aperture_host_log_sfr_84"] == 56.564565)
+        self.assertTrue(data["local_aperture_host_log_ssfr_16"] == 15.676)
+        self.assertTrue(data["local_aperture_host_log_ssfr_50"] == 12.34343)
         self.assertTrue(data["local_aperture_host_log_ssfr_84"] == 12)
         self.assertTrue(data["local_aperture_host_log_age_16"] == 1.0)
         self.assertTrue(data["local_aperture_host_log_age_50"] == 0.1)
@@ -106,7 +106,6 @@ class DatamodelConstructionTest(TestCase):
         self.assertTrue(data["global_aperture_host_log_tau_16"] == 1.0)
         self.assertTrue(data["global_aperture_host_log_tau_50"] == 5.0)
         self.assertTrue(data["global_aperture_host_log_tau_84"] == 60)
-
 
 
 class DataModelComponentTests(TestCase):
