@@ -128,7 +128,7 @@ def sed_fit_component(transient_name: str) -> List[DataModelComponent]:
                 prefix=f"{aperture_type}_aperture_host_",
                 query={
                     "transient__name__exact": transient_name,
-                    "aperture__type__exact": aperture_type
+                    "aperture__type__exact": aperture_type,
                 },
                 model=models.SEDFittingResult,
                 serializer=serializers.SEDFittingResultSerializer,
