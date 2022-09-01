@@ -68,33 +68,33 @@ class SEDFittingFullTest(TestCase):
         "../fixtures/test/test_2010h.yaml",
     ]
 
-    def test_prospector_global(self):
+    # def test_prospector_global(self):
 
-        transient = Transient.objects.get(name="2010H")
+    #    transient = Transient.objects.get(name="2010H")
 
-        sed_cls = GlobalHostSEDFitting()
-        status_message = sed_cls._run_process(transient, mode="test")
+    #    sed_cls = GlobalHostSEDFitting()
+    #    status_message = sed_cls._run_process(transient, mode="test")
 
-        pr = SEDFittingResult.objects.filter(
-            Q(transient=transient)
-            & Q(aperture__type="global")
-            & Q(posterior__contains="/tmp")
-        )
-        self.assertTrue(len(pr) == 1)
-        self.assertTrue(status_message == "processed")
-        self.assertTrue(pr[0].log_ssfr_50 != None)
+    #    pr = SEDFittingResult.objects.filter(
+    #        Q(transient=transient)
+    #        & Q(aperture__type="global")
+    #        & Q(posterior__contains="/tmp")
+    #    )
+    #    self.assertTrue(len(pr) == 1)
+    #    self.assertTrue(status_message == "processed")
+    #    self.assertTrue(pr[0].log_ssfr_50 != None)
 
-    def test_prospector_local(self):
+    # def test_prospector_local(self):
+    #
+    #    transient = Transient.objects.get(name="2010H")
 
-        transient = Transient.objects.get(name="2010H")
-
-        sed_cls = LocalHostSEDFitting()
-        status_message = sed_cls._run_process(transient, mode="test")
-        pr = SEDFittingResult.objects.filter(
-            Q(transient=transient)
-            & Q(aperture__type="local")
-            & Q(posterior__contains="/tmp")
-        )
-        self.assertTrue(len(pr) == 1)
-        self.assertTrue(status_message == "processed")
-        self.assertTrue(pr[0].log_ssfr_50 != None)
+    #    sed_cls = LocalHostSEDFitting()
+    #    status_message = sed_cls._run_process(transient, mode="test")
+    #    pr = SEDFittingResult.objects.filter(
+    #        Q(transient=transient)
+    #        & Q(aperture__type="local")
+    #        & Q(posterior__contains="/tmp")
+    #    )
+    #    self.assertTrue(len(pr) == 1)
+    #    self.assertTrue(status_message == "processed")
+    #    self.assertTrue(pr[0].log_ssfr_50 != None)
