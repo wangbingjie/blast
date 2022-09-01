@@ -14,8 +14,10 @@ from .models import Filter
 
 
 def download_and_save_cutouts(
-    transient, fov=Quantity(0.1, unit="deg"), media_root=settings.MEDIA_ROOT,
-        overwrite=settings.CUTOUT_OVERWRITE
+    transient,
+    fov=Quantity(0.1, unit="deg"),
+    media_root=settings.MEDIA_ROOT,
+    overwrite=settings.CUTOUT_OVERWRITE,
 ):
     """
     Download all available imaging from a list of surveys
@@ -37,7 +39,6 @@ def download_and_save_cutouts(
         as values.
     """
 
-
     for filter in Filter.objects.all():
         save_dir = f"{media_root}/{transient.name}/{filter.survey.name}/"
         path_to_fits = save_dir + f"{filter.name}.fits"
@@ -56,7 +57,9 @@ def download_and_save_cutouts(
                 path_to_fits = save_dir + f"{filter.name}.fits"
                 fits.writeto(path_to_fits, overwrite=True)
                 cutout_name = f"{transient.name}_{filter.name}"
-                cutout_object = Cutout(name=cutout_name, filter=filter, transient=transient)
+                cutout_object = Cutout(
+                    name=cutout_name, filter=filter, transient=transient
+                )
                 cutout_object.fits.name = path_to_fits
                 cutout_object.save()
 
