@@ -160,3 +160,7 @@ static/
 .DS_Store
 
 data/fsps/*
+
+batch/*
+!batch/run_batch.py
+!batch/docker-entrypoint.batch.sh
