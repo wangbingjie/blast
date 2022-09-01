@@ -76,3 +76,19 @@ data for a particular filter and transient does not exist the values will be Non
 * :code:`<aperture_type>_aperture_<filter>_flux_error` - Aperture photometry flux error in mJy
 * :code:`<aperture_type>_aperture_<filter>_magnitude` - Aperture photometry magnitude
 * :code:`<aperture_type>_aperture_<filter>_magnitude_error` - Aperture photometry magnitude error
+
+SED fit fields
+++++++++++++++
+
+<aperture_type> can either be "local" or "global". <parameter> can be either,
+
+* "log_mass" (log base 10 of the host stellar mass [solar masses])
+* "log_sfr" (log base 10 of the host star formation rate [solar masses / year])
+* "log_ssfr" (log base 10 of the host specific star formation rate [/ year])
+* "log_age" (log base 10 of the host stellar age [year])
+* "log_tau" (log base 10 of the host star formation rate decline exponent [year])
+
+<posterior_percentile> is the percentile value from the posterior distribution
+which can either be "16", "50" ot "84"
+
+* :code:`<aperture_type>_aperture_host_<parameter>_<posterior_percentile>`
