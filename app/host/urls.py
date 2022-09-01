@@ -7,6 +7,7 @@ from . import views
 base_path = os.environ.get("BASE_PATH", "").strip("/")
 if base_path != "":
     base_path = f"""{base_path}/"""
+
 urlpatterns = [
     path(f"""{base_path}transients/""", views.transient_list),
     path(f"""{base_path}analytics/""", views.analytics),
