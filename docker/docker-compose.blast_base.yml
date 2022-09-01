@@ -8,10 +8,11 @@ services:
       - ../app:/app
       - ../data/cutout_cdn:/cutout_cdn
       - ../data/ghost_output:/ghost_output
-      - ../data/prospector_output:/prospector_output
+      - ../data/sed_output:/sed_output
       - ../data/tns_staging:/tns_staging
       - ../data/transmission:/transmission
       - ../data/dustmaps:/dustmaps
+      - ../data/fsps/:/fsps
   nginx_base:
     restart: always
     image: nginx:1.21-alpine
@@ -33,7 +34,8 @@ services:
       - ../app:/app
       - ../data/cutout_cdn:/cutout_cdn
       - ../data/ghost_output:/ghost_output
-      - ../data/prospector_output:/prospector_output
+      - ../data/sed_output:/sed_output
       - ../data/tns_staging:/tns_staging
       - ../data/transmission:/transmission
       - ../data/dustmaps:/dustmaps
+      - ../data/fsps/:/fsps

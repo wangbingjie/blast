@@ -20,7 +20,7 @@ services:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.celery.sh
-    profiles: ["full_prod", "full_dev"]
+    profiles: ["full_prod", "full_dev", "batch"]
     env_file:
       - ../env/.env.dev
   celery_beat:
@@ -28,7 +28,7 @@ services:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.celery_beat.sh
-    profiles: ["full_prod", "full_dev"]
+    profiles: ["full_prod", "full_dev", "batch"]
     env_file:
       - ../env/.env.dev
   rabbitmq:
@@ -41,14 +41,14 @@ services:
       - ../data/rabbitmq_data:/data
     env_file:
       - ../env/.env.dev
-    profiles: ["full_prod", "full_dev"]
+    profiles: ["full_prod", "full_dev", "batch"]
   database:
     extends:
       file: docker-compose.blast_base.yml
       service: database_base
     volumes:
       - ../data/database/:/var/lib/mysql/
-    profiles: ["full_prod", "slim_prod", "full_dev", "slim_dev"]
+    profiles: ["full_prod", "slim_prod", "full_dev", "slim_dev", "batch"]
     env_file:
       - ../env/.env.dev
   nginx:
@@ -79,7 +79,7 @@ services:
       - ../app/entrypoints:/data/entrypoints
     env_file:
       - ../env/.env.dev
-    profiles: ["full_prod", "full_dev"]
+    profiles: ["full_prod", "full_dev", "batch"]
   app_test:
     extends:
       file: docker-compose.blast_base.yml
@@ -129,7 +129,7 @@ services:
     command: bash entrypoints/docker-entrypoint.app.dev.sh
     ports:
       - 8000:${WEB_APP_PORT}
-    profiles: ["full_dev", "slim_dev"]
+    profiles: ["full_dev", "slim_dev", "batch"]
     env_file:
       - ../env/.env.dev
     networks:
@@ -144,3 +144,16 @@ services:
     volumes:
       - ../docs:/docs
     profiles: ["docs"]
+  batch:
+    image: python:3.9-buster
+    volumes:
+      - ../batch/run_batch.py:/run_batch.py
+      - ../app/entrypoints/wait-for-it.sh:/wait-for-it.sh
+      - ../batch/docker-entrypoint.batch.sh:/docker-entrypoint.batch.sh
+      - ${BATCH_CSV}:/input.csv
+      - ${OUTPUT_CSV}:/results.csv
+    profiles: ["batch"]
+    command: bash docker-entrypoint.batch.sh
+    network_mode: "host"
+    env_file:
+      - ../env/.env.dev

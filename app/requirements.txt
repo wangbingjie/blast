@@ -1,3 +1,5 @@
+numpy==1.23.2
+dynesty==1.2.3
 alabaster==0.7.12
 amqp==5.0.9
 asgiref==3.4.1
@@ -44,7 +46,6 @@ kombu==5.2.3
 MarkupSafe==2.0.1
 matplotlib==3.5.0
 mimeparse==0.1.3
-numpy==1.23.1
 packaging==21.3
 pandas==1.3.4
 photutils==1.2.0
@@ -101,3 +102,5 @@ healpy==1.14.0
 dustmaps
 astro-sedpy
 django-revproxy
+djangorestframework
+fsps==0.4.1

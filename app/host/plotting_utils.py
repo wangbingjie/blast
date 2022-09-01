@@ -2,6 +2,7 @@ from math import pi
 
 import numpy as np
 import pandas as pd
+import prospect.io.read_results as reader
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.visualization import AsinhStretch
@@ -25,6 +26,8 @@ from bokeh.plotting import show
 from bokeh.transform import cumsum
 from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
+from host.photometric_calibration import maggies_to_mJy
+from host.prospector import build_obs  # , build_model
 
 from .models import Aperture
 
@@ -184,7 +187,7 @@ def plot_cutout_image(
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 
 
-def plot_sed(aperture_photometry=None, type=""):
+def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
     """
     Plot SED from aperture photometry.
     """
@@ -207,13 +210,24 @@ def plot_sed(aperture_photometry=None, type=""):
         width=700,
         height=400,
         min_border=0,
-        toolbar_location=None,
+        #    toolbar_location=None,
         x_axis_type="log",
         x_axis_label="Wavelength [Angstrom]",
         y_axis_label="Flux",
     )
 
     fig = plot_errorbar(fig, wavelength, flux, yerr=flux_error)
+
+    if sed_results_file is not None:
+        print(sed_results_file)
+        result, obs, model = reader.results_from(sed_results_file, dangerous=False)
+
+        best = result["bestfit"]
+        a = result["obs"]["redshift"] + 1
+        fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
+        if obs["filters"] is not None:
+            pwave = [f.wave_effective for f in obs["filters"]]
+            fig.circle(pwave, maggies_to_mJy(best["photometry"]))
 
     # xaxis = LinearAxis()
     # figure.add_layout(xaxis, 'below')
