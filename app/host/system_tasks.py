@@ -7,6 +7,7 @@ from django.utils import timezone
 
 from .base_tasks import initialise_all_tasks_status
 from .base_tasks import SystemTaskRunner
+from .models import TaskRegister
 from .models import TaskRegisterSnapshot
 from .models import Transient
 from .transient_name_server import get_daily_tns_staging_csv
@@ -150,3 +151,38 @@ class SnapshotTaskRegister(SystemTaskRunner):
     @property
     def task_name(self):
         return "Snapshot task register"
+
+
+class LogTransientProgress(SystemTaskRunner):
+    def run_process(self):
+        """
+        Updates the processing status for all transients.
+        """
+        transients = Transient.objects.all()
+
+        for transient in transients:
+            tasks = TaskRegister.objects.filter(transient__name__exact=transient.name)
+
+            total_tasks = len(tasks)
+            completed_tasks = len(
+                [task for task in tasks if task.status.message == "processed"]
+            )
+            blocked = len([task for task in tasks if task.status.type == "error"])
+
+            progress = "processing"
+
+            if total_tasks == 0:
+                progress = "processing"
+            elif total_tasks == completed_tasks:
+                progress = "completed"
+            elif total_tasks < completed_tasks:
+                progress = "processing"
+            elif blocked > 0:
+                progress = "blocked"
+
+            transient.processing_status = progress
+            transient.save()
+
+    @property
+    def task_name(self):
+        return "Log transient processing status"

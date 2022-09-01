@@ -20,17 +20,18 @@ new transient reported to the IAU in real-time after the transient is
 announced. This information is not provided by any existing transient
 broker service.
 
-Blast is currently developed by the <a href="https://transients.ucsc.edu/">UCSC Transients Team</a>.
+Blast is currently developed by the `UCSC Transients Team <https://transients.ucsc.edu/>`_.
 
-Using the web interface
------------------------
+Usage
+-----
 
 .. toctree::
    :maxdepth: 2
-   :caption: Web interface
+   :caption: Usage
 
    web_pages
    web_api
+   batch
 
 Developer Guide
 ---------------
@@ -47,6 +48,7 @@ Developer Guide
    dev_github_issues
    dev_documentation
    dev_task_runner
+   dev_installing_packages
    dev_faqs
 
 
@@ -60,6 +62,8 @@ Code API
    API/models
    API/transient_name_server
    API/base_tasks
+   API/datamodel
+   API/components
 
 
 Acknowledgements

@@ -14,3 +14,7 @@ rm -r data/cutout_cdn/*
 mv data/2010ag/ data/cutout_cdn/
 mv data/2010ai/ data/cutout_cdn/
 mv data/2010h/ data/cutout_cdn/
+
+mv data/sed_output/2010h/ data/
+rm -r data/sed_output/*
+mv data/2010h data/sed_output/

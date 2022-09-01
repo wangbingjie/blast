@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "crispy_forms",
     "django_celery_beat",
     "revproxy",
+    "rest_framework",
+    "api",
 ]
 
 MIDDLEWARE = [
@@ -132,6 +134,7 @@ MEDIA_URL = "/cutouts/"
 # os.path.join(os.path.dirname(BASE_DIR), '../cutout_cdn')
 
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../cutout_cdn")
+SED_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../sed_output")
 GHOST_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../ghost_output")
 TNS_STAGING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../tns_staging")
 TRANSMISSION_CURVES_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../transmission")
@@ -152,3 +155,10 @@ CELERY_BROKER_URL = (
 
 CELERYD_REDIRECT_STDOUTS_LEVEL = "INFO"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+######API########
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        f'rest_framework.permissions.{os.environ.get("API_AUTHENTICATION")}',
+    ]
+}
