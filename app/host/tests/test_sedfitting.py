@@ -68,7 +68,7 @@ class SEDFittingFullTest(TestCase):
         "../fixtures/test/test_2010h.yaml",
     ]
 
-    #def test_prospector_global(self):
+    # def test_prospector_global(self):
 
     #    transient = Transient.objects.get(name="2010H")
 
@@ -84,7 +84,7 @@ class SEDFittingFullTest(TestCase):
     #    self.assertTrue(status_message == "processed")
     #    self.assertTrue(pr[0].log_ssfr_50 != None)
 
-    #def test_prospector_local(self):
+    # def test_prospector_local(self):
     #
     #    transient = Transient.objects.get(name="2010H")
 
