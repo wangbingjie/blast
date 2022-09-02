@@ -50,3 +50,28 @@ class AperturePhotometrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.AperturePhotometry
         fields = ["flux", "flux_error", "magnitude", "magnitude_error"]
+
+
+class SEDFittingResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.SEDFittingResult
+        fields = [
+            "log_mass_16",
+            "log_mass_50",
+            "log_mass_84",
+            "log_sfr_16",
+            "log_sfr_50",
+            "log_sfr_84",
+            "log_ssfr_16",
+            "log_ssfr_50",
+            "log_sfr_84",
+            "log_ssfr_16",
+            "log_ssfr_50",
+            "log_ssfr_84",
+            "log_age_16",
+            "log_age_50",
+            "log_age_84",
+            "log_tau_16",
+            "log_tau_50",
+            "log_tau_84",
+        ]
