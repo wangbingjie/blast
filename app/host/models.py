@@ -410,6 +410,15 @@ class SEDFittingResult(models.Model):
     log_tau_50 = models.FloatField(null=True, blank=True)
     log_tau_84 = models.FloatField(null=True, blank=True)
 
+    @property
+    def posterior_samples(self):
+        pass
+
+    @property
+    def fitting_result_file_path(self):
+        return f"{settings.SED_OUTPUT_ROOT}/{self.transient.name}/{self.transient.name}_{self.aperture.type}.h5"
+
+
 
 class TaskRegisterSnapshot(models.Model):
     """

@@ -28,7 +28,7 @@ from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
 from host.photometric_calibration import maggies_to_mJy
 from host.prospector import build_obs  # , build_model
-
+from bokeh.layouts import column
 from .models import Aperture
 
 
@@ -330,3 +330,25 @@ def plot_timeseries():
         f"bokeh_processing_trends_script": script,
         f"bokeh_processing_trends_div": div,
     }
+
+def plot_sed_posteriors(posterior_samples : dict):
+    width, height = 500, 500
+    n_bins = 100
+    subplots = []
+
+    for parameter, posterior in posterior_samples.items():
+        fig = figure(width=width, height=height)
+
+        bins = np.linspace(np.min(posterior), np.max(posterior), n_bins)
+        hist, edges = np.histogram(posterior, density=True, bins=bins)
+        fig.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:],
+                fill_color="skyblue", line_color="white")
+        subplots.append(fig)
+
+    script, div = components(column(subplots))
+    return {
+        f"bokeh_sed_posterior_script": script,
+        f"bokeh_sed_posterior_div": div,
+    }
+
+
