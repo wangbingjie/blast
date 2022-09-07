@@ -164,4 +164,3 @@ REST_FRAMEWORK = {
         f'rest_framework.permissions.{os.environ.get("API_AUTHENTICATION")}',
     ]
 }
-

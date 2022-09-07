@@ -419,7 +419,6 @@ class SEDFittingResult(models.Model):
         return f"{settings.SED_OUTPUT_ROOT}/{self.transient.name}/{self.transient.name}_{self.aperture.type}.h5"
 
 
-
 class TaskRegisterSnapshot(models.Model):
     """
     Model to keep track of how many unprocessed transients exist

@@ -9,6 +9,7 @@ from astropy.visualization import AsinhStretch
 from astropy.visualization import PercentileInterval
 from astropy.wcs import WCS
 from bokeh.embed import components
+from bokeh.layouts import column
 from bokeh.layouts import gridplot
 from bokeh.models import Circle
 from bokeh.models import ColumnDataSource
@@ -28,7 +29,7 @@ from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
 from host.photometric_calibration import maggies_to_mJy
 from host.prospector import build_obs  # , build_model
-from bokeh.layouts import column
+
 from .models import Aperture
 
 
@@ -331,7 +332,8 @@ def plot_timeseries():
         f"bokeh_processing_trends_div": div,
     }
 
-def plot_sed_posteriors(posterior_samples : dict):
+
+def plot_sed_posteriors(posterior_samples: dict):
     width, height = 500, 500
     n_bins = 100
     subplots = []
@@ -341,8 +343,14 @@ def plot_sed_posteriors(posterior_samples : dict):
 
         bins = np.linspace(np.min(posterior), np.max(posterior), n_bins)
         hist, edges = np.histogram(posterior, density=True, bins=bins)
-        fig.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:],
-                fill_color="skyblue", line_color="white")
+        fig.quad(
+            top=hist,
+            bottom=0,
+            left=edges[:-1],
+            right=edges[1:],
+            fill_color="skyblue",
+            line_color="white",
+        )
         subplots.append(fig)
 
     script, div = components(column(subplots))
@@ -350,5 +358,3 @@ def plot_sed_posteriors(posterior_samples : dict):
         f"bokeh_sed_posterior_script": script,
         f"bokeh_sed_posterior_div": div,
     }
-
-

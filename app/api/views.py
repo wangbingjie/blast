@@ -3,8 +3,10 @@ from host.models import Transient
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
 from . import datamodel
 from .components import data_model_components
+
 
 def transient_exists(transient_name: str) -> bool:
     """
@@ -82,5 +84,3 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
         {"message": f"transient successfully posted: {data_string}"},
         status=status.HTTP_201_CREATED,
     )
-
-
