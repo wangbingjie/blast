@@ -22,15 +22,16 @@ broker service.
 
 Blast is currently developed by the `UCSC Transients Team <https://transients.ucsc.edu/>`_.
 
-Using the web interface
------------------------
+Usage
+-----
 
 .. toctree::
    :maxdepth: 2
-   :caption: Web interface
+   :caption: Usage
 
    Usage/web_pages
    Usage/web_api
+
 
 Developer Guide
 ---------------
