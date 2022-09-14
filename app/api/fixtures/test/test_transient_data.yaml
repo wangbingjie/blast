@@ -116,3 +116,41 @@
       flux_error: 1.0
       magnitude: 10
       magnitude_error: 0.2
+- model: host.SEDFittingResult
+  fields:
+    transient: [2022testone]
+    aperture: [2022testone_local]
+    log_mass_16: 10.0
+    log_mass_50: 20.0
+    log_mass_84: 30.0
+    log_sfr_16: 123.4546
+    log_sfr_50: 123.4566
+    log_sfr_84: 56.564565
+    log_ssfr_16: 15.676
+    log_ssfr_50: 12.34343
+    log_ssfr_84: 12
+    log_age_16: 1.0
+    log_age_50: 0.1
+    log_age_84: 5.0
+    log_tau_16: 1.0
+    log_tau_50: 5.0
+    log_tau_84: 60
+- model: host.SEDFittingResult
+  fields:
+    transient: [2022testone]
+    aperture: [2022testone_2MASS_H_global]
+    log_mass_16: 1.0
+    log_mass_50: 2.0
+    log_mass_84: 3.0
+    log_sfr_16: 123.4546
+    log_sfr_50: 123.4566
+    log_sfr_84: 56.564565
+    log_ssfr_16: 15.676
+    log_ssfr_50: 12.34343
+    log_ssfr_84: 12
+    log_age_16: 1.0
+    log_age_50: 0.1
+    log_age_84: 5.0
+    log_tau_16: 1.0
+    log_tau_50: 5.0
+    log_tau_84: 60

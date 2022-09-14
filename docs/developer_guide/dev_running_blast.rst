@@ -45,6 +45,12 @@ a TNS api bot (see `<https://www.wis-tns.org/bots>`_).
 Run the blast app
 -----------------
 
+First pull the latest version of the blast image
+
+.. code:: none
+
+    docker pull ghcr.io/astrophpeter/blast:latest
+
 Once in the top level blast directory, start the docker containers. This command
 brings up the full blast stack,
 
