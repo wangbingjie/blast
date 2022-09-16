@@ -1,4 +1,83 @@
-<div class="card">
+{% extends "host/card_template.html"%}
+
+{% block title %} 
+
+<h5>Host SED inference</h5>
+<ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="global-params-tab" data-bs-toggle="tab" data-bs-target="#global-parmas" type="button" role="tab" aria-controls="global-params" aria-selected="false">Global</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="local-params-tab" data-bs-toggle="tab" data-bs-target="#local-params" type="button" role="tab" aria-controls="local-params" aria-selected="true">Local</button>
+    </li>
+</ul>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade" id="local-params" role="tabpanel" aria-labelledby="local-params-tab">
+        <div class="container">
+            <br>
+            <h6>Local parameter details</h6>
+            <br>
+            <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Lower Bound (16%)</th>
+                <th scope="col">Median</th>
+                <th scope="col">Upper Bound (84%)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in local_sed_results %}
+            <tr>
+                <td>{{item.0}}</td>
+                <td>{{item.1|floatformat:3}}</td>
+                <td>{{item.2|floatformat:3}}</td>
+                <td>{{item.3|floatformat:3}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+    <div class="tab-pane fade show active" id="global-params" role="tabpanel" aria-labelledby="global-params-tab">
+
+        <div class="container">
+            <br>
+            <h6>Global parameter details</h6>
+            <br>
+            <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Lower Bound (16%)</th>
+                <th scope="col">Median</th>
+                <th scope="col">Upper Bound (84%)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in global_sed_results %}
+            <tr>
+                <td>{{item.0}}</td>
+                <td>{{item.1|floatformat:3}}</td>
+                <td>{{item.2|floatformat:3}}</td>
+                <td>{{item.3|floatformat:3}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+<!-- <div class="card">
     <div class="card-header">
         <h5>Host SED inference</h5>
         <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
@@ -69,4 +148,4 @@
         </div>
     </div>
 </div>
-<div>&nbsp;</div>
+<div>&nbsp;</div> -->
