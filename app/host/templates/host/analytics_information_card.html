@@ -1,8 +1,15 @@
- <div class="card">
+{% extends "host/card_template.html"%}
+
+{% block title %} <h5>Database Snapshot </h5>{%endblock%} 
+
+{% block body %}<b>Total transients ingested:{{total}}</b>
+{{ bokeh_cutout_div | safe }}{% endblock %}
+
+ <!-- <div class="card">
      <h5 class="card-header">Database Snapshot</h5>
      <div class="card-body">
          <b>Total transients ingested:</b> {{total}}
          {{ bokeh_cutout_div | safe }}
      </div>
  </div>
-<div>&nbsp;</div>
+<div>&nbsp;</div> -->

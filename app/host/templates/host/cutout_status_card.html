@@ -1,4 +1,23 @@
-<div class="card">
+{% extends "host/card_template.html" %}
+
+{% block title %}<h5>Cutout Download Report</h5>{% endblock %}
+
+{% block body %}
+
+{% for filter, status in filter_status.items %}
+{{filter}}:
+{% if status == "yes"%}
+    <i class="bi bi-check", style="font-size: 2rem; color: green;"></i>
+{% else %}
+    <i class="bi bi-x", style="font-size: 2rem; color: red;"></i>
+{% endif %}
+{% endfor %}
+
+{% endblock %}
+
+
+
+<!-- <div class="card">
     <h5 class="card-header">Cutout Download Report</h5>
     <div class="card-body">
         {% for filter, status in filter_status.items %}
@@ -11,4 +30,4 @@
         {% endfor %}
     </div>
 </div>
-<div>&nbsp;</div>
+<div>&nbsp;</div> -->

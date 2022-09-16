@@ -1,5 +1,31 @@
+{% extends "host/card_template.html" %}
+
 {% load crispy_forms_tags %}
-<div class="card">
+
+{% block title %} <h5> Imaging data </h5>{% endblock %}
+
+{% block body %}
+{{ bokeh_cutout_div | safe }}
+<form class="form" , method="POST">
+    {% csrf_token %}
+    <div class="input-group mb-10">
+        {{ form.filters }}
+        <div class="input-group-append">
+            <button type="submit" ,class="btn btn-outline-success" ,type="button">Get Cutout</button>
+        </div>
+    </div>    
+</form>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+<!-- <div class="card">
     <h5 class="card-header">Imaging data</h5>
     <div class="card-body">
         {{ bokeh_cutout_div | safe }}
@@ -14,4 +40,4 @@
         </form>
     </div>
 </div>
-<div>&nbsp;</div>
+<div>&nbsp;</div> -->
