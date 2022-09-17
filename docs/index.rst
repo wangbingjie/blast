@@ -29,8 +29,9 @@ Usage
    :maxdepth: 2
    :caption: Usage
 
-   Usage/web_pages
-   Usage/web_api
+   usage/web_pages
+   usage/web_api
+   usage/batch
 
 
 Developer Guide
