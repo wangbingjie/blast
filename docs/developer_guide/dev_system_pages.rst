@@ -12,8 +12,7 @@ The blast django admin site (see the docs
 to view, edit, and launch periodic tasks, and add data to the database through
 a web interface.
 
-Once blast is running locally to see the django admin dashboard go to
-`<0.0.0.0:8000/admin/>`_ where you will be prompted for a login. The login user and
+Once blast is running locally to see the django admin dashboard go to `http://0.0.0.0:8000/ <http://0.0.0.0:8000/>`_ where you will be prompted for a login. The login user and
 password are set by :code:`DJANGO_SUPERUSER_PASSWORD`
 :code:`DJANGO_SUPERUSER_USERNAME` defined in your :code:`env/.env.dev` file.
 
