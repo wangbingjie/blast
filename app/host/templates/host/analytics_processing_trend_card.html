@@ -1,13 +1,8 @@
 {% extends "host/card_template.html"%}
-
+<!-- title -->
 {% block title %} <h5>Transient Processing Trends</h5> {% endblock %}
 
+<!-- body -->
 {% block body %} {{ bokeh_processing_trends_div | safe }} {% endblock %}
-<!-- <div class="card">
-     <h5 class="card-header">Transient Processing Trends</h5>
-     <div class="card-body">
-        {{ bokeh_processing_trends_div | safe }}
 
-     </div>
- </div>
-<div>&nbsp;</div> -->
+
