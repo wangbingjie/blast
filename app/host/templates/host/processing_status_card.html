@@ -1,30 +1,34 @@
-<div class="card">
-    <h5 class="card-header">Processing Status</h5>
-    <div class="card-body">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Task Name</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Time taken (s)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in transient.taskregister_set.all %}
-                <tr>
-                    <td>{{item.task.name}}</td>
-                    <td> <span class="badge {{item.status.badge}}">{{item.status.message}}</span></td>
-                    <td>
-                        {% if item.last_processing_time_seconds == 'None' %}
-                            --
-                        {% else %}
-                            {{item.last_processing_time_seconds}}
-                        {% endif %}
-                    </td>
-                </tr>
-               {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-<div>&nbsp;</div>
+{% extends "host/card_template.html" %}
+
+<!-- title -->
+{% block title %} <h5>Processing Status</h5> {% endblock %}
+
+<!-- body -->
+{% block body %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Task Name</th>
+            <th scope="col">Status</th>
+            <th scope="col">Time taken (s)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in transient.taskregister_set.all %}
+        <tr>
+            <td>{{item.task.name}}</td>
+            <td> <span class="badge {{item.status.badge}}">{{item.status.message}}</span></td>
+            <td>
+                {% if item.last_processing_time_seconds == 'None' %}
+                    --
+                {% else %}
+                    {{item.last_processing_time_seconds}}
+                {% endif %}
+            </td>
+        </tr>
+       {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
