@@ -37,8 +37,9 @@ import dustmaps.sfd
 
 config.reset()
 config["data_dir"] = f"{media_root}/../dustmaps/"
-if not os.path.exists(f"{media_root}/../dustmaps/sfd/SFD_dust_4096_ngp.fits") or \
-   not os.path.exists(f"{media_root}/../dustmaps/sfd/SFD_dust_4096_sgp.fits"):
+if not os.path.exists(
+    f"{media_root}/../dustmaps/sfd/SFD_dust_4096_ngp.fits"
+) or not os.path.exists(f"{media_root}/../dustmaps/sfd/SFD_dust_4096_sgp.fits"):
     dustmaps.sfd.fetch()
 from dustmaps.sfd import SFDQuery
 
