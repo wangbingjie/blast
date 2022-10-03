@@ -90,5 +90,5 @@ repository.
 .. code:: none
 
     git push -d origin <your branch name>
-    
+
 To start work on a new feature, re-follow the developer workflow from step 2.
