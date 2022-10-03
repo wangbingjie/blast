@@ -111,9 +111,36 @@ def photometry_component(transient_name) -> List[DataModelComponent]:
     return components
 
 
+def sed_fit_component(transient_name: str) -> List[DataModelComponent]:
+    """
+    SED fit component which defines what is in the blast science payload.
+
+    parameter:
+        transient_name (str): name of the transient
+    returns:
+        component (List[DataModelComponent]): data model component to be added
+            to the blast science payload.
+    """
+    components = []
+    for aperture_type in ["local", "global"]:
+        components.append(
+            DataModelComponent(
+                prefix=f"{aperture_type}_aperture_host_",
+                query={
+                    "transient__name__exact": transient_name,
+                    "aperture__type__exact": aperture_type,
+                },
+                model=models.SEDFittingResult,
+                serializer=serializers.SEDFittingResultSerializer,
+            )
+        )
+    return components
+
+
 data_model_components = [
     transient_component,
     host_component,
     aperture_component,
     photometry_component,
+    sed_fit_component,
 ]

@@ -14,7 +14,10 @@ from .models import Filter
 
 
 def download_and_save_cutouts(
-    transient, fov=Quantity(0.1, unit="deg"), media_root=settings.MEDIA_ROOT
+    transient,
+    fov=Quantity(0.1, unit="deg"),
+    media_root=settings.MEDIA_ROOT,
+    overwrite=settings.CUTOUT_OVERWRITE,
 ):
     """
     Download all available imaging from a list of surveys
@@ -37,16 +40,28 @@ def download_and_save_cutouts(
     """
 
     for filter in Filter.objects.all():
-        fits = cutout(transient.sky_coord, filter, fov=fov)
-        if fits:
-            save_dir = f"{media_root}/{transient.name}/{filter.survey.name}/"
-            os.makedirs(save_dir, exist_ok=True)
-            path_to_fits = save_dir + f"{filter.name}.fits"
-            fits.writeto(path_to_fits, overwrite=True)
+        save_dir = f"{media_root}/{transient.name}/{filter.survey.name}/"
+        path_to_fits = save_dir + f"{filter.name}.fits"
+        file_exists = os.exists(path_to_fits)
+
+        if file_exists and overwrite == "False":
             cutout_name = f"{transient.name}_{filter.name}"
             cutout_object = Cutout(name=cutout_name, filter=filter, transient=transient)
             cutout_object.fits.name = path_to_fits
             cutout_object.save()
+        else:
+            fits = cutout(transient.sky_coord, filter, fov=fov)
+            if fits:
+                save_dir = f"{media_root}/{transient.name}/{filter.survey.name}/"
+                os.makedirs(save_dir, exist_ok=True)
+                path_to_fits = save_dir + f"{filter.name}.fits"
+                fits.writeto(path_to_fits, overwrite=True)
+                cutout_name = f"{transient.name}_{filter.name}"
+                cutout_object = Cutout(
+                    name=cutout_name, filter=filter, transient=transient
+                )
+                cutout_object.fits.name = path_to_fits
+                cutout_object.save()
 
 
 def panstarrs_image_filename(position, image_size=None, filter=None):
