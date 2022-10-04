@@ -16,6 +16,7 @@ from astroquery.hips2fits import hips2fits
 from astroquery.ipac.ned import Ned
 from astroquery.sdss import SDSS
 from django.conf import settings
+from dustmaps.sfd import SFDQuery
 from photutils.aperture import aperture_photometry
 from photutils.aperture import EllipticalAperture
 from photutils.background import Background2D
@@ -30,18 +31,6 @@ from .photometric_calibration import flux_to_mag
 from .photometric_calibration import flux_to_mJy_flux
 from .photometric_calibration import fluxerr_to_magerr
 from .photometric_calibration import fluxerr_to_mJy_fluxerr
-
-media_root = settings.MEDIA_ROOT
-from dustmaps.config import config
-import dustmaps.sfd
-
-config.reset()
-config["data_dir"] = f"{media_root}/../dustmaps/"
-dustmaps.sfd.fetch()
-from dustmaps.sfd import SFDQuery
-
-
-# from astro_ghost.ghostHelperFunctions import getTransientHosts
 
 
 def survey_list(survey_metadata_path):
