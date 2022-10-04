@@ -31,16 +31,16 @@ from .photometric_calibration import flux_to_mJy_flux
 from .photometric_calibration import fluxerr_to_magerr
 from .photometric_calibration import fluxerr_to_mJy_fluxerr
 
-media_root = settings.MEDIA_ROOT
-from dustmaps.config import config
-import dustmaps.sfd
+#media_root = settings.MEDIA_ROOT
+#from dustmaps.config import config
+#import dustmaps.sfd
 
-config.reset()
-config["data_dir"] = f"{media_root}/../dustmaps/"
-if not os.path.exists(
-    f"{media_root}/../dustmaps/sfd/SFD_dust_4096_ngp.fits"
-) or not os.path.exists(f"{media_root}/../dustmaps/sfd/SFD_dust_4096_sgp.fits"):
-    dustmaps.sfd.fetch()
+#config.reset()
+#config["data_dir"] = f"{media_root}/../dustmaps/"
+#if not os.path.exists(
+#    f"{media_root}/../dustmaps/sfd/SFD_dust_4096_ngp.fits"
+#) or not os.path.exists(f"{media_root}/../dustmaps/sfd/SFD_dust_4096_sgp.fits"):
+#    dustmaps.sfd.fetch()
 from dustmaps.sfd import SFDQuery
 
 
