@@ -12,14 +12,13 @@ The blast django admin site (see the docs
 to view, edit, and launch periodic tasks, and add data to the database through
 a web interface.
 
-Once blast is running locally to see the django admin dashboard go to
-`<0.0.0.0:8000/admin/>`_ where you will be prompted for a login. The login user and
+Once blast is running locally to see the django admin dashboard go to `http://0.0.0.0:8000/ <http://0.0.0.0:8000/>`_ where you will be prompted for a login. The login user and
 password are set by :code:`DJANGO_SUPERUSER_PASSWORD`
 :code:`DJANGO_SUPERUSER_USERNAME` defined in your :code:`env/.env.dev` file.
 
 Once logged in, you should see a page like this:
 
-.. image:: _static/django_admin_screenshot.png
+.. image::../_static/django_admin_screenshot.png
 
 .. note::
 
@@ -35,7 +34,7 @@ you to see which tasks are being run and which tasks are failing.
 
 Once blast is running locally to see the flower dashboard go to `<0.0.0.0:8888>`_.
 
-.. image:: _static/flower_dashboard.png
+.. image::../_static/flower_dashboard.png
 
 
 RabbitMQ
@@ -52,4 +51,4 @@ password are set by :code:`RABBITMQ_USERNAME`
 
 Once logged in, you see a page like this:
 
-.. image:: _static/rabbitmq_screenshot.png
+.. image::../_static/rabbitmq_screenshot.png
