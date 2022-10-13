@@ -330,3 +330,7 @@ def plot_timeseries():
         f"bokeh_processing_trends_script": script,
         f"bokeh_processing_trends_div": div,
     }
+
+
+def plot_sed_posterior(posterior_dict):
+    return 0.0
