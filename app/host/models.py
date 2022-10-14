@@ -11,6 +11,7 @@ from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
 import prospect.io.read_results as reader
 from django.conf import settings
+import numpy as np
 
 from .managers import ApertureManager
 from .managers import CatalogManager
@@ -415,10 +416,13 @@ class SEDFittingResult(models.Model):
     def posterior_samples(self) -> dict:
         """Dictionary of parameter posterior samples."""
         posterior, _, _ = reader.results_from(self.file_path, dangerous=False)
+        posterior_samples = {}
 
-        posterior["chain"]
-
-
+        for parameter in ["mass", "tage", "tau"]:
+            samples = posterior["chain"][
+                ..., np.where(np.array(posterior["theta_labels"]) == parameter)[0][0]
+            ]
+            posterior_samples[parameter] = samples
 
         return posterior_samples
     @property
