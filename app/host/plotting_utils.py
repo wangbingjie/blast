@@ -332,5 +332,30 @@ def plot_timeseries():
     }
 
 
-def plot_sed_posterior(posterior_dict):
-    return 0.0
+def plot_sed_posterior(posterior_dict: dict) -> dict:
+    """
+    Generates bokeh plotting components for the SED parameter posteriors.
+
+    Args:
+        posterior_dict: Dictionary of parameter names and posteriors samples.
+    Returns:
+        Dictionary of Bokeh plotting components.
+    """
+    posterior_plots = []
+
+    for parameter, posterior in posterior_dict.items():
+        hist, edges = np.histogram(posterior, density=True, bins=50)
+        plot = figure()
+        plot.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:])
+        plot.xaxis.axis_label = parameter
+        plot.yaxis.axis_label = "Probability Density"
+        posterior_plots.append(plot)
+
+    grid = gridplot(posterior_plots, ncols=2, width=250, height=250)
+    script, div = components(grid)
+    return {
+        f"bokeh_sed_posterior_script": script,
+        f"bokeh_sed_posterior_div": div,
+    }
+
+

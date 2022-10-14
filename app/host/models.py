@@ -7,9 +7,10 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from django.conf import settings
 from django.db import models
-from django_celery_beat.models import PeriodicTask
 from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
+import prospect.io.read_results as reader
+from django.conf import settings
 
 from .managers import ApertureManager
 from .managers import CatalogManager
@@ -409,6 +410,25 @@ class SEDFittingResult(models.Model):
     log_tau_16 = models.FloatField(null=True, blank=True)
     log_tau_50 = models.FloatField(null=True, blank=True)
     log_tau_84 = models.FloatField(null=True, blank=True)
+
+    @property
+    def posterior_samples(self) -> dict:
+        """Dictionary of parameter posterior samples."""
+        posterior, _, _ = reader.results_from(self.file_path, dangerous=False)
+
+        posterior["chain"]
+
+
+
+        return posterior_samples
+    @property
+    def file_path(self) -> str:
+        """File path to posterior samples"""
+        transient_name = self.transient.name
+        root = settings.SED_OUTPUT_ROOT
+        return f"{root}/{transient_name}/{transient_name}_{self.aperture.type}.h5"
+
+
 
 
 class TaskRegisterSnapshot(models.Model):
