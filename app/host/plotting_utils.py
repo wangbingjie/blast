@@ -30,9 +30,9 @@ from host.photometric_calibration import maggies_to_mJy
 from host.prospector import build_obs  # , build_model
 
 from .models import Aperture
+from .models import AperturePhotometry
 from .models import SEDFittingResult
 from .models import Transient
-from .models import AperturePhotometry
 
 
 def scale_image(image_data):
@@ -114,7 +114,7 @@ def plot_image_grid(image_dict, apertures=None):
 
 
 def plot_cutout_image(
-        cutout=None, transient=None, global_aperture=None, local_aperture=None
+    cutout=None, transient=None, global_aperture=None, local_aperture=None
 ):
     title = cutout.filter if cutout is not None else "No cutout selected"
     fig = figure(
@@ -201,8 +201,7 @@ def plot_sed(transient, aperture_types=None, sed_results_file=None):
             flux = [measurement.flux for measurement in photometry]
             flux_error = [measurement.flux_error for measurement in photometry]
             wavelength = [
-                measurement.filter.wavelength_eff_angstrom
-                for measurement in photometry
+                measurement.filter.wavelength_eff_angstrom for measurement in photometry
             ]
         else:
             flux, flux_error, wavelength = [], [], []
@@ -228,7 +227,9 @@ def plot_sed(transient, aperture_types=None, sed_results_file=None):
 
             best = result["bestfit"]
             a = result["obs"]["redshift"] + 1
-            fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
+            fig.line(
+                a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"])
+            )
             if obs["filters"] is not None:
                 pwave = [f.wave_effective for f in obs["filters"]]
                 fig.circle(pwave, maggies_to_mJy(best["photometry"]))
@@ -241,7 +242,7 @@ def plot_sed(transient, aperture_types=None, sed_results_file=None):
 
 
 def plot_errorbar(
-        figure, x, y, xerr=None, yerr=None, color="red", point_kwargs={}, error_kwargs={}
+    figure, x, y, xerr=None, yerr=None, color="red", point_kwargs={}, error_kwargs={}
 ):
     """
     Plot data points with error bars on a bokeh plot

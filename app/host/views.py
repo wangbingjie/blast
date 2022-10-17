@@ -15,12 +15,13 @@ from .models import Filter
 from .models import SEDFittingResult
 from .models import TaskRegisterSnapshot
 from .models import Transient
+from .plotting_utils import get_if_exists
 from .plotting_utils import plot_cutout_image
 from .plotting_utils import plot_pie_chart
 from .plotting_utils import plot_sed
 from .plotting_utils import plot_sed_posterior
 from .plotting_utils import plot_timeseries
-from .plotting_utils import get_if_exists
+
 
 def transient_list(request):
     transients = Transient.objects.all()
@@ -70,8 +71,12 @@ def results(request, slug):
     transients = Transient.objects.all()
     transient = transients.get(name__exact=slug)
 
-    sed_posterior_bokeh_div, sed_posterior_bokeh_script = plot_sed_posterior(transient, aperture_types=["local", "global"])
-    sed_bokeh_div, sed_bokeh_script = plot_sed(transient, aperture_types=["local", "global"])
+    sed_posterior_bokeh_div, sed_posterior_bokeh_script = plot_sed_posterior(
+        transient, aperture_types=["local", "global"]
+    )
+    sed_bokeh_div, sed_bokeh_script = plot_sed(
+        transient, aperture_types=["local", "global"]
+    )
 
     local_aperture_photometry = AperturePhotometry.objects.filter(
         transient=transient, aperture__type__exact="local"
@@ -80,15 +85,23 @@ def results(request, slug):
         transient=transient, aperture__type__exact="global"
     )
 
-    global_aperture = get_if_exists(Aperture.objects.filter(type__exact="global", transient=transient))
-    local_aperture = get_if_exists(Aperture.objects.filter(type__exact="local", transient=transient))
+    global_aperture = get_if_exists(
+        Aperture.objects.filter(type__exact="global", transient=transient)
+    )
+    local_aperture = get_if_exists(
+        Aperture.objects.filter(type__exact="local", transient=transient)
+    )
 
-    local_sed_posterior = get_if_exists(SEDFittingResult.objects.filter(
-        transient=transient, aperture__type__exact="local"
-    ))
-    global_sed_posterior = get_if_exists(SEDFittingResult.objects.filter(
-        transient=transient, aperture__type__exact="global"
-    ))
+    local_sed_posterior = get_if_exists(
+        SEDFittingResult.objects.filter(
+            transient=transient, aperture__type__exact="local"
+        )
+    )
+    global_sed_posterior = get_if_exists(
+        SEDFittingResult.objects.filter(
+            transient=transient, aperture__type__exact="global"
+        )
+    )
 
     all_cutouts = Cutout.objects.filter(transient__name__exact=slug)
     filters = [cutout.filter.name for cutout in all_cutouts]
@@ -116,18 +129,25 @@ def results(request, slug):
     )
 
     render_context = {}
-    render_context['transient'] = transient
-    render_context['form'] = form
-    render_context['local_aperture_photometry'] = local_aperture_photometry
-    render_context['global_aperture_photometry'] = global_aperture_photometry
-    render_context['local_aperture'] = local_aperture
-    render_context['global_aperture'] = global_aperture
-    render_context['filter_status'] = filter_status
-    render_context['local_sed_results'] = local_sed_posterior
-    render_context['global_sed_results'] = global_sed_posterior
-    render_context['bokeh_scripts'] = sed_bokeh_script + sed_posterior_bokeh_script + [cutout_bokeh_script]
-    render_context['cutout_bokeh_script'] = cutout_bokeh_script
-    render_context = {**render_context, **sed_posterior_bokeh_div, **sed_bokeh_div, **cutout_bokeh_div}
+    render_context["transient"] = transient
+    render_context["form"] = form
+    render_context["local_aperture_photometry"] = local_aperture_photometry
+    render_context["global_aperture_photometry"] = global_aperture_photometry
+    render_context["local_aperture"] = local_aperture
+    render_context["global_aperture"] = global_aperture
+    render_context["filter_status"] = filter_status
+    render_context["local_sed_results"] = local_sed_posterior
+    render_context["global_sed_results"] = global_sed_posterior
+    render_context["bokeh_scripts"] = (
+        sed_bokeh_script + sed_posterior_bokeh_script + [cutout_bokeh_script]
+    )
+    render_context["cutout_bokeh_script"] = cutout_bokeh_script
+    render_context = {
+        **render_context,
+        **sed_posterior_bokeh_div,
+        **sed_bokeh_div,
+        **cutout_bokeh_div,
+    }
 
     return render(request, "results.html", render_context)
 
