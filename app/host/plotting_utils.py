@@ -235,7 +235,7 @@ def plot_sed(transient, aperture_types=None, sed_results_file=None):
 
         bokeh_script, bokeh_div = components(fig)
         bokeh_scripts.append(bokeh_script)
-        bokeh_divs[f"{aperture_type}_sed_posterior_bokeh_div"] = bokeh_div
+        bokeh_divs[f"{aperture_type}_sed_bokeh_div"] = bokeh_div
 
     return bokeh_divs, bokeh_scripts
 
