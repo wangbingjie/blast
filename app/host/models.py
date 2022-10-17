@@ -2,6 +2,8 @@
 This modules contains the django code used to create tables in the database
 backend.
 """
+from os.path import exists
+
 import numpy as np
 import pandas as pd
 import prospect.io.read_results as reader
@@ -11,7 +13,6 @@ from django.conf import settings
 from django.db import models
 from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
-from os.path import exists
 
 from .managers import ApertureManager
 from .managers import CatalogManager
@@ -422,7 +423,8 @@ class SEDFittingResult(models.Model):
 
             for parameter in ["mass", "tage", "tau"]:
                 samples = posterior["chain"][
-                    ..., np.where(np.array(posterior["theta_labels"]) == parameter)[0][0]
+                    ...,
+                    np.where(np.array(posterior["theta_labels"]) == parameter)[0][0],
                 ]
                 posterior_samples[parameter] = samples
 
