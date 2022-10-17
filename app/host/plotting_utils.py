@@ -348,7 +348,6 @@ def plot_sed_posterior(posterior_dict: dict) -> dict:
         plot = figure()
         plot.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:])
         plot.xaxis.axis_label = parameter
-        plot.yaxis.axis_label = "Probability Density"
         posterior_plots.append(plot)
 
     grid = gridplot(posterior_plots, ncols=2, width=250, height=250)

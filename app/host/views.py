@@ -19,6 +19,7 @@ from .plotting_utils import plot_cutout_image
 from .plotting_utils import plot_pie_chart
 from .plotting_utils import plot_sed
 from .plotting_utils import plot_timeseries
+from .plotting_utils import plot_sed_posterior
 
 
 def transient_list(request):
@@ -85,6 +86,11 @@ def results(request, slug):
     global_sed_obj = SEDFittingResult.objects.filter(
         transient=transient, aperture__type__exact="global"
     )
+    local_posterior = local_sed_obj[0].posterior_samples
+    bokeh_local_sed_posterior_context = plot_sed_posterior(local_posterior)
+
+    global_posterior = global_sed_obj[0].posterior_samples
+    bokeh_global_sed_posterior_context = plot_sed_posterior(global_posterior)
     # ugly, but effective?
     local_sed_results, global_sed_results = (), ()
     for param in ["mass", "sfr", "ssfr", "age", "tau"]:
@@ -171,10 +177,13 @@ def results(request, slug):
             "global_aperture": global_aperture,
             "local_sed_results": local_sed_results,
             "global_sed_results": global_sed_results,
+
         },
         **bokeh_context,
         **bokeh_sed_local_context,
         **bokeh_sed_global_context,
+        **bokeh_local_sed_posterior_context,
+        **bokeh_global_sed_posterior_context,
     }
 
     return render(request, "results.html", context)
