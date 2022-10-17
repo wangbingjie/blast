@@ -2,16 +2,15 @@
 This modules contains the django code used to create tables in the database
 backend.
 """
+import numpy as np
 import pandas as pd
+import prospect.io.read_results as reader
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from django.conf import settings
 from django.db import models
 from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
-import prospect.io.read_results as reader
-from django.conf import settings
-import numpy as np
 
 from .managers import ApertureManager
 from .managers import CatalogManager
@@ -425,14 +424,13 @@ class SEDFittingResult(models.Model):
             posterior_samples[parameter] = samples
 
         return posterior_samples
+
     @property
     def file_path(self) -> str:
         """File path to posterior samples"""
         transient_name = self.transient.name
         root = settings.SED_OUTPUT_ROOT
         return f"{root}/{transient_name}/{transient_name}_{self.aperture.type}.h5"
-
-
 
 
 class TaskRegisterSnapshot(models.Model):

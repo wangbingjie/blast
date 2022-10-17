@@ -356,5 +356,3 @@ def plot_sed_posterior(posterior_dict: dict) -> dict:
         f"bokeh_sed_posterior_script": script,
         f"bokeh_sed_posterior_div": div,
     }
-
-

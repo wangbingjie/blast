@@ -18,8 +18,8 @@ from .models import Transient
 from .plotting_utils import plot_cutout_image
 from .plotting_utils import plot_pie_chart
 from .plotting_utils import plot_sed
-from .plotting_utils import plot_timeseries
 from .plotting_utils import plot_sed_posterior
+from .plotting_utils import plot_timeseries
 
 
 def transient_list(request):
@@ -177,7 +177,6 @@ def results(request, slug):
             "global_aperture": global_aperture,
             "local_sed_results": local_sed_results,
             "global_sed_results": global_sed_results,
-
         },
         **bokeh_context,
         **bokeh_sed_local_context,
