@@ -1,7 +1,11 @@
 {% extends 'host/base.html' %}
 
 {% block title %} Results {% endblock %}
-{% block script %} {{ bokeh_cutout_script | safe }} {{ bokeh_sed_local_script | safe }} {{ bokeh_sed_global_script | safe }}  {{ bokeh_sed_posterior_script | safe }} {{ bokeh_sed_posterior_script | safe }} {% endblock %}
+{% block script %}
+{% for script in bokeh_scripts %}
+    {{script|safe}}
+{% endfor %}
+{% endblock %}
 
 {% load crispy_forms_tags %}
 
@@ -11,7 +15,6 @@
   <h1 class="mb-3">{{transient.name}} </h1>
     <a href="/api/transient/get/{{transient.name}}" role="button" class="btn btn-success">Download data <i class="bi bi-box-arrow-in-down"></i></button></a> <div class="container">
 </div>
-
     <div class="row">
         <div class="col-lg-5">
                 {% include "host/information_card.html" %}

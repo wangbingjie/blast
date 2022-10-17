@@ -30,10 +30,12 @@ from host.photometric_calibration import maggies_to_mJy
 from host.prospector import build_obs  # , build_model
 
 from .models import Aperture
+from .models import SEDFittingResult
+from .models import Transient
+from .models import AperturePhotometry
 
 
 def scale_image(image_data):
-
     transform = AsinhStretch() + PercentileInterval(99.5)
     scaled_data = transform(image_data)
 
@@ -41,7 +43,6 @@ def scale_image(image_data):
 
 
 def plot_image(image_data, figure):
-
     image_data = np.nan_to_num(image_data, nan=0)  # )=np.amin(image_data))
     image_data = image_data + abs(np.amin(image_data)) + 0.1
 
@@ -89,7 +90,6 @@ def plot_aperture(figure, aperture, wcs, plotting_kwargs=None):
 
 
 def plot_image_grid(image_dict, apertures=None):
-
     figures = []
     for survey, image in image_dict.items():
         fig = figure(
@@ -114,9 +114,8 @@ def plot_image_grid(image_dict, apertures=None):
 
 
 def plot_cutout_image(
-    cutout=None, transient=None, global_aperture=None, local_aperture=None
+        cutout=None, transient=None, global_aperture=None, local_aperture=None
 ):
-
     title = cutout.filter if cutout is not None else "No cutout selected"
     fig = figure(
         title=f"{title}",
@@ -154,11 +153,11 @@ def plot_cutout_image(
             plot_position(
                 transient.host, wcs, plotting_kwargs=host_kwargs, plotting_func=fig.x
             )
-        if global_aperture.exists():
-            filter_name = global_aperture[0].cutout.filter.name
+        if global_aperture is not None:
+            filter_name = global_aperture.cutout.filter.name
             plot_aperture(
                 fig,
-                global_aperture[0].sky_aperture,
+                global_aperture.sky_aperture,
                 wcs,
                 plotting_kwargs={
                     "fill_alpha": 0.1,
@@ -167,10 +166,10 @@ def plot_cutout_image(
                 },
             )
 
-        if local_aperture.exists():
+        if local_aperture is not None:
             plot_aperture(
                 fig,
-                local_aperture[0].sky_aperture,
+                local_aperture.sky_aperture,
                 wcs,
                 plotting_kwargs={
                     "fill_alpha": 0.1,
@@ -184,65 +183,65 @@ def plot_cutout_image(
 
     plot_image(image_data, fig)
     script, div = components(fig)
-    return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
+    return {"cutout_bokeh_div": div}, script
 
 
-def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
+def plot_sed(transient, aperture_types=None, sed_results_file=None):
     """
     Plot SED from aperture photometry.
     """
+    bokeh_divs, bokeh_scripts = {}, []
+    for aperture_type in aperture_types:
+        photometry = AperturePhotometry.objects.filter(
+            transient=transient, aperture__type__exact=aperture_type
+        )
 
-    if aperture_photometry.exists():
+        if photometry.exists():
 
-        flux = [measurement.flux for measurement in aperture_photometry]
-        flux_error = [measurement.flux_error for measurement in aperture_photometry]
-        wavelength = [
-            measurement.filter.wavelength_eff_angstrom
-            for measurement in aperture_photometry
-        ]
-    else:
-        flux, flux_error, wavelength = [], [], []
+            flux = [measurement.flux for measurement in photometry]
+            flux_error = [measurement.flux_error for measurement in photometry]
+            wavelength = [
+                measurement.filter.wavelength_eff_angstrom
+                for measurement in photometry
+            ]
+        else:
+            flux, flux_error, wavelength = [], [], []
 
-    flux_error = [0.0 if error is None else error for error in flux_error]
+        flux_error = [0.0 if error is None else error for error in flux_error]
 
-    fig = figure(
-        title="",
-        width=700,
-        height=400,
-        min_border=0,
-        #    toolbar_location=None,
-        x_axis_type="log",
-        x_axis_label="Wavelength [Angstrom]",
-        y_axis_label="Flux",
-    )
+        fig = figure(
+            title="",
+            width=700,
+            height=400,
+            min_border=0,
+            #    toolbar_location=None,
+            x_axis_type="log",
+            x_axis_label="Wavelength [Angstrom]",
+            y_axis_label="Flux",
+        )
 
-    fig = plot_errorbar(fig, wavelength, flux, yerr=flux_error)
+        fig = plot_errorbar(fig, wavelength, flux, yerr=flux_error)
 
-    if sed_results_file is not None:
-        print(sed_results_file)
-        result, obs, model = reader.results_from(sed_results_file, dangerous=False)
+        if sed_results_file is not None:
+            print(sed_results_file)
+            result, obs, model = reader.results_from(sed_results_file, dangerous=False)
 
-        best = result["bestfit"]
-        a = result["obs"]["redshift"] + 1
-        fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
-        if obs["filters"] is not None:
-            pwave = [f.wave_effective for f in obs["filters"]]
-            fig.circle(pwave, maggies_to_mJy(best["photometry"]))
+            best = result["bestfit"]
+            a = result["obs"]["redshift"] + 1
+            fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
+            if obs["filters"] is not None:
+                pwave = [f.wave_effective for f in obs["filters"]]
+                fig.circle(pwave, maggies_to_mJy(best["photometry"]))
 
-    # xaxis = LinearAxis()
-    # figure.add_layout(xaxis, 'below')
+        bokeh_script, bokeh_div = components(fig)
+        bokeh_scripts.append(bokeh_script)
+        bokeh_divs[f"{aperture_type}_sed_posterior_bokeh_div"] = bokeh_div
 
-    # yaxis = LinearAxis()
-    # fig.add_layout(yaxis, 'left')
-
-    # fig.add_layout(Grid(dimension=0, ticker=xaxis.ticker))
-    # fig.add_layout(Grid(dimension=1, ticker=yaxis.ticker))
-    script, div = components(fig)
-    return {f"bokeh_sed_{type}_script": script, f"bokeh_sed_{type}_div": div}
+    return bokeh_divs, bokeh_scripts
 
 
 def plot_errorbar(
-    figure, x, y, xerr=None, yerr=None, color="red", point_kwargs={}, error_kwargs={}
+        figure, x, y, xerr=None, yerr=None, color="red", point_kwargs={}, error_kwargs={}
 ):
     """
     Plot data points with error bars on a bokeh plot
@@ -313,7 +312,6 @@ def plot_pie_chart(data_dict):
 
 
 def plot_timeseries():
-
     fig = figure(
         title="",
         width=700,
@@ -332,7 +330,7 @@ def plot_timeseries():
     }
 
 
-def plot_sed_posterior(posterior_dict: dict) -> dict:
+def plot_sed_posterior_data(posterior_dict: dict) -> dict:
     """
     Generates bokeh plotting components for the SED parameter posteriors.
 
@@ -352,4 +350,38 @@ def plot_sed_posterior(posterior_dict: dict) -> dict:
 
     grid = gridplot(posterior_plots, ncols=2, width=250, height=250)
     script, div = components(grid)
-    return {"script": script, "div": div}
+    return div, script
+
+
+def plot_sed_posterior(transient: Transient, aperture_types=None):
+    """
+    Plot the SED posterior inference for a given transient and aperture type.
+
+    Args:
+        transient: transient to get posterior for,
+        aperture_type: list of aperture types. Default [Local, Global]
+    Returns
+        bokeh div, bokeh script
+    """
+    bokeh_divs, bokeh_scripts = {}, []
+
+    for aperture_type in aperture_types:
+        sed_posterior = SEDFittingResult.objects.filter(
+            transient=transient, aperture__type__exact=aperture_type
+        )
+
+        if sed_posterior.exists():
+            posterior = sed_posterior[0].posterior_samples
+            bokeh_div, bokeh_script = plot_sed_posterior_data(posterior)
+        else:
+            bokeh_div, bokeh_script = None, None
+
+        bokeh_scripts.append(bokeh_script)
+        bokeh_divs[f"{aperture_type}_sed_posterior_bokeh_div"] = bokeh_div
+
+    return bokeh_divs, bokeh_scripts
+
+
+def get_if_exists(query_set):
+    """Returns first element of query set if not empty, None otherwise"""
+    return query_set[0] if query_set.exists() else None

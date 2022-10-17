@@ -20,7 +20,7 @@ from .plotting_utils import plot_pie_chart
 from .plotting_utils import plot_sed
 from .plotting_utils import plot_sed_posterior
 from .plotting_utils import plot_timeseries
-
+from .plotting_utils import get_if_exists
 
 def transient_list(request):
     transients = Transient.objects.all()
@@ -42,7 +42,6 @@ def transient_list(request):
 
 
 def analytics(request):
-
     analytics_results = {}
 
     for aggregate in ["total", "not completed", "completed", "waiting"]:
@@ -71,35 +70,9 @@ def results(request, slug):
     transients = Transient.objects.all()
     transient = transients.get(name__exact=slug)
 
-    bokeh_context = {}
+    sed_posterior_bokeh_div, sed_posterior_bokeh_script = plot_sed_posterior(transient, aperture_types=["local", "global"])
+    sed_bokeh_div, sed_bokeh_script = plot_sed(transient, aperture_types=["local", "global"])
 
-    for aperture_type in ["global", "local"]:
-        aperture = Aperture.objects.filter(
-            type__exact=aperture_type, transient=transient
-        )
-        photometry = AperturePhotometry.objects.filter(
-            transient=transient, aperture__type__exact=aperture_type
-        )
-        sed_posterior = SEDFittingResult.objects.filter(
-            transient=transient, aperture__type__exact=aperture_type
-        )
-
-        if sed_posterior.exists():
-            posterior = sed_posterior[0].posterior_samples
-            bokeh_div, bokeh_script = plot_sed_posterior(posterior)
-            bokeh_context[f"{aperture_type}_sed_posterior_div"] = bokeh_div
-            bokeh_context[f"{aperture_type}_sed_posterior_script"] = bokeh_script
-        else:
-            bokeh_context[f"{aperture_type}_sed_posterior_div"] = None
-            bokeh_context[f"{aperture_type}_sed_posterior_script"] = None
-
-        if photometry.exists():
-            bokeh_sed_local_context = plot_sed(
-                aperture_photometry=photometry, type=aperture_type
-            )
-
-    global_aperture = Aperture.objects.filter(type__exact="global", transient=transient)
-    local_aperture = Aperture.objects.filter(type__exact="local", transient=transient)
     local_aperture_photometry = AperturePhotometry.objects.filter(
         transient=transient, aperture__type__exact="local"
     )
@@ -107,46 +80,15 @@ def results(request, slug):
         transient=transient, aperture__type__exact="global"
     )
 
-    local_sed_obj = SEDFittingResult.objects.filter(
-        transient=transient, aperture__type__exact="local"
-    )
-    global_sed_obj = SEDFittingResult.objects.filter(
-        transient=transient, aperture__type__exact="global"
-    )
-    local_posterior = local_sed_obj[0].posterior_samples
-    bokeh_local_sed_posterior_context = plot_sed_posterior(local_posterior)
+    global_aperture = get_if_exists(Aperture.objects.filter(type__exact="global", transient=transient))
+    local_aperture = get_if_exists(Aperture.objects.filter(type__exact="local", transient=transient))
 
-    global_posterior = global_sed_obj[0].posterior_samples
-    bokeh_global_sed_posterior_context = plot_sed_posterior(global_posterior)
-    # ugly, but effective?
-    local_sed_results, global_sed_results = (), ()
-    for param in ["mass", "sfr", "ssfr", "age", "tau"]:
-        if local_sed_obj.exists():
-            local_sed_results += (
-                (
-                    param,
-                    local_sed_obj[0].__dict__[f"log_{param}_16"],
-                    local_sed_obj[0].__dict__[f"log_{param}_50"],
-                    local_sed_obj[0].__dict__[f"log_{param}_84"],
-                ),
-            )
-        if global_sed_obj.exists():
-            global_sed_results += (
-                (
-                    param,
-                    global_sed_obj[0].__dict__[f"log_{param}_16"],
-                    global_sed_obj[0].__dict__[f"log_{param}_50"],
-                    global_sed_obj[0].__dict__[f"log_{param}_84"],
-                ),
-            )
-    if local_sed_obj.exists():
-        local_sed_file = local_sed_obj[0].posterior.name
-    else:
-        local_sed_file = None
-    if global_sed_obj.exists():
-        global_sed_file = global_sed_obj[0].posterior.name
-    else:
-        global_sed_file = None
+    local_sed_posterior = get_if_exists(SEDFittingResult.objects.filter(
+        transient=transient, aperture__type__exact="local"
+    ))
+    global_sed_posterior = get_if_exists(SEDFittingResult.objects.filter(
+        transient=transient, aperture__type__exact="global"
+    ))
 
     all_cutouts = Cutout.objects.filter(transient__name__exact=slug)
     filters = [cutout.filter.name for cutout in all_cutouts]
@@ -166,53 +108,28 @@ def results(request, slug):
         cutout = None
         form = ImageGetForm(filter_choices=filters)
 
-    bokeh_context = plot_cutout_image(
+    cutout_bokeh_div, cutout_bokeh_script = plot_cutout_image(
         cutout=cutout,
         transient=transient,
         global_aperture=global_aperture,
         local_aperture=local_aperture,
     )
-    bokeh_sed_local_context = plot_sed(
-        aperture_photometry=local_aperture_photometry,
-        type="local",
-        sed_results_file=local_sed_file,
-    )
-    bokeh_sed_global_context = plot_sed(
-        aperture_photometry=global_aperture_photometry,
-        type="global",
-        sed_results_file=global_sed_file,
-    )
 
-    if local_aperture.exists():
-        local_aperture = local_aperture[0]
-    else:
-        local_aperture = None
+    render_context = {}
+    render_context['transient'] = transient
+    render_context['form'] = form
+    render_context['local_aperture_photometry'] = local_aperture_photometry
+    render_context['global_aperture_photometry'] = global_aperture_photometry
+    render_context['local_aperture'] = local_aperture
+    render_context['global_aperture'] = global_aperture
+    render_context['filter_status'] = filter_status
+    render_context['local_sed_results'] = local_sed_posterior
+    render_context['global_sed_results'] = global_sed_posterior
+    render_context['bokeh_scripts'] = sed_bokeh_script + sed_posterior_bokeh_script + [cutout_bokeh_script]
+    render_context['cutout_bokeh_script'] = cutout_bokeh_script
+    render_context = {**render_context, **sed_posterior_bokeh_div, **sed_bokeh_div, **cutout_bokeh_div}
 
-    if global_aperture.exists():
-        global_aperture = global_aperture[0]
-    else:
-        global_aperture = None
-
-    context = {
-        **{
-            "transient": transient,
-            "form": form,
-            "local_aperture_photometry": local_aperture_photometry,
-            "global_aperture_photometry": global_aperture_photometry,
-            "filter_status": filter_status,
-            "local_aperture": local_aperture,
-            "global_aperture": global_aperture,
-            "local_sed_results": local_sed_results,
-            "global_sed_results": global_sed_results,
-        },
-        **bokeh_context,
-        **bokeh_sed_local_context,
-        **bokeh_sed_global_context,
-        **bokeh_local_sed_posterior_context,
-        **bokeh_global_sed_posterior_context,
-    }
-
-    return render(request, "results.html", context)
+    return render(request, "results.html", render_context)
 
 
 def acknowledgements(request):
@@ -221,7 +138,6 @@ def acknowledgements(request):
 
 
 def home(request):
-
     analytics_results = {}
 
     for aggregate in ["total", "not completed", "completed", "waiting"]:
