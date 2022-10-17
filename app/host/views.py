@@ -71,6 +71,31 @@ def results(request, slug):
     transients = Transient.objects.all()
     transient = transients.get(name__exact=slug)
 
+    bokeh_context = {}
+
+    for aperture_type in ["global", "local"]:
+        aperture = Aperture.objects.filter(type__exact=aperture_type, transient=transient)
+        photometry = AperturePhotometry.objects.filter(
+            transient=transient, aperture__type__exact=aperture_type
+        )
+        sed_posterior = SEDFittingResult.objects.filter(
+            transient=transient, aperture__type__exact=aperture_type)
+
+        if sed_posterior.exists():
+            posterior = sed_posterior[0].posterior_samples
+            bokeh_div, bokeh_script = plot_sed_posterior(posterior)
+            bokeh_context[f"{aperture_type}_sed_posterior_div"] = bokeh_div
+            bokeh_context[f"{aperture_type}_sed_posterior_script"] = bokeh_script
+        else:
+            bokeh_context[f"{aperture_type}_sed_posterior_div"] = None
+            bokeh_context[f"{aperture_type}_sed_posterior_script"] = None
+
+        if photometry.exists():
+            bokeh_sed_local_context = plot_sed(aperture_photometry=photometry, type=aperture_type)
+
+
+
+
     global_aperture = Aperture.objects.filter(type__exact="global", transient=transient)
     local_aperture = Aperture.objects.filter(type__exact="local", transient=transient)
     local_aperture_photometry = AperturePhotometry.objects.filter(

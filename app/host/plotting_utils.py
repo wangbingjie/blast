@@ -352,7 +352,4 @@ def plot_sed_posterior(posterior_dict: dict) -> dict:
 
     grid = gridplot(posterior_plots, ncols=2, width=250, height=250)
     script, div = components(grid)
-    return {
-        f"bokeh_sed_posterior_script": script,
-        f"bokeh_sed_posterior_div": div,
-    }
+    return {"script": script, "div": div}
