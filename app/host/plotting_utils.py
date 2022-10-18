@@ -345,7 +345,9 @@ def plot_sed_posterior_data(posterior_dict: dict) -> dict:
     for parameter, posterior in posterior_dict.items():
         lower, med, upper = np.percentile(posterior, [16, 50, 85])
         hist, edges = np.histogram(posterior, density=True, bins=50)
-        plot = figure(title=f"{round(med,3)}^{{+{round(upper-lower,3)}}}_{{{round(lower-med,3)}}}")
+        plot = figure(
+            title=f"{round(med,3)}^{{+{round(upper-lower,3)}}}_{{{round(lower-med,3)}}}"
+        )
         plot.yaxis.visible = False
         plot.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:])
         plot.xaxis.axis_label = parameter
