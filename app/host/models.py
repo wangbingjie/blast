@@ -4,6 +4,7 @@ backend.
 """
 from os.path import exists
 
+import h5py
 import numpy as np
 import pandas as pd
 import prospect.io.read_results as reader
@@ -436,6 +437,13 @@ class SEDFittingResult(models.Model):
         transient_name = self.transient.name
         root = settings.SED_OUTPUT_ROOT
         return f"{root}/{transient_name}/{transient_name}_{self.aperture.type}.h5"
+
+    def save_asset(self, posterior, predictive) -> None:
+
+        with h5py.File(self.file_path, "w") as f:
+            dset = f.create_dataset("mydataset", (100,), dtype='i')
+
+
 
 
 class TaskRegisterSnapshot(models.Model):
