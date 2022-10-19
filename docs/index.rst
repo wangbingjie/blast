@@ -30,9 +30,10 @@ Usage
    :maxdepth: 2
    :caption: Usage
 
-   web_pages
-   web_api
-   batch
+   usage/web_pages
+   usage/web_api
+   usage/batch
+
 
 Developer Guide
 ---------------
@@ -41,16 +42,16 @@ Developer Guide
    :maxdepth: 2
    :caption: Developer Guide
 
-   dev_getting_started
-   dev_running_blast
-   dev_system_pages
-   dev_workflow
-   dev_overview_of_repo
-   dev_github_issues
-   dev_documentation
-   dev_task_runner
-   dev_installing_packages
-   dev_faqs
+   developer_guide/dev_getting_started
+   developer_guide/dev_running_blast
+   developer_guide/dev_system_pages
+   developer_guide/dev_workflow
+   developer_guide/dev_overview_of_repo
+   developer_guide/dev_github_issues
+   developer_guide/dev_documentation
+   developer_guide/dev_task_runner
+   developer_guide/dev_installing_packages
+   developer_guide/dev_faqs
 
 
 Code API
@@ -74,5 +75,5 @@ Acknowledgements
    :maxdepth: 2
    :caption: Acknowledgements
 
-   software
-   contributors
+   acknowledgements/software
+   acknowledgements/contributors
