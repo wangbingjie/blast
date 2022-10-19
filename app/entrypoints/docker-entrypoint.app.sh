@@ -8,4 +8,5 @@ python manage.py collectstatic &&
 bash entrypoints/load_initial_data.sh &&
 ./manage.py shell < entrypoints/setup_initial_periodic_tasks.py &&
 bash entrypoints/load_example_data.sh &&
+python manage.py shell < entrypoints/initialize_dustmaps.py &&
 gunicorn app.wsgi:application --bind 0.0.0.0:${WEB_APP_PORT}
