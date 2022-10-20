@@ -30,7 +30,9 @@ def ghost(transient_position, output_dir=""):
     if len(host_data) == 0:
         host_position, host_name = None, None
     else:
-        host_position = SkyCoord(ra=host_data["raMean"][0], dec=host_data["decMean"][0], unit='deg')
+        host_position = SkyCoord(
+            ra=host_data["raMean"][0], dec=host_data["decMean"][0], unit="deg"
+        )
         host_name = host_data["objName"][0]
 
     return {"host_position": host_position, "host_name": host_name}
