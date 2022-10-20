@@ -5,10 +5,10 @@
 #
 #
 #Coosys	J2000:	eq_FK5 J2000
-#INFO	version=7.294	
-#INFO	-ref=VIZ63518c3821d955	
-#INFO	-out.max=1000	
-#INFO	queryParameters=27	
+#INFO	version=7.294
+#INFO	-ref=VIZ63518c3821d955
+#INFO	-out.max=1000
+#INFO	queryParameters=27
 #-oc.form=dec
 #-out.max=1000
 #-out.all=2
@@ -37,7 +37,7 @@
 #-out=SimbadName
 #-source=J/ApJ/867/108
 #
-#INFO	CatalogsExamined=2	
+#INFO	CatalogsExamined=2
 #  2 catalogues with potential matches were examined.
 #
 
