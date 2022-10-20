@@ -441,9 +441,7 @@ class SEDFittingResult(models.Model):
     def save_asset(self, posterior, predictive) -> None:
 
         with h5py.File(self.file_path, "w") as f:
-            dset = f.create_dataset("mydataset", (100,), dtype='i')
-
-
+            dset = f.create_dataset("mydataset", (100,), dtype="i")
 
 
 class TaskRegisterSnapshot(models.Model):
