@@ -47,8 +47,12 @@ for match in matches:
     host_ra_deg.append(match["host_position"].ra.deg)
     host_dec_deg.append(match["host_position"].dec.deg)
 
-    predicted_host_ra_deg.append(match["predicted_host_position"].ra.deg)
-    predicted_host_dec_deg.append(match["predicted_host_position"].dec.deg)
+    if match["predicted_host_position"] is not None:
+        predicted_host_ra_deg.append(match["predicted_host_position"].ra.deg)
+        predicted_host_dec_deg.append(match["predicted_host_position"].dec.deg)
+    else:
+        predicted_host_ra_deg.append(None)
+        predicted_host_dec_deg.append(None)
 
 results = {
     "transient_ra_deg": transient_ra_deg,

@@ -5,9 +5,10 @@ services:
     extends:
       file: ../docker/docker-compose.blast_base.yml
       service: blast_latest
+    working_dir: /
     volumes:
       - ./validation_data:/validation_data
       - ./validation_results/:/validation_results/
       - ./validation_plots:/validation_plots/
       - ./validation_scripts:/validation_scripts/
-    command: python ../validation_scripts/validate_matching.py
+    command: python validation_scripts/validate_matching.py
