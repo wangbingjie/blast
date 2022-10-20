@@ -1,7 +1,11 @@
 import pandas as pd
 from astropy.coordinates import SkyCoord
 from astropy import units as u
+import sys
 
+sys.path.append("app/host")
+
+from matching import ghost
 
 validation_data = pd.read_csv("../validation_data/jones+2018.tsv", skiprows=list(range(96)) + [97, 98], sep="|")
 
@@ -21,9 +25,10 @@ for _, match in validation_data.iterrows():
     matches.append(current_match)
 
 
-for match in matches:
-    predicted_host_position = match['transient_position']
-    match['predicted_host_position'] = predicted_host_position
+for num, match in enumerate(matches):
+    print(f"Matching {num} of {len(matches)} transients")
+    host_data = ghost(match['transient_position'])
+    match['predicted_host_position'] = host_data['host_position']
 
 
 transient_ra_deg, transient_dec_deg = [], []
