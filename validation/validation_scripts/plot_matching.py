@@ -46,4 +46,12 @@ plt.xlabel("GHOST - Jones+2018 Host Galaxy offset")
 plt.xscale('log')
 plt.ylabel("Count")
 plt.savefig('validation_plots/ghost_host_sep_distribution.png')
+plt.clf()
+
+plt.scatter(seps, seps / seps_sma,s=1.0)
+plt.xlabel("GHOST - Jones2018 Host Galaxy offset [arcsec]")
+plt.ylabel("host semi major axis [arsec]")
+plt.xscale('log')
+plt.yscale('log')
+plt.savefig('validation_plots/ghost_host_sep_arsec_vs_sma.png')
 
