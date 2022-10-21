@@ -11,5 +11,5 @@ services:
       - ./validation_results/:/validation_results/
       - ./validation_plots:/validation_plots/
       - ./validation_scripts:/validation_scripts/
-    command: python validation_scripts/plot_matching.py
+    command: python validation_scripts/plot_cutouts_matching.py
 
