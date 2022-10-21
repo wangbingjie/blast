@@ -3,6 +3,8 @@ import sys
 import pandas as pd
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+import matplotlib.pyplot as plt
+
 
 sys.path.append("app/host")
 
@@ -21,7 +23,7 @@ for _, match in validation_data.iterrows():
         ra=transient_ra, dec=transient_dec, unit=(u.hourangle, u.deg)
     )
 
-    host_ra, host_dec = match["RAJ2000"], match["DEJ2000"]
+    host_ra, host_dec = match["RAH"], match["DEH"]
     host_position = SkyCoord(ra=host_ra, dec=host_dec, unit=(u.hourangle, u.deg))
 
     current_match = {}
@@ -63,6 +65,11 @@ results = {
     "predicted_host_dec_deg": predicted_host_dec_deg,
 }
 
-pd.DataFrame(results).to_csv(
+results = pd.DataFrame(results)
+results.to_csv(
     "validation_results/matching_ghost_jones+2018.csv", index=False
 )
+
+
+
+
