@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from astropy.coordinates import SkyCoord
 import numpy as np
+import sys
+
 
 seps = []
 seps_sma = []
@@ -54,4 +56,5 @@ plt.ylabel("host semi major axis [arsec]")
 plt.xscale('log')
 plt.yscale('log')
 plt.savefig('validation_plots/ghost_host_sep_arsec_vs_sma.png')
+plt.clf()
 
