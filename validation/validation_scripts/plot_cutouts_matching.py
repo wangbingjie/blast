@@ -17,9 +17,9 @@ results = pd.read_csv('validation_results/matching_ghost_jones+2018.csv')
 
 n = 6
 m = 45
-fig, axs = plt.subplots(m, n, figsize=(20, 252))
+fig, axs = plt.subplots(m, n, figsize=(20, 20*45/6))
 
-for (_, match), ax in zip(list(results.iterrows())[:12], axs.reshape(-1)[:12]):
+for (_, match), ax in zip(list(results.iterrows()), axs.reshape(-1)):
     pred_ra, pred_dec = match['predicted_host_ra_deg'], match['predicted_host_dec_deg']
     actual_ra, actual_dec = match['host_ra_deg'], match['host_dec_deg']
     transient_ra, transient_dec = match['transient_ra_deg'], match['transient_dec_deg']
@@ -40,6 +40,7 @@ for (_, match), ax in zip(list(results.iterrows())[:12], axs.reshape(-1)[:12]):
 
     wcs = WCS(image[0].header)
     ax.imshow(image_data, cmap='Greys', origin='lower')
+    image.close()
 
     sn_x, sn_y = transient_position.to_pixel(wcs)
     ghost_x, ghost_y = ghost_position.to_pixel(wcs)
@@ -49,9 +50,13 @@ for (_, match), ax in zip(list(results.iterrows())[:12], axs.reshape(-1)[:12]):
     ax.scatter(ghost_x, ghost_y, label='GHOST', s=200, facecolors='none', edgecolors='r')
     ax.scatter(jones_x, jones_y, facecolors='none', edgecolors='b', marker="^")
 
-    ax.set_title(transient_name)
+    ax.text(0.05, 0.95, transient_name, horizontalalignment='left',
+         verticalalignment='top', transform=ax.transAxes, backgroundcolor="white")
+
+    #ax.set_title(transient_name)
     ax.xaxis.set_ticks([])
     ax.yaxis.set_ticks([])
 
+plt.subplots_adjust(wspace=-0.5, hspace=-0.5)
 plt.tight_layout()
 plt.savefig("validation_plots/GHOST_jones18_match_mosaic.pdf", dpi=150)
