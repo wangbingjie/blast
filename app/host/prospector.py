@@ -85,11 +85,13 @@ def build_obs(transient, aperture_type):
         elif aperture_type == "local":
             mwebv = transient.milkyway_dust_reddening
         else:
-            raise ValueError(f"aperture_type must be 'global' or 'local', currently set to {aperture_type}")
+            raise ValueError(
+                f"aperture_type must be 'global' or 'local', currently set to {aperture_type}"
+            )
         wave_eff = filter.transmission_curve().wave_effective
-        ext_corr = extinction.fitzpatrick99(wave_eff,mwebv*3.1,r_v=3.1)
-        flux_mwcorr = datapoint.flux*10**(0.4*ext_corr)
-        
+        ext_corr = extinction.fitzpatrick99(wave_eff, mwebv * 3.1, r_v=3.1)
+        flux_mwcorr = datapoint.flux * 10 ** (0.4 * ext_corr)
+
         filters.append(filter.transmission_curve())
         flux_maggies.append(mJy_to_maggies(flux_mwcorr))
         flux_maggies_error.append(mJy_to_maggies(datapoint.flux_error))
