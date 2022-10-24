@@ -7,6 +7,7 @@ from collections import namedtuple
 import astropy.units as u
 import numpy as np
 import yaml
+import extinction
 from astropy.convolution import Gaussian2DKernel
 from astropy.coordinates import SkyCoord
 from astropy.stats import gaussian_fwhm_to_sigma
@@ -187,6 +188,9 @@ def do_aperture_photometry(image, sky_aperture, filter):
     if magnitude != magnitude:
         magnitude, magnitude_error = 0, 0
 
+    wave_eff = filter.transmission_curve().wave_effective
+
+    
     return {
         "flux": flux,
         "flux_error": flux_error,
