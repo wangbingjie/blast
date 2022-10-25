@@ -305,7 +305,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
         self._overwrite_or_create_object(Aperture, query, data)
         aperture = Aperture.objects.get(**query)
         cutouts = Cutout.objects.filter(transient=transient)
-
+        
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
 
@@ -314,23 +314,24 @@ class LocalAperturePhotometry(TransientTaskRunner):
                     image, aperture.sky_aperture, cutout.filter
                 )
 
-                query = {
-                    "aperture": aperture,
-                    "transient": transient,
-                    "filter": cutout.filter,
-                }
+                if photometry["flux"] is not None:
+                    query = {
+                        "aperture": aperture,
+                        "transient": transient,
+                        "filter": cutout.filter,
+                    }
 
-                data = {
-                    "aperture": aperture,
-                    "transient": transient,
-                    "filter": cutout.filter,
-                    "flux": photometry["flux"],
-                    "flux_error": photometry["flux_error"],
-                    "magnitude": photometry["magnitude"],
-                    "magnitude_error": photometry["magnitude_error"],
-                }
+                    data = {
+                        "aperture": aperture,
+                        "transient": transient,
+                        "filter": cutout.filter,
+                        "flux": photometry["flux"],
+                        "flux_error": photometry["flux_error"],
+                        "magnitude": photometry["magnitude"],
+                        "magnitude_error": photometry["magnitude_error"],
+                    }
 
-                self._overwrite_or_create_object(AperturePhotometry, query, data)
+                    self._overwrite_or_create_object(AperturePhotometry, query, data)
             except Exception as e:
                 raise
         return "processed"
@@ -445,7 +446,9 @@ class HostInformation(TransientTaskRunner):
         """Code goes here"""
 
         host = transient.host
-
+        if host is None:
+            return "no host"
+        
         galaxy_ned_data = query_ned(host.sky_coord)
         galaxy_sdss_data = query_sdss(host.sky_coord)
 
