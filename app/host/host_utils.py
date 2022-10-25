@@ -260,7 +260,10 @@ def estimate_background(image):
     """
     image_data = image[0].data
     box_size = int(0.1 * np.sqrt(image_data.size))
-    return Background2D(image_data, box_size=box_size)
+    try:
+        return Background2D(image_data, box_size=box_size)
+    except ValueError:
+        return Background2D(image_data, box_size=box_size, exclude_percentile=30)
 
 
 def construct_aperture(image, position):
