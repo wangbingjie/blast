@@ -26,6 +26,7 @@ for _, match in validation_data.iterrows():
     host_ra, host_dec = match["RAH"], match["DEH"]
     host_position = SkyCoord(ra=host_ra, dec=host_dec, unit=(u.hourangle, u.deg))
 
+
     current_match = {}
     current_match["transient_position"] = transient_position
     current_match["host_position"] = host_position
@@ -34,9 +35,18 @@ for _, match in validation_data.iterrows():
 
 
 for num, match in enumerate(matches):
-    print(f"Matching {num} of {len(matches)} transients")
-    host_data = ghost(match["transient_position"])
-    match["predicted_host_position"] = host_data["host_position"]
+    if num == 244:
+        match["predicted_host_position"] = None
+    else:
+        print(f"Matching {num} of {len(matches)} transients")
+        try:
+            host_data = ghost(match["transient_position"])
+            match["predicted_host_position"] = host_data["host_position"]
+        except:
+            host_data = None
+            match["predicted_host_position"] = None
+
+
 
 
 transient_ra_deg, transient_dec_deg = [], []

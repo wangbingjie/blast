@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from astropy.coordinates import SkyCoord
 import numpy as np
-import sys
 
 
 seps = []
@@ -29,25 +28,27 @@ seps_sma = np.array(seps_sma)
 seps = seps[np.logical_not(np.isnan(seps))]
 seps_sma = seps_sma[np.logical_not(np.isnan(seps_sma))]
 
+hist, bins = np.histogram(seps, bins=50)
+logbins = np.logspace(np.log10(bins[0]), np.log10(bins[-1]),len(bins))
+plt.hist(seps, bins=logbins, color="silver")
+#plt.hist(seps_sma, bins=logbins, label='host semi major axis')
 
 
-hist, bins = np.histogram(seps, bins=30)
-logbins = np.logspace(np.log10(bins[0]),np.log10(bins[-1]),len(bins))
-plt.hist(seps, bins=logbins, label='arcsec', histtype="step")
-plt.hist(seps_sma, bins=logbins, label='host semi major axis')
+#thresh_seps = np.percentile(seps, 95)
+#thresh_seps_sma = np.percentile(seps_sma, 95)
+
+#plt.axvline(x=thresh_seps, c='tab:blue')
+plt.axvline(x=2.0, c='black')
+plt.text(0.3, 32, r"$\leftarrow$ consistent", fontsize=12)
 
 
-thresh_seps = np.percentile(seps, 95)
-thresh_seps_sma = np.percentile(seps_sma, 95)
 
-plt.axvline(x=thresh_seps, c='tab:blue')
-plt.axvline(x=thresh_seps_sma, c='tab:orange')
 
-plt.legend()
-plt.xlabel("GHOST - Jones+2018 Host Galaxy offset")
+
+plt.xlabel(r"GHOST - Jones+18 Host Galaxy offset [arcseconds]", fontsize=12)
 plt.xscale('log')
-plt.ylabel("Count")
-plt.savefig('validation_plots/ghost_host_sep_distribution.png')
+plt.ylabel(r"Number of host associations", fontsize=12)
+plt.savefig('validation_plots/ghost_host_sep_distribution.png', bbox_inches='tight', dpi=250)
 plt.clf()
 
 plt.scatter(seps, seps / seps_sma,s=1.0)

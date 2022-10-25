@@ -3,7 +3,7 @@ from astro_ghost.ghostHelperFunctions import getTransientHosts
 from astropy.coordinates import SkyCoord
 
 
-def ghost(transient_position, output_dir=""):
+def ghost(transient_position, output_dir="."):
     """
     Finds the information about the host galaxy given the position of the supernova.
     Parameters
@@ -23,9 +23,7 @@ def ghost(transient_position, output_dir=""):
         snName=["name"],
         verbose=1,
         savepath=output_dir,
-        starcut="gentle",
-        # ascentMatch=False,
-    )
+        starcut="gentle")
 
     if len(host_data) == 0:
         host_position, host_name = None, None
