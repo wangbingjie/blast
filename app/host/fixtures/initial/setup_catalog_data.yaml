@@ -24,7 +24,7 @@
     dec_column: DEJ2000
 - model: host.Catalog
   fields:
-    name: PanSTARRS_DR1
+    name: PanSTARRS_DR2
     survey: [PanSTARRS]
     vizier_id: II/349
     id_column: objID
