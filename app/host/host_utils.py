@@ -186,7 +186,9 @@ def do_aperture_photometry(image, sky_aperture, filter):
     magnitude = flux_to_mag(uncalibrated_flux, zpt)
     magnitude_error = fluxerr_to_magerr(uncalibrated_flux, uncalibrated_flux_err)
     if magnitude != magnitude:
-        magnitude, magnitude_error = 0, 0
+        magnitude, magnitude_error = None,None
+    if flux != flux or flux_error != flux_error:
+        flux,flux_error = None,None
 
     wave_eff = filter.transmission_curve().wave_effective
 
@@ -263,7 +265,7 @@ def estimate_background(image):
     try:
         return Background2D(image_data, box_size=box_size)
     except ValueError:
-        return Background2D(image_data, box_size=box_size, exclude_percentile=30)
+        return Background2D(image_data, box_size=box_size, exclude_percentile=50)
 
 
 def construct_aperture(image, position):
