@@ -288,6 +288,22 @@
     kcorrect_name: 'sdss_z0'
 - model: host.Filter
   fields:
+    name: SDSS_g
+    survey: [SDSS]
+    sedpy_id: sdss_g
+    hips_id: CDS/P/SDSS9/g
+    pixel_size_arcsec: 0.29296875
+    vosa_id: SLOAN/SDSS.g
+    image_download_method: hips
+    wavelength_eff_angstrom: 4671.78
+    wavelength_min_angstrom: 3797.64
+    wavelength_max_angstrom: 5553.04
+    vega_zero_point_jansky: 4023.57
+    magnitude_zero_point: 22.5
+    image_pixel_units: 'counts/sec'
+    kcorrect_name: 'sdss_g0'
+- model: host.Filter
+  fields:
     name: DES_g
     survey: [DES]
     sedpy_id: des_g
