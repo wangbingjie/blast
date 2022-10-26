@@ -73,10 +73,10 @@ def results(request, slug):
     global_aperture = Aperture.objects.filter(type__exact="global", transient=transient)
     local_aperture = Aperture.objects.filter(type__exact="local", transient=transient)
     local_aperture_photometry = AperturePhotometry.objects.filter(
-        transient=transient, aperture__type__exact="local"
+        transient=transient, aperture__type__exact="local", flux__isnull=False
     )
     global_aperture_photometry = AperturePhotometry.objects.filter(
-        transient=transient, aperture__type__exact="global"
+        transient=transient, aperture__type__exact="global", flux__isnull=False
     )
 
     local_sed_obj = SEDFittingResult.objects.filter(
