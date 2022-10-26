@@ -64,6 +64,19 @@
                             <i class="bi-github" role="img" aria-label="GitHub"></i>
                         </a>
                     </li>
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/"> {{ user.username }} </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-light btn-sm"  type="button"  href="/accounts/logout"> Logout </a>
+                            </li>
+                    {% else %}
+                    <li class="nav-item">
+                            <a class="btn btn-light btn-sm "  type="button" href="/accounts/login"> Login </a>
+                            </li>
+                    {% endif %}
+
                 </ul>
             </div>
         </div>
