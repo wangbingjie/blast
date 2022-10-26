@@ -1,6 +1,7 @@
 import os
 
 from django.urls import path
+
 from . import views
 
 base_path = os.environ.get("BASE_PATH", "").strip("/")
