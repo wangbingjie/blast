@@ -66,7 +66,7 @@ def survey_list(survey_metadata_path):
     return survey_list
 
 
-def build_source_catalog(image, background, threshhold_sigma=1.0, npixels=10):
+def build_source_catalog(image, background, threshhold_sigma=3.0, npixels=10):
     """
     Constructs a source catalog given an image and background estimation
     Parameters

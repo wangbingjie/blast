@@ -314,24 +314,23 @@ class LocalAperturePhotometry(TransientTaskRunner):
                     image, aperture.sky_aperture, cutout.filter
                 )
 
-                if photometry["flux"] is not None:
-                    query = {
-                        "aperture": aperture,
-                        "transient": transient,
-                        "filter": cutout.filter,
-                    }
+                query = {
+                    "aperture": aperture,
+                    "transient": transient,
+                    "filter": cutout.filter,
+                }
 
-                    data = {
-                        "aperture": aperture,
-                        "transient": transient,
-                        "filter": cutout.filter,
-                        "flux": photometry["flux"],
-                        "flux_error": photometry["flux_error"],
-                        "magnitude": photometry["magnitude"],
-                        "magnitude_error": photometry["magnitude_error"],
-                    }
+                data = {
+                    "aperture": aperture,
+                    "transient": transient,
+                    "filter": cutout.filter,
+                    "flux": photometry["flux"],
+                    "flux_error": photometry["flux_error"],
+                    "magnitude": photometry["magnitude"],
+                    "magnitude_error": photometry["magnitude_error"],
+                }
 
-                    self._overwrite_or_create_object(AperturePhotometry, query, data)
+                self._overwrite_or_create_object(AperturePhotometry, query, data)
             except Exception as e:
                 raise
         return "processed"
