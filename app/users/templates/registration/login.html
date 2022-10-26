@@ -1,0 +1,16 @@
+{% extends 'host/base.html' %}
+
+{% block body %}
+
+<div class="h-100 d-flex align-items-center justify-content-center">
+
+<h2>Login</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Login">
+</form>
+</div>
+
+{% endblock %}
