@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "revproxy",
     "rest_framework",
     "api",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -164,3 +165,7 @@ REST_FRAMEWORK = {
         f'rest_framework.permissions.{os.environ.get("API_AUTHENTICATION")}',
     ]
 }
+
+
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
