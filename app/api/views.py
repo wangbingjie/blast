@@ -6,6 +6,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import FileUploadParser, JSONParser
+from rest_framework.decorators import parser_classes
+import pandas as pd
 
 from . import datamodel
 from .components import data_model_components
@@ -87,3 +90,9 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
         {"message": f"transient successfully posted: {data_string}"},
         status=status.HTTP_201_CREATED,
     )
+
+@api_view(["POST"])
+@parser_classes([JSONParser])
+def upload_transient_data(request):
+    print(request.data)
+    return Response(request.data["transient_name"], status=status.HTTP_201_CREATED)
