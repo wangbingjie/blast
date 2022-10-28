@@ -3,7 +3,6 @@ from django.test import TestCase
 
 
 class SerializerValidationTest(TestCase):
-<<<<<<< HEAD
     def test_ra_validation(self):
         serializer_objs = [serializers.TransientSerializer(),
                        serializers.HostSerializer(),
@@ -13,20 +12,6 @@ class SerializerValidationTest(TestCase):
             serial = serializer
             value = serial.validate_ra_deg(120.0)
             self.assertTrue(value == 120.0)
-=======
-    def test_transient_name_validation(self):
-        transient_data = {
-            "transient_name": "2010h",
-            "transient_ra_deg": 121.6015,
-            "transient_dec_deg": 1.03586,
-            "transient_public_timestamp": "2010-01-16T00:00:00Z",
-            "transient_redshift": None,
-            "transient_milkyway_dust_reddening": None,
-            "transient_spectroscopic_class": "SN 1a",
-            "transient_photometric_class": None,
-            "transient_processing_status": "processing",
-        }
->>>>>>> 2b6fddd449e812785b0c42da961652a8a3a60b29
 
             with self.assertRaises(Exception):
                 serial.validate_ra_deg("120.0")
