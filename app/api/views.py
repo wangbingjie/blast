@@ -97,9 +97,6 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
 @parser_classes([JSONParser])
 def upload_transient_data(request):
 
-
-
-
     transient_name = request.data["transient_name"]
     transient_ra = request.data["transient_ra_deg"]
 

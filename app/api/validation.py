@@ -57,11 +57,12 @@ def science_payload_valid(science_payload: dict, datamodel) -> bool:
     for compoment in datamodel:
         column_names = [name for name in column_names if compoment.prefix in name]
         record_names = [name.replace(compoment.prefix, "") for name in column_names]
-        data = {record: science_payload[column] for column, record in zip(column_names, record_names)}
+        data = {
+            record: science_payload[column]
+            for column, record in zip(column_names, record_names)
+        }
 
         if not compoment.serializer(data=data).is_valid():
             return False
 
     return True
-
-
