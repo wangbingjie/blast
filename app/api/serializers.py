@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from host import models
 from rest_framework import serializers
-
+import datetime
 
 class CutoutField(serializers.RelatedField):
     def to_representation(self, value):
@@ -23,6 +23,53 @@ class TransientSerializer(serializers.ModelSerializer):
             "photometric_class",
             "processing_status",
         ]
+    def validate_name(self, value):
+        """
+        Check that the name is a string
+        """
+        if type(value) != str:
+            raise serializers.ValidationError("Transient name is not a string")
+        return value
+
+    def validate_ra_deg(self, value):
+        """
+        Check that ra is valid
+        """
+        if type(value) != float:
+            raise serializers.ValidationError("Transient ra is not a float")
+        if value < 0.0 or value > 360.0:
+            raise serializers.ValidationError("Transient ra is not between 0 and 360 degrees")
+        return value
+
+    def validate_dec_deg(self, value):
+        """
+        Check that dec is valid
+        """
+        if type(value) != float:
+            raise serializers.ValidationError("Transient dec is not a float")
+        if value < -90.0 or value > 90.0:
+            raise serializers.ValidationError("Transient dec is not between -90 and 90 degrees")
+        return value
+
+    def validate_public_timestamp(self, value):
+        """
+        Check if public time stamp is valid
+        """
+        if type(value) != str:
+            raise serializers.ValidationError("Transient public timestamp is not a string")
+
+        try:
+            format_string = '%Y-%m-%dT%H:%M:%S.%f%z'
+            datetime.datetime.strptime(value, format_string)
+        except ValueError:
+            raise serializers.ValidationError("Transient public timestamp is not in iso UTC format e.g. 2014-01-01T00:00:00.588Z")
+
+        return value
+
+
+
+
+
 
 
 class HostSerializer(serializers.ModelSerializer):

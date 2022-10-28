@@ -290,7 +290,7 @@ def update_status(task_status, updated_status):
     task_status.save()
 
 
-def initialise_all_tasks_status(transient):
+def initialise_all_tasks_status(transient, status_message="not processed"):
     """
     Set all available tasks for a transient to not processed.
 
@@ -301,7 +301,7 @@ def initialise_all_tasks_status(transient):
         None: Saves the new updates to the backend.
     """
     tasks = Task.objects.all()
-    not_processed = Status.objects.get(message__exact="not processed")
+    not_processed = Status.objects.get(message__exact=status_message)
 
     for task in tasks:
         task_status = TaskRegister(task=task, transient=transient)
