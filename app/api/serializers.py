@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from host import models
 from rest_framework import serializers
-import datetime
+import api.validation as validation
 
 class CutoutField(serializers.RelatedField):
     def to_representation(self, value):
@@ -23,39 +23,50 @@ class TransientSerializer(serializers.ModelSerializer):
             "photometric_class",
             "processing_status",
         ]
-    def validate_name(self, value):
-        """
-        Check that the name is a string
-        """
-        if type(value) != str:
-            raise serializers.ValidationError("Transient name is not a string")
-        return value
 
     def validate_ra_deg(self, value):
         """
         Check that ra is valid
         """
-        if type(value) != float:
-            raise serializers.ValidationError("Transient ra is not a float")
-        if value < 0.0 or value > 360.0:
-            raise serializers.ValidationError("Transient ra is not between 0 and 360 degrees")
-        return value
+        if validation.ra_deg_valid(value):
+            return value
+        else:
+            raise serializers.ValidationError("Transient RA is not valid")
+
 
     def validate_dec_deg(self, value):
         """
         Check that dec is valid
         """
-        if type(value) != float:
-            raise serializers.ValidationError("Transient dec is not a float")
-        if value < -90.0 or value > 90.0:
-            raise serializers.ValidationError("Transient dec is not between -90 and 90 degrees")
-        return value
+        if validation.dec_deg_valid(value):
+            return value
+        else:
+            raise serializers.ValidationError("Transient DEC is not valid")
 
 
 class HostSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Host
         fields = ["name", "ra_deg", "dec_deg", "redshift", "milkyway_dust_reddening"]
+
+    def validate_ra_deg(self, value):
+        """
+        Check that ra is valid
+        """
+        if validation.ra_deg_valid(value):
+            return value
+        else:
+            raise serializers.ValidationError("Host RA is not valid")
+
+
+    def validate_dec_deg(self, value):
+        """
+        Check that dec is valid
+        """
+        if validation.dec_deg_valid(value):
+            return value
+        else:
+            raise serializers.ValidationError("Host DEC is not valid")
 
 
 class ApertureSerializer(serializers.ModelSerializer):
@@ -71,6 +82,25 @@ class ApertureSerializer(serializers.ModelSerializer):
             "semi_minor_axis_arcsec",
             "cutout",
         ]
+
+    def validate_ra_deg(self, value):
+        """
+        Check that ra is valid
+        """
+        if validation.ra_deg_valid(value):
+            return value
+        else:
+            raise serializers.ValidationError("Aperture RA is not valid")
+
+
+    def validate_dec_deg(self, value):
+        """
+        Check that dec is valid
+        """
+        if validation.dec_deg_valid(value):
+            return value
+        else:
+            raise serializers.ValidationError("Aperture DEC is not valid")
 
 
 class AperturePhotometrySerializer(serializers.ModelSerializer):
