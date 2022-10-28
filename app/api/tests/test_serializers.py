@@ -4,9 +4,11 @@ from django.test import TestCase
 
 class SerializerValidationTest(TestCase):
     def test_ra_validation(self):
-        serializer_objs = [serializers.TransientSerializer(),
-                       serializers.HostSerializer(),
-                       serializers.ApertureSerializer()]
+        serializer_objs = [
+            serializers.TransientSerializer(),
+            serializers.HostSerializer(),
+            serializers.ApertureSerializer(),
+        ]
 
         for serializer in serializer_objs:
             serial = serializer
@@ -26,9 +28,11 @@ class SerializerValidationTest(TestCase):
                 serial.validate_ra_deg(None)
 
     def test_dec_validation(self):
-        serializer_objs = [serializers.TransientSerializer(),
-                           serializers.HostSerializer(),
-                           serializers.ApertureSerializer()]
+        serializer_objs = [
+            serializers.TransientSerializer(),
+            serializers.HostSerializer(),
+            serializers.ApertureSerializer(),
+        ]
 
         for serializer in serializer_objs:
             serial = serializer
@@ -85,7 +89,7 @@ class SerializerValidationTest(TestCase):
             "milkyway_dust_reddening": None,
             "spectroscopic_class": "SN 1a",
             "photometric_class": None,
-            "processing_status": "processing"
+            "processing_status": "processing",
         }
         serial = serializers.TransientSerializer(data=transient_data_bad)
         self.assertTrue(serial.is_valid() is False)
