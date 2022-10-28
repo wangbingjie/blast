@@ -57,6 +57,18 @@ def serialize_blast_science_data(datamodel: List[DataModelComponent]) -> dict:
         science_payload = {**science_payload, **object_dict}
     return science_payload
 
+def deserialize_blast_science_data(science_payload: dict, datamodel: List[DataModelComponent]) -> None:
+    """
+    Deserializes blast science payload to be saved to the database
+
+    parameters:
+        science_payload: blast science payload
+        datamodel: datamodel used to construct the blast science payload.
+    returns:
+        None, saves the blast science payload to the database
+    """
+    pass
+
 
 def unpack_component_groups(
     component_groups: List[List[DataModelComponent]],
