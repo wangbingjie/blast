@@ -57,34 +57,34 @@ class SerializerValidationTest(TestCase):
         with self.assertRaises(Exception):
             serial.validate_dec_deg(None)
 
-    def test_public_timestamp_validation(self):
-        serial = serializers.TransientSerializer()
-        value = serial.validate_public_timestamp("2014-01-01T00:00:00.588Z")
-        self.assertTrue(value == "2014-01-01T00:00:00.588Z")
-
-        with self.assertRaises(Exception):
-            serial.validate_public_timestamp(-10000.0)
-
-        with self.assertRaises(Exception):
-            serial.validate_public_timestamp("2014-01-01T00:00:00.588")
-
-
     def test_full_validation(self):
         transient_data = {
-            "name": "2010h",
+            "name": "2010-01-16T00:00:00Z",
             "ra_deg": 121.6015,
             "dec_deg": 1.03586,
             "public_timestamp": "2010-01-16T00:00:00Z",
-            #"transient_redshift": None,
-            #"transient_milkyway_dust_reddening": None,
-            #"transient_spectroscopic_class": "SN 1a",
-            #"transient_photometric_class": None,
-            #"transient_processing_status": "processing"
+             "redshift": None,
+             "milkyway_dust_reddening": None,
+            "spectroscopic_class": "SN 1a",
+            "photometric_class": None,
+            "processing_status": "processing"
         }
         serial = serializers.TransientSerializer(data=transient_data)
-        print(serial.is_valid())
-        print(serial.errors)
+        self.assertTrue(serial.is_valid())
 
+        transient_data_bad = {
+            "name": "2010-01-16T00:00:00Z",
+            "ra_deg": 121.6015,
+            "dec_deg": 1.03586,
+            "public_timestamp": 2010.1234,
+            "redshift": None,
+            "milkyway_dust_reddening": None,
+            "spectroscopic_class": "SN 1a",
+            "photometric_class": None,
+            "processing_status": "processing"
+        }
+        serial = serializers.TransientSerializer(data=transient_data_bad)
+        self.assertTrue(serial.is_valid() is False)
 
 
 

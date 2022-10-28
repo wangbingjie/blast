@@ -51,26 +51,6 @@ class TransientSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Transient dec is not between -90 and 90 degrees")
         return value
 
-    def validate_public_timestamp(self, value):
-        """
-        Check if public time stamp is valid
-        """
-        if type(value) != str:
-            raise serializers.ValidationError("Transient public timestamp is not a string")
-
-        try:
-            format_string = '%Y-%m-%dT%H:%M:%S.%f%z'
-            datetime.datetime.strptime(value, format_string)
-        except ValueError:
-            raise serializers.ValidationError("Transient public timestamp is not in iso UTC format e.g. 2014-01-01T00:00:00.588Z")
-
-        return value
-
-
-
-
-
-
 
 class HostSerializer(serializers.ModelSerializer):
     class Meta:
