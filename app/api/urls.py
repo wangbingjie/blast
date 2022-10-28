@@ -16,7 +16,7 @@ urlpatterns = [
     path(
         f"""{base_path}upload/""",
         views.upload_transient_data,
-    )
+    ),
 ]
 
 if os.environ.get("ALLOW_API_POST") == "YES":

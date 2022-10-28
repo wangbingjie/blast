@@ -1,8 +1,9 @@
+import datetime
 from dataclasses import dataclass
 
 from host import models
 from rest_framework import serializers
-import datetime
+
 
 class CutoutField(serializers.RelatedField):
     def to_representation(self, value):
@@ -23,6 +24,7 @@ class TransientSerializer(serializers.ModelSerializer):
             "photometric_class",
             "processing_status",
         ]
+
     def validate_name(self, value):
         """
         Check that the name is a string
@@ -38,7 +40,9 @@ class TransientSerializer(serializers.ModelSerializer):
         if type(value) != float:
             raise serializers.ValidationError("Transient ra is not a float")
         if value < 0.0 or value > 360.0:
-            raise serializers.ValidationError("Transient ra is not between 0 and 360 degrees")
+            raise serializers.ValidationError(
+                "Transient ra is not between 0 and 360 degrees"
+            )
         return value
 
     def validate_dec_deg(self, value):
@@ -48,7 +52,9 @@ class TransientSerializer(serializers.ModelSerializer):
         if type(value) != float:
             raise serializers.ValidationError("Transient dec is not a float")
         if value < -90.0 or value > 90.0:
-            raise serializers.ValidationError("Transient dec is not between -90 and 90 degrees")
+            raise serializers.ValidationError(
+                "Transient dec is not between -90 and 90 degrees"
+            )
         return value
 
 

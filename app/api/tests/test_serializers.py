@@ -1,8 +1,8 @@
-from django.test import TestCase
 import api.serializers as serializers
+from django.test import TestCase
+
 
 class SerializerValidationTest(TestCase):
-
     def test_transient_name_validation(self):
         transient_data = {
             "transient_name": "2010h",
@@ -13,7 +13,7 @@ class SerializerValidationTest(TestCase):
             "transient_milkyway_dust_reddening": None,
             "transient_spectroscopic_class": "SN 1a",
             "transient_photometric_class": None,
-            "transient_processing_status": "processing"
+            "transient_processing_status": "processing",
         }
 
         serial = serializers.TransientSerializer()
@@ -63,11 +63,11 @@ class SerializerValidationTest(TestCase):
             "ra_deg": 121.6015,
             "dec_deg": 1.03586,
             "public_timestamp": "2010-01-16T00:00:00Z",
-             "redshift": None,
-             "milkyway_dust_reddening": None,
+            "redshift": None,
+            "milkyway_dust_reddening": None,
             "spectroscopic_class": "SN 1a",
             "photometric_class": None,
-            "processing_status": "processing"
+            "processing_status": "processing",
         }
         serial = serializers.TransientSerializer(data=transient_data)
         self.assertTrue(serial.is_valid())
@@ -81,22 +81,7 @@ class SerializerValidationTest(TestCase):
             "milkyway_dust_reddening": None,
             "spectroscopic_class": "SN 1a",
             "photometric_class": None,
-            "processing_status": "processing"
+            "processing_status": "processing",
         }
         serial = serializers.TransientSerializer(data=transient_data_bad)
         self.assertTrue(serial.is_valid() is False)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

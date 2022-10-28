@@ -58,8 +58,6 @@ def serialize_blast_science_data(datamodel: List[DataModelComponent]) -> dict:
     return science_payload
 
 
-
-
 def unpack_component_groups(
     component_groups: List[List[DataModelComponent]],
 ) -> List[DataModelComponent]:
