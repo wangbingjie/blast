@@ -1,9 +1,10 @@
 import datetime
 from dataclasses import dataclass
 
+import api.validation as validation
 from host import models
 from rest_framework import serializers
-import api.validation as validation
+
 
 class CutoutField(serializers.RelatedField):
     def to_representation(self, value):
@@ -44,7 +45,6 @@ class TransientSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Transient DEC is not valid")
 
 
-
 class HostSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Host
@@ -58,7 +58,6 @@ class HostSerializer(serializers.ModelSerializer):
             return value
         else:
             raise serializers.ValidationError("Host RA is not valid")
-
 
     def validate_dec_deg(self, value):
         """
@@ -92,7 +91,6 @@ class ApertureSerializer(serializers.ModelSerializer):
             return value
         else:
             raise serializers.ValidationError("Aperture RA is not valid")
-
 
     def validate_dec_deg(self, value):
         """
