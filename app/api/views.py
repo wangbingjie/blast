@@ -1,14 +1,15 @@
 import itertools
 
+import pandas as pd
 from astropy.coordinates import SkyCoord
 from host.models import Transient
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.decorators import parser_classes
+from rest_framework.parsers import FileUploadParser
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.parsers import FileUploadParser, JSONParser
-from rest_framework.decorators import parser_classes
-import pandas as pd
 
 from . import datamodel
 from .components import data_model_components
@@ -91,13 +92,12 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
         status=status.HTTP_201_CREATED,
     )
 
+
 @api_view(["POST"])
 @parser_classes([JSONParser])
 def upload_transient_data(request):
     transient_name = request.data["transient_name"]
     transient_ra = request.data["transient_ra_deg"]
-
-
 
     print(request.data)
     return Response(request.data["transient_name"], status=status.HTTP_201_CREATED)

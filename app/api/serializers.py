@@ -1,3 +1,4 @@
+import datetime
 from dataclasses import dataclass
 
 from host import models
@@ -33,7 +34,6 @@ class TransientSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("Transient RA is not valid")
 
-
     def validate_dec_deg(self, value):
         """
         Check that dec is valid
@@ -42,6 +42,7 @@ class TransientSerializer(serializers.ModelSerializer):
             return value
         else:
             raise serializers.ValidationError("Transient DEC is not valid")
+
 
 
 class HostSerializer(serializers.ModelSerializer):
