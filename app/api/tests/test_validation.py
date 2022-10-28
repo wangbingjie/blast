@@ -1,8 +1,8 @@
-from django.test import TestCase
 import api.validation as validation
+from django.test import TestCase
+
 
 class TestValidation(TestCase):
-
     def test_ra_validation(self):
         self.assertTrue(validation.ra_deg_valid(120.0) == True)
         self.assertTrue(validation.ra_deg_valid(-10.0) == False)

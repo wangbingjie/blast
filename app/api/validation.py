@@ -40,4 +40,3 @@ def dec_deg_valid(declination_degrees: float) -> bool:
     else:
         valid = True
     return valid
-
