@@ -7,7 +7,7 @@ from revproxy.views import ProxyView
 
 from .forms import ImageGetForm
 from .forms import TransientSearchForm
-from .host_utils import select_cutout_aperture
+from .host_utils import select_aperture
 from .models import Acknowledgement
 from .models import Aperture
 from .models import AperturePhotometry
@@ -71,15 +71,7 @@ def results(request, slug):
     transients = Transient.objects.all()
     transient = transients.get(name__exact=slug)
 
-    cutouts = Cutout.objects.filter(transient=transient)
-    if len(cutouts):
-        cutout_for_aperture = select_cutout_aperture(cutouts)
-    if len(cutouts) and len(cutout_for_aperture):
-        global_aperture = Aperture.objects.filter(
-            type__exact="global", transient=transient, cutout=cutout_for_aperture[0]
-        )
-    else:
-        global_aperture = Aperture.objects.none()
+    global_aperture = select_aperture(transient)
     
     local_aperture = Aperture.objects.filter(type__exact="local", transient=transient)
     local_aperture_photometry = AperturePhotometry.objects.filter(
