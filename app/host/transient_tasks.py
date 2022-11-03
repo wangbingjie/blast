@@ -359,7 +359,7 @@ class GlobalAperturePhotometry(TransientTaskRunner):
                     semi_major_axis = aperture.semi_major_axis_arcsec - \
                         aperture.cutout.filter.image_fwhm_arcsec/2.354 + \
                         cutout.filter.image_fwhm_arcsec/2.354
-                    semi_minor_axis = aperture.semi_minor_axis_arcsec  - \
+                    semi_minor_axis = aperture.semi_minor_axis_arcsec - \
                         aperture.cutout.filter.image_fwhm_arcsec/2.354 + \
                         cutout.filter.image_fwhm_arcsec/2.354
 
