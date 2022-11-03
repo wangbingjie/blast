@@ -72,7 +72,7 @@ def results(request, slug):
     transient = transients.get(name__exact=slug)
 
     global_aperture = select_aperture(transient)
-    
+
     local_aperture = Aperture.objects.filter(type__exact="local", transient=transient)
     local_aperture_photometry = AperturePhotometry.objects.filter(
         transient=transient,
