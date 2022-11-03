@@ -295,6 +295,7 @@ def select_cutout_aperture(cutouts):
 
     return cutouts.filter(filter__name=filter_choice)
 
+
 def select_aperture(transient):
 
     cutouts = Cutout.objects.filter(transient=transient)
@@ -308,6 +309,7 @@ def select_aperture(transient):
         global_aperture = Aperture.objects.none()
 
     return global_aperture
+
 
 # def find_host_data(position, name='No name'):
 #    """
