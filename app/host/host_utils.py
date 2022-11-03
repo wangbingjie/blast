@@ -42,6 +42,7 @@ from .photometric_calibration import fluxerr_to_mJy_fluxerr
 from .models import Cutout
 from .models import Aperture
 
+
 def survey_list(survey_metadata_path):
     """
     Build a list of survey objects from a metadata file.
