@@ -598,10 +598,10 @@ class HostSEDFitting(TransientTaskRunner):
             "transient__name__exact": f"{transient.name}",
             "type__exact": aperture_type,
         }
-        try:
-            aperture = Aperture.objects.get(**query)
-        except Aperture.DoesNotExist or Aperture.MultipleObjectsReturned:
-            raise
+
+        aperture = Aperture.objects.filter(**query)
+        if len(aperture) == 0:
+            raise RuntimeError(f"no apertures found for transient {transient.name}")
 
         observations = build_obs(transient, aperture_type)
         model_components = build_model(observations)
