@@ -5,7 +5,7 @@
     sedpy_id: twomass_H
     hips_id: CDS/P/2MASS/H
     pixel_size_arcsec: 1.0
-    image_fwhm: 2.8
+    image_fwhm_arcsec: 2.8
     vosa_id: 2MASS/2MASS.H
     image_download_method: hips
     wavelength_eff_angstrom: 16620.00
@@ -22,7 +22,7 @@
     sedpy_id: twomass_j
     hips_id: CDS/P/2MASS/J
     pixel_size_arcsec: 1.0
-    image_fwhm: 2.9
+    image_fwhm_arcsec: 2.9
     vosa_id: 2MASS/2MASS.J
     image_download_method: hips
     wavelength_eff_angstrom: 12350.00
@@ -39,7 +39,7 @@
     sedpy_id: twomass_k
     hips_id: CDS/P/2MASS/K
     pixel_size_arcsec: 1.0
-    image_fwhm: 2.9
+    image_fwhm_arcsec: 2.9
     vosa_id: 2MASS/2MASS.Ks
     image_download_method: hips
     wavelength_eff_angstrom: 21590.00
@@ -56,7 +56,7 @@
     sedpy_id: wise_w1
     hips_id: CDS/P/WISE/W1
     pixel_size_arcsec: 2.75
-    image_fwhm: 5.84
+    image_fwhm_arcsec: 5.84
     vosa_id: WISE/WISE.W1
     image_download_method: hips
     wavelength_eff_angstrom: 33526.00
@@ -73,7 +73,7 @@
     sedpy_id: wise_w2
     hips_id: CDS/P/WISE/W2
     pixel_size_arcsec: 2.75
-    image_fwhm: 6.48
+    image_fwhm_arcsec: 6.48
     vosa_id: WISE/WISE.W2
     image_download_method: hips
     wavelength_eff_angstrom: 46028.00
@@ -90,7 +90,7 @@
     sedpy_id: wise_w3
     hips_id: CDS/P/WISE/W3
     pixel_size_arcsec: 2.75
-    image_fwhm: 6.72
+    image_fwhm_arcsec: 6.72
     vosa_id: WISE/WISE.W3
     image_download_method: hips
     wavelength_eff_angstrom: 115608.00
@@ -107,7 +107,7 @@
     sedpy_id: wise_w4
     hips_id: CDS/P/WISE/W4
     pixel_size_arcsec: 5.5
-    image_fwhm: 11.82
+    image_fwhm_arcsec: 11.82
     vosa_id: WISE/WISE.W4
     image_download_method: hips
     wavelength_eff_angstrom: 220883.00
@@ -124,7 +124,7 @@
     sedpy_id: galex_nuv
     hips_id: CDS/P/GALEXGR6/AIS/NUV
     pixel_size_arcsec: 1.5
-    image_fwhm: 5.3
+    image_fwhm_arcsec: 5.3
     vosa_id: GALEX/GALEX.NUV
     image_download_method: hips
     wavelength_eff_angstrom: 2304.74
@@ -141,7 +141,7 @@
     sedpy_id: galex_fuv
     hips_id: CDS/P/GALEXGR6/AIS/FUV
     pixel_size_arcsec: 1.5
-    image_fwhm: 4.2
+    image_fwhm_arcsec: 4.2
     vosa_id: GALEX/GALEX.FUV
     image_download_method: hips
     wavelength_eff_angstrom: 1549.02
@@ -158,7 +158,7 @@
     sedpy_id: panstarrs_g
     hips_id: CDS/P/PanSTARRS/DR1/g
     pixel_size_arcsec: 0.26
-    image_fwhm: 1.31
+    image_fwhm_arcsec: 1.31
     vosa_id: PAN-STARRS/PS1.g
     image_download_method: custom
     wavelength_eff_angstrom: 4810.88
@@ -175,7 +175,7 @@
     sedpy_id: panstarrs_r
     hips_id: CDS/P/PanSTARRS/DR1/r
     pixel_size_arcsec: 0.26
-    image_fwhm: 1.19
+    image_fwhm_arcsec: 1.19
     vosa_id: PAN-STARRS/PS1.r
     image_download_method: custom
     wavelength_eff_angstrom: 6156.36
@@ -192,7 +192,7 @@
     sedpy_id: panstarrs_i
     hips_id: CDS/P/PanSTARRS/DR1/i
     pixel_size_arcsec: 0.26
-    image_fwhm: 1.11
+    image_fwhm_arcsec: 1.11
     vosa_id: PAN-STARRS/PS1.i
     image_download_method: custom
     wavelength_eff_angstrom: 7503.68
@@ -209,7 +209,7 @@
     sedpy_id: panstarrs_z
     hips_id: CDS/P/PanSTARRS/DR1/z
     pixel_size_arcsec: 0.26
-    image_fwhm: 1.07
+    image_fwhm_arcsec: 1.07
     vosa_id: PAN-STARRS/PS1.z
     image_download_method: custom
     wavelength_eff_angstrom: 8668.56
@@ -226,7 +226,7 @@
     sedpy_id: panstarrs_y
     hips_id: CDS/P/PanSTARRS/DR1/y
     pixel_size_arcsec: 0.26
-    image_fwhm: 1.02
+    image_fwhm_arcsec: 1.02
     vosa_id: PAN-STARRS/PS1.y
     image_download_method: custom
     wavelength_eff_angstrom: 9613.45
@@ -243,7 +243,7 @@
     sedpy_id: sdss_i
     hips_id: CDS/P/SDSS9/i
     pixel_size_arcsec: 0.29296875
-    image_fwhm: 1.26
+    image_fwhm_arcsec: 1.26
     vosa_id: SLOAN/SDSS.i
     image_download_method: hips
     wavelength_eff_angstrom: 4671.78
@@ -260,7 +260,7 @@
     sedpy_id: sdss_r
     hips_id: CDS/P/SDSS9/r
     pixel_size_arcsec: 0.29296875
-    image_fwhm: 1.32
+    image_fwhm_arcsec: 1.32
     vosa_id: SLOAN/SDSS.r
     image_download_method: hips
     wavelength_eff_angstrom: 6141.12
@@ -277,7 +277,7 @@
     sedpy_id: sdss_u
     hips_id: CDS/P/SDSS9/u
     pixel_size_arcsec: 0.29296875
-    image_fwhm: 1.53
+    image_fwhm_arcsec: 1.53
     vosa_id: SLOAN/SDSS.u
     image_download_method: hips
     wavelength_eff_angstrom: 3608.04
@@ -294,7 +294,7 @@
     sedpy_id: sdss_z
     hips_id: CDS/P/SDSS9/z
     pixel_size_arcsec: 0.29296875
-    image_fwhm: 1.29
+    image_fwhm_arcsec: 1.29
     vosa_id: SLOAN/SDSS.z
     image_download_method: hips
     wavelength_eff_angstrom: 8922.78
@@ -311,7 +311,7 @@
     sedpy_id: sdss_g
     hips_id: CDS/P/SDSS9/g
     pixel_size_arcsec: 0.29296875
-    image_fwhm: 1.44
+    image_fwhm_arcsec: 1.44
     vosa_id: SLOAN/SDSS.g
     image_download_method: hips
     wavelength_eff_angstrom: 4671.78
@@ -328,7 +328,7 @@
     sedpy_id: des_g
     hips_id: CDS/P/DES-DR1/g
     pixel_size_arcsec: 0.2637
-    image_fwhm: 1.16
+    image_fwhm_arcsec: 1.16
     vosa_id: CTIO/DECam.g
     image_download_method: hips
     wavelength_eff_angstrom: 4770.83
@@ -345,7 +345,7 @@
     sedpy_id: des_r
     hips_id: CDS/P/DES-DR1/r
     pixel_size_arcsec: 0.2637
-    image_fwhm: 1.07
+    image_fwhm_arcsec: 1.07
     vosa_id: CTIO/DECam.r
     image_download_method: hips
     wavelength_eff_angstrom: 6371.33
@@ -362,7 +362,7 @@
     sedpy_id: des_i
     hips_id: CDS/P/DES-DR1/i
     pixel_size_arcsec: 0.2637
-    image_fwhm: 0.97
+    image_fwhm_arcsec: 0.97
     vosa_id: CTIO/DECam.i
     image_download_method: hips
     wavelength_eff_angstrom: 7774.19
@@ -379,7 +379,7 @@
     sedpy_id: des_z
     hips_id: CDS/P/DES-DR1/z
     pixel_size_arcsec: 0.2637
-    image_fwhm: 0.93
+    image_fwhm_arcsec: 0.93
     vosa_id: CTIO/DECam.z
     image_download_method: hips
     wavelength_eff_angstrom: 9157.90
@@ -396,7 +396,7 @@
     sedpy_id: des_y
     hips_id: CDS/P/DES-DR1/Y
     pixel_size_arcsec: 0.2637
-    image_fwhm: 0.91
+    image_fwhm_arcsec: 0.91
     vosa_id: CTIO/DECam.y
     image_download_method: hips
     wavelength_eff_angstrom: 9886.35
