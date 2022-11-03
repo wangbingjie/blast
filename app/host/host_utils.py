@@ -294,6 +294,19 @@ def select_cutout_aperture(cutouts):
 
     return cutouts.filter(filter__name=filter_choice)
 
+def select_aperture(transient):
+
+    cutouts = Cutout.objects.filter(transient=transient)
+    if len(cutouts):
+        cutout_for_aperture = select_cutout_aperture(cutouts)
+    if len(cutouts) and len(cutout_for_aperture):
+        global_aperture = Aperture.objects.filter(
+            type__exact="global", transient=transient, cutout=cutout_for_aperture[0]
+        )
+    else:
+        global_aperture = Aperture.objects.none()
+
+    return global_aperture
 
 # def find_host_data(position, name='No name'):
 #    """
