@@ -1,8 +1,8 @@
 from django.test import TestCase
 
+from ..models import AperturePhotometry
 from ..models import TaskRegister
 from ..models import Transient
-from ..models import AperturePhotometry
 from ..transient_tasks import ValidateGlobalPhotometry
 from ..transient_tasks import ValidateLocalPhotometry
 
@@ -45,8 +45,7 @@ class TestValidatePhotometry(TestCase):
 
         status_message = vgp_cls._run_process(transient)
 
-        not_validated_global_aperture_photometry = \
-            AperturePhotometry.objects.filter(
+        not_validated_global_aperture_photometry = AperturePhotometry.objects.filter(
             transient=transient, aperture__type="global", is_validated=False
         )
 
