@@ -61,12 +61,7 @@ def build_obs(transient, aperture_type):
     if transient.host is None:
         raise ValueError("No host galaxy match")
 
-    if transient.host.redshift is not None:
-        z = transient.host.redshift
-    elif transient.redshift is not None:
-        z = transient.redshift
-    else:
-        raise ValueError("No SN or host galaxy redshift")
+    z = transient.best_redshift()
 
     filters, flux_maggies, flux_maggies_error = [], [], []
 

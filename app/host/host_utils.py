@@ -8,6 +8,9 @@ import astropy.units as u
 import numpy as np
 import yaml
 import extinction
+import warnings
+
+from astropy.io import fits
 from astropy.convolution import Gaussian2DKernel
 from astropy.coordinates import SkyCoord
 from astropy.stats import gaussian_fwhm_to_sigma
@@ -16,6 +19,9 @@ from astropy.wcs import WCS
 from astroquery.hips2fits import hips2fits
 from astroquery.ipac.ned import Ned
 from astroquery.sdss import SDSS
+from astropy.cosmology import FlatLambdaCDM
+cosmo = FlatLambdaCDM(H0=70, Om0=0.315)
+
 from django.conf import settings
 from dustmaps.sfd import SFDQuery
 from photutils.aperture import aperture_photometry
@@ -207,6 +213,75 @@ def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
     ebv = SFDQuery()(position)
     # see Schlafly & Finkbeiner 2011 for the 0.86 correction term
     return 0.86 * ebv
+
+def check_local_radius(aperture_size,redshift,image_fwhm_arcsec):
+    """Checks whether filter image FWHM is larger than
+    the aperture size"""
+
+    dadist = cosmo.angular_diameter_distance(redshift).value
+    apr_arcsec = 2/(dadist*1000*(np.pi/180./3600.)) # 2 kpc aperture radius is this many arcsec
+
+    return apr_arcsec > image_fwhm_arcsec
+
+def check_global_contamination(global_aperture_phot,aperture_primary):
+    """Checks whether aperture is contaminated by multiple objects"""
+    warnings.simplefilter('ignore')
+    is_contam = False
+    aperture = global_aperture_phot.aperture
+    # check both the image used to generate aperture
+    # and the image used to measure photometry
+    for cutout_name in [
+            global_aperture_phot.aperture.cutout.fits.name,
+            aperture_primary.cutout.fits.name]:
+
+        # UV photons are too sparse, segmentation map
+        # builder cannot easily handle these
+        if '/GALEX/' in cutout_name:
+            continue
+        
+        # copy the steps to build segmentation map
+        image = fits.open(cutout_name)
+        wcs = WCS(image[0].header)
+        background = estimate_background(image)
+        catalog = build_source_catalog(image, background, threshhold_sigma=5, npixels=15)
+        source_data = match_source(aperture.sky_coord, catalog, wcs)
+
+        mask_image = aperture.sky_aperture.to_pixel(wcs).to_mask().to_image(np.shape(image[0].data))
+        obj_ids = catalog._segment_img.data[np.where(mask_image == True)]
+        source_obj = source_data._labels
+
+        # let's look for contaminants
+        unq_obj_ids = np.unique(obj_ids)
+        if len(unq_obj_ids[(unq_obj_ids != 0) & (unq_obj_ids != source_obj)]):
+            is_contam = True
+
+    return is_contam
+
+def select_cutout_aperture(cutouts):
+    """
+    Select cutout for aperture
+    """
+    filter_names = [
+        "PanSTARRS_g",
+        "PanSTARRS_r",
+        "PanSTARRS_i",
+        "SDSS_r",
+        "SDSS_i",
+        "SDSS_g",
+        "DES_r",
+        "DES_i",
+        "DES_g",
+        "2MASS_H",
+    ]
+
+    choice = 0
+    filter_choice = filter_names[choice]
+
+    while not cutouts.filter(filter__name=filter_choice).exists():
+        choice += 1
+        filter_choice = filter_names[choice]
+
+    return cutouts.filter(filter__name=filter_choice)
 
 
 # def find_host_data(position, name='No name'):

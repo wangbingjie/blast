@@ -11,6 +11,9 @@ from .host_utils import do_aperture_photometry
 from .host_utils import get_dust_maps
 from .host_utils import query_ned
 from .host_utils import query_sdss
+from .host_utils import check_local_radius
+from .host_utils import check_global_contamination
+from .host_utils import select_cutout_aperture
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
@@ -21,6 +24,7 @@ from .prospector import fit_model
 from .prospector import prospector_result_to_blast
 
 """This module contains all of the TransientTaskRunners in blast."""
+
 
 
 class Ghost(TransientTaskRunner):
@@ -210,37 +214,11 @@ class GlobalApertureConstruction(TransientTaskRunner):
         """
         return "failed"
 
-    def _select_cutout_aperture(self, cutouts):
-        """
-        Select cutout for aperture
-        """
-        filter_names = [
-            "PanSTARRS_g",
-            "PanSTARRS_r",
-            "PanSTARRS_i",
-            "SDSS_r",
-            "SDSS_i",
-            "SDSS_g",
-            "DES_r",
-            "DES_i",
-            "DES_g",
-            "2MASS_H",
-        ]
-
-        choice = 0
-        filter_choice = filter_names[choice]
-
-        while not cutouts.filter(filter__name=filter_choice).exists():
-            choice += 1
-            filter_choice = filter_names[choice]
-
-        return cutouts.filter(filter__name=filter_choice)
-
     def _run_process(self, transient):
         """Code goes here"""
 
         cutouts = Cutout.objects.filter(transient=transient)
-        aperture_cutout = self._select_cutout_aperture(cutouts)
+        aperture_cutout = select_cutout_aperture(cutouts)
 
         image = fits.open(aperture_cutout[0].fits.name)
         aperture = construct_aperture(image, transient.host.sky_coord)
@@ -365,25 +343,55 @@ class GlobalAperturePhotometry(TransientTaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        aperture = Aperture.objects.filter(transient=transient, type="global")
         cutouts = Cutout.objects.filter(transient=transient)
+        cutout_for_aperture = select_cutout_aperture(cutouts)[0]
+        aperture = Aperture.objects.get(cutout=cutout_for_aperture,type="global")
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
 
+            # make new aperture
+            # adjust semi-major/minor axes for size
+            if f"{cutout.name}_global" != aperture.name:
+
+                if not len(Aperture.objects.filter(cutout=f"{cutout.name}_global")):
+                
+                    semi_major_axis = aperture.semi_major_axis_arcsec - \
+                        aperture.cutout.filter.image_fwhm_arcsec/2.354 + \
+                        cutout.filter.image_fwhm_arcsec/2.354
+                    semi_minor_axis = aperture.semi_minor_axis_arcsec  - \
+                        aperture.cutout.filter.image_fwhm_arcsec/2.354 + \
+                        cutout.filter.image_fwhm_arcsec/2.354
+
+                    query = {"name": f"{cutout.name}_global"}
+                    data = {
+                        "name": f"{cutout.name}_global",
+                        "cutout": cutout,
+                        "orientation_deg": aperture.orientation_deg,
+                        "ra_deg": aperture.ra_deg,
+                        "dec_deg": aperture.dec_deg,
+                        "semi_major_axis_arcsec": semi_major_axis,
+                        "semi_minor_axis_arcsec": semi_minor_axis,
+                        "transient": transient,
+                        "type": "global",
+                    }
+
+                    self._overwrite_or_create_object(Aperture, query, data)
+                    aperture = Aperture.objects.get(transient=transient,name=f"{cutout.name}_global")
+                
             try:
                 photometry = do_aperture_photometry(
-                    image, aperture[0].sky_aperture, cutout.filter
+                    image, aperture.sky_aperture, cutout.filter
                 )
 
                 query = {
-                    "aperture": aperture[0],
+                    "aperture": aperture,
                     "transient": transient,
                     "filter": cutout.filter,
                 }
 
                 data = {
-                    "aperture": aperture[0],
+                    "aperture": aperture,
                     "transient": transient,
                     "filter": cutout.filter,
                     "flux": photometry["flux"],
@@ -398,7 +406,119 @@ class GlobalAperturePhotometry(TransientTaskRunner):
 
         return "processed"
 
+class ValidateLocalPhotometry(TransientTaskRunner):
+    """
+    TaskRunner to validate the local photometry.
+    We need to make sure image seeing is ~smaller than the aperture size
+    """
 
+    def _prerequisites(self):
+        """
+        Prerequisites are that the validate local photometry task is
+        not processed and the local photometry task is processed.
+        """
+        return {"Local aperture photometry":"processed",
+                "Validate local photometry":"not processed"}
+
+    @property
+    def task_name(self):
+        """
+        Task status to be altered is validate local photometry.
+        """
+        return "Validate local photometry"
+
+    def _failed_status_message(self):
+        """
+        Failed status is local photometry validation failed.
+        """
+        return "local photometry validation failed"
+
+    def _run_process(self, transient):
+        """
+        Run the local photometry validation
+        """
+
+        local_aperture_photometry = AperturePhotometry.objects.filter(
+            transient=transient,aperture__type="local")
+        redshift = transient.best_redshift
+
+        # we can't measure the local aperture if we don't know the redshift
+        if redshift is None:
+            for local_aperture_phot in local_aperture_photometry:
+                local_aperture_phot.is_validated = False
+                local_aperture_phot.save()
+        
+        if not len(local_aperture_photometry):
+            return "local photometry validation failed"
+        
+        for local_aperture_phot in local_aperture_photometry:
+
+            is_validated = check_local_radius(
+                local_aperture_phot.aperture.semi_major_axis_arcsec,
+                redshift,
+                local_aperture_phot.filter.image_fwhm_arcsec)
+            local_aperture_phot.is_validated = is_validated
+            local_aperture_phot.save()
+
+        return "processed"
+
+class ValidateGlobalPhotometry(TransientTaskRunner):
+    """
+    TaskRunner to validate the global photometry.
+    We need to check for contaminating objects in the aperture
+    """
+
+    def _prerequisites(self):
+        """
+        Prerequisites are that the validate local photometry task
+        is not processed and the local photometry task is processed.
+        """
+        return {"Global aperture photometry":"processed",
+                "Validate global photometry":"not processed"}
+
+    @property
+    def task_name(self):
+        """
+        Task status to be altered is validate local photometry.
+        """
+        return "Validate global photometry"
+
+    def _failed_status_message(self):
+        """
+        Failed status is local photometry validation failed.
+        """
+        return "global photometry validation failed"
+
+    def _run_process(self, transient):
+        """
+        Run the global photometry validation
+        """
+
+        cutouts = Cutout.objects.filter(transient=transient)
+        cutout_for_aperture = select_cutout_aperture(cutouts)[0]
+        aperture_primary = Aperture.objects.get(cutout=cutout_for_aperture,type="global")
+        
+        global_aperture_photometry = AperturePhotometry.objects.filter(
+            transient=transient,aperture__type="global")
+        if not len(global_aperture_photometry):
+            return "global photometry validation failed"
+
+        
+        for global_aperture_phot in global_aperture_photometry:
+            # check if there are contaminating objects in the
+            # cutout image used for aperture construction at
+            # the PSF-adjusted radius
+            # AND
+            # if there are contaminating objects detected in
+            # the cutout image used for the photometry
+            is_contam = check_global_contamination(
+                global_aperture_phot,aperture_primary)
+            global_aperture_phot.is_validated = not is_contam
+            global_aperture_phot.save()
+            
+        return "processed"
+
+    
 class TransientInformation(TransientTaskRunner):
     """Task Runner to gather information about the Transient"""
 
@@ -547,6 +667,7 @@ class LocalHostSEDFitting(HostSEDFitting):
             "Host match": "processed",
             "Host information": "processed",
             "Local aperture photometry": "processed",
+            "Local photometry validation": "processed",
             "Local host SED inference": "not processed",
         }
 
@@ -582,6 +703,7 @@ class GlobalHostSEDFitting(HostSEDFitting):
             "Host match": "processed",
             "Host information": "processed",
             "Global aperture photometry": "processed",
+            "Global photometry validation": "processed",
             "Global host SED inference": "not processed",
         }
 
