@@ -12,16 +12,16 @@ from .system_tasks import TNSDataIngestion
 from .transient_tasks import Ghost
 from .transient_tasks import GlobalApertureConstruction
 from .transient_tasks import GlobalAperturePhotometry
-from .transient_tasks import ValidateGlobalPhotometry
 from .transient_tasks import GlobalHostSEDFitting
 from .transient_tasks import HostInformation
 from .transient_tasks import ImageDownload
 from .transient_tasks import LocalAperturePhotometry
-from .transient_tasks import ValidateLocalPhotometry
 from .transient_tasks import LocalHostSEDFitting
 from .transient_tasks import MWEBV_Host
 from .transient_tasks import MWEBV_Transient
 from .transient_tasks import TransientInformation
+from .transient_tasks import ValidateGlobalPhotometry
+from .transient_tasks import ValidateLocalPhotometry
 
 periodic_tasks = [
     MWEBV_Transient(),

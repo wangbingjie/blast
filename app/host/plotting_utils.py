@@ -77,8 +77,8 @@ def plot_aperture(figure, aperture, wcs, plotting_kwargs=None):
     plot_dict = {
         "x": x,
         "y": y,
-        "width": aperture.a*2,
-        "height": aperture.b*2,
+        "width": aperture.a * 2,
+        "height": aperture.b * 2,
         "angle": theta_rad,
         "fill_color": "#cab2d6",
         "fill_alpha": 0.1,

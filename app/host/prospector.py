@@ -52,8 +52,7 @@ def build_obs(transient, aperture_type):
     """
 
     photometry = AperturePhotometry.objects.filter(
-        transient=transient, aperture__type__exact=aperture_type,
-        is_validated=True
+        transient=transient, aperture__type__exact=aperture_type, is_validated=True
     )
 
     if not photometry.exists():
