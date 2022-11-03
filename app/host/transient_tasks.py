@@ -365,7 +365,7 @@ class GlobalAperturePhotometry(TransientTaskRunner):
                         - aperture.cutout.filter.image_fwhm_arcsec / 2.354
                         + cutout.filter.image_fwhm_arcsec / 2.354
                     )
-                    
+
                     query = {"name": f"{cutout.name}_global"}
                     data = {
                         "name": f"{cutout.name}_global",
