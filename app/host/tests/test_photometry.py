@@ -1,8 +1,10 @@
 from django.test import TestCase
+
 from ..models import TaskRegister
 from ..models import Transient
-from ..transient_tasks import ValidateLocalPhotometry
 from ..transient_tasks import ValidateGlobalPhotometry
+from ..transient_tasks import ValidateLocalPhotometry
+
 
 class TestValidatePhotometry(TestCase):
     fixtures = [
@@ -23,14 +25,16 @@ class TestValidatePhotometry(TestCase):
         status_message = vlp_cls._run_process(transient)
 
         # let's see which photometry is validated and which isn't
-        validated_local_aperture_photometry = \
-            AperturePhotometry.objects.filter(
-            transient=transient,aperture__type="local",is_validated=True)
+        validated_local_aperture_photometry = AperturePhotometry.objects.filter(
+            transient=transient, aperture__type="local", is_validated=True
+        )
         for v in validated_local_aperture_photometry:
-            assert 'WISE_W2' not in v.filter.name and \
-                'WISE_W3' not in v.filter.name and \
-                'WISE_W4' not in v.filter.name
-        
+            assert (
+                "WISE_W2" not in v.filter.name
+                and "WISE_W3" not in v.filter.name
+                and "WISE_W4" not in v.filter.name
+            )
+
         assert status_message == "processed"
 
     def test_validate_global_photometry(self):
@@ -40,8 +44,8 @@ class TestValidatePhotometry(TestCase):
 
         status_message = vlp_cls._run_process(transient)
 
-        validated_global_aperture_photometry = \
-            AperturePhotometry.objects.filter(
-                transient=transient,aperture__type="global",is_validated=True)
+        validated_global_aperture_photometry = AperturePhotometry.objects.filter(
+            transient=transient, aperture__type="global", is_validated=True
+        )
 
         assert len(validated_global_aperture_photometry) == 0

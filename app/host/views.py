@@ -7,6 +7,7 @@ from revproxy.views import ProxyView
 
 from .forms import ImageGetForm
 from .forms import TransientSearchForm
+from .host_utils import select_cutout_aperture
 from .models import Acknowledgement
 from .models import Aperture
 from .models import AperturePhotometry
@@ -19,7 +20,7 @@ from .plotting_utils import plot_cutout_image
 from .plotting_utils import plot_pie_chart
 from .plotting_utils import plot_sed
 from .plotting_utils import plot_timeseries
-from .host_utils import select_cutout_aperture
+
 
 def transient_list(request):
     transients = Transient.objects.all()
@@ -72,7 +73,9 @@ def results(request, slug):
 
     cutouts = Cutout.objects.filter(transient=transient)
     cutout_for_aperture = select_cutout_aperture(cutouts)[0]
-    global_aperture = Aperture.objects.filter(type__exact="global", transient=transient, cutout=cutout_for_aperture)
+    global_aperture = Aperture.objects.filter(
+        type__exact="global", transient=transient, cutout=cutout_for_aperture
+    )
     local_aperture = Aperture.objects.filter(type__exact="local", transient=transient)
     local_aperture_photometry = AperturePhotometry.objects.filter(
         transient=transient, aperture__type__exact="local", flux__isnull=False
