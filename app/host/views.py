@@ -72,16 +72,21 @@ def results(request, slug):
     transient = transients.get(name__exact=slug)
 
     cutouts = Cutout.objects.filter(transient=transient)
-    cutout_for_aperture = select_cutout_aperture(cutouts)[0]
-    global_aperture = Aperture.objects.filter(
-        type__exact="global", transient=transient, cutout=cutout_for_aperture
-    )
+    if len(cutouts):
+        cutout_for_aperture = select_cutout_aperture(cutouts)
+    if len(cutouts) and len(cutout_for_aperture):
+        global_aperture = Aperture.objects.filter(
+            type__exact="global", transient=transient, cutout=cutout_for_aperture[0]
+        )
+    else:
+        global_aperture = Aperture.objects.none()
+    
     local_aperture = Aperture.objects.filter(type__exact="local", transient=transient)
     local_aperture_photometry = AperturePhotometry.objects.filter(
-        transient=transient, aperture__type__exact="local", flux__isnull=False
+        transient=transient, aperture__type__exact="local", flux__isnull=False, is_validated=True
     )
     global_aperture_photometry = AperturePhotometry.objects.filter(
-        transient=transient, aperture__type__exact="global", flux__isnull=False
+        transient=transient, aperture__type__exact="global", flux__isnull=False, is_validated=True
     )
 
     local_sed_obj = SEDFittingResult.objects.filter(
