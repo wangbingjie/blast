@@ -6,13 +6,13 @@ from astropy.io import fits
 from .base_tasks import TransientTaskRunner
 from .cutouts import download_and_save_cutouts
 from .ghost import run_ghost
+from .host_utils import check_global_contamination
+from .host_utils import check_local_radius
 from .host_utils import construct_aperture
 from .host_utils import do_aperture_photometry
 from .host_utils import get_dust_maps
 from .host_utils import query_ned
 from .host_utils import query_sdss
-from .host_utils import check_local_radius
-from .host_utils import check_global_contamination
 from .host_utils import select_cutout_aperture
 from .models import Aperture
 from .models import AperturePhotometry
@@ -24,7 +24,6 @@ from .prospector import fit_model
 from .prospector import prospector_result_to_blast
 
 """This module contains all of the TransientTaskRunners in blast."""
-
 
 
 class Ghost(TransientTaskRunner):
@@ -283,7 +282,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
         self._overwrite_or_create_object(Aperture, query, data)
         aperture = Aperture.objects.get(**query)
         cutouts = Cutout.objects.filter(transient=transient)
-        
+
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
 
@@ -345,7 +344,7 @@ class GlobalAperturePhotometry(TransientTaskRunner):
 
         cutouts = Cutout.objects.filter(transient=transient)
         cutout_for_aperture = select_cutout_aperture(cutouts)[0]
-        aperture = Aperture.objects.get(cutout=cutout_for_aperture,type="global")
+        aperture = Aperture.objects.get(cutout=cutout_for_aperture, type="global")
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
@@ -355,14 +354,18 @@ class GlobalAperturePhotometry(TransientTaskRunner):
             if f"{cutout.name}_global" != aperture.name:
 
                 if not len(Aperture.objects.filter(cutout=f"{cutout.name}_global")):
-                
-                    semi_major_axis = aperture.semi_major_axis_arcsec - \
-                        aperture.cutout.filter.image_fwhm_arcsec/2.354 + \
-                        cutout.filter.image_fwhm_arcsec/2.354
-                    semi_minor_axis = aperture.semi_minor_axis_arcsec - \
-                        aperture.cutout.filter.image_fwhm_arcsec/2.354 + \
-                        cutout.filter.image_fwhm_arcsec/2.354
 
+                    semi_major_axis = (
+                        aperture.semi_major_axis_arcsec
+                        - aperture.cutout.filter.image_fwhm_arcsec / 2.354
+                        + cutout.filter.image_fwhm_arcsec / 2.354
+                    )
+                    semi_minor_axis = (
+                        aperture.semi_minor_axis_arcsec
+                        - aperture.cutout.filter.image_fwhm_arcsec / 2.354
+                        + cutout.filter.image_fwhm_arcsec / 2.354
+                    )
+                    
                     query = {"name": f"{cutout.name}_global"}
                     data = {
                         "name": f"{cutout.name}_global",
@@ -377,8 +380,10 @@ class GlobalAperturePhotometry(TransientTaskRunner):
                     }
 
                     self._overwrite_or_create_object(Aperture, query, data)
-                    aperture = Aperture.objects.get(transient=transient,name=f"{cutout.name}_global")
-                
+                    aperture = Aperture.objects.get(
+                        transient=transient, name=f"{cutout.name}_global"
+                    )
+
             try:
                 photometry = do_aperture_photometry(
                     image, aperture.sky_aperture, cutout.filter
@@ -406,6 +411,7 @@ class GlobalAperturePhotometry(TransientTaskRunner):
 
         return "processed"
 
+
 class ValidateLocalPhotometry(TransientTaskRunner):
     """
     TaskRunner to validate the local photometry.
@@ -417,8 +423,10 @@ class ValidateLocalPhotometry(TransientTaskRunner):
         Prerequisites are that the validate local photometry task is
         not processed and the local photometry task is processed.
         """
-        return {"Local aperture photometry":"processed",
-                "Validate local photometry":"not processed"}
+        return {
+            "Local aperture photometry": "processed",
+            "Validate local photometry": "not processed",
+        }
 
     @property
     def task_name(self):
@@ -439,7 +447,8 @@ class ValidateLocalPhotometry(TransientTaskRunner):
         """
 
         local_aperture_photometry = AperturePhotometry.objects.filter(
-            transient=transient,aperture__type="local")
+            transient=transient, aperture__type="local"
+        )
         redshift = transient.best_redshift
 
         # we can't measure the local aperture if we don't know the redshift
@@ -447,20 +456,22 @@ class ValidateLocalPhotometry(TransientTaskRunner):
             for local_aperture_phot in local_aperture_photometry:
                 local_aperture_phot.is_validated = False
                 local_aperture_phot.save()
-        
+
         if not len(local_aperture_photometry):
             return "local photometry validation failed"
-        
+
         for local_aperture_phot in local_aperture_photometry:
 
             is_validated = check_local_radius(
                 local_aperture_phot.aperture.semi_major_axis_arcsec,
                 redshift,
-                local_aperture_phot.filter.image_fwhm_arcsec)
+                local_aperture_phot.filter.image_fwhm_arcsec,
+            )
             local_aperture_phot.is_validated = is_validated
             local_aperture_phot.save()
 
         return "processed"
+
 
 class ValidateGlobalPhotometry(TransientTaskRunner):
     """
@@ -473,8 +484,10 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
         Prerequisites are that the validate local photometry task
         is not processed and the local photometry task is processed.
         """
-        return {"Global aperture photometry":"processed",
-                "Validate global photometry":"not processed"}
+        return {
+            "Global aperture photometry": "processed",
+            "Validate global photometry": "not processed",
+        }
 
     @property
     def task_name(self):
@@ -496,14 +509,16 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
 
         cutouts = Cutout.objects.filter(transient=transient)
         cutout_for_aperture = select_cutout_aperture(cutouts)[0]
-        aperture_primary = Aperture.objects.get(cutout=cutout_for_aperture,type="global")
-        
+        aperture_primary = Aperture.objects.get(
+            cutout=cutout_for_aperture, type="global"
+        )
+
         global_aperture_photometry = AperturePhotometry.objects.filter(
-            transient=transient,aperture__type="global")
+            transient=transient, aperture__type="global"
+        )
         if not len(global_aperture_photometry):
             return "global photometry validation failed"
 
-        
         for global_aperture_phot in global_aperture_photometry:
             # check if there are contaminating objects in the
             # cutout image used for aperture construction at
@@ -512,13 +527,14 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
             # if there are contaminating objects detected in
             # the cutout image used for the photometry
             is_contam = check_global_contamination(
-                global_aperture_phot,aperture_primary)
+                global_aperture_phot, aperture_primary
+            )
             global_aperture_phot.is_validated = not is_contam
             global_aperture_phot.save()
-            
+
         return "processed"
 
-    
+
 class TransientInformation(TransientTaskRunner):
     """Task Runner to gather information about the Transient"""
 
@@ -567,7 +583,7 @@ class HostInformation(TransientTaskRunner):
         host = transient.host
         if host is None:
             return "no host"
-        
+
         galaxy_ned_data = query_ned(host.sky_coord)
         galaxy_sdss_data = query_sdss(host.sky_coord)
 
