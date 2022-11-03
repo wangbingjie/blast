@@ -439,7 +439,7 @@ class ValidateLocalPhotometry(TransientTaskRunner):
         """
         Failed status is local photometry validation failed.
         """
-        return "local photometry validation failed"
+        return "phot valid failed"
 
     def _run_process(self, transient):
         """
@@ -500,7 +500,7 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
         """
         Failed status is local photometry validation failed.
         """
-        return "global photometry validation failed"
+        return "phot valid failed"
 
     def _run_process(self, transient):
         """
@@ -683,7 +683,7 @@ class LocalHostSEDFitting(HostSEDFitting):
             "Host match": "processed",
             "Host information": "processed",
             "Local aperture photometry": "processed",
-            "Local photometry validation": "processed",
+            "Validate local photometry": "processed",
             "Local host SED inference": "not processed",
         }
 
@@ -719,7 +719,7 @@ class GlobalHostSEDFitting(HostSEDFitting):
             "Host match": "processed",
             "Host information": "processed",
             "Global aperture photometry": "processed",
-            "Global photometry validation": "processed",
+            "Validate global photometry": "processed",
             "Global host SED inference": "not processed",
         }
 
