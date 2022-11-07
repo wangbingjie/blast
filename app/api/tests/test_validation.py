@@ -1,6 +1,6 @@
 import api.validation as validation
 from django.test import TestCase
-import api.components as components
+from api.components import data_model_components
 import api.datamodel as datamodel
 
 class TestValidation(TestCase):
@@ -259,7 +259,7 @@ class TestValidation(TestCase):
     "global_aperture_host_log_tau_50": 0.1046197140354783,
     "global_aperture_host_log_tau_84": 0.1261118048050916
         }
-        data_model_components = components.data_model_components
-        data_model = datamodel.unpack_component_groups(data_model_components)
+        data_model = [component("2010h") for component in data_model_components]
+        data_model = datamodel.unpack_component_groups(data_model)
         validation.science_payload_valid(good_payload, data_model)
 
