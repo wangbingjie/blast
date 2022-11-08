@@ -95,18 +95,19 @@ class SerializerValidationTest(TestCase):
         serial = serializers.TransientSerializer(data=transient_data_bad)
         self.assertTrue(serial.is_valid() is False)
 
+
 class SerializerCreateTest(TestCase):
     def test_transient_create(self):
         transient_data = {
-                "name": "2010h",
-                "ra_deg": 121.6015,
-                "dec_deg": 1.03586,
-                "public_timestamp": "2010-01-16T00:00:00Z",
-                "redshift": None,
-                "milkyway_dust_reddening": None,
-                "spectroscopic_class": "SN 1a",
-                "photometric_class": None,
-                "processing_status": "processing",
+            "name": "2010h",
+            "ra_deg": 121.6015,
+            "dec_deg": 1.03586,
+            "public_timestamp": "2010-01-16T00:00:00Z",
+            "redshift": None,
+            "milkyway_dust_reddening": None,
+            "spectroscopic_class": "SN 1a",
+            "photometric_class": None,
+            "processing_status": "processing",
         }
         serial = serializers.TransientSerializer(data=transient_data)
         serial.is_valid()
@@ -116,8 +117,10 @@ class SerializerCreateTest(TestCase):
         object_data = serializers.TransientSerializer(transient).data
         self.assertTrue(object_data == transient_data)
 
+
 class SerializerUpdateTest(TestCase):
     fixtures = ["../fixtures/test/test_transient_upload.yaml"]
+
     def test_transient_update(self):
         transient_data = {
             "name": "2022testone",
@@ -133,7 +136,6 @@ class SerializerUpdateTest(TestCase):
 
         transient = models.Transient.objects.get(name__exact="2022testone")
 
-
         serial = serializers.TransientSerializer(transient, data=transient_data)
         serial.is_valid()
         serial.save()
@@ -143,10 +145,3 @@ class SerializerUpdateTest(TestCase):
         self.assertTrue(transient.dec_deg == 1.03586)
         self.assertTrue(transient.tns_id == 9999)
         self.assertTrue(transient.tasks_initialized == "True")
-
-
-
-
-
-
-

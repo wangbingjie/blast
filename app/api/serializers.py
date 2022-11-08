@@ -51,7 +51,9 @@ class TransientSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Updates existing transient"""
         for field in self.fields:
-            setattr(instance, field, validated_data.get(field, getattr(instance, field)))
+            setattr(
+                instance, field, validated_data.get(field, getattr(instance, field))
+            )
         instance.tasks_initialized = "True"
         instance.save()
         return instance
