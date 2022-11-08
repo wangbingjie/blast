@@ -197,3 +197,68 @@ class HostSerializerUpdateTest(TestCase):
         self.assertTrue(transient.host.redshift == 0.05)
         self.assertTrue(transient.host.milkyway_dust_reddening == 0.5)
 
+class ApertureSerializerCreateTest(TestCase):
+    fixtures = ["../fixtures/test/test_aperture_upload.yaml"]
+
+
+    def test_aperture_create(self):
+
+        aperture_data = {
+            "ra_deg": 100.0,
+            "dec_deg": -30.0,
+            "orientation_deg": 10.0,
+            "semi_major_axis_arcsec": 5.0,
+            "semi_minor_axis_arcsec": 3.0,
+            "cutout": "2MASS_J"
+        }
+
+        transient = models.Transient.objects.get(name__exact="2022testone")
+        type = "local"
+        serial = serializers.ApertureSerializer(data=aperture_data)
+        serial.is_valid()
+        serial.save(transient=transient, type=type)
+
+        aperture = models.Aperture.objects.get(transient=transient)
+        self.assertTrue(aperture.ra_deg == 100.0)
+        self.assertTrue(aperture.dec_deg == -30.0)
+        self.assertTrue(aperture.orientation_deg == 10.0)
+        self.assertTrue(aperture.semi_major_axis_arcsec == 5.0)
+        self.assertTrue(aperture.semi_minor_axis_arcsec == 3.0)
+        self.assertTrue(aperture.name == "2022testone_local")
+        self.assertTrue(aperture.transient.name == "2022testone")
+
+class ApertureSerializerUpdateTest(TestCase):
+    fixtures = ["../fixtures/test/test_aperture_update.yaml"]
+
+
+    def test_aperture_update(self):
+
+        aperture_data = {
+            "ra_deg": 100.0,
+            "dec_deg": -30.0,
+            "orientation_deg": 10.0,
+            "semi_major_axis_arcsec": 5.0,
+            "semi_minor_axis_arcsec": 3.0,
+            "cutout": "2MASS_J"
+        }
+
+        transient = models.Transient.objects.get(name__exact="2022testone")
+        aperture = models.Aperture.objects.get(transient=transient)
+        type = "local"
+        serial = serializers.ApertureSerializer(aperture, data=aperture_data)
+        serial.is_valid()
+        serial.save(transient=transient, type=type)
+
+        aperture = models.Aperture.objects.get(transient=transient)
+        self.assertTrue(aperture.ra_deg == 100.0)
+        self.assertTrue(aperture.dec_deg == -30.0)
+        self.assertTrue(aperture.orientation_deg == 10.0)
+        self.assertTrue(aperture.semi_major_axis_arcsec == 5.0)
+        self.assertTrue(aperture.semi_minor_axis_arcsec == 3.0)
+        self.assertTrue(aperture.name == "2022testone_local")
+        self.assertTrue(aperture.transient.name == "2022testone")
+
+
+
+
+

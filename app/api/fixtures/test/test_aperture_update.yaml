@@ -1,0 +1,24 @@
+- model: host.Host
+  fields:
+    name: PSO J080624.103+010209.859
+    ra_deg: 121.60043802
+    dec_deg: 1.03606313
+- model: host.Transient
+  fields:
+    name: 2022testone
+    tns_id: 9999
+    public_timestamp: 2022-02-04 07:29:02.112+00:00
+    tns_prefix: AT
+    ra_deg: 120.0273250
+    dec_deg: 2.1707639
+    host: [PSO J080624.103+010209.859]
+- model: host.Aperture
+  fields:
+      name: 2022testone_local
+      transient: [2022testone]
+      orientation_deg: 0.0
+      ra_deg: 121.6015
+      dec_deg: 1.03586
+      semi_major_axis_arcsec: 1.0
+      semi_minor_axis_arcsec: 1.0
+      type: local
