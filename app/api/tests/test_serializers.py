@@ -146,6 +146,7 @@ class TransientSerializerUpdateTest(TestCase):
         self.assertTrue(transient.tns_id == 9999)
         self.assertTrue(transient.tasks_initialized == "True")
 
+
 class HostSerializerCreateTest(TestCase):
     fixtures = ["../fixtures/test/test_host_upload.yaml"]
 
@@ -156,7 +157,7 @@ class HostSerializerCreateTest(TestCase):
             "dec_deg": 1.03586,
             "redshift": 0.1,
             "photometric_redshift": 0.3,
-            "milkyway_dust_reddening": 0.4
+            "milkyway_dust_reddening": 0.4,
         }
 
         transient = models.Transient.objects.get(name__exact="2022testone")
@@ -181,7 +182,7 @@ class HostSerializerUpdateTest(TestCase):
             "dec_deg": 1.0,
             "redshift": 0.05,
             "photometric_redshift": 0.3,
-            "milkyway_dust_reddening": 0.5
+            "milkyway_dust_reddening": 0.5,
         }
 
         transient = models.Transient.objects.get(name__exact="2022testone")
@@ -196,4 +197,3 @@ class HostSerializerUpdateTest(TestCase):
         self.assertTrue(transient.host.dec_deg == 1.0)
         self.assertTrue(transient.host.redshift == 0.05)
         self.assertTrue(transient.host.milkyway_dust_reddening == 0.5)
-
