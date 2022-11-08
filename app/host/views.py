@@ -7,6 +7,7 @@ from revproxy.views import ProxyView
 
 from .forms import ImageGetForm
 from .forms import TransientSearchForm
+from .host_utils import select_aperture
 from .models import Acknowledgement
 from .models import Aperture
 from .models import AperturePhotometry
@@ -70,13 +71,20 @@ def results(request, slug):
     transients = Transient.objects.all()
     transient = transients.get(name__exact=slug)
 
-    global_aperture = Aperture.objects.filter(type__exact="global", transient=transient)
+    global_aperture = select_aperture(transient)
+
     local_aperture = Aperture.objects.filter(type__exact="local", transient=transient)
     local_aperture_photometry = AperturePhotometry.objects.filter(
-        transient=transient, aperture__type__exact="local"
+        transient=transient,
+        aperture__type__exact="local",
+        flux__isnull=False,
+        is_validated=True,
     )
     global_aperture_photometry = AperturePhotometry.objects.filter(
-        transient=transient, aperture__type__exact="global"
+        transient=transient,
+        aperture__type__exact="global",
+        flux__isnull=False,
+        is_validated=True,
     )
 
     local_sed_obj = SEDFittingResult.objects.filter(

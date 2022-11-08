@@ -15,6 +15,12 @@
     name: Global aperture photometry
 - model: host.Task
   fields:
+    name: Validate local photometry
+- model: host.Task
+  fields:
+    name: Validate global photometry
+- model: host.Task
+  fields:
     name: Host information
 - model: host.Task
   fields:
