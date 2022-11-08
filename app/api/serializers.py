@@ -82,6 +82,27 @@ class HostSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("Host DEC is not valid")
 
+    def create(self, validated_data):
+        """Creates new Host with transient"""
+        transient = validated_data["transient"]
+        del validated_data["transient"]
+        host = models.Host.objects.create(**validated_data)
+        transient.host = host
+        transient.save()
+        return host
+
+    def update(self, instance, validated_data):
+        """Updates existing transient"""
+        transient = validated_data["transient"]
+        del validated_data["transient"]
+        transient.host = instance
+        transient.save()
+        for field in self.fields:
+            setattr(
+                instance, field, validated_data.get(field, getattr(instance, field))
+            )
+        instance.save()
+        return instance
 
 class ApertureSerializer(serializers.ModelSerializer):
     cutout = CutoutField(read_only=True)

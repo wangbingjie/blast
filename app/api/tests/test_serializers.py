@@ -118,7 +118,7 @@ class SerializerCreateTest(TestCase):
         self.assertTrue(object_data == transient_data)
 
 
-class SerializerUpdateTest(TestCase):
+class TransientSerializerUpdateTest(TestCase):
     fixtures = ["../fixtures/test/test_transient_upload.yaml"]
 
     def test_transient_update(self):
@@ -145,3 +145,55 @@ class SerializerUpdateTest(TestCase):
         self.assertTrue(transient.dec_deg == 1.03586)
         self.assertTrue(transient.tns_id == 9999)
         self.assertTrue(transient.tasks_initialized == "True")
+
+class HostSerializerCreateTest(TestCase):
+    fixtures = ["../fixtures/test/test_host_upload.yaml"]
+
+    def test_host_create(self):
+        host_data = {
+            "name": "testhost",
+            "ra_deg": 121.6015,
+            "dec_deg": 1.03586,
+            "redshift": 0.1,
+            "photometric_redshift": 0.3,
+            "milkyway_dust_reddening": 0.4
+        }
+
+        transient = models.Transient.objects.get(name__exact="2022testone")
+        serial = serializers.HostSerializer(data=host_data)
+        serial.is_valid()
+        serial.save(transient=transient)
+        transient = models.Transient.objects.get(name__exact="2022testone")
+        self.assertTrue(transient.host.name == "testhost")
+        self.assertTrue(transient.host.ra_deg == 121.6015)
+        self.assertTrue(transient.host.dec_deg == 1.03586)
+        self.assertTrue(transient.host.redshift == 0.1)
+        self.assertTrue(transient.host.milkyway_dust_reddening == 0.4)
+
+
+class HostSerializerUpdateTest(TestCase):
+    fixtures = ["../fixtures/test/test_host_update.yaml"]
+
+    def test_host_update(self):
+        host_data = {
+            "name": "testhost",
+            "ra_deg": 100.0,
+            "dec_deg": 1.0,
+            "redshift": 0.05,
+            "photometric_redshift": 0.3,
+            "milkyway_dust_reddening": 0.5
+        }
+
+        transient = models.Transient.objects.get(name__exact="2022testone")
+        self.assertTrue(transient.host.name == "PSO J080624.103+010209.859")
+        host = models.Host.objects.get(transient=transient)
+        serial = serializers.HostSerializer(host, data=host_data)
+        serial.is_valid()
+        serial.save(transient=transient)
+        transient = models.Transient.objects.get(name__exact="2022testone")
+        self.assertTrue(transient.host.name == "testhost")
+        self.assertTrue(transient.host.ra_deg == 100.0)
+        self.assertTrue(transient.host.dec_deg == 1.0)
+        self.assertTrue(transient.host.redshift == 0.05)
+        self.assertTrue(transient.host.milkyway_dust_reddening == 0.5)
+
