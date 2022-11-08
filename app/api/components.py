@@ -136,6 +136,7 @@ def sed_fit_component(transient_name: str) -> List[DataModelComponent]:
         )
     return components
 
+
 data_model_components = [
     transient_component,
     host_component,
@@ -144,7 +145,10 @@ data_model_components = [
     sed_fit_component,
 ]
 
-def transient_data_model_components(transient_name: str, components=data_model_components) -> List[DataModelComponent]:
+
+def transient_data_model_components(
+    transient_name: str, components=data_model_components
+) -> List[DataModelComponent]:
     """
     Get all data model components for a transient.
 
