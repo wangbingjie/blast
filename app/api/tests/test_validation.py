@@ -1,6 +1,6 @@
-from api.components import data_model_components
 import api.datamodel as datamodel
 import api.validation as validation
+from api.components import data_model_components
 from django.test import TestCase
 
 
