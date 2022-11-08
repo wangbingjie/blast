@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 
 from . import datamodel
 from .components import data_model_components
-
+from api import validation
 
 def transient_exists(transient_name: str) -> bool:
     """
@@ -97,8 +97,9 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
 @parser_classes([JSONParser])
 def upload_transient_data(request):
 
-    transient_name = request.data["transient_name"]
-    transient_ra = request.data["transient_ra_deg"]
+    if validation.science_payload_valid(request.data):
+        response = Response(request.data["transient_name"], status=status.HTTP_201_CREATED)
+    else:
+        response = Response("Transient data not valid", status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    print(request.data)
-    return Response(request.data["transient_name"], status=status.HTTP_201_CREATED)
+    return response

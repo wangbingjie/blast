@@ -104,7 +104,7 @@ class Transient(SkyObject):
     """
 
     name = models.CharField(max_length=20)
-    tns_id = models.IntegerField()
+    tns_id = models.IntegerField(null=True, blank=True)
     tns_prefix = models.CharField(max_length=20)
     public_timestamp = models.DateTimeField(null=True, blank=True)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, null=True, blank=True)
@@ -178,7 +178,7 @@ class Task(models.Model):
 
 class TaskRegister(models.Model):
     """
-    Keep track of the the various processing status of a transient.
+    Keep track of the various processing status of a transient.
     """
 
     task = models.ForeignKey(Task, on_delete=models.CASCADE)

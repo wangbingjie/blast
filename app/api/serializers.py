@@ -44,6 +44,18 @@ class TransientSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("Transient DEC is not valid")
 
+    def create(self, validated_data):
+        """Creates new transient"""
+        return models.Transient.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """Updates existing transient"""
+        for field in self.fields:
+            setattr(instance, field, validated_data.get(field, getattr(instance, field)))
+        instance.tasks_initialized = "True"
+        instance.save()
+        return instance
+
 
 class HostSerializer(serializers.ModelSerializer):
     class Meta:

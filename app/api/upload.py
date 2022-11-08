@@ -4,11 +4,11 @@ Functions to help with the house keeping of uploading transient data
 import host.models as models
 
 
-def ingest_uploaded_transient(sciennce_payload, transient_data_model_component):
+def ingest_uploaded_transient(science_payload, transient_data_model_component):
     """
 
     parameters
-        sciennce_payload
+        science_payload
         transient_data_model_component
     Returns
         None, initialized transient so data can be uploaded.
