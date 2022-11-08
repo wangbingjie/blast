@@ -52,16 +52,15 @@ def science_payload_valid(science_payload: dict, data_model) -> bool:
     returns:
         True if science payload is valid, False otherwise.
     """
-    column_names = science_payload.keys()
+    all_column_names = science_payload.keys()
 
     for component in data_model:
-        column_names = [name for name in column_names if component.prefix in name]
+        column_names = [name for name in all_column_names if component.prefix in name]
         record_names = [name.replace(component.prefix, "") for name in column_names]
         data = {
             record: science_payload[column]
             for column, record in zip(column_names, record_names)
         }
-
         if not component.serializer(data=data).is_valid():
             return False
 

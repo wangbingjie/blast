@@ -136,7 +136,6 @@ def sed_fit_component(transient_name: str) -> List[DataModelComponent]:
         )
     return components
 
-
 data_model_components = [
     transient_component,
     host_component,
@@ -144,3 +143,14 @@ data_model_components = [
     photometry_component,
     sed_fit_component,
 ]
+
+def transient_data_model_components(transient_name: str, components=data_model_components) -> List[DataModelComponent]:
+    """
+    Get all data model components for a transient.
+
+    Parameters
+        transient_name: Name of the transient e.g. 2022ann
+        components: List of data model components for the transient
+    Returns
+        List of data model components
+    """
