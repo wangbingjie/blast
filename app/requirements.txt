@@ -104,4 +104,5 @@ astro-sedpy
 django-revproxy
 djangorestframework
 fsps==0.4.1
-opencv-python==4.6.0.66
+opencv_python==4.6.0.66
+extinction==0.4.6

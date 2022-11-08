@@ -126,6 +126,19 @@ class Transient(SkyObject):
         progress = 100 * (completed_tasks / total_tasks) if total_tasks > 0 else 0
         return int(round(progress, 0))
 
+    @property
+    def best_redshift(self):
+        """get the best redshift for a transient"""
+        if self.host.redshift is not None:
+            z = self.host.redshift
+        elif self.redshift is not None:
+            z = self.redshift
+        elif self.host.photometric_redshift is not None:
+            z = self.host.photometric_redshift
+        else:
+            z = None
+        return z
+
 
 class Status(models.Model):
     """
@@ -229,6 +242,7 @@ class Filter(models.Model):
     vosa_id = models.CharField(max_length=20)
     image_download_method = models.CharField(max_length=20)
     pixel_size_arcsec = models.FloatField()
+    image_fwhm_arcsec = models.FloatField(null=True, blank=True)
     wavelength_eff_angstrom = models.FloatField()
     wavelength_min_angstrom = models.FloatField()
     wavelength_max_angstrom = models.FloatField()
@@ -364,10 +378,11 @@ class AperturePhotometry(models.Model):
     aperture = models.ForeignKey(Aperture, on_delete=models.CASCADE)
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
-    flux = models.FloatField()
+    flux = models.FloatField(blank=True, null=True)
     flux_error = models.FloatField(blank=True, null=True)
     magnitude = models.FloatField(blank=True, null=True)
     magnitude_error = models.FloatField(blank=True, null=True)
+    is_validated = models.BooleanField(blank=True, null=True)
 
     @property
     def flux_rounded(self):

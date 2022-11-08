@@ -2,19 +2,26 @@ import glob
 import math
 import os
 import time
+import warnings
 from collections import namedtuple
 
 import astropy.units as u
+import extinction
 import numpy as np
 import yaml
 from astropy.convolution import Gaussian2DKernel
 from astropy.coordinates import SkyCoord
+from astropy.cosmology import FlatLambdaCDM
+from astropy.io import fits
 from astropy.stats import gaussian_fwhm_to_sigma
 from astropy.units import Quantity
 from astropy.wcs import WCS
 from astroquery.hips2fits import hips2fits
 from astroquery.ipac.ned import Ned
 from astroquery.sdss import SDSS
+
+cosmo = FlatLambdaCDM(H0=70, Om0=0.315)
+
 from django.conf import settings
 from dustmaps.sfd import SFDQuery
 from photutils.aperture import aperture_photometry
@@ -31,6 +38,9 @@ from .photometric_calibration import flux_to_mag
 from .photometric_calibration import flux_to_mJy_flux
 from .photometric_calibration import fluxerr_to_magerr
 from .photometric_calibration import fluxerr_to_mJy_fluxerr
+
+from .models import Cutout
+from .models import Aperture
 
 
 def survey_list(survey_metadata_path):
@@ -65,7 +75,7 @@ def survey_list(survey_metadata_path):
     return survey_list
 
 
-def build_source_catalog(image, background, threshhold_sigma=1.0, npixels=10):
+def build_source_catalog(image, background, threshhold_sigma=3.0, npixels=10):
     """
     Constructs a source catalog given an image and background estimation
     Parameters
@@ -185,7 +195,11 @@ def do_aperture_photometry(image, sky_aperture, filter):
     magnitude = flux_to_mag(uncalibrated_flux, zpt)
     magnitude_error = fluxerr_to_magerr(uncalibrated_flux, uncalibrated_flux_err)
     if magnitude != magnitude:
-        magnitude, magnitude_error = 0, 0
+        magnitude, magnitude_error = None, None
+    if flux != flux or flux_error != flux_error:
+        flux, flux_error = None, None
+
+    wave_eff = filter.transmission_curve().wave_effective
 
     return {
         "flux": flux,
@@ -201,6 +215,102 @@ def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
     ebv = SFDQuery()(position)
     # see Schlafly & Finkbeiner 2011 for the 0.86 correction term
     return 0.86 * ebv
+
+
+def check_local_radius(aperture_size, redshift, image_fwhm_arcsec):
+    """Checks whether filter image FWHM is larger than
+    the aperture size"""
+
+    dadist = cosmo.angular_diameter_distance(redshift).value
+    apr_arcsec = 2 / (
+        dadist * 1000 * (np.pi / 180.0 / 3600.0)
+    )  # 2 kpc aperture radius is this many arcsec
+
+    return apr_arcsec > image_fwhm_arcsec
+
+
+def check_global_contamination(global_aperture_phot, aperture_primary):
+    """Checks whether aperture is contaminated by multiple objects"""
+    warnings.simplefilter("ignore")
+    is_contam = False
+    aperture = global_aperture_phot.aperture
+    # check both the image used to generate aperture
+    # and the image used to measure photometry
+    for cutout_name in [
+        global_aperture_phot.aperture.cutout.fits.name,
+        aperture_primary.cutout.fits.name,
+    ]:
+
+        # UV photons are too sparse, segmentation map
+        # builder cannot easily handle these
+        if "/GALEX/" in cutout_name:
+            continue
+
+        # copy the steps to build segmentation map
+        image = fits.open(cutout_name)
+        wcs = WCS(image[0].header)
+        background = estimate_background(image)
+        catalog = build_source_catalog(
+            image, background, threshhold_sigma=5, npixels=15
+        )
+        source_data = match_source(aperture.sky_coord, catalog, wcs)
+
+        mask_image = (
+            aperture.sky_aperture.to_pixel(wcs)
+            .to_mask()
+            .to_image(np.shape(image[0].data))
+        )
+        obj_ids = catalog._segment_img.data[np.where(mask_image == True)]
+        source_obj = source_data._labels
+
+        # let's look for contaminants
+        unq_obj_ids = np.unique(obj_ids)
+        if len(unq_obj_ids[(unq_obj_ids != 0) & (unq_obj_ids != source_obj)]):
+            is_contam = True
+
+    return is_contam
+
+
+def select_cutout_aperture(cutouts):
+    """
+    Select cutout for aperture
+    """
+    filter_names = [
+        "PanSTARRS_g",
+        "PanSTARRS_r",
+        "PanSTARRS_i",
+        "SDSS_r",
+        "SDSS_i",
+        "SDSS_g",
+        "DES_r",
+        "DES_i",
+        "DES_g",
+        "2MASS_H",
+    ]
+
+    choice = 0
+    filter_choice = filter_names[choice]
+
+    while not cutouts.filter(filter__name=filter_choice).exists():
+        choice += 1
+        filter_choice = filter_names[choice]
+
+    return cutouts.filter(filter__name=filter_choice)
+
+
+def select_aperture(transient):
+
+    cutouts = Cutout.objects.filter(transient=transient)
+    if len(cutouts):
+        cutout_for_aperture = select_cutout_aperture(cutouts)
+    if len(cutouts) and len(cutout_for_aperture):
+        global_aperture = Aperture.objects.filter(
+            type__exact="global", transient=transient, cutout=cutout_for_aperture[0]
+        )
+    else:
+        global_aperture = Aperture.objects.none()
+
+    return global_aperture
 
 
 # def find_host_data(position, name='No name'):
@@ -256,7 +366,10 @@ def estimate_background(image):
     """
     image_data = image[0].data
     box_size = int(0.1 * np.sqrt(image_data.size))
-    return Background2D(image_data, box_size=box_size)
+    try:
+        return Background2D(image_data, box_size=box_size)
+    except ValueError:
+        return Background2D(image_data, box_size=box_size, exclude_percentile=50)
 
 
 def construct_aperture(image, position):
