@@ -121,13 +121,17 @@ class ApertureSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Creates new Aperture with transient"""
-        validated_data["name"] = validated_data["transient"].name + "_" + validated_data["type"]
+        validated_data["name"] = (
+            validated_data["transient"].name + "_" + validated_data["type"]
+        )
         aperture = models.Aperture.objects.create(**validated_data)
         return aperture
 
     def update(self, instance, validated_data):
         """Updates existing Aperture"""
-        validated_data["name"] = validated_data["transient"].name + "_" + validated_data["type"]
+        validated_data["name"] = (
+            validated_data["transient"].name + "_" + validated_data["type"]
+        )
         for field in self.fields:
             setattr(
                 instance, field, validated_data.get(field, getattr(instance, field))
@@ -152,8 +156,6 @@ class ApertureSerializer(serializers.ModelSerializer):
             return value
         else:
             raise serializers.ValidationError("Aperture DEC is not valid")
-
-
 
 
 class AperturePhotometrySerializer(serializers.ModelSerializer):

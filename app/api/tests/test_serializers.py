@@ -198,9 +198,9 @@ class HostSerializerUpdateTest(TestCase):
         self.assertTrue(transient.host.redshift == 0.05)
         self.assertTrue(transient.host.milkyway_dust_reddening == 0.5)
 
+
 class ApertureSerializerCreateTest(TestCase):
     fixtures = ["../fixtures/test/test_aperture_upload.yaml"]
-
 
     def test_aperture_create(self):
 
@@ -210,7 +210,7 @@ class ApertureSerializerCreateTest(TestCase):
             "orientation_deg": 10.0,
             "semi_major_axis_arcsec": 5.0,
             "semi_minor_axis_arcsec": 3.0,
-            "cutout": "2MASS_J"
+            "cutout": "2MASS_J",
         }
 
         transient = models.Transient.objects.get(name__exact="2022testone")
@@ -228,9 +228,9 @@ class ApertureSerializerCreateTest(TestCase):
         self.assertTrue(aperture.name == "2022testone_local")
         self.assertTrue(aperture.transient.name == "2022testone")
 
+
 class ApertureSerializerUpdateTest(TestCase):
     fixtures = ["../fixtures/test/test_aperture_update.yaml"]
-
 
     def test_aperture_update(self):
 
@@ -240,7 +240,7 @@ class ApertureSerializerUpdateTest(TestCase):
             "orientation_deg": 10.0,
             "semi_major_axis_arcsec": 5.0,
             "semi_minor_axis_arcsec": 3.0,
-            "cutout": "2MASS_J"
+            "cutout": "2MASS_J",
         }
 
         transient = models.Transient.objects.get(name__exact="2022testone")
