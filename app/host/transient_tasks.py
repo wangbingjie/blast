@@ -516,12 +516,13 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
         cutouts = Cutout.objects.filter(transient=transient)
         cutout_for_aperture = select_cutout_aperture(cutouts)[0]
         aperture_primary = Aperture.objects.get(
-            cutout=cutout_for_aperture, type="global"
+            cutout__name=cutout_for_aperture.name, type="global"
         )
 
         global_aperture_photometry = AperturePhotometry.objects.filter(
             transient=transient, aperture__type="global"
         )
+        
         if not len(global_aperture_photometry):
             return "global photometry validation failed"
 

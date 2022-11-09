@@ -55,7 +55,7 @@
     survey: [WISE]
     sedpy_id: wise_w1
     hips_id: CDS/P/allWISE/W1
-    pixel_size_arcsec: 2.75
+    pixel_size_arcsec: 1.375
     image_fwhm_arcsec: 5.84
     vosa_id: WISE/WISE.W1
     image_download_method: hips
@@ -63,7 +63,7 @@
     wavelength_min_angstrom: 27540.97
     wavelength_max_angstrom: 38723.88
     vega_zero_point_jansky: 309.54
-    magnitude_zero_point: 20.752
+    magnitude_zero_point: 20.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'wise_w1'
 - model: host.Filter
@@ -71,8 +71,8 @@
     name: WISE_W2
     survey: [WISE]
     sedpy_id: wise_w2
-    hips_id: CDS/P/WISE/W2
-    pixel_size_arcsec: 2.75
+    hips_id: CDS/P/allWISE/W2
+    pixel_size_arcsec: 1.375
     image_fwhm_arcsec: 6.48
     vosa_id: WISE/WISE.W2
     image_download_method: hips
@@ -80,7 +80,7 @@
     wavelength_min_angstrom: 39633.26
     wavelength_max_angstrom: 53413.60
     vega_zero_point_jansky: 171.79
-    magnitude_zero_point: 19.596
+    magnitude_zero_point: 19.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'wise_w2'
 - model: host.Filter
@@ -88,8 +88,8 @@
     name: WISE_W3
     survey: [WISE]
     sedpy_id: wise_w3
-    hips_id: CDS/P/WISE/W3
-    pixel_size_arcsec: 2.75
+    hips_id: CDS/P/allWISE/W3
+    pixel_size_arcsec: 1.375
     image_fwhm_arcsec: 6.72
     vosa_id: WISE/WISE.W3
     image_download_method: hips
@@ -97,7 +97,7 @@
     wavelength_min_angstrom: 74430.44
     wavelength_max_angstrom: 172613.43
     vega_zero_point_jansky: 31.67
-    magnitude_zero_point: 17.800
+    magnitude_zero_point: 18.0
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'wise_w3'
 - model: host.Filter
@@ -105,8 +105,8 @@
     name: WISE_W4
     survey: [WISE]
     sedpy_id: wise_w4
-    hips_id: CDS/P/WISE/W4
-    pixel_size_arcsec: 5.5
+    hips_id: CDS/P/allWISE/W4
+    pixel_size_arcsec: 1.375
     image_fwhm_arcsec: 11.82
     vosa_id: WISE/WISE.W4
     image_download_method: hips
@@ -114,7 +114,7 @@
     wavelength_min_angstrom: 195200.83
     wavelength_max_angstrom: 279107.24
     vega_zero_point_jansky: 8.36
-    magnitude_zero_point: 12.945
+    magnitude_zero_point: 13.0
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'wise_w4'
 - model: host.filter
