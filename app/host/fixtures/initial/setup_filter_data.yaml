@@ -241,8 +241,8 @@
     name: SDSS_i
     survey: [SDSS]
     sedpy_id: sdss_i
-    hips_id: CDS/P/SDSS9/i
-    pixel_size_arcsec: 0.29296875
+    hips_id: CDS/P/SDSS17/i
+    pixel_size_arcsec: 0.4
     image_fwhm_arcsec: 1.26
     vosa_id: SLOAN/SDSS.i
     image_download_method: hips
@@ -258,8 +258,8 @@
     name: SDSS_r
     survey: [SDSS]
     sedpy_id: sdss_r
-    hips_id: CDS/P/SDSS9/r
-    pixel_size_arcsec: 0.29296875
+    hips_id: CDS/P/SDSS17/r
+    pixel_size_arcsec: 0.4
     image_fwhm_arcsec: 1.32
     vosa_id: SLOAN/SDSS.r
     image_download_method: hips
@@ -275,8 +275,8 @@
     name: SDSS_u
     survey: [SDSS]
     sedpy_id: sdss_u
-    hips_id: CDS/P/SDSS9/u
-    pixel_size_arcsec: 0.29296875
+    hips_id: CDS/P/SDSS17/u
+    pixel_size_arcsec: 0.4
     image_fwhm_arcsec: 1.53
     vosa_id: SLOAN/SDSS.u
     image_download_method: hips
@@ -292,8 +292,8 @@
     name: SDSS_z
     survey: [SDSS]
     sedpy_id: sdss_z
-    hips_id: CDS/P/SDSS9/z
-    pixel_size_arcsec: 0.29296875
+    hips_id: CDS/P/SDSS17/z
+    pixel_size_arcsec: 0.4
     image_fwhm_arcsec: 1.29
     vosa_id: SLOAN/SDSS.z
     image_download_method: hips
@@ -309,8 +309,8 @@
     name: SDSS_g
     survey: [SDSS]
     sedpy_id: sdss_g
-    hips_id: CDS/P/SDSS9/g
-    pixel_size_arcsec: 0.29296875
+    hips_id: CDS/P/SDSS17/g
+    pixel_size_arcsec: 0.4
     image_fwhm_arcsec: 1.44
     vosa_id: SLOAN/SDSS.g
     image_download_method: hips
