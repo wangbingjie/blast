@@ -104,6 +104,7 @@ class HostSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class ApertureSerializer(serializers.ModelSerializer):
     cutout = CutoutField(read_only=True)
 
