@@ -103,6 +103,8 @@ def build_source_catalog(image, background, threshhold_sigma=3.0, npixels=10):
     segmentation = detect_sources(
         background_subtracted_data, threshold, npixels=npixels
     )
+    if segmentation is None:
+        return None
     deblended_segmentation = deblend_sources(
         background_subtracted_data, segmentation, npixels=npixels
     )
@@ -217,7 +219,17 @@ def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
     return 0.86 * ebv
 
 
-def check_local_radius(aperture_size, redshift, image_fwhm_arcsec):
+def get_local_aperture_size(redshift):
+    """find the size of a 2 kpc radius in arcsec"""
+
+    dadist = cosmo.angular_diameter_distance(redshift).value
+    apr_arcsec = 2 / (
+        dadist * 1000 * (np.pi / 180.0 / 3600.0)
+    )  # 2 kpc aperture radius is this many arcsec
+    
+    return apr_arcsec
+    
+def check_local_radius(redshift, image_fwhm_arcsec):
     """Checks whether filter image FWHM is larger than
     the aperture size"""
 
@@ -253,6 +265,12 @@ def check_global_contamination(global_aperture_phot, aperture_primary):
         catalog = build_source_catalog(
             image, background, threshhold_sigma=5, npixels=15
         )
+
+        # catalog is None is no sources are detected in the image
+        # so we don't have to worry about contamination in that case
+        if catalog is None:
+            continue
+
         source_data = match_source(aperture.sky_coord, catalog, wcs)
 
         mask_image = (

@@ -14,6 +14,7 @@ from .host_utils import get_dust_maps
 from .host_utils import query_ned
 from .host_utils import query_sdss
 from .host_utils import select_cutout_aperture
+from .host_utils import get_local_aperture_size
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
@@ -249,6 +250,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
         return {
             "Cutout download": "processed",
             "Local aperture photometry": "not processed",
+            "Host match": "processed"
         }
 
     @property
@@ -267,14 +269,19 @@ class LocalAperturePhotometry(TransientTaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
+        if transient.best_redshift is None:
+            return "failed"
+        
+        aperture_size = get_local_aperture_size(transient.best_redshift)
+        
         query = {"name__exact": f"{transient.name}_local"}
         data = {
             "name": f"{transient.name}_local",
             "orientation_deg": 0.0,
             "ra_deg": transient.sky_coord.ra.degree,
             "dec_deg": transient.sky_coord.dec.degree,
-            "semi_major_axis_arcsec": 1.0,
-            "semi_minor_axis_arcsec": 1.0,
+            "semi_major_axis_arcsec": aperture_size,
+            "semi_minor_axis_arcsec": aperture_size,
             "transient": transient,
             "type": "local",
         }
@@ -345,7 +352,7 @@ class GlobalAperturePhotometry(TransientTaskRunner):
         cutouts = Cutout.objects.filter(transient=transient)
         cutout_for_aperture = select_cutout_aperture(cutouts)[0]
         aperture = Aperture.objects.get(cutout=cutout_for_aperture, type="global")
-
+        query = {"name": f"{cutout_for_aperture.name}_global"}
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
 
@@ -353,7 +360,7 @@ class GlobalAperturePhotometry(TransientTaskRunner):
             # adjust semi-major/minor axes for size
             if f"{cutout.name}_global" != aperture.name:
 
-                if not len(Aperture.objects.filter(cutout=f"{cutout.name}_global")):
+                if not len(Aperture.objects.filter(cutout__name=f"{cutout.name}_global")):
 
                     semi_major_axis = (
                         aperture.semi_major_axis_arcsec
@@ -463,7 +470,6 @@ class ValidateLocalPhotometry(TransientTaskRunner):
         for local_aperture_phot in local_aperture_photometry:
 
             is_validated = check_local_radius(
-                local_aperture_phot.aperture.semi_major_axis_arcsec,
                 redshift,
                 local_aperture_phot.filter.image_fwhm_arcsec,
             )

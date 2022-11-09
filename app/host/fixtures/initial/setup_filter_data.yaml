@@ -54,7 +54,7 @@
     name: WISE_W1
     survey: [WISE]
     sedpy_id: wise_w1
-    hips_id: CDS/P/WISE/W1
+    hips_id: CDS/P/allWISE/W1
     pixel_size_arcsec: 2.75
     image_fwhm_arcsec: 5.84
     vosa_id: WISE/WISE.W1

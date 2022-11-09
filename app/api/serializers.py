@@ -49,7 +49,7 @@ class ApertureSerializer(serializers.ModelSerializer):
 class AperturePhotometrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.AperturePhotometry
-        fields = ["flux", "flux_error", "magnitude", "magnitude_error"]
+        fields = ["flux", "flux_error", "magnitude", "magnitude_error","is_validated"]
 
 
 class SEDFittingResultSerializer(serializers.ModelSerializer):
