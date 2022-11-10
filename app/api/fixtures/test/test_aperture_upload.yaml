@@ -37,4 +37,3 @@
       filter: [2MASS_J]
       transient: [2022testone]
       fits: /../cutout_cdn/2022testone/2MASS/2MASS_J.fits
-

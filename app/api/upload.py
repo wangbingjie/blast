@@ -6,6 +6,7 @@ import api.datamodel as datamodel
 import host.models as models
 from host.base_tasks import initialise_all_tasks_status
 
+
 def ingest_uploaded_transient(science_payload, data_model):
     """
     Upload science payload to the database, overwrites transient if
@@ -31,14 +32,18 @@ def ingest_uploaded_transient(science_payload, data_model):
     initialise_all_tasks_status(transient, status_message="processed")
     create_transient_cutout_placeholders(transient_name)
 
-    models_in_order = [models.Host, models.Aperture, models.AperturePhotometry, models.SEDFittingResult]
+    models_in_order = [
+        models.Host,
+        models.Aperture,
+        models.AperturePhotometry,
+        models.SEDFittingResult,
+    ]
 
     for model in models_in_order:
         components = components_with_model(data_model, model)
         for component in components:
             serializer = component.serializer()
             serializer.save(science_payload, component)
-
 
 
 def remove_transient_data(transient_name):

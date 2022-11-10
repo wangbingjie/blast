@@ -5,11 +5,12 @@ the API.
 """
 from typing import List
 
+from api.datamodel import DataModelComponent
+from api.datamodel import unpack_component_groups
 from host import models
 
 from . import serializers
-from api.datamodel import DataModelComponent
-from api.datamodel import unpack_component_groups
+
 
 def transient_component(transient_name) -> List[DataModelComponent]:
     """
@@ -159,7 +160,5 @@ def transient_data_model_components(
         List of data model components
     """
 
-    data_model = [
-        component(transient_name) for component in components
-    ]
+    data_model = [component(transient_name) for component in components]
     return unpack_component_groups(data_model)

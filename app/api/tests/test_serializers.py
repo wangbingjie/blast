@@ -1,6 +1,5 @@
-import api.serializers as serializers
 import api.components as components
-
+import api.serializers as serializers
 from django.test import TestCase
 from host import models
 
@@ -174,6 +173,7 @@ class ApertureLocalSerializerCreateTest(TestCase):
         self.assertTrue(aperture.semi_minor_axis_arcsec == 3.0)
         self.assertTrue(aperture.name == "2022testone_local")
         self.assertTrue(aperture.transient.name == "2022testone")
+
 
 class ApertureGlobalSerializerCreateTest(TestCase):
     fixtures = ["../fixtures/test/test_aperture_upload.yaml"]

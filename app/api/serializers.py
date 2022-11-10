@@ -10,10 +10,12 @@ class CutoutField(serializers.RelatedField):
     def to_representation(self, value):
         return value.filter.name
 
+
 class SkyObjectSerializer(serializers.ModelSerializer):
     """
     Abstract serializer to validate RA an Dec values.
     """
+
     def validate_ra_deg(self, value):
         """
         Check that ra is valid
@@ -31,7 +33,6 @@ class SkyObjectSerializer(serializers.ModelSerializer):
             return value
         else:
             raise serializers.ValidationError("DEC is not valid")
-
 
 
 class TransientSerializer(SkyObjectSerializer):
@@ -167,7 +168,6 @@ class ApertureSerializer(serializers.ModelSerializer):
         print(data)
         return models.Aperture.objects.create(**data)
 
-
     def science_payload_to_model_data(
         self, science_payload: dict, data_model_component
     ) -> dict:
@@ -192,7 +192,8 @@ class ApertureSerializer(serializers.ModelSerializer):
 
         if data["cutout"] is not None:
             data["cutout"] = models.Cutout.objects.get(
-                transient__name__exact=transient_name, filter__name__exact=data["cutout"]
+                transient__name__exact=transient_name,
+                filter__name__exact=data["cutout"],
             )
         return data
 

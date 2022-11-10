@@ -225,7 +225,9 @@ def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
 
             best = result["bestfit"]
             a = result["obs"]["redshift"] + 1
-            fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
+            fig.line(
+                a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"])
+            )
             if obs["filters"] is not None:
                 pwave = [f.wave_effective for f in obs["filters"]]
                 fig.circle(pwave, maggies_to_mJy(best["photometry"]))

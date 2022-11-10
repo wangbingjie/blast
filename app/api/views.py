@@ -3,6 +3,7 @@ import itertools
 import pandas as pd
 from api import upload
 from api import validation
+from api.components import transient_data_model_components
 from astropy.coordinates import SkyCoord
 from host.models import Transient
 from rest_framework import status
@@ -15,7 +16,7 @@ from rest_framework.views import APIView
 
 from . import datamodel
 from .components import data_model_components
-from api.components import transient_data_model_components
+
 
 def transient_exists(transient_name: str) -> bool:
     """
