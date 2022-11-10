@@ -1,8 +1,8 @@
 import itertools
 
 import pandas as pd
-from api import validation
 from api import upload
+from api import validation
 from astropy.coordinates import SkyCoord
 from host.models import Transient
 from rest_framework import status
@@ -99,7 +99,9 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
 @parser_classes([JSONParser])
 def upload_transient_data(request):
 
-    data_model = [component(request.data["transient_name"]) for component in data_model_components]
+    data_model = [
+        component(request.data["transient_name"]) for component in data_model_components
+    ]
     data_model = datamodel.unpack_component_groups(data_model)
     print(request.data)
     if validation.science_payload_valid(request.data, data_model):

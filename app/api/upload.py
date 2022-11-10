@@ -1,9 +1,9 @@
 """
 Functions to help with the house keeping of uploading transient data
 """
-import host.models as models
 import api.components as api_comp
 import api.datamodel as datamodel
+import host.models as models
 
 
 def ingest_uploaded_transient(science_payload):
@@ -24,17 +24,18 @@ def ingest_uploaded_transient(science_payload):
 
     transient_component = api_comp.transient_component(transient_name)
 
-
     transient_serializer = transient_component[0].serializer(data=transient_data)
     transient_serializer.is_valid()
     transient_serializer.save()
 
     create_transient_cutout_placeholders(transient_name)
 
-    data_model = [api_comp.host_component,
-                  api_comp.aperture_component,
-                  api_comp.photometry_component,
-                  api_comp.sed_fit_component]
+    data_model = [
+        api_comp.host_component,
+        api_comp.aperture_component,
+        api_comp.photometry_component,
+        api_comp.sed_fit_component,
+    ]
     component_groups = [
         component_group(transient_name) for component_group in data_model
     ]
@@ -83,4 +84,6 @@ def create_transient_cutout_placeholders(transient_name: str):
     """
     transient = models.Transient.objects.get(name__exact=transient_name)
     for filter in models.Filter.objects.all():
-        models.Cutout.objects.create(filter=filter, transient=transient, name=f"{transient_name}_{filter.name}")
+        models.Cutout.objects.create(
+            filter=filter, transient=transient, name=f"{transient_name}_{filter.name}"
+        )
