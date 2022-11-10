@@ -11,10 +11,10 @@ from .host_utils import check_local_radius
 from .host_utils import construct_aperture
 from .host_utils import do_aperture_photometry
 from .host_utils import get_dust_maps
+from .host_utils import get_local_aperture_size
 from .host_utils import query_ned
 from .host_utils import query_sdss
 from .host_utils import select_cutout_aperture
-from .host_utils import get_local_aperture_size
 from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
@@ -250,7 +250,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
         return {
             "Cutout download": "processed",
             "Local aperture photometry": "not processed",
-            "Host match": "processed"
+            "Host match": "processed",
         }
 
     @property
@@ -271,9 +271,9 @@ class LocalAperturePhotometry(TransientTaskRunner):
 
         if transient.best_redshift is None:
             return "failed"
-        
+
         aperture_size = get_local_aperture_size(transient.best_redshift)
-        
+
         query = {"name__exact": f"{transient.name}_local"}
         data = {
             "name": f"{transient.name}_local",
@@ -360,7 +360,9 @@ class GlobalAperturePhotometry(TransientTaskRunner):
             # adjust semi-major/minor axes for size
             if f"{cutout.name}_global" != aperture.name:
 
-                if not len(Aperture.objects.filter(cutout__name=f"{cutout.name}_global")):
+                if not len(
+                    Aperture.objects.filter(cutout__name=f"{cutout.name}_global")
+                ):
 
                     semi_major_axis = (
                         aperture.semi_major_axis_arcsec
@@ -522,7 +524,7 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
         global_aperture_photometry = AperturePhotometry.objects.filter(
             transient=transient, aperture__type="global"
         )
-        
+
         if not len(global_aperture_photometry):
             return "global photometry validation failed"
 
