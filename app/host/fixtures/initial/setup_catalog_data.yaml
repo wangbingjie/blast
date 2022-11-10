@@ -24,7 +24,7 @@
     dec_column: DEJ2000
 - model: host.Catalog
   fields:
-    name: PanSTARRS_DR1
+    name: PanSTARRS_DR2
     survey: [PanSTARRS]
     vizier_id: II/349
     id_column: objID
@@ -32,7 +32,7 @@
     dec_column: DEJ2000
 - model: host.Catalog
   fields:
-    name: SDSS_DR12
+    name: SDSS_DR17
     survey: [SDSS]
     vizier_id: V/147
     id_column: objID
@@ -111,65 +111,72 @@
     mag_error_column: e_FUV.a
 - model: host.CatalogPhotometry
   fields:
-    name: PanSTARRS_g_DR1_KRON
+    name: PanSTARRS_g_DR2_KRON
     filter: [PanSTARRS_g]
-    catalog: [PanSTARRS_DR1]
+    catalog: [PanSTARRS_DR2]
     mag_column: gKmag
     mag_error_column: e_gKmag
 - model: host.CatalogPhotometry
   fields:
-    name: PanSTARRS_r_DR1_KRON
+    name: PanSTARRS_r_DR2_KRON
     filter: [PanSTARRS_r]
-    catalog: [PanSTARRS_DR1]
+    catalog: [PanSTARRS_DR2]
     mag_column: rKmag
     mag_error_column: e_rKmag
 - model: host.CatalogPhotometry
   fields:
-    name: PanSTARRS_i_DR1_KRON
+    name: PanSTARRS_i_DR2_KRON
     filter: [PanSTARRS_i]
-    catalog: [PanSTARRS_DR1]
+    catalog: [PanSTARRS_DR2]
     mag_column: iKmag
     mag_error_column: e_iKmag
 - model: host.CatalogPhotometry
   fields:
-    name: PanSTARRS_z_DR1_KRON
+    name: PanSTARRS_z_DR2_KRON
     filter: [PanSTARRS_z]
-    catalog: [PanSTARRS_DR1]
+    catalog: [PanSTARRS_DR2]
     mag_column: zKmag
     mag_error_column: e_zKmag
 - model: host.CatalogPhotometry
   fields:
     name: PanSTARRS_y_DR1_KRON
     filter: [PanSTARRS_y]
-    catalog: [PanSTARRS_DR1]
+    catalog: [PanSTARRS_DR2]
     mag_column: yKmag
     mag_error_column: e_yKmag
 - model: host.CatalogPhotometry
   fields:
-    name: SDSS_u_DR12_P
+    name: SDSS_u_DR17_P
     filter: [SDSS_u]
-    catalog: [SDSS_DR12]
+    catalog: [SDSS_DR17]
     mag_column: uPmag
     mag_error_column: e_uPmag
 - model: host.CatalogPhotometry
   fields:
-    name: SDSS_r_DR12_P
+    name: SDSS_g_DR17_P
+    filter: [SDSS_g]
+    catalog: [SDSS_DR17]
+    mag_column: gPmag
+    mag_error_column: e_gPmag
+- model: host.CatalogPhotometry
+  fields:
+    name: SDSS_r_DR17_P
     filter: [SDSS_r]
-    catalog: [SDSS_DR12]
+    catalog: [SDSS_DR17]
     mag_column: rPmag
     mag_error_column: e_rPmag
 - model: host.CatalogPhotometry
   fields:
-    name: SDSS_z_DR12_P
+    name: SDSS_z_DR17_P
     filter: [SDSS_z]
-    catalog: [SDSS_DR12]
+    catalog: [SDSS_DR17]
     mag_column: zPmag
     mag_error_column: e_zPmag
 - model: host.CatalogPhotometry
   fields:
-    name: SDSS_i_DR12_P
+    name: SDSS_i_DR17_P
     filter: [SDSS_i]
-    catalog: [SDSS_DR12]
+    catalog: [SDSS_DR17]
     mag_column: iPmag
     mag_error_column: e_iPmag
 - model: host.CatalogPhotometry
