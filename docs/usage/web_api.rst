@@ -58,12 +58,12 @@ Aperture fields
 
 <aperture_type> can either be "local" or "global".
 
-* :code:`<aperture_type>_aperture_ra_deg` - aperture Right Ascension in decimal degrees e.g., 132.3456
-* :code:`<aperture_type>_aperture_dec_deg` - aperture declination in decimal degrees e.g., 60.123424
-* :code:`<aperture_type>_orientation_deg` - orientation angle of the aperture in decimal degrees e.g., 30.123
-* :code:`<aperture_type>_semi_major_axis_arcsec` - semi major axis of the aperture in arcseconds
-* :code:`<aperture_type>_semi_minor_axis_arcsec` - semi minor axis of the aperture in arcseconds
-* :code:`<aperture_type>_cutout` - name of the cutout used to create aperture e.g, 2MASS_H, None if not cutout was used
+* :code:`aperture_<aperture_type>_ra_deg` - aperture Right Ascension in decimal degrees e.g., 132.3456
+* :code:`aperture_<aperture_type>_dec_deg` - aperture declination in decimal degrees e.g., 60.123424
+* :code:`aperture_<aperture_type>_orientation_deg` - orientation angle of the aperture in decimal degrees e.g., 30.123
+* :code:`aperture_<aperture_type>_semi_major_axis_arcsec` - semi major axis of the aperture in arcseconds
+* :code:`aperture_<aperture_type>_semi_minor_axis_arcsec` - semi minor axis of the aperture in arcseconds
+* :code:`aperture_<aperture_type>_cutout` - name of the cutout used to create aperture e.g, 2MASS_H, None if not cutout was used
 
 Photometry fields
 +++++++++++++++++

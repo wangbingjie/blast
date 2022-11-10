@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 
 from . import datamodel
 from .components import data_model_components
-
+from api.components import transient_data_model_components
 
 def transient_exists(transient_name: str) -> bool:
     """
@@ -99,13 +99,10 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
 @parser_classes([JSONParser])
 def upload_transient_data(request):
 
-    data_model = [
-        component(request.data["transient_name"]) for component in data_model_components
-    ]
-    data_model = datamodel.unpack_component_groups(data_model)
-    print(request.data)
+    data_model = transient_data_model_components(request.data["transient_name"])
+
     if validation.science_payload_valid(request.data, data_model):
-        upload.ingest_uploaded_transient(request.data)
+        upload.ingest_uploaded_transient(request.data, data_model)
         response = Response(
             request.data["transient_name"], status=status.HTTP_201_CREATED
         )

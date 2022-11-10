@@ -371,11 +371,11 @@ class AperturePhotometry(models.Model):
 
     @property
     def flux_rounded(self):
-        return round(self.flux, 2)
+        return round(self.flux, 2) if self.flux is not None else "-"
 
     @property
     def flux_error_rounded(self):
-        return round(self.flux_error, 2)
+        return round(self.flux_error, 2) if self.flux is not None else "-"
 
 
 class SEDFittingResult(models.Model):

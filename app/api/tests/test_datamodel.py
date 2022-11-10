@@ -60,17 +60,17 @@ class DatamodelConstructionTest(TestCase):
         aperture = aperture_component("2022testone")
         data = serialize_blast_science_data(aperture)
 
-        self.assertTrue(data["local_aperture_ra_deg"] == 121.6015)
-        self.assertTrue(data["local_aperture_dec_deg"] == 1.03586)
-        self.assertTrue(data["local_aperture_semi_major_axis_arcsec"] == 1.0)
-        self.assertTrue(data["local_aperture_semi_minor_axis_arcsec"] == 1.0)
-        self.assertTrue(data["local_aperture_cutout"] is None)
+        self.assertTrue(data["aperture_local_ra_deg"] == 121.6015)
+        self.assertTrue(data["aperture_local_dec_deg"] == 1.03586)
+        self.assertTrue(data["aperture_local_semi_major_axis_arcsec"] == 1.0)
+        self.assertTrue(data["aperture_local_semi_minor_axis_arcsec"] == 1.0)
+        self.assertTrue(data["aperture_local_cutout"] is None)
 
-        self.assertTrue(data["global_aperture_ra_deg"] == 11.6015)
-        self.assertTrue(data["global_aperture_dec_deg"] == 10.03586)
-        self.assertTrue(data["global_aperture_semi_major_axis_arcsec"] == 0.4)
-        self.assertTrue(data["global_aperture_semi_minor_axis_arcsec"] == 0.5)
-        self.assertTrue(data["global_aperture_cutout"] == "2MASS_J")
+        self.assertTrue(data["aperture_global_ra_deg"] == 11.6015)
+        self.assertTrue(data["aperture_global_dec_deg"] == 10.03586)
+        self.assertTrue(data["aperture_global_semi_major_axis_arcsec"] == 0.4)
+        self.assertTrue(data["aperture_global_semi_minor_axis_arcsec"] == 0.5)
+        self.assertTrue(data["aperture_global_cutout"] == "2MASS_J")
 
     def test_sed_fitting_result_build(self):
         sed_fit = sed_fit_component("2022testone")

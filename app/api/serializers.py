@@ -10,8 +10,31 @@ class CutoutField(serializers.RelatedField):
     def to_representation(self, value):
         return value.filter.name
 
+class SkyObjectSerializer(serializers.ModelSerializer):
+    """
+    Abstract serializer to validate RA an Dec values.
+    """
+    def validate_ra_deg(self, value):
+        """
+        Check that ra is valid
+        """
+        if validation.ra_deg_valid(value):
+            return value
+        else:
+            raise serializers.ValidationError("RA is not valid")
 
-class TransientSerializer(serializers.ModelSerializer):
+    def validate_dec_deg(self, value):
+        """
+        Check that dec is valid
+        """
+        if validation.dec_deg_valid(value):
+            return value
+        else:
+            raise serializers.ValidationError("DEC is not valid")
+
+
+
+class TransientSerializer(SkyObjectSerializer):
     class Meta:
         model = models.Transient
         fields = [
@@ -44,22 +67,9 @@ class TransientSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("Transient DEC is not valid")
 
-    def create(self, validated_data):
-        """Creates new transient"""
-        science_payload = validated_data["science_payload"]
-        data_model_component = validated_data["data_model_component"]
+    def save(self, science_payload, data_model_component):
         data = self.science_payload_to_model_data(science_payload, data_model_component)
-        return models.Transient.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """Updates existing transient"""
-        for field in self.fields:
-            setattr(
-                instance, field, validated_data.get(field, getattr(instance, field))
-            )
-        instance.tasks_initialized = "True"
-        instance.save()
-        return instance
+        return models.Transient.objects.create(**data)
 
     def science_payload_to_model_data(
         self, science_payload: dict, data_model_component
@@ -100,27 +110,14 @@ class HostSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("Host DEC is not valid")
 
-    def create(self, validated_data):
-        """Creates new Host with transient"""
-        transient = validated_data["transient"]
-        del validated_data["transient"]
-        host = models.Host.objects.create(**validated_data)
+    def save(self, science_payload, data_model_component):
+        data = self.science_payload_to_model_data(science_payload, data_model_component)
+        transient = data["transient"]
+        del data["transient"]
+        host = models.Host.objects.create(**data)
         transient.host = host
         transient.save()
         return host
-
-    def update(self, instance, validated_data):
-        """Updates existing transient"""
-        transient = validated_data["transient"]
-        del validated_data["transient"]
-        transient.host = instance
-        transient.save()
-        for field in self.fields:
-            setattr(
-                instance, field, validated_data.get(field, getattr(instance, field))
-            )
-        instance.save()
-        return instance
 
     def science_payload_to_model_data(
         self, science_payload: dict, data_model_component
@@ -156,26 +153,6 @@ class ApertureSerializer(serializers.ModelSerializer):
             "cutout",
         ]
 
-    def create(self, validated_data):
-        """Creates new Aperture with transient"""
-        validated_data["name"] = (
-            validated_data["transient"].name + "_" + validated_data["type"]
-        )
-        aperture = models.Aperture.objects.create(**validated_data)
-        return aperture
-
-    def update(self, instance, validated_data):
-        """Updates existing Aperture"""
-        validated_data["name"] = (
-            validated_data["transient"].name + "_" + validated_data["type"]
-        )
-        for field in self.fields + ["name"]:
-            setattr(
-                instance, field, validated_data.get(field, getattr(instance, field))
-            )
-        instance.save()
-        return instance
-
     def validate_ra_deg(self, value):
         """
         Check that ra is valid
@@ -184,6 +161,12 @@ class ApertureSerializer(serializers.ModelSerializer):
             return value
         else:
             raise serializers.ValidationError("Aperture RA is not valid")
+
+    def save(self, science_payload, data_model_component):
+        data = self.science_payload_to_model_data(science_payload, data_model_component)
+        print(data)
+        return models.Aperture.objects.create(**data)
+
 
     def science_payload_to_model_data(
         self, science_payload: dict, data_model_component
@@ -201,7 +184,7 @@ class ApertureSerializer(serializers.ModelSerializer):
         }
 
         transient_name = science_payload["transient_name"]
-        aperture_type, _ = data_model_component.prefix.split("_")
+        aperture_type = data_model_component.prefix.split("_")[1]
 
         data["transient"] = models.Transient.objects.get(name__exact=transient_name)
         data["type"] = aperture_type
@@ -209,7 +192,7 @@ class ApertureSerializer(serializers.ModelSerializer):
 
         if data["cutout"] is not None:
             data["cutout"] = models.Cutout.objects.get(
-                transient__name__exact=transient_name, filter_name__exact=data["cutout"]
+                transient__name__exact=transient_name, filter__name__exact=data["cutout"]
             )
         return data
 
@@ -228,19 +211,9 @@ class AperturePhotometrySerializer(serializers.ModelSerializer):
         model = models.AperturePhotometry
         fields = ["flux", "flux_error", "magnitude", "magnitude_error"]
 
-    def create(self, validated_data):
-        """Creates new Aperture with transient"""
-        aperture = models.AperturePhotometry.objects.create(**validated_data)
-        return aperture
-
-    def update(self, instance, validated_data):
-        """Updates existing Aperture"""
-        for field in self.fields:
-            setattr(
-                instance, field, validated_data.get(field, getattr(instance, field))
-            )
-        instance.save()
-        return instance
+    def save(self, science_payload, data_model_component):
+        data = self.science_payload_to_model_data(science_payload, data_model_component)
+        return models.AperturePhotometry.objects.create(**data)
 
     def science_payload_to_model_data(
         self, science_payload: dict, data_model_component
@@ -292,6 +265,10 @@ class SEDFittingResultSerializer(serializers.ModelSerializer):
             "log_tau_50",
             "log_tau_84",
         ]
+
+    def save(self, science_payload, data_model_component):
+        data = self.science_payload_to_model_data(science_payload, data_model_component)
+        return models.SEDFittingResult.objects.create(**data)
 
     def science_payload_to_model_data(
         self, science_payload: dict, data_model_component

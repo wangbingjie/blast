@@ -8,8 +8,8 @@ from typing import List
 from host import models
 
 from . import serializers
-from .datamodel import DataModelComponent
-
+from api.datamodel import DataModelComponent
+from api.datamodel import unpack_component_groups
 
 def transient_component(transient_name) -> List[DataModelComponent]:
     """
@@ -67,7 +67,7 @@ def aperture_component(transient_name) -> List[DataModelComponent]:
     for aperture_type in ["local", "global"]:
         components.append(
             DataModelComponent(
-                prefix=f"{aperture_type}_aperture_",
+                prefix=f"aperture_{aperture_type}_",
                 query={
                     "transient__name__exact": transient_name,
                     "type__exact": aperture_type,
@@ -158,3 +158,8 @@ def transient_data_model_components(
     Returns
         List of data model components
     """
+
+    data_model = [
+        component(transient_name) for component in components
+    ]
+    return unpack_component_groups(data_model)

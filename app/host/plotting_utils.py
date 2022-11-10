@@ -204,6 +204,7 @@ def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
         flux, flux_error, wavelength = [], [], []
 
     flux_error = [0.0 if error is None else error for error in flux_error]
+    flux = [0.0 if datapoint is None else datapoint for datapoint in flux]
 
     fig = figure(
         title="",
@@ -219,15 +220,17 @@ def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
     fig = plot_errorbar(fig, wavelength, flux, yerr=flux_error)
 
     if sed_results_file is not None:
-        print(sed_results_file)
-        result, obs, model = reader.results_from(sed_results_file, dangerous=False)
+        try:
+            result, obs, model = reader.results_from(sed_results_file, dangerous=False)
 
-        best = result["bestfit"]
-        a = result["obs"]["redshift"] + 1
-        fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
-        if obs["filters"] is not None:
-            pwave = [f.wave_effective for f in obs["filters"]]
-            fig.circle(pwave, maggies_to_mJy(best["photometry"]))
+            best = result["bestfit"]
+            a = result["obs"]["redshift"] + 1
+            fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
+            if obs["filters"] is not None:
+                pwave = [f.wave_effective for f in obs["filters"]]
+                fig.circle(pwave, maggies_to_mJy(best["photometry"]))
+        except:
+            pass
 
     # xaxis = LinearAxis()
     # figure.add_layout(xaxis, 'below')
