@@ -364,7 +364,7 @@ class AperturePhotometry(models.Model):
     aperture = models.ForeignKey(Aperture, on_delete=models.CASCADE)
     filter = models.ForeignKey(Filter, on_delete=models.CASCADE)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
-    flux = models.FloatField()
+    flux = models.FloatField(blank=True, null=True)
     flux_error = models.FloatField(blank=True, null=True)
     magnitude = models.FloatField(blank=True, null=True)
     magnitude_error = models.FloatField(blank=True, null=True)

@@ -61,7 +61,8 @@ def science_payload_valid(science_payload: dict, data_model) -> bool:
             record: science_payload[column]
             for column, record in zip(column_names, record_names)
         }
-        if not component.serializer(data=data).is_valid():
+        serializer = component.serializer(data=data)
+        if not serializer.is_valid():
             return False
 
     return True
