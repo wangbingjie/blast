@@ -226,9 +226,10 @@ def get_local_aperture_size(redshift):
     apr_arcsec = 2 / (
         dadist * 1000 * (np.pi / 180.0 / 3600.0)
     )  # 2 kpc aperture radius is this many arcsec
-    
+
     return apr_arcsec
-    
+
+
 def check_local_radius(redshift, image_fwhm_arcsec):
     """Checks whether filter image FWHM is larger than
     the aperture size"""
