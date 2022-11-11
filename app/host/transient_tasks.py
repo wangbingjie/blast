@@ -351,7 +351,7 @@ class GlobalAperturePhotometry(TransientTaskRunner):
 
         cutouts = Cutout.objects.filter(transient=transient)
         cutout_for_aperture = select_cutout_aperture(cutouts)[0]
-        aperture = Aperture.objects.get(cutout=cutout_for_aperture, type="global")
+        aperture = Aperture.objects.get(cutout__name=cutout_for_aperture.name, type="global")
         query = {"name": f"{cutout_for_aperture.name}_global"}
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
