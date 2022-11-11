@@ -414,7 +414,7 @@ def query_ned(position):
     result_table = result_table[result_table["Redshift"].mask == False]
 
     redshift = result_table["Redshift"].value
-    
+
     if redshift:
         galaxy_data = {"redshift": redshift[0]}
     else:
