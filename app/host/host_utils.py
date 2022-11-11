@@ -177,7 +177,17 @@ def do_aperture_photometry(image, sky_aperture, filter):
     wcs = WCS(image[0].header)
 
     # get the background
-    background = estimate_background(image)
+    try:
+        background = estimate_background(image)
+    except ValueError:
+        # indicates poor image data
+        return {
+            "flux": None,
+            "flux_error": None,
+            "magnitude": None,
+            "magnitude_error": None,
+        }
+        
     background_subtracted_data = image_data - background.background
 
     error = calc_total_error(image_data, background.background_rms, 1.0)
@@ -415,7 +425,7 @@ def query_ned(position):
 
     redshift = result_table["Redshift"].value
     
-    if redshift:
+    if len(redshift):
         galaxy_data = {"redshift": redshift[0]}
     else:
         galaxy_data = {"redshift": None}
