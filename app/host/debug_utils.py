@@ -1,6 +1,7 @@
+from host import tasks
 from host.models import *
 from host.transient_tasks import *
-from host import tasks
+
 
 def _overwrite_or_create_object(model, unique_object_query, object_data):
     """
@@ -20,12 +21,16 @@ def _overwrite_or_create_object(model, unique_object_query, object_data):
     except model.DoesNotExist:
         model.objects.create(**object_data)
 
+
 def get_failed_tasks(transient_name):
-    
+
     transient = Transient.objects.get(name=transient_name)
-    failed_task_register = TaskRegister.objects.filter(transient=transient,status__message='failed')
+    failed_task_register = TaskRegister.objects.filter(
+        transient=transient, status__message="failed"
+    )
 
     return failed_task_register
+
 
 def rerun_failed_task(task_register):
 
@@ -33,4 +38,3 @@ def rerun_failed_task(task_register):
     for ptask in periodic_task:
         if ptask.task_name == task.name:
             ptask._run_process(task_register.transient)
-
