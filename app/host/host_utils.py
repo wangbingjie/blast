@@ -411,8 +411,10 @@ def query_ned(position):
     """Get a Galaxy's redshift from ned if it is available."""
 
     result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
-    redshift = result_table["Redshift"].value
+    result_table = result_table[result_table["Redshift"].mask == False]
 
+    redshift = result_table["Redshift"].value
+    
     if redshift:
         galaxy_data = {"redshift": redshift[0]}
     else:
