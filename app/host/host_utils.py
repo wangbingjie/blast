@@ -187,7 +187,7 @@ def do_aperture_photometry(image, sky_aperture, filter):
             "magnitude": None,
             "magnitude_error": None,
         }
-        
+
     background_subtracted_data = image_data - background.background
 
     error = calc_total_error(image_data, background.background_rms, 1.0)
@@ -424,7 +424,7 @@ def query_ned(position):
     result_table = result_table[result_table["Redshift"].mask == False]
 
     redshift = result_table["Redshift"].value
-    
+
     if len(redshift):
         galaxy_data = {"redshift": redshift[0]}
     else:
