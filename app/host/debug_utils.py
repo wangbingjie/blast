@@ -1,6 +1,7 @@
 from host.models import *
 from host.transient_tasks import *
 from host import tasks
+from host.base_tasks import TransientTaskRunner
 
 def _overwrite_or_create_object(model, unique_object_query, object_data):
     """
@@ -20,17 +21,40 @@ def _overwrite_or_create_object(model, unique_object_query, object_data):
     except model.DoesNotExist:
         model.objects.create(**object_data)
 
-def get_failed_tasks(transient_name):
-    
-    transient = Transient.objects.get(name=transient_name)
-    failed_task_register = TaskRegister.objects.filter(transient=transient,status__message='failed')
+def get_failed_tasks(transient_name=None):
+
+    if transient_name is None:
+        failed_task_register = TaskRegister.objects.filter(status__message='failed')
+    else:
+        transient = Transient.objects.get(name=transient_name)
+        failed_task_register = TaskRegister.objects.filter(transient=transient,status__message='failed')
 
     return failed_task_register
 
 def rerun_failed_task(task_register):
 
     task = task_register.task
-    for ptask in periodic_task:
+    for ptask in tasks.periodic_tasks:
         if ptask.task_name == task.name:
-            ptask._run_process(task_register.transient)
+            print(f'Running {task.name}')
+            status = ptask._run_process(task_register.transient)
+            print(f"Status: {status}")
+    s = Status.objects.get(message=status)
+    task_register.status = s
+    task_register.save()
+    return status
 
+def set_tasks_unprocessed(transient_name):
+
+    transient = Transient.objects.get(name=transient_name)
+    all_tasks = TaskRegister.objects.filter(transient=transient)
+    for t in all_tasks:
+        s = Status.objects.get(message='not processed')
+        t.status = s
+        t.save()
+
+def run_tasks_for_transient(transient_name):
+
+    transient = Transient.objects.get(name=transient_name)
+    ttr = TransientTaskRunner()
+    
