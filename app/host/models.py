@@ -5,12 +5,12 @@ backend.
 import pandas as pd
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from astropy.io import fits
 from django.conf import settings
 from django.db import models
 from django_celery_beat.models import PeriodicTask
 from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
-from astropy.io import fits
 
 from .managers import ApertureManager
 from .managers import CatalogManager
@@ -334,10 +334,6 @@ class Cutout(models.Model):
         file = fits.open(file)
         file.writeto(self.file_path, overwrite=True)
         file.close()
-
-
-
-
 
 
 class Aperture(SkyObject):

@@ -10,6 +10,7 @@ class CutoutField(serializers.RelatedField):
     def to_representation(self, value):
         return value.filter.name
 
+
 class FitsFileField(serializers.RelatedField):
     def to_representation(self, value):
         return value.url
@@ -87,14 +88,12 @@ class TransientSerializer(SkyObjectSerializer):
             if name.startswith(data_model_component.prefix)
         ]
         records = [name.replace(data_model_component.prefix, "") for name in columns]
-        data =  {
+        data = {
             record: science_payload[column] for column, record in zip(columns, records)
         }
         data["tasks_initialized"] = "True"
         data["processing_status"] = "uploading"
         return data
-
-
 
 
 class HostSerializer(serializers.ModelSerializer):
@@ -303,12 +302,13 @@ class SEDFittingResultSerializer(serializers.ModelSerializer):
         )
         return data
 
+
 class CutoutSerializer(serializers.ModelSerializer):
     fits = FitsFileField(read_only=True)
+
     class Meta:
         model = models.Cutout
-        fields = [
-            "fits"]
+        fields = ["fits"]
 
     def save(self, science_payload, data_model_component):
         data = self.science_payload_to_model_data(science_payload, data_model_component)
@@ -327,4 +327,3 @@ class CutoutSerializer(serializers.ModelSerializer):
         data["filter"] = models.Filter.objects.get(name__exact=filter_name)
         data["name"] = f"{transient_name}_{filter_name}"
         return data
-

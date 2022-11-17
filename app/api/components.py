@@ -137,6 +137,7 @@ def sed_fit_component(transient_name: str) -> List[DataModelComponent]:
         )
     return components
 
+
 def cutout_component(transient_name: str) -> List[DataModelComponent]:
     """
     SED fit component which defines what is in the blast science payload.
@@ -156,11 +157,11 @@ def cutout_component(transient_name: str) -> List[DataModelComponent]:
                 query={
                     "transient__name__exact": transient_name,
                     "filter__name__exact": filter.name,
-                    },
-                    model=models.Cutout,
-                    serializer=serializers.CutoutSerializer,
-                )
+                },
+                model=models.Cutout,
+                serializer=serializers.CutoutSerializer,
             )
+        )
     return components
 
 

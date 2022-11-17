@@ -1,8 +1,8 @@
 """
 Helper functions to validate transient data uploads.
 """
-
 from astropy.io import fits
+
 
 def ra_deg_valid(right_ascension_degrees: float) -> bool:
     """
@@ -67,6 +67,7 @@ def science_payload_valid(science_payload: dict, data_model) -> bool:
             return False
 
     return True
+
 
 def valid_fits_file(file) -> bool:
     """

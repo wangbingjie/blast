@@ -101,7 +101,3 @@ Posting cutout images
 .. code:: none
 
     curl -X POST "http://0.0.0.0:8000/api/upload/cutout/transient_name=2010h&cutout_filter=2MASS_J" -H "Content-Disposition: attachment; filename="2010h-2MASS_J"" -H "Content-Type: application/octet-stream" --data-binary @data/cutout_cdn/2010h/2MASS/2MASS_J.fits
-
-
-
-

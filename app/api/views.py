@@ -1,18 +1,17 @@
 import itertools
 
+import host.models as models
 import pandas as pd
 from api import upload
 from api import validation
 from api.components import transient_data_model_components
 from astropy.coordinates import SkyCoord
 from host.models import Transient
-import host.models as models
-
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import FileUploadParser
-from rest_framework.parsers import JSONParser, FileUploadParser
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
 from . import datamodel
@@ -119,15 +118,16 @@ def upload_transient_data(request):
 @api_view(["POST"])
 @parser_classes([FileUploadParser])
 def upload_cutout_data(request, transient_name, cutout_filter_name):
-    file_obj = request.data['file']
+    file_obj = request.data["file"]
 
     if not validation.valid_fits_file(file_obj):
         message = "Fits file not acceptable"
         http_status = status.HTTP_406_NOT_ACCEPTABLE
         return Response(message, status=http_status)
 
-    cutout = models.Cutout.objects.filter(transient__name__exact=transient_name,
-                                          filter__name__exact=cutout_filter_name)
+    cutout = models.Cutout.objects.filter(
+        transient__name__exact=transient_name, filter__name__exact=cutout_filter_name
+    )
 
     if not cutout.exists():
         message = f"Cutout with filter {cutout_filter_name} does not exist for transient {transient_name}"
@@ -144,13 +144,15 @@ def upload_cutout_data(request, transient_name, cutout_filter_name):
 
     return Response(message, status=http_status)
 
+
 @api_view(["POST"])
 @parser_classes([FileUploadParser])
 def upload_posterior_data(request, transient_name, aperture_type):
-    file_obj = request.data['file']
+    file_obj = request.data["file"]
 
-    fitting_result = models.SEDFittingResult.objects.filter(transient__name__exact=transient_name,
-                                                            aperture__type__exact=aperture_type)
+    fitting_result = models.SEDFittingResult.objects.filter(
+        transient__name__exact=transient_name, aperture__type__exact=aperture_type
+    )
 
     if not fitting_result.exists():
         message = f"SED Fitting result with aperture type {aperture_type} does not exist for transient {transient_name}"
@@ -159,11 +161,12 @@ def upload_posterior_data(request, transient_name, aperture_type):
 
     fitting_result = fitting_result[0]
     fitting_result.posterior.delete()
-    fitting_result.posterior.save(models.hdf5_file_path(fitting_result[0], ""), file_obj)
+    fitting_result.posterior.save(
+        models.hdf5_file_path(fitting_result[0], ""), file_obj
+    )
     fitting_result.save()
 
     message = f"Posterior {fitting_result} uploaded for {transient_name}"
     http_status = status.HTTP_201_CREATED
 
     return Response(message, status=http_status)
-
