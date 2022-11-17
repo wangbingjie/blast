@@ -48,25 +48,33 @@ def ingest_uploaded_transient(science_payload, data_model):
 
 def remove_transient_data(transient_name):
     """
-    Remove all data association with transient.
+    Remove all data associated with a transient, including assets files such as cutouts and
+    posterior sample files.
 
     parameters
         transient_name: Name of the transient (e.g. 2022ann)
     returns
-        None, removes all data associated with tranisent
+        None, removes all data associated with transient
     """
     models.Transient.objects.filter(name__exact=transient_name).delete()
     related_objects = [
         models.TaskRegister,
         models.Aperture,
-        models.Cutout,
         models.Host,
         models.AperturePhotometry,
-        models.SEDFittingResult,
     ]
 
     for object in related_objects:
         object.objects.filter(transient__name__exact=transient_name).delete()
+
+    related_objects_with_media = [models.Cutout, models.SEDFittingResult]
+    media_field_names = ["fits", "posterior"]
+
+    for object, name in zip(related_objects_with_media, media_field_names):
+        instances = object.objects.filter(transient__name__exact=transient_name)
+        for instance in instances:
+            getattr(instance, name).delete()
+            instance.delete()
 
 
 def create_transient_cutout_placeholders(transient_name: str):

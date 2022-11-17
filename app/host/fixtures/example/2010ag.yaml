@@ -162,7 +162,7 @@
       name: 2010ag_2MASS_H
       filter: [2MASS_H]
       transient: [2010ag]
-      fits: /../cutout_cdn/2010ag/2MASS/2MASS_H.fits
+      fits: /../cutout_cdn/2010ag/2MASS/2MASS_H_bak.fits
 - model: host.Cutout
   fields:
       name: 2010ag_2MASS_K

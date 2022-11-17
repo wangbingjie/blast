@@ -10,6 +10,10 @@ class CutoutField(serializers.RelatedField):
     def to_representation(self, value):
         return value.filter.name
 
+class FitsFileField(serializers.RelatedField):
+    def to_representation(self, value):
+        return value.url
+
 
 class SkyObjectSerializer(serializers.ModelSerializer):
     """
@@ -83,9 +87,14 @@ class TransientSerializer(SkyObjectSerializer):
             if name.startswith(data_model_component.prefix)
         ]
         records = [name.replace(data_model_component.prefix, "") for name in columns]
-        return {
+        data =  {
             record: science_payload[column] for column, record in zip(columns, records)
         }
+        data["tasks_initialized"] = "True"
+        data["processing_status"] = "uploading"
+        return data
+
+
 
 
 class HostSerializer(serializers.ModelSerializer):
@@ -165,7 +174,6 @@ class ApertureSerializer(serializers.ModelSerializer):
 
     def save(self, science_payload, data_model_component):
         data = self.science_payload_to_model_data(science_payload, data_model_component)
-        print(data)
         return models.Aperture.objects.create(**data)
 
     def science_payload_to_model_data(
@@ -294,3 +302,29 @@ class SEDFittingResultSerializer(serializers.ModelSerializer):
             type__exact=aperture_type, transient__name__exact=transient_name
         )
         return data
+
+class CutoutSerializer(serializers.ModelSerializer):
+    fits = FitsFileField(read_only=True)
+    class Meta:
+        model = models.Cutout
+        fields = [
+            "fits"]
+
+    def save(self, science_payload, data_model_component):
+        data = self.science_payload_to_model_data(science_payload, data_model_component)
+        return models.Cutout.objects.create(**data)
+
+    def science_payload_to_model_data(
+        self, science_payload: dict, data_model_component
+    ) -> dict:
+        """Converts science payload to data to be passed to the model"""
+
+        transient_name = science_payload["transient_name"]
+        prefix = data_model_component.prefix.split("_")
+        filter_name = f"{prefix[1]}_{prefix[2]}"
+        data = {}
+        data["transient"] = models.Transient.objects.get(name__exact=transient_name)
+        data["filter"] = models.Filter.objects.get(name__exact=filter_name)
+        data["name"] = f"{transient_name}_{filter_name}"
+        return data
+

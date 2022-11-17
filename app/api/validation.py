@@ -2,6 +2,7 @@
 Helper functions to validate transient data uploads.
 """
 
+from astropy.io import fits
 
 def ra_deg_valid(right_ascension_degrees: float) -> bool:
     """
@@ -66,3 +67,20 @@ def science_payload_valid(science_payload: dict, data_model) -> bool:
             return False
 
     return True
+
+def valid_fits_file(file) -> bool:
+    """
+    Test if file is valid fits file.
+
+    parameters:
+        file: file to be tested.
+
+    returns:
+        True if valid fits image file, False otherwise.
+    """
+    try:
+        file = fits.open(file)
+        is_valid = True
+    except OSError:
+        is_valid = False
+    return is_valid

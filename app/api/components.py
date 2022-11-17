@@ -137,6 +137,32 @@ def sed_fit_component(transient_name: str) -> List[DataModelComponent]:
         )
     return components
 
+def cutout_component(transient_name: str) -> List[DataModelComponent]:
+    """
+    SED fit component which defines what is in the blast science payload.
+
+    parameter:
+        transient_name (str): name of the transient
+    returns:
+        component (List[DataModelComponent]): data model component to be added
+            to the blast science payload.
+    """
+    components = []
+    filters = models.Filter.objects.all()
+    for filter in filters:
+        components.append(
+            DataModelComponent(
+                prefix=f"cutout_{filter.name}_",
+                query={
+                    "transient__name__exact": transient_name,
+                    "filter__name__exact": filter.name,
+                    },
+                    model=models.Cutout,
+                    serializer=serializers.CutoutSerializer,
+                )
+            )
+    return components
+
 
 data_model_components = [
     transient_component,
@@ -144,6 +170,7 @@ data_model_components = [
     aperture_component,
     photometry_component,
     sed_fit_component,
+    cutout_component,
 ]
 
 

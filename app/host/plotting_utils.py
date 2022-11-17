@@ -132,7 +132,7 @@ def plot_cutout_image(
     fig.ygrid.visible = False
 
     if cutout is not None:
-        with fits.open(cutout.fits.name) as fits_file:
+        with fits.open(cutout.fits.path) as fits_file:
             image_data = fits_file[0].data
             wcs = WCS(fits_file[0].header)
 

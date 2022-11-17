@@ -10,6 +10,7 @@ from django.db import models
 from django_celery_beat.models import PeriodicTask
 from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
+from astropy.io import fits
 
 from .managers import ApertureManager
 from .managers import CatalogManager
@@ -298,14 +299,14 @@ class CatalogPhotometry(models.Model):
     catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE)
 
 
-def fits_file_path(instance):
+def fits_file_path(instance, filename):
     """
     Constructs a file path for a fits image
     """
-    return f"{instance.host}/{instance.filter.survey}/{instance.filter}.fits"
+    return f"{instance.transient.name}/{instance.filter.survey.name}/{instance.filter}.fits"
 
 
-def hdf5_file_path(instance):
+def hdf5_file_path(instance, filename):
     """
     Constructs a file path for a HDF5 image
     """
@@ -324,6 +325,19 @@ class Cutout(models.Model):
     )
     fits = models.FileField(upload_to=fits_file_path, null=True, blank=True)
     objects = CutoutManager()
+
+    @property
+    def file_path(self):
+        return f"{settings.MEDIA_ROOT}/{self.transient.name}/{self.filter.survey.name}/{self.filter.name}.fits"
+
+    def save_file(self, file):
+        file = fits.open(file)
+        file.writeto(self.file_path, overwrite=True)
+        file.close()
+
+
+
+
 
 
 class Aperture(SkyObject):
