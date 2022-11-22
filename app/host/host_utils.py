@@ -415,17 +415,22 @@ def construct_aperture(image, position):
 
     ### found an edge case where deblending isn't working how I'd like it to
     ### so if it's not finding the host, play with the default threshold
-    iter = 0; source_separation_arcsec = 100
+    iter = 0
+    source_separation_arcsec = 100
     while source_separation_arcsec > 5 and iter < 5:
-        catalog = build_source_catalog(image, background, threshhold_sigma=3*(iter+1))
+        catalog = build_source_catalog(
+            image, background, threshhold_sigma=3 * (iter + 1)
+        )
         source_data = match_source(position, catalog, wcs)
-    
-        source_ra,source_dec = wcs.wcs_pix2world(source_data.xcentroid,source_data.ycentroid,0)
-        source_position = SkyCoord(source_ra,source_dec,unit=u.deg)
+
+        source_ra, source_dec = wcs.wcs_pix2world(
+            source_data.xcentroid, source_data.ycentroid, 0
+        )
+        source_position = SkyCoord(source_ra, source_dec, unit=u.deg)
         source_separation_arcsec = position.separation(source_position).arcsec
 
         iter += 1
-        
+
     return elliptical_sky_aperture(source_data, wcs)
 
 
