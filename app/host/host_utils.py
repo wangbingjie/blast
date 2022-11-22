@@ -190,7 +190,7 @@ def do_aperture_photometry(image, sky_aperture, filter):
 
     background_subtracted_data = image_data - background.background
 
-    error = calc_total_error(image_data, background.background_rms, 1.0)
+    error = calc_total_error(background_subtracted_data, background.background_rms, 1.0)
     phot_table = aperture_photometry(
         background_subtracted_data, sky_aperture, wcs=wcs, error=error
     )
