@@ -23,7 +23,7 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
     :host_information : ~astropy.coordinates.SkyCoord`
         Host position
     """
-    getGHOST(real=False, verbose=1)
+    getGHOST(real=True, verbose=1)
     transient_position = SkyCoord(
         ra=transient.ra_deg, dec=transient.dec_deg, unit="deg"
     )
