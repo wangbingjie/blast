@@ -419,7 +419,7 @@ def construct_aperture(image, position):
     source_separation_arcsec = 100
     while source_separation_arcsec > 5 and iter < 5:
         catalog = build_source_catalog(
-            image, background, threshhold_sigma=3 * (iter + 1)
+            image, background, threshhold_sigma=5 * (iter + 1)
         )
         source_data = match_source(position, catalog, wcs)
 
