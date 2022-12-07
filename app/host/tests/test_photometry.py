@@ -5,7 +5,8 @@ from ..models import TaskRegister
 from ..models import Transient
 from ..transient_tasks import ValidateGlobalPhotometry
 from ..transient_tasks import ValidateLocalPhotometry
-
+from ..transient_tasks import LocalAperturePhotometry
+from ..transient_tasks import GlobalAperturePhotometry
 
 class TestValidatePhotometry(TestCase):
     fixtures = [
@@ -50,3 +51,26 @@ class TestValidatePhotometry(TestCase):
         )
 
         assert len(not_validated_global_aperture_photometry) == 0
+
+    def test_global_aperture_photometry(self):
+        transient = Transient.objects.get(name="2010H")
+        apphot_cls = GlobalAperturePhotometry()
+
+        status_message = apphot_cls._run_process(transient)
+        
+        assert status_message == 'processed'
+
+    def test_local_aperture_redshifts(self):
+        transient = Transient.objects.get(name="2010H")
+        transient.redshift = None
+        transient.host.redshift = None
+        transient.host.photometric_redshift = None
+        transient.save()
+        apphot_cls = LocalAperturePhotometry()
+        
+        status_message = apphot_cls._run_process(transient)
+
+        assert status_message == 'failed'
+
+
+        
