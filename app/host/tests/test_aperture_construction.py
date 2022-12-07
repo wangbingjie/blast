@@ -1,16 +1,15 @@
+import numpy as np
+from astropy.io import fits
 from django.test import TestCase
 
+from ..host_utils import build_source_catalog
+from ..host_utils import estimate_background
 from ..models import Aperture
 from ..models import Status
 from ..models import TaskRegister
 from ..models import Transient
 from ..transient_tasks import GlobalApertureConstruction
 
-from ..host_utils import build_source_catalog
-from ..host_utils import estimate_background
-
-from astropy.io import fits
-import numpy as np
 
 class TestApertureConstruction(TestCase):
 
@@ -38,8 +37,8 @@ class TestApertureConstruction(TestCase):
         data = np.zeros((500, 5000), dtype=np.float64)
         hdu = fits.PrimaryHDU(data=data)
         hdulist = fits.HDUList(hdus=[hdu])
-        
+
         background = estimate_background(hdulist)
-        catalog = build_source_catalog(hdulist,background)
-        
+        catalog = build_source_catalog(hdulist, background)
+
         assert catalog is None
