@@ -1,10 +1,11 @@
 from django.test import TestCase
 
 from ..models import Aperture
+from ..models import Status
 from ..models import TaskRegister
 from ..models import Transient
-from ..models import Status
 from ..transient_tasks import Ghost
+
 
 class TestHostMatch(TestCase):
 
@@ -20,9 +21,9 @@ class TestHostMatch(TestCase):
 
     def test_aperture_construction(self):
         transient = Transient.objects.get(name="2010H")
-        
+
         host_cls = Ghost()
 
         status_message = host_cls._run_process(transient)
 
-        assert status_message == 'processed'
+        assert status_message == "processed"
