@@ -1,7 +1,7 @@
 #!/bin/env bash
 bash entrypoints/wait-for-it.sh ${DATABASE_HOST}:${DATABASE_PORT} --timeout=0 &&
-#python manage.py makemigrations &&
-#python manage.py migrate &&
+python manage.py makemigrations &&
+python manage.py migrate &&
 bash entrypoints/load_initial_data.sh &&
 bash entrypoints/load_example_data.sh &&
 python manage.py shell < entrypoints/initialize_dustmaps.py &&
