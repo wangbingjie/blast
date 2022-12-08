@@ -17,7 +17,7 @@ class TestValidatePhotometry(TestCase):
         "../fixtures/initial/setup_status.yaml",
         "../fixtures/initial/setup_tasks.yaml",
         "../fixtures/initial/setup_acknowledgements.yaml",
-        "../fixtures/test/test_2010h.yaml",
+        "../fixtures/test/test_2010h_onefilter.yaml",
     ]
 
     def test_validate_local_photometry(self):
