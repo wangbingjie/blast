@@ -30,3 +30,7 @@
   fields:
     message: no host MWEBV
     type: error
+- model: host.Status
+  fields:
+    message: phot valid failed
+    type: error

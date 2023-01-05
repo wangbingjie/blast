@@ -162,5 +162,8 @@ static/
 data/fsps/*
 
 batch/*
+!batch/results.csv
 !batch/run_batch.py
 !batch/docker-entrypoint.batch.sh
+
+validation/validation_data/jones+18_panstarrs_g_cutouts/
