@@ -14,7 +14,7 @@ Welcome to blast's documentation!
 
 Blast is developed on `github <https://github.com/astrophpeter/blast>`_.
 
-Blast is a public web application built to find a transinet's host
+Blast is a public web application built to find a transient's host
 galaxy, identify the available archival data, and measure the resulting
 host galaxy star formation rates, masses, and stellar ages - for every
 new transient reported to the IAU in real-time after the transient is
