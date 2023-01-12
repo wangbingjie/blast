@@ -20,6 +20,8 @@ from .transient_tasks import LocalHostSEDFitting
 from .transient_tasks import MWEBV_Host
 from .transient_tasks import MWEBV_Transient
 from .transient_tasks import TransientInformation
+from .transient_tasks import ValidateGlobalPhotometry
+from .transient_tasks import ValidateLocalPhotometry
 
 periodic_tasks = [
     MWEBV_Transient(),
@@ -29,6 +31,8 @@ periodic_tasks = [
     GlobalApertureConstruction(),
     LocalAperturePhotometry(),
     GlobalAperturePhotometry(),
+    ValidateLocalPhotometry(),
+    ValidateGlobalPhotometry(),
     TransientInformation(),
     HostInformation(),
     GlobalHostSEDFitting(),

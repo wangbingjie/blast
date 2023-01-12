@@ -52,7 +52,7 @@ def build_obs(transient, aperture_type):
     """
 
     photometry = AperturePhotometry.objects.filter(
-        transient=transient, aperture__type__exact=aperture_type
+        transient=transient, aperture__type__exact=aperture_type, is_validated=True
     )
 
     if not photometry.exists():
@@ -61,12 +61,7 @@ def build_obs(transient, aperture_type):
     if transient.host is None:
         raise ValueError("No host galaxy match")
 
-    if transient.host.redshift is not None:
-        z = transient.host.redshift
-    elif transient.redshift is not None:
-        z = transient.redshift
-    else:
-        raise ValueError("No SN or host galaxy redshift")
+    z = transient.best_redshift()
 
     filters, flux_maggies, flux_maggies_error = [], [], []
 
@@ -79,8 +74,21 @@ def build_obs(transient, aperture_type):
         except AperturePhotometry.MultipleObjectsReturned:
             raise
 
+        # correct for MW reddening
+        if aperture_type == "global":
+            mwebv = transient.host.milkyway_dust_reddening
+        elif aperture_type == "local":
+            mwebv = transient.milkyway_dust_reddening
+        else:
+            raise ValueError(
+                f"aperture_type must be 'global' or 'local', currently set to {aperture_type}"
+            )
+        wave_eff = filter.transmission_curve().wave_effective
+        ext_corr = extinction.fitzpatrick99(wave_eff, mwebv * 3.1, r_v=3.1)
+        flux_mwcorr = datapoint.flux * 10 ** (0.4 * ext_corr)
+
         filters.append(filter.transmission_curve())
-        flux_maggies.append(mJy_to_maggies(datapoint.flux))
+        flux_maggies.append(mJy_to_maggies(flux_mwcorr))
         flux_maggies_error.append(mJy_to_maggies(datapoint.flux_error))
 
     obs_data = dict(
