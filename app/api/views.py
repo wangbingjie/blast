@@ -8,11 +8,13 @@ from api.components import transient_data_model_components
 from astropy.coordinates import SkyCoord
 from host.models import Transient
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import FileUploadParser
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 
 from . import datamodel
 from .components import data_model_components
@@ -52,6 +54,7 @@ def ra_dec_valid(ra: str, dec: str) -> bool:
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def get_transient_science_payload(request, transient_name):
     if not transient_exists(transient_name):
         return Response(
@@ -68,6 +71,7 @@ def get_transient_science_payload(request, transient_name):
 
 
 @api_view(["POST"])
+@permission_classes([IsAdminUser])
 def post_transient(request, transient_name, transient_ra, transient_dec):
     if transient_exists(transient_name):
         return Response(
@@ -88,7 +92,8 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
         name=transient_name,
         ra_deg=float(transient_ra),
         dec_deg=float(transient_dec),
-        tns_id=1,
+        tasks_initialized="False",
+        processing_status="processing"
     )
     return Response(
         {"message": f"transient successfully posted: {data_string}"},
@@ -98,11 +103,21 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
 
 @api_view(["POST"])
 @parser_classes([JSONParser])
+@permission_classes([IsAdminUser])
 def upload_transient_data(request):
+    transient_name = request.data.get(["transient_name"], None)
 
-    data_model = transient_data_model_components(request.data["transient_name"])
+    data_model = transient_data_model_components(transient_name)
 
     if validation.science_payload_valid(request.data, data_model):
+
+        if upload.transient_processing(transient_name):
+            return Response(
+                {
+                    "message": f"{transient_name} is still being processed, try again when transient has finished processing"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         upload.ingest_uploaded_transient(request.data, data_model)
         response = Response(
             request.data["transient_name"], status=status.HTTP_201_CREATED
@@ -117,6 +132,7 @@ def upload_transient_data(request):
 
 @api_view(["POST"])
 @parser_classes([FileUploadParser])
+@permission_classes([IsAdminUser])
 def upload_cutout_data(request, transient_name, cutout_filter_name):
     file_obj = request.data["file"]
 
@@ -147,6 +163,7 @@ def upload_cutout_data(request, transient_name, cutout_filter_name):
 
 @api_view(["POST"])
 @parser_classes([FileUploadParser])
+@permission_classes([IsAdminUser])
 def upload_posterior_data(request, transient_name, aperture_type):
     file_obj = request.data["file"]
 
@@ -170,3 +187,56 @@ def upload_posterior_data(request, transient_name, aperture_type):
     http_status = status.HTTP_201_CREATED
 
     return Response(message, status=http_status)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def delete_transient(request, transient_name):
+    if not transient_exists(transient_name):
+        return Response(
+            {"message": f"{transient_name} not in database"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    if upload.transient_processing(transient_name):
+        return Response(
+            {"message": f"{transient_name} is still being processed, try again when transient has finished processing"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    upload.remove_transient_data(transient_name)
+    return Response({"message": f"{transient_name} successfully deleted"},
+            status=status.HTTP_200_OK,)
+
+
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def restart_transient_processing(request, transient_name):
+    if not transient_exists(transient_name):
+        return Response(
+            {"message": f"{transient_name} not in database"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    if upload.transient_processing(transient_name):
+        return Response(
+            {"message": f"{transient_name} is still being processed, try again when transient has finished processing"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    transient = models.Transient.objects.get(name__exact=transient_name)
+    upload.remove_transient_data(transient_name)
+
+    models.Transient.objects.create(name=transient.name,
+                                    ra_deg=transient.ra_deg,
+                                    dec_deg=transient.dec_deg,
+                                    public_timestamp=transient.public_timestamp,
+                                    tasks_initialized="False",
+                                    processing_status="processing")
+
+    return Response({"message": f"{transient_name} processing successfully restarted"},
+                    status=status.HTTP_200_OK, )
+
+
+
+

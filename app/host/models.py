@@ -303,7 +303,7 @@ def fits_file_path(instance, filename):
     """
     Constructs a file path for a fits image
     """
-    return f"{instance.transient.name}/{instance.filter.survey.name}/{instance.filter}.fits"
+    return f"{instance.transient.name}/cutout_{instance.transient.name}_{instance.filter}.fits"
 
 
 def hdf5_file_path(instance, filename):

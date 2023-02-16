@@ -25,12 +25,17 @@ urlpatterns = [
         f"""{base_path}upload/posterior/transient_name=<str:transient_name>&aperture_type=<str:aperture_type>""",
         views.upload_posterior_data,
     ),
-]
-
-if os.environ.get("ALLOW_API_POST") == "YES":
-    urlpatterns.append(
         path(
             f"""{base_path}transient/post/name=<str:transient_name>&ra=<str:transient_ra>&dec=<str:transient_dec>""",
             views.post_transient,
-        )
-    )
+        ),
+        path(
+            f"""{base_path}transient/delete/transient_name=<str:transient_name>""",
+            views.delete_transient,
+        ),
+
+path(
+            f"""{base_path}transient/restart_processing/transient_name=<str:transient_name>""",
+            views.restart_transient_processing,
+        ),
+    ]

@@ -52,7 +52,7 @@
       name: 2022testone_2MASS_J
       filter: [2MASS_J]
       transient: [2022testone]
-      fits: /../cutout_cdn/2010h/2MASS/2MASS_J.fits
+      fits: /../cutout_cdn/2010h/2MASS/cutout_2010h_2MASS_J.fits
 - model: host.Cutout
   fields:
       name: 2022testone_2MASS_H

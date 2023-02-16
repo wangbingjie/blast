@@ -76,6 +76,19 @@ def remove_transient_data(transient_name):
             getattr(instance, name).delete()
             instance.delete()
 
+def transient_processing(transient_name: str) -> bool:
+    """
+    Checks if a transient has any tasks that have status  of processing
+
+    parameters:
+        transient_name: Name of transient to be checked.
+    returns:
+        True if transient has tasks that are processing, false otherwise.
+    """
+    processing_tasks = models.TaskRegister.objects.filter(transient__name__exact=transient_name,
+                                                          status__message__exact="processing")
+    return processing_tasks.exists()
+
 
 def create_transient_cutout_placeholders(transient_name: str):
     """
