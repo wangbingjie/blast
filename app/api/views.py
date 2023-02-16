@@ -8,13 +8,14 @@ from api.components import transient_data_model_components
 from astropy.coordinates import SkyCoord
 from host.models import Transient
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.decorators import parser_classes
+from rest_framework.decorators import permission_classes
 from rest_framework.parsers import FileUploadParser
 from rest_framework.parsers import JSONParser
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from . import datamodel
 from .components import data_model_components
@@ -93,7 +94,7 @@ def post_transient(request, transient_name, transient_ra, transient_dec):
         ra_deg=float(transient_ra),
         dec_deg=float(transient_dec),
         tasks_initialized="False",
-        processing_status="processing"
+        processing_status="processing",
     )
     return Response(
         {"message": f"transient successfully posted: {data_string}"},
@@ -114,7 +115,8 @@ def upload_transient_data(request):
         if upload.transient_processing(transient_name):
             return Response(
                 {
-                    "message": f"{transient_name} is still being processed, try again when transient has finished processing"},
+                    "message": f"{transient_name} is still being processed, try again when transient has finished processing"
+                },
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -200,13 +202,17 @@ def delete_transient(request, transient_name):
 
     if upload.transient_processing(transient_name):
         return Response(
-            {"message": f"{transient_name} is still being processed, try again when transient has finished processing"},
+            {
+                "message": f"{transient_name} is still being processed, try again when transient has finished processing"
+            },
             status=status.HTTP_403_FORBIDDEN,
         )
 
     upload.remove_transient_data(transient_name)
-    return Response({"message": f"{transient_name} successfully deleted"},
-            status=status.HTTP_200_OK,)
+    return Response(
+        {"message": f"{transient_name} successfully deleted"},
+        status=status.HTTP_200_OK,
+    )
 
 
 @api_view(["POST"])
@@ -220,23 +226,25 @@ def restart_transient_processing(request, transient_name):
 
     if upload.transient_processing(transient_name):
         return Response(
-            {"message": f"{transient_name} is still being processed, try again when transient has finished processing"},
+            {
+                "message": f"{transient_name} is still being processed, try again when transient has finished processing"
+            },
             status=status.HTTP_403_FORBIDDEN,
         )
 
     transient = models.Transient.objects.get(name__exact=transient_name)
     upload.remove_transient_data(transient_name)
 
-    models.Transient.objects.create(name=transient.name,
-                                    ra_deg=transient.ra_deg,
-                                    dec_deg=transient.dec_deg,
-                                    public_timestamp=transient.public_timestamp,
-                                    tasks_initialized="False",
-                                    processing_status="processing")
+    models.Transient.objects.create(
+        name=transient.name,
+        ra_deg=transient.ra_deg,
+        dec_deg=transient.dec_deg,
+        public_timestamp=transient.public_timestamp,
+        tasks_initialized="False",
+        processing_status="processing",
+    )
 
-    return Response({"message": f"{transient_name} processing successfully restarted"},
-                    status=status.HTTP_200_OK, )
-
-
-
-
+    return Response(
+        {"message": f"{transient_name} processing successfully restarted"},
+        status=status.HTTP_200_OK,
+    )
