@@ -126,7 +126,7 @@
     pixel_size_arcsec: 1.5
     image_fwhm_arcsec: 5.3
     vosa_id: GALEX/GALEX.NUV
-    image_download_method: hips
+    image_download_method: MAST
     wavelength_eff_angstrom: 2304.74
     wavelength_min_angstrom: 1692.52
     wavelength_max_angstrom: 3006.67
@@ -143,7 +143,7 @@
     pixel_size_arcsec: 1.5
     image_fwhm_arcsec: 4.2
     vosa_id: GALEX/GALEX.FUV
-    image_download_method: hips
+    image_download_method: MAST
     wavelength_eff_angstrom: 1549.02
     wavelength_min_angstrom: 1340.32
     wavelength_max_angstrom: 1806.43
