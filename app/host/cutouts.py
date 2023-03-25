@@ -7,8 +7,8 @@ from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.units import Quantity
 from astroquery.hips2fits import hips2fits
-from django.conf import settings
 from astroquery.mast import Observations
+from django.conf import settings
 
 from .models import Cutout
 from .models import Filter
@@ -148,6 +148,7 @@ def panstarrs_cutout(position, image_size=None, filter=None):
 
     return fits_image
 
+
 def galex_cutout(position, image_size=None, filter=None):
     """
     Download GALEX cutout from MAST
@@ -162,22 +163,21 @@ def galex_cutout(position, image_size=None, filter=None):
     -------
     :cutout : :class:`~astropy.io.fits.HDUList` or None
     """
-    
+
     obs = Observations.query_region(position)
-    obs = obs[(obs['obs_collection'] == 'GALEX') & (obs['filters'] == filter[-3:])]
+    obs = obs[(obs["obs_collection"] == "GALEX") & (obs["filters"] == filter[-3:])]
     if len(obs) > 1:
-        obs = obs[obs['t_exptime'] == max(obs['t_exptime'])]
-        
+        obs = obs[obs["t_exptime"] == max(obs["t_exptime"])]
+
     if len(obs):
-        fits_image = fits.open(obs['dataURL'])
+        fits_image = fits.open(obs["dataURL"])
     else:
         fits_image = None
-    
+
     return fits_image
 
 
-download_function_dict = {"PanSTARRS": panstarrs_cutout,
-                          "GALEX": galex_cutout}
+download_function_dict = {"PanSTARRS": panstarrs_cutout, "GALEX": galex_cutout}
 
 
 def cutout(transient, survey, fov=Quantity(0.1, unit="deg")):

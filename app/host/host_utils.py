@@ -191,10 +191,16 @@ def do_aperture_photometry(image, sky_aperture, filter):
     background_subtracted_data = image_data - background.background
 
     if filter.image_pixel_units == "counts/sec":
-        error = calc_total_error(background_subtracted_data, background.background_rms, image[0].header["EXPTIME"])
+        error = calc_total_error(
+            background_subtracted_data,
+            background.background_rms,
+            image[0].header["EXPTIME"],
+        )
     else:
-        error = calc_total_error(background_subtracted_data, background.background_rms, 1.0)
-        
+        error = calc_total_error(
+            background_subtracted_data, background.background_rms, 1.0
+        )
+
     phot_table = aperture_photometry(
         background_subtracted_data, sky_aperture, wcs=wcs, error=error
     )
