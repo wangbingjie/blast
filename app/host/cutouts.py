@@ -170,7 +170,8 @@ def galex_cutout(position, image_size=None, filter=None):
         obs = obs[obs["t_exptime"] == max(obs["t_exptime"])]
 
     if len(obs):
-        fits_image = fits.open(obs["dataURL"][0])
+        ### stupid MAST thinks we want the exposure time map
+        fits_image = fits.open(obs["dataURL"][0].replace('-exp.fits.gz','-int.fits.gz'))
     else:
         fits_image = None
 
