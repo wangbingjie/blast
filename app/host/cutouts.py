@@ -170,7 +170,7 @@ def galex_cutout(position, image_size=None, filter=None):
         obs = obs[obs["t_exptime"] == max(obs["t_exptime"])]
 
     if len(obs):
-        fits_image = fits.open(obs["dataURL"])
+        fits_image = fits.open(obs["dataURL"][0])
     else:
         fits_image = None
 
