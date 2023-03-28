@@ -177,6 +177,7 @@ def galex_cutout(position, image_size=None, filter=None):
 
     if len(obs):
         ### stupid MAST thinks we want the exposure time map
+
         fits_image = fits.open(obs["dataURL"][0].replace('-exp.fits.gz','-int.fits.gz').replace('-rr.fits.gz','-int.fits.gz'))
 
         wcs = WCS(fits_image[0].header)
