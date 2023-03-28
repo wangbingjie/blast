@@ -264,7 +264,7 @@ def SDSS_cutout(position, image_size=None, filter=None):
     """
 
     sdss_baseurl = 'https://data.sdss.org/sas'
-    
+    print(position)
     xid = SDSS.query_region(position,radius=0.1*u.deg)
     if xid is not None:
         link = SDSS.IMAGING_URL_SUFFIX.format(
@@ -281,7 +281,7 @@ def SDSS_cutout(position, image_size=None, filter=None):
 
 
 download_function_dict = {"PanSTARRS": panstarrs_cutout, "GALEX": galex_cutout,
-                          "2MASS":TWOMASS_cutout, "WISE": WISE_cutout, "DES":hips_cutout,
+                          "2MASS":TWOMASS_cutout, "WISE": WISE_cutout, #"DES":hips_cutout,
                           "SDSS": SDSS_cutout}
 
 
