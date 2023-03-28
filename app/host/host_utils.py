@@ -190,12 +190,20 @@ def do_aperture_photometry(image, sky_aperture, filter):
 
     background_subtracted_data = image_data - background.background
 
+    print(image[0].header)
+    
     if filter.image_pixel_units == "counts/sec":
-        error = calc_total_error(
-            background_subtracted_data,
-            background.background_rms,
-            image[0].header["EXPTIME"],
-        )
+        try:
+            error = calc_total_error(
+                background_subtracted_data,
+                background.background_rms,
+                image[0].header["EXPTIME"],
+            )
+        except:
+            error = calc_total_error(
+                background_subtracted_data, background.background_rms, 1.0
+            )
+            
     else:
         error = calc_total_error(
             background_subtracted_data, background.background_rms, 1.0
@@ -207,7 +215,9 @@ def do_aperture_photometry(image, sky_aperture, filter):
     uncalibrated_flux = phot_table["aperture_sum"]
     uncalibrated_flux_err = phot_table["aperture_sum_err"]
 
-    if filter.image_pixel_units == "counts/sec":
+    if filter.magnitude_zero_point_keyword is not None:
+        zpt = image[0].header[filter.magnitude_zero_point_keyword]
+    elif filter.image_pixel_units == "counts/sec":
         zpt = filter.magnitude_zero_point
     else:
         zpt = filter.magnitude_zero_point + 2.5 * np.log10(image[0].header["EXPTIME"])
