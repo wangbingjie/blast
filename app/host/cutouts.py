@@ -13,6 +13,8 @@ from astroquery.skyview import SkyView
 from django.conf import settings
 import requests
 import re
+from astropy.nddata import Cutout2D
+from astropy.wcs import WCS
 
 from .models import Cutout
 from .models import Filter
@@ -169,13 +171,19 @@ def galex_cutout(position, image_size=None, filter=None):
     """
 
     obs = Observations.query_region(position)
-    obs = obs[(obs["obs_collection"] == "GALEX") & (obs["filters"] == filter[-3:])]
+    obs = obs[(obs["obs_collection"] == "GALEX") & (obs["filters"] == filter) & (obs["distance"] == 0)]
     if len(obs) > 1:
         obs = obs[obs["t_exptime"] == max(obs["t_exptime"])]
 
     if len(obs):
         ### stupid MAST thinks we want the exposure time map
-        fits_image = fits.open(obs["dataURL"][0].replace('-exp.fits.gz','-int.fits.gz'))
+        fits_image = fits.open(obs["dataURL"][0].replace('-exp.fits.gz','-int.fits.gz').replace('-rr.fits.gz','-int.fits.gz'))
+
+        wcs = WCS(fits_image[0].header)
+        cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
+        fits_image[0].data = cutout.data
+        fits_image[0].header.update(cutout.wcs.to_header())
+
     else:
         fits_image = None
 
@@ -211,6 +219,12 @@ def WISE_cutout(position, image_size=None, filter=None):
     
     if url is not None:
         fits_image = fits.open(url)
+
+        wcs = WCS(fits_image[0].header)
+        cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
+        fits_image[0].data = cutout.data
+        fits_image[0].header.update(cutout.wcs.to_header())
+
     else:
         fits_image = None
     
@@ -231,17 +245,26 @@ def TWOMASS_cutout(position, image_size=None, filter=None):
     :cutout : :class:`~astropy.io.fits.HDUList` or None
     """
 
-    irsaquery = f"https://irsa.ipac.caltech.edu/cgi-bin/2MASS/IM/nph-im_sia?POS={position.ra.deg},{position.dec.deg}&SIZE=0.001"
+    irsaquery = f"https://irsa.ipac.caltech.edu/cgi-bin/2MASS/IM/nph-im_sia?POS={position.ra.deg},{position.dec.deg}&SIZE=0.01"
     response = requests.get(url=irsaquery)
 
-    fitsurllist = np.array([])
+    fits_image = None
     for line in response.content.decode('utf-8').split('<TD><![CDATA['):
         if re.match(f'https://irsa.*{filter.lower()}i.*fits',line.split(']]>')[0]):
             fitsurl = line.split(']]')[0]
-            fitsurllist = np.append(fitsurllist,fitsurl)
-    
-    if len(fitsurllist):
-        fits_image = fits.open(fitsurllist[0])
+
+            fits_image = fits.open(fitsurl)
+            wcs = WCS(fits_image[0].header)
+            
+            if position.contained_by(wcs):
+                break
+            
+    if fits_image is not None:
+
+        cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
+        fits_image[0].data = cutout.data
+        fits_image[0].header.update(cutout.wcs.to_header())
+
     else:
         fits_image = None
     
@@ -265,15 +288,24 @@ def SDSS_cutout(position, image_size=None, filter=None):
 
     sdss_baseurl = 'https://data.sdss.org/sas'
     print(position)
-    xid = SDSS.query_region(position,radius=0.1*u.deg)
+    xid = SDSS.query_region(position,radius=0.05*u.deg)
+    sc = SkyCoord(xid['ra'],xid['dec'],unit=u.deg)
+    sep = position.separation(sc).arcsec
+    iSep = np.where(sep == min(sep))[0][0]
     if xid is not None:
         link = SDSS.IMAGING_URL_SUFFIX.format(
-            base=sdss_baseurl, run=xid[0]['run'],
+            base=sdss_baseurl, run=xid[iSep]['run'],
             dr=14, instrument='eboss',
-            rerun=xid[0]['rerun'], camcol=xid[0]['camcol'],
-            field=xid[0]['field'], band=filter)
+            rerun=xid[iSep]['rerun'], camcol=xid[iSep]['camcol'],
+            field=xid[iSep]['field'], band=filter)
 
         fits_image = fits.open(link)
+
+        wcs = WCS(fits_image[0].header)
+        cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
+        fits_image[0].data = cutout.data
+        fits_image[0].header.update(cutout.wcs.to_header())
+
     else:
         fits_image = None
     
