@@ -1,20 +1,20 @@
 import os
+import re
 
 import astropy.units as u
 import numpy as np
 import pandas as pd
+import requests
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
+from astropy.nddata import Cutout2D
 from astropy.units import Quantity
+from astropy.wcs import WCS
 from astroquery.hips2fits import hips2fits
 from astroquery.mast import Observations
 from astroquery.sdss import SDSS
 from astroquery.skyview import SkyView
 from django.conf import settings
-import requests
-import re
-from astropy.nddata import Cutout2D
-from astropy.wcs import WCS
 
 from .models import Cutout
 from .models import Filter
@@ -171,14 +171,22 @@ def galex_cutout(position, image_size=None, filter=None):
     """
 
     obs = Observations.query_region(position)
-    obs = obs[(obs["obs_collection"] == "GALEX") & (obs["filters"] == filter) & (obs["distance"] == 0)]
+    obs = obs[
+        (obs["obs_collection"] == "GALEX")
+        & (obs["filters"] == filter)
+        & (obs["distance"] == 0)
+    ]
     if len(obs) > 1:
         obs = obs[obs["t_exptime"] == max(obs["t_exptime"])]
 
     if len(obs):
         ### stupid MAST thinks we want the exposure time map
 
-        fits_image = fits.open(obs["dataURL"][0].replace('-exp.fits.gz','-int.fits.gz').replace('-rr.fits.gz','-int.fits.gz'))
+        fits_image = fits.open(
+            obs["dataURL"][0]
+            .replace("-exp.fits.gz", "-int.fits.gz")
+            .replace("-rr.fits.gz", "-int.fits.gz")
+        )
 
         wcs = WCS(fits_image[0].header)
         cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
@@ -189,6 +197,7 @@ def galex_cutout(position, image_size=None, filter=None):
         fits_image = None
 
     return fits_image
+
 
 def WISE_cutout(position, image_size=None, filter=None):
     """
@@ -205,19 +214,21 @@ def WISE_cutout(position, image_size=None, filter=None):
     :cutout : :class:`~astropy.io.fits.HDUList` or None
     """
 
-    band_to_wavelength = {'W1':'3.4e-6',
-                          'W2':'4.6e-6',
-                          'W3':'1.2e-5',
-                          'W4':'2.2e-5'}
-    
+    band_to_wavelength = {
+        "W1": "3.4e-6",
+        "W2": "4.6e-6",
+        "W3": "1.2e-5",
+        "W4": "2.2e-5",
+    }
+
     url = f"https://irsa.ipac.caltech.edu/SIA?COLLECTION=wise_allwise&POS=circle+{position.ra.deg}+{position.dec.deg}+0.002777&RESPONSEFORMAT=CSV&BAND={band_to_wavelength[filter]}&FORMAT=image/fits"
     r = requests.get(url)
     url = None
-    for t in r.text.split(','):
-        if t.startswith('https'):
+    for t in r.text.split(","):
+        if t.startswith("https"):
             url = t[:]
             break
-    
+
     if url is not None:
         fits_image = fits.open(url)
 
@@ -228,8 +239,9 @@ def WISE_cutout(position, image_size=None, filter=None):
 
     else:
         fits_image = None
-    
+
     return fits_image
+
 
 def TWOMASS_cutout(position, image_size=None, filter=None):
     """
@@ -250,16 +262,16 @@ def TWOMASS_cutout(position, image_size=None, filter=None):
     response = requests.get(url=irsaquery)
 
     fits_image = None
-    for line in response.content.decode('utf-8').split('<TD><![CDATA['):
-        if re.match(f'https://irsa.*{filter.lower()}i.*fits',line.split(']]>')[0]):
-            fitsurl = line.split(']]')[0]
+    for line in response.content.decode("utf-8").split("<TD><![CDATA["):
+        if re.match(f"https://irsa.*{filter.lower()}i.*fits", line.split("]]>")[0]):
+            fitsurl = line.split("]]")[0]
 
             fits_image = fits.open(fitsurl)
             wcs = WCS(fits_image[0].header)
-            
+
             if position.contained_by(wcs):
                 break
-            
+
     if fits_image is not None:
 
         cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
@@ -268,7 +280,7 @@ def TWOMASS_cutout(position, image_size=None, filter=None):
 
     else:
         fits_image = None
-    
+
     return fits_image
 
 
@@ -287,18 +299,23 @@ def SDSS_cutout(position, image_size=None, filter=None):
     :cutout : :class:`~astropy.io.fits.HDUList` or None
     """
 
-    sdss_baseurl = 'https://data.sdss.org/sas'
+    sdss_baseurl = "https://data.sdss.org/sas"
     print(position)
-    xid = SDSS.query_region(position,radius=0.05*u.deg)
-    sc = SkyCoord(xid['ra'],xid['dec'],unit=u.deg)
+    xid = SDSS.query_region(position, radius=0.05 * u.deg)
+    sc = SkyCoord(xid["ra"], xid["dec"], unit=u.deg)
     sep = position.separation(sc).arcsec
     iSep = np.where(sep == min(sep))[0][0]
     if xid is not None:
         link = SDSS.IMAGING_URL_SUFFIX.format(
-            base=sdss_baseurl, run=xid[iSep]['run'],
-            dr=14, instrument='eboss',
-            rerun=xid[iSep]['rerun'], camcol=xid[iSep]['camcol'],
-            field=xid[iSep]['field'], band=filter)
+            base=sdss_baseurl,
+            run=xid[iSep]["run"],
+            dr=14,
+            instrument="eboss",
+            rerun=xid[iSep]["rerun"],
+            camcol=xid[iSep]["camcol"],
+            field=xid[iSep]["field"],
+            band=filter,
+        )
 
         fits_image = fits.open(link)
 
@@ -309,13 +326,17 @@ def SDSS_cutout(position, image_size=None, filter=None):
 
     else:
         fits_image = None
-    
+
     return fits_image
 
 
-download_function_dict = {"PanSTARRS": panstarrs_cutout, "GALEX": galex_cutout,
-                          "2MASS":TWOMASS_cutout, "WISE": WISE_cutout, #"DES":hips_cutout,
-                          "SDSS": SDSS_cutout}
+download_function_dict = {
+    "PanSTARRS": panstarrs_cutout,
+    "GALEX": galex_cutout,
+    "2MASS": TWOMASS_cutout,
+    "WISE": WISE_cutout,  # "DES":hips_cutout,
+    "SDSS": SDSS_cutout,
+}
 
 
 def cutout(transient, survey, fov=Quantity(0.1, unit="deg")):
