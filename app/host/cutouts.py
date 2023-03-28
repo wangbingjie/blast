@@ -8,7 +8,11 @@ from astropy.io import fits
 from astropy.units import Quantity
 from astroquery.hips2fits import hips2fits
 from astroquery.mast import Observations
+from astroquery.sdss import SDSS
+from astroquery.skyview import SkyView
 from django.conf import settings
+import requests
+import re
 
 from .models import Cutout
 from .models import Filter
@@ -177,8 +181,108 @@ def galex_cutout(position, image_size=None, filter=None):
 
     return fits_image
 
+def WISE_cutout(position, image_size=None, filter=None):
+    """
+    Download WISE image cutout from IRSA
 
-download_function_dict = {"PanSTARRS": panstarrs_cutout, "GALEX": galex_cutout}
+    Parameters
+    ----------
+    :position : :class:`~astropy.coordinates.SkyCoord`
+        Target centre position of the cutout image to be downloaded.
+    :image_size: int: size of cutout image in pixels
+    :filter: str: Panstarrs filter (g r i z y)
+    Returns
+    -------
+    :cutout : :class:`~astropy.io.fits.HDUList` or None
+    """
+
+    band_to_wavelength = {'W1':'3.4e-6',
+                          'W2':'4.6e-6',
+                          'W3':'1.2e-5',
+                          'W4':'2.2e-5'}
+    
+    url = f"https://irsa.ipac.caltech.edu/SIA?COLLECTION=wise_allwise&POS=circle+{position.ra.deg}+{position.dec.deg}+0.002777&RESPONSEFORMAT=CSV&BAND={band_to_wavelength[filter]}&FORMAT=image/fits"
+    r = requests.get(url)
+    url = None
+    for t in r.text.split(','):
+        if t.startswith('https'):
+            url = t[:]
+            break
+    
+    if url is not None:
+        fits_image = fits.open(url)
+    else:
+        fits_image = None
+    
+    return fits_image
+
+def TWOMASS_cutout(position, image_size=None, filter=None):
+    """
+    Download 2MASS image cutout from IRSA
+
+    Parameters
+    ----------
+    :position : :class:`~astropy.coordinates.SkyCoord`
+        Target centre position of the cutout image to be downloaded.
+    :image_size: int: size of cutout image in pixels
+    :filter: str: Panstarrs filter (g r i z y)
+    Returns
+    -------
+    :cutout : :class:`~astropy.io.fits.HDUList` or None
+    """
+
+    irsaquery = f"https://irsa.ipac.caltech.edu/cgi-bin/2MASS/IM/nph-im_sia?POS={position.ra.deg},{position.dec.deg}&SIZE=0.001"
+    response = requests.get(url=irsaquery)
+
+    fitsurllist = np.array([])
+    for line in response.content.decode('utf-8').split('<TD><![CDATA['):
+        if re.match(f'https://irsa.*{filter.lower()}i.*fits',line.split(']]>')[0]):
+            fitsurl = line.split(']]')[0]
+            fitsurllist = np.append(fitsurllist,fitsurl)
+    
+    if len(fitsurllist):
+        fits_image = fits.open(fitsurllist[0])
+    else:
+        fits_image = None
+    
+    return fits_image
+
+
+def SDSS_cutout(position, image_size=None, filter=None):
+    """
+    Download SDSS image cutout from astroquery
+
+    Parameters
+    ----------
+    :position : :class:`~astropy.coordinates.SkyCoord`
+        Target centre position of the cutout image to be downloaded.
+    :image_size: int: size of cutout image in pixels
+    :filter: str: Panstarrs filter (g r i z y)
+    Returns
+    -------
+    :cutout : :class:`~astropy.io.fits.HDUList` or None
+    """
+
+    sdss_baseurl = 'https://data.sdss.org/sas'
+    
+    xid = SDSS.query_region(position,radius=0.1*u.deg)
+    if xid is not None:
+        link = SDSS.IMAGING_URL_SUFFIX.format(
+            base=sdss_baseurl, run=xid[0]['run'],
+            dr=14, instrument='eboss',
+            rerun=xid[0]['rerun'], camcol=xid[0]['camcol'],
+            field=xid[0]['field'], band=filter)
+
+        fits_image = fits.open(link)
+    else:
+        fits_image = None
+    
+    return fits_image
+
+
+download_function_dict = {"PanSTARRS": panstarrs_cutout, "GALEX": galex_cutout,
+                          "2MASS":TWOMASS_cutout, "WISE": WISE_cutout, "DES":hips_cutout,
+                          "SDSS": SDSS_cutout}
 
 
 def cutout(transient, survey, fov=Quantity(0.1, unit="deg")):

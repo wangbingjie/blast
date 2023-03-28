@@ -12,8 +12,8 @@
     wavelength_min_angstrom: 14787.38
     wavelength_max_angstrom: 18231.02
     vega_zero_point_jansky: 1024.00
-    magnitude_zero_point: 20.4871
-    image_pixel_units: 'counts/sec'
+    magnitude_zero_point_keyword: MAGZP
+    image_pixel_units: 'counts'
     kcorrect_name: 'twomass_H'
 - model: host.Filter
   fields:
@@ -29,8 +29,8 @@
     wavelength_min_angstrom: 10806.47
     wavelength_max_angstrom: 14067.97
     vega_zero_point_jansky: 1594.00
-    magnitude_zero_point: 20.9044
-    image_pixel_units: 'counts/sec'
+    magnitude_zero_point_keyword: MAGZP
+    image_pixel_units: 'counts'
     kcorrect_name: 'twomass_J'
 - model: host.Filter
   fields:
@@ -46,8 +46,8 @@
     wavelength_min_angstrom: 19543.69
     wavelength_max_angstrom: 23552.40
     vega_zero_point_jansky: 666.80
-    magnitude_zero_point: 19.9757
-    image_pixel_units: 'counts/sec'
+    magnitude_zero_point_keyword: MAGZP
+    image_pixel_units: 'counts'
     kcorrect_name: 'twomass_Ks'
 - model: host.Filter
   fields:
