@@ -15,7 +15,9 @@ from astroquery.mast import Observations
 from astroquery.sdss import SDSS
 from astroquery.skyview import SkyView
 from django.conf import settings
-from dl import queryClient as qc, storeClient as sc, authClient as ac
+from dl import authClient as ac
+from dl import queryClient as qc
+from dl import storeClient as sc
 from pyvo.dal import sia
 
 from .models import Cutout
@@ -245,6 +247,7 @@ def WISE_cutout(position, image_size=None, filter=None):
 
     return fits_image
 
+
 def DES_cutout(position, image_size=None, filter=None):
     """
     Download DES image cutout from NOIRLab
@@ -260,38 +263,38 @@ def DES_cutout(position, image_size=None, filter=None):
     :cutout : :class:`~astropy.io.fits.HDUList` or None
     """
 
-
     DEF_ACCESS_URL = "https://datalab.noirlab.edu/sia/ls_dr9"
     svc_ls_dr9 = sia.SIAService(DEF_ACCESS_URL)
-    
+
     imgTable = svc_ls_dr9.search(
-        (position.ra.deg,position.dec.deg),
-        (image_size/np.cos(position.dec.deg*np.pi/180), image_size),
-        verbosity=2).to_table()
+        (position.ra.deg, position.dec.deg),
+        (image_size / np.cos(position.dec.deg * np.pi / 180), image_size),
+        verbosity=2,
+    ).to_table()
 
     valid_urls = []
     for img in imgTable:
-        if '-depth-' in img['access_url'] and img['obs_bandpass'].startswith(filter):
-            valid_urls += [img['access_url']]
-            
+        if "-depth-" in img["access_url"] and img["obs_bandpass"].startswith(filter):
+            valid_urls += [img["access_url"]]
+
     if len(valid_urls):
         # we need both the depth and the image
-        
-        fits_image = fits.open(valid_urls[0].replace('-depth-','-image-'))
+
+        fits_image = fits.open(valid_urls[0].replace("-depth-", "-image-"))
         depth_image = fits.open(valid_urls[0])
         wcs_depth = WCS(depth_image[0].header)
-        xc,yc = wcs_depth.wcs_world2pix(position.ra.deg,position.dec.deg,0)
+        xc, yc = wcs_depth.wcs_world2pix(position.ra.deg, position.dec.deg, 0)
 
         # this is ugly - just assuming the exposure time at the
         # location of interest is uniform across the image
-        exptime = depth_image[0].data[int(yc),int(xc)]
-        
+        exptime = depth_image[0].data[int(yc), int(xc)]
+
         wcs = WCS(fits_image[0].header)
         cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
         fits_image[0].data = cutout.data
         fits_image[0].header.update(cutout.wcs.to_header())
-        fits_image[0].header['EXPTIME'] = exptime
-        
+        fits_image[0].header["EXPTIME"] = exptime
+
     else:
         fits_image = None
 
@@ -390,7 +393,7 @@ download_function_dict = {
     "GALEX": galex_cutout,
     "2MASS": TWOMASS_cutout,
     "WISE": WISE_cutout,
-    "DES":DES_cutout,
+    "DES": DES_cutout,
     "SDSS": SDSS_cutout,
 }
 
