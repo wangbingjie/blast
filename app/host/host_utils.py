@@ -194,7 +194,7 @@ def do_aperture_photometry(image, sky_aperture, filter):
         error = calc_total_error(
             background_subtracted_data,
             background.background_rms,
-            float(image[0].header["EXPTIME"])
+            float(image[0].header["EXPTIME"]),
         )
 
     else:
