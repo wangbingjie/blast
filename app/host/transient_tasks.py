@@ -312,6 +312,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
                     "flux": photometry["flux"],
                     "flux_error": photometry["flux_error"]
                 }
+
                 if photometry["flux"] > 0:
                     data["magnitude"] = photometry["magnitude"]
                     data["magnitude_error"] = photometry["magnitude_error"]
@@ -370,13 +371,13 @@ class GlobalAperturePhotometry(TransientTaskRunner):
 
                     semi_major_axis = (
                         aperture.semi_major_axis_arcsec
-                        - aperture.cutout.filter.image_fwhm_arcsec #/ 2.354
-                        + cutout.filter.image_fwhm_arcsec #/ 2.354
+                        - aperture.cutout.filter.image_fwhm_arcsec  # / 2.354
+                        + cutout.filter.image_fwhm_arcsec  # / 2.354
                     )
                     semi_minor_axis = (
                         aperture.semi_minor_axis_arcsec
-                        - aperture.cutout.filter.image_fwhm_arcsec #/ 2.354
-                        + cutout.filter.image_fwhm_arcsec #/ 2.354
+                        - aperture.cutout.filter.image_fwhm_arcsec  # / 2.354
+                        + cutout.filter.image_fwhm_arcsec  # / 2.354
                     )
 
                     query = {"name": f"{cutout.name}_global"}
