@@ -17,6 +17,7 @@ from astroquery.skyview import SkyView
 from django.conf import settings
 from dl import queryClient as qc, storeClient as sc, authClient as ac
 from pyvo.dal import sia
+import astropy.table as at
 
 from .models import Cutout
 from .models import Filter
@@ -231,7 +232,9 @@ def WISE_cutout(position, image_size=None, filter=None):
         if t.startswith("https"):
             url = t[:]
             break
-
+    data = at.Table.read(r.text,format='ascii.csv')
+    exptime = data['t_exptime'][0]
+        
     if url is not None:
         fits_image = fits.open(url)
 
@@ -239,7 +242,8 @@ def WISE_cutout(position, image_size=None, filter=None):
         cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
         fits_image[0].data = cutout.data
         fits_image[0].header.update(cutout.wcs.to_header())
-
+        fits_image[0].header['EXPTIME'] = exptime
+        
     else:
         fits_image = None
 
