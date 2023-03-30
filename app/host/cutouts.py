@@ -191,6 +191,7 @@ def galex_cutout(position, image_size=None, filter=None):
             obs["dataURL"][0]
             .replace("-exp.fits.gz", "-int.fits.gz")
             .replace("-rr.fits.gz", "-int.fits.gz")
+            .replace("-xd-mcat.fits.gz", f"-{filter[0].lower()}d-int.fits.gz")
         )
 
         wcs = WCS(fits_image[0].header)
