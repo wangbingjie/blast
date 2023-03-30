@@ -157,7 +157,7 @@
     survey: [PanSTARRS]
     sedpy_id: panstarrs_g
     hips_id: CDS/P/PanSTARRS/DR1/g
-    pixel_size_arcsec: 0.26
+    pixel_size_arcsec: 0.25
     image_fwhm_arcsec: 1.31
     vosa_id: PAN-STARRS/PS1.g
     image_download_method: custom
@@ -174,7 +174,7 @@
     survey: [PanSTARRS]
     sedpy_id: panstarrs_r
     hips_id: CDS/P/PanSTARRS/DR1/r
-    pixel_size_arcsec: 0.26
+    pixel_size_arcsec: 0.25
     image_fwhm_arcsec: 1.19
     vosa_id: PAN-STARRS/PS1.r
     image_download_method: custom
@@ -191,7 +191,7 @@
     survey: [PanSTARRS]
     sedpy_id: panstarrs_i
     hips_id: CDS/P/PanSTARRS/DR1/i
-    pixel_size_arcsec: 0.26
+    pixel_size_arcsec: 0.25
     image_fwhm_arcsec: 1.11
     vosa_id: PAN-STARRS/PS1.i
     image_download_method: custom
@@ -208,7 +208,7 @@
     survey: [PanSTARRS]
     sedpy_id: panstarrs_z
     hips_id: CDS/P/PanSTARRS/DR1/z
-    pixel_size_arcsec: 0.26
+    pixel_size_arcsec: 0.25
     image_fwhm_arcsec: 1.07
     vosa_id: PAN-STARRS/PS1.z
     image_download_method: custom
@@ -225,7 +225,7 @@
     survey: [PanSTARRS]
     sedpy_id: panstarrs_y
     hips_id: CDS/P/PanSTARRS/DR1/y
-    pixel_size_arcsec: 0.26
+    pixel_size_arcsec: 0.25
     image_fwhm_arcsec: 1.02
     vosa_id: PAN-STARRS/PS1.y
     image_download_method: custom
