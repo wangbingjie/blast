@@ -362,13 +362,14 @@ def SDSS_cutout(position, image_size=None, filter=None):
     :cutout : :class:`~astropy.io.fits.HDUList` or None
     """
 
-    sdss_baseurl = "https://data.sdss.org/sas"
+    sdss_baseurl = "https://dr14.sdss.org/sas"
     print(position)
     xid = SDSS.query_region(position, radius=0.05 * u.deg)
-    sc = SkyCoord(xid["ra"], xid["dec"], unit=u.deg)
-    sep = position.separation(sc).arcsec
-    iSep = np.where(sep == min(sep))[0][0]
     if xid is not None:
+        sc = SkyCoord(xid["ra"], xid["dec"], unit=u.deg)
+        sep = position.separation(sc).arcsec
+        iSep = np.where(sep == min(sep))[0][0]
+
         link = SDSS.IMAGING_URL_SUFFIX.format(
             base=sdss_baseurl,
             run=xid[iSep]["run"],
