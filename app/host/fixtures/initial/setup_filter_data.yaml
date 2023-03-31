@@ -330,7 +330,7 @@
     pixel_size_arcsec: 0.2637
     image_fwhm_arcsec: 1.16
     vosa_id: CTIO/DECam.g
-    image_download_method: hips
+    image_download_method: custom
     wavelength_eff_angstrom: 4770.83
     wavelength_min_angstrom: 3925.42
     wavelength_max_angstrom: 5529.96
@@ -347,7 +347,7 @@
     pixel_size_arcsec: 0.2637
     image_fwhm_arcsec: 1.07
     vosa_id: CTIO/DECam.r
-    image_download_method: hips
+    image_download_method: custom
     wavelength_eff_angstrom: 6371.33
     wavelength_min_angstrom: 5519.97
     wavelength_max_angstrom: 7233.72
@@ -364,7 +364,7 @@
     pixel_size_arcsec: 0.2637
     image_fwhm_arcsec: 0.97
     vosa_id: CTIO/DECam.i
-    image_download_method: hips
+    image_download_method: custom
     wavelength_eff_angstrom: 7774.19
     wavelength_min_angstrom: 6948.18
     wavelength_max_angstrom: 8645.68
@@ -381,7 +381,7 @@
     pixel_size_arcsec: 0.2637
     image_fwhm_arcsec: 0.93
     vosa_id: CTIO/DECam.z
-    image_download_method: hips
+    image_download_method: custom
     wavelength_eff_angstrom: 9157.90
     wavelength_min_angstrom: 8341.20
     wavelength_max_angstrom: 10074.26
@@ -398,7 +398,7 @@
     pixel_size_arcsec: 0.2637
     image_fwhm_arcsec: 0.91
     vosa_id: CTIO/DECam.y
-    image_download_method: hips
+    image_download_method: custom
     wavelength_eff_angstrom: 9886.35
     wavelength_min_angstrom: 9364.77
     wavelength_max_angstrom: 10685.78
