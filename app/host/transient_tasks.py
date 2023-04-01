@@ -414,13 +414,12 @@ class GlobalAperturePhotometry(TransientTaskRunner):
                     "transient": transient,
                     "filter": cutout.filter,
                     "flux": photometry["flux"],
-                    "flux_error": photometry["flux_error"]
+                    "flux_error": photometry["flux_error"],
                 }
                 if photometry["flux"] > 0:
                     data["magnitude"] = photometry["magnitude"]
                     data["magnitude_error"] = photometry["magnitude_error"]
 
-                
                 self._overwrite_or_create_object(AperturePhotometry, query, data)
             except Exception as e:
                 raise
