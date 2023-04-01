@@ -467,7 +467,7 @@ def query_sdss(position):
     """Get a Galaxy's redshift from SDSS if it is available"""
     result_table = SDSS.query_region(position, spectro=True, radius=1.0 * u.arcsec)
 
-    if result_table is not None:
+    if result_table is not None and "z" in result_table.keys():
         redshift = result_table["z"].value
         if len(redshift) > 0:
             if not math.isnan(redshift[0]):
