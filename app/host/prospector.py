@@ -1,6 +1,7 @@
 # Utils and wrappers for the prospector SED fitting code
 import os
 
+import extinction
 import numpy as np
 import prospect.io.read_results as reader
 from django.conf import settings
@@ -14,12 +15,12 @@ from prospect.utils.obsutils import fix_obs
 from scipy.special import gamma
 from scipy.special import gammainc
 
+from .host_utils import get_dust_maps
 from .models import AperturePhotometry
 from .models import Filter
 from .models import hdf5_file_path
-from .host_utils import get_dust_maps
 from .photometric_calibration import mJy_to_maggies  ##jansky_to_maggies
-import extinction
+
 
 def get_CI(chain):
     chainlen = len(chain)
@@ -91,7 +92,9 @@ def build_obs(transient, aperture_type):
                 f"aperture_type must be 'global' or 'local', currently set to {aperture_type}"
             )
         wave_eff = filter.transmission_curve().wave_effective
-        ext_corr = extinction.fitzpatrick99(np.array([wave_eff]), mwebv * 3.1, r_v=3.1)[0]
+        ext_corr = extinction.fitzpatrick99(np.array([wave_eff]), mwebv * 3.1, r_v=3.1)[
+            0
+        ]
         flux_mwcorr = datapoint.flux * 10 ** (0.4 * ext_corr)
 
         filters.append(filter.transmission_curve())
