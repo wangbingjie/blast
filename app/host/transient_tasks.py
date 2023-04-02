@@ -402,6 +402,8 @@ class GlobalAperturePhotometry(TransientTaskRunner):
                 photometry = do_aperture_photometry(
                     image, aperture.sky_aperture, cutout.filter
                 )
+                if photometry["flux"] is None:
+                    continue
 
                 query = {
                     "aperture": aperture,

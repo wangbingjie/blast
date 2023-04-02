@@ -27,9 +27,17 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
     transient_position = SkyCoord(
         ra=transient.ra_deg, dec=transient.dec_deg, unit="deg"
     )
+
+    # dumb hack for ghost
+    try:
+        float(transient.name)
+        transient_name = 'sn' + str(transient.name)
+    except:
+        transient_name = transient.name
+    
     host_data = getTransientHosts(
         snCoord=[transient_position],
-        snName=[transient.name],
+        snName=[transient_name],
         verbose=1,
         savepath=output_dir,
         starcut="gentle",
