@@ -31,10 +31,10 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
     # dumb hack for ghost
     try:
         float(transient.name)
-        transient_name = 'sn' + str(transient.name)
+        transient_name = "sn" + str(transient.name)
     except:
         transient_name = transient.name
-    
+
     host_data = getTransientHosts(
         snCoord=[transient_position],
         snName=[transient_name],
