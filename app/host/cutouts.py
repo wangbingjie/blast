@@ -286,13 +286,20 @@ def DES_cutout(position, image_size=None, filter=None):
         # we need both the depth and the image
 
         fits_image = fits.open(valid_urls[0].replace("-depth-", "-image-"))
+        if np.shape(fits_image[0].data)[0] == 1 or np.shape(fits_image[0].data)[1] == 1:
+            # no idea what's happening here but this is a mess
+            return None
+        
         depth_image = fits.open(valid_urls[0])
         wcs_depth = WCS(depth_image[0].header)
         xc, yc = wcs_depth.wcs_world2pix(position.ra.deg, position.dec.deg, 0)
 
         # this is ugly - just assuming the exposure time at the
         # location of interest is uniform across the image
-        exptime = depth_image[0].data[int(yc), int(xc)]
+        if np.shape(depth_image[0].data) == (1,1):
+            exptime = depth_image[0].data[0][0]
+        else:
+            exptime = depth_image[0].data[int(yc), int(xc)]
 
         wcs = WCS(fits_image[0].header)
         cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
