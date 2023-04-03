@@ -115,7 +115,7 @@ def build_model(observations):
     """
     Construct all model components
     """
-
+    
     model_params = TemplateLibrary["parametric_sfh"]
     model_params.update(TemplateLibrary["nebular"])
     model_params["zred"]["init"] = observations["redshift"]
@@ -128,7 +128,7 @@ def build_model(observations):
 
 def fit_model(observations, model_components, fitting_kwargs):
     """Fit the model"""
-
+    
     output = fit_model_prospect(
         observations,
         model_components["model"],

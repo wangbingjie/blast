@@ -673,7 +673,7 @@ class HostSEDFitting(TransientTaskRunner):
         if mode == "test":
             prosp_results = prospector_result_to_blast(
                 transient,
-                aperture,
+                aperture[0],
                 posterior,
                 model_components,
                 observations,
@@ -681,7 +681,7 @@ class HostSEDFitting(TransientTaskRunner):
             )
         else:
             prosp_results = prospector_result_to_blast(
-                transient, aperture, posterior, model_components, observations
+                transient, aperture[0], posterior, model_components, observations
             )
 
         pr = SEDFittingResult.objects.create(**prosp_results)
