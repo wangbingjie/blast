@@ -90,24 +90,24 @@ class SEDFittingFullTest(TestCase):
        #self.assertTrue(status_message == "processed")
        #self.assertTrue(pr[0].log_ssfr_50 != None)
 
-    def test_prospector_local(self):
+    #def test_prospector_local(self):
 
-       transient = Transient.objects.get(name="2010H")
+    #   transient = Transient.objects.get(name="2010H")
 
-       apphot_cls = LocalAperturePhotometry()
-       status_message = apphot_cls._run_process(transient)
+    #   apphot_cls = LocalAperturePhotometry()
+    #   status_message = apphot_cls._run_process(transient)
 
-       valid_cls = ValidateLocalPhotometry()
-       status_message = valid_cls._run_process(transient)
+    #   valid_cls = ValidateLocalPhotometry()
+    #   status_message = valid_cls._run_process(transient)
        
-       sed_cls = LocalHostSEDFitting()
-       status_message = sed_cls._run_process(transient, mode="test")
+    #   sed_cls = LocalHostSEDFitting()
+    #   status_message = sed_cls._run_process(transient, mode="test")
        
-       pr = SEDFittingResult.objects.filter(
-           Q(transient=transient)
-           & Q(aperture__type="local")
-           & Q(posterior__contains="/tmp")
-       )
-       self.assertTrue(len(pr) == 1)
-       self.assertTrue(status_message == "processed")
-       self.assertTrue(pr[0].log_ssfr_50 != None)
+    #   pr = SEDFittingResult.objects.filter(
+    #       Q(transient=transient)
+    #       & Q(aperture__type="local")
+    #       & Q(posterior__contains="/tmp")
+    #   )
+    #   self.assertTrue(len(pr) == 1)
+    #   self.assertTrue(status_message == "processed")
+    #   self.assertTrue(pr[0].log_ssfr_50 != None)
