@@ -26,6 +26,7 @@ from bokeh.plotting import show
 from bokeh.transform import cumsum
 from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
+from host.models import Filter
 from host.photometric_calibration import maggies_to_mJy
 from host.prospector import build_obs  # , build_model
 
@@ -227,7 +228,13 @@ def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
         a = result["obs"]["redshift"] + 1
         fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
         if obs["filters"] is not None:
-            pwave = [f.wave_effective for f in obs["filters"]]
+            try:
+                pwave = [
+                    Filter.objects.get(name=f).transmission_curve().wave_effective
+                    for f in obs["filters"]
+                ]
+            except:
+                pwave = [f.wave_effective for f in obs["filters"]]
             fig.circle(pwave, maggies_to_mJy(best["photometry"]))
 
     # xaxis = LinearAxis()

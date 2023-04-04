@@ -129,11 +129,11 @@ class Transient(SkyObject):
     @property
     def best_redshift(self):
         """get the best redshift for a transient"""
-        if self.host.redshift is not None:
+        if self.host is not None and self.host.redshift is not None:
             z = self.host.redshift
         elif self.redshift is not None:
             z = self.redshift
-        elif self.host.photometric_redshift is not None:
+        elif self.host is not None and self.host.photometric_redshift is not None:
             z = self.host.photometric_redshift
         else:
             z = None
@@ -248,6 +248,7 @@ class Filter(models.Model):
     wavelength_max_angstrom = models.FloatField()
     vega_zero_point_jansky = models.FloatField()
     magnitude_zero_point = models.FloatField(null=True, blank=True)
+    magnitude_zero_point_keyword = models.CharField(null=True, blank=True, max_length=8)
     image_pixel_units = models.CharField(max_length=50, null=True, blank=True)
 
     objects = FilterManager()
