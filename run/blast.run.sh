@@ -1,5 +1,13 @@
 #!/bin/env bash
-bash app/entrypoints/clean_data.sh
+
+if [ "$2" != "noclean" ]
+then
+    bash app/entrypoints/clean_data.sh
+else
+    echo "warning: not cleaning old data"
+    bash app/entrypoints/clean_most_data.sh
+fi
+
 bash run/get_fsps_files.sh
 
 case "$1" in

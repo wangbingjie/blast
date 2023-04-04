@@ -1,6 +1,7 @@
 # Utils and wrappers for the prospector SED fitting code
 import os
 
+import extinction
 import numpy as np
 import prospect.io.read_results as reader
 from django.conf import settings
@@ -14,6 +15,7 @@ from prospect.utils.obsutils import fix_obs
 from scipy.special import gamma
 from scipy.special import gammainc
 
+from .host_utils import get_dust_maps
 from .models import AperturePhotometry
 from .models import Filter
 from .models import hdf5_file_path
@@ -61,7 +63,7 @@ def build_obs(transient, aperture_type):
     if transient.host is None:
         raise ValueError("No host galaxy match")
 
-    z = transient.best_redshift()
+    z = transient.best_redshift
 
     filters, flux_maggies, flux_maggies_error = [], [], []
 
@@ -70,21 +72,29 @@ def build_obs(transient, aperture_type):
             datapoint = photometry.get(filter=filter)
         except AperturePhotometry.DoesNotExist:
             # sometimes data just don't exist, we can ignore
-            pass
+            continue
         except AperturePhotometry.MultipleObjectsReturned:
             raise
 
         # correct for MW reddening
         if aperture_type == "global":
             mwebv = transient.host.milkyway_dust_reddening
+            if mwebv is None:
+                # try once more
+                mwebv = get_dust_maps(transient.host.sky_coord)
         elif aperture_type == "local":
             mwebv = transient.milkyway_dust_reddening
+            if mwebv is None:
+                # try once more
+                mwebv = get_dust_maps(transient.sky_coord)
         else:
             raise ValueError(
                 f"aperture_type must be 'global' or 'local', currently set to {aperture_type}"
             )
         wave_eff = filter.transmission_curve().wave_effective
-        ext_corr = extinction.fitzpatrick99(wave_eff, mwebv * 3.1, r_v=3.1)
+        ext_corr = extinction.fitzpatrick99(np.array([wave_eff]), mwebv * 3.1, r_v=3.1)[
+            0
+        ]
         flux_mwcorr = datapoint.flux * 10 ** (0.4 * ext_corr)
 
         filters.append(filter.transmission_curve())

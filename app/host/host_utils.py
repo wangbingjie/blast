@@ -103,6 +103,8 @@ def build_source_catalog(image, background, threshhold_sigma=3.0, npixels=10):
     segmentation = detect_sources(
         background_subtracted_data, threshold, npixels=npixels
     )
+    if segmentation is None:
+        return None
     deblended_segmentation = deblend_sources(
         background_subtracted_data, segmentation, npixels=npixels
     )
@@ -175,17 +177,40 @@ def do_aperture_photometry(image, sky_aperture, filter):
     wcs = WCS(image[0].header)
 
     # get the background
-    background = estimate_background(image)
+    try:
+        background = estimate_background(image)
+    except ValueError:
+        # indicates poor image data
+        return {
+            "flux": None,
+            "flux_error": None,
+            "magnitude": None,
+            "magnitude_error": None,
+        }
+
     background_subtracted_data = image_data - background.background
 
-    error = calc_total_error(image_data, background.background_rms, 1.0)
+    if filter.image_pixel_units == "counts/sec":
+        error = calc_total_error(
+            background_subtracted_data,
+            background.background_rms,
+            float(image[0].header["EXPTIME"]),
+        )
+
+    else:
+        error = calc_total_error(
+            background_subtracted_data, background.background_rms, 1.0
+        )
+
     phot_table = aperture_photometry(
         background_subtracted_data, sky_aperture, wcs=wcs, error=error
     )
-    uncalibrated_flux = phot_table["aperture_sum"]
-    uncalibrated_flux_err = phot_table["aperture_sum_err"]
+    uncalibrated_flux = phot_table["aperture_sum"].value[0]
+    uncalibrated_flux_err = phot_table["aperture_sum_err"].value[0]
 
-    if filter.image_pixel_units == "counts/sec":
+    if filter.magnitude_zero_point_keyword is not None:
+        zpt = image[0].header[filter.magnitude_zero_point_keyword]
+    elif filter.image_pixel_units == "counts/sec":
         zpt = filter.magnitude_zero_point
     else:
         zpt = filter.magnitude_zero_point + 2.5 * np.log10(image[0].header["EXPTIME"])
@@ -217,7 +242,18 @@ def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
     return 0.86 * ebv
 
 
-def check_local_radius(aperture_size, redshift, image_fwhm_arcsec):
+def get_local_aperture_size(redshift):
+    """find the size of a 2 kpc radius in arcsec"""
+
+    dadist = cosmo.angular_diameter_distance(redshift).value
+    apr_arcsec = 2 / (
+        dadist * 1000 * (np.pi / 180.0 / 3600.0)
+    )  # 2 kpc aperture radius is this many arcsec
+
+    return apr_arcsec
+
+
+def check_local_radius(redshift, image_fwhm_arcsec):
     """Checks whether filter image FWHM is larger than
     the aperture size"""
 
@@ -253,6 +289,12 @@ def check_global_contamination(global_aperture_phot, aperture_primary):
         catalog = build_source_catalog(
             image, background, threshhold_sigma=5, npixels=15
         )
+
+        # catalog is None is no sources are detected in the image
+        # so we don't have to worry about contamination in that case
+        if catalog is None:
+            continue
+
         source_data = match_source(aperture.sky_coord, catalog, wcs)
 
         mask_image = (
@@ -383,8 +425,25 @@ def construct_aperture(image, position):
     """
     wcs = WCS(image[0].header)
     background = estimate_background(image)
-    catalog = build_source_catalog(image, background)
-    source_data = match_source(position, catalog, wcs)
+
+    ### found an edge case where deblending isn't working how I'd like it to
+    ### so if it's not finding the host, play with the default threshold
+    iter = 0
+    source_separation_arcsec = 100
+    while source_separation_arcsec > 5 and iter < 5:
+        catalog = build_source_catalog(
+            image, background, threshhold_sigma=5 * (iter + 1)
+        )
+        source_data = match_source(position, catalog, wcs)
+
+        source_ra, source_dec = wcs.wcs_pix2world(
+            source_data.xcentroid, source_data.ycentroid, 0
+        )
+        source_position = SkyCoord(source_ra, source_dec, unit=u.deg)
+        source_separation_arcsec = position.separation(source_position).arcsec
+
+        iter += 1
+
     return elliptical_sky_aperture(source_data, wcs)
 
 
@@ -392,9 +451,11 @@ def query_ned(position):
     """Get a Galaxy's redshift from ned if it is available."""
 
     result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
+    result_table = result_table[result_table["Redshift"].mask == False]
+
     redshift = result_table["Redshift"].value
 
-    if redshift:
+    if len(redshift):
         galaxy_data = {"redshift": redshift[0]}
     else:
         galaxy_data = {"redshift": None}
@@ -406,7 +467,7 @@ def query_sdss(position):
     """Get a Galaxy's redshift from SDSS if it is available"""
     result_table = SDSS.query_region(position, spectro=True, radius=1.0 * u.arcsec)
 
-    if result_table is not None:
+    if result_table is not None and "z" in result_table.keys():
         redshift = result_table["z"].value
         if len(redshift) > 0:
             if not math.isnan(redshift[0]):

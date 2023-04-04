@@ -1,9 +1,10 @@
+astro-datalab==2.20.1
 numpy==1.23.2
 dynesty==1.2.3
 alabaster==0.7.12
 amqp==5.0.9
 asgiref==3.4.1
-astro-ghost==0.1.49
+astro-ghost==0.1.53
 astro-prospector==1.0.0
 astropy==5.0.4
 astroquery==0.4.4
@@ -103,6 +104,7 @@ dustmaps
 astro-sedpy
 django-revproxy
 djangorestframework
-fsps==0.4.1
+fsps==0.4.2
 opencv_python==4.6.0.66
 extinction==0.4.6
+ipython==8.6.0

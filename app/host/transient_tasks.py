@@ -11,6 +11,7 @@ from .host_utils import check_local_radius
 from .host_utils import construct_aperture
 from .host_utils import do_aperture_photometry
 from .host_utils import get_dust_maps
+from .host_utils import get_local_aperture_size
 from .host_utils import query_ned
 from .host_utils import query_sdss
 from .host_utils import select_cutout_aperture
@@ -249,6 +250,8 @@ class LocalAperturePhotometry(TransientTaskRunner):
         return {
             "Cutout download": "processed",
             "Local aperture photometry": "not processed",
+            "Host match": "processed",
+            "Host information": "processed",
         }
 
     @property
@@ -267,14 +270,19 @@ class LocalAperturePhotometry(TransientTaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
+        if transient.best_redshift is None:
+            return "failed"
+
+        aperture_size = get_local_aperture_size(transient.best_redshift)
+
         query = {"name__exact": f"{transient.name}_local"}
         data = {
             "name": f"{transient.name}_local",
             "orientation_deg": 0.0,
             "ra_deg": transient.sky_coord.ra.degree,
             "dec_deg": transient.sky_coord.dec.degree,
-            "semi_major_axis_arcsec": 1.0,
-            "semi_minor_axis_arcsec": 1.0,
+            "semi_major_axis_arcsec": aperture_size,
+            "semi_minor_axis_arcsec": aperture_size,
             "transient": transient,
             "type": "local",
         }
@@ -303,9 +311,11 @@ class LocalAperturePhotometry(TransientTaskRunner):
                     "filter": cutout.filter,
                     "flux": photometry["flux"],
                     "flux_error": photometry["flux_error"],
-                    "magnitude": photometry["magnitude"],
-                    "magnitude_error": photometry["magnitude_error"],
                 }
+
+                if photometry["flux"] > 0:
+                    data["magnitude"] = photometry["magnitude"]
+                    data["magnitude_error"] = photometry["magnitude_error"]
 
                 self._overwrite_or_create_object(AperturePhotometry, query, data)
             except Exception as e:
@@ -344,8 +354,10 @@ class GlobalAperturePhotometry(TransientTaskRunner):
 
         cutouts = Cutout.objects.filter(transient=transient)
         cutout_for_aperture = select_cutout_aperture(cutouts)[0]
-        aperture = Aperture.objects.get(cutout=cutout_for_aperture, type="global")
-
+        aperture = Aperture.objects.get(
+            cutout__name=cutout_for_aperture.name, type="global"
+        )
+        query = {"name": f"{cutout_for_aperture.name}_global"}
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
 
@@ -353,17 +365,19 @@ class GlobalAperturePhotometry(TransientTaskRunner):
             # adjust semi-major/minor axes for size
             if f"{cutout.name}_global" != aperture.name:
 
-                if not len(Aperture.objects.filter(cutout=f"{cutout.name}_global")):
+                if not len(
+                    Aperture.objects.filter(cutout__name=f"{cutout.name}_global")
+                ):
 
                     semi_major_axis = (
                         aperture.semi_major_axis_arcsec
-                        - aperture.cutout.filter.image_fwhm_arcsec / 2.354
-                        + cutout.filter.image_fwhm_arcsec / 2.354
+                        - aperture.cutout.filter.image_fwhm_arcsec  # / 2.354
+                        + cutout.filter.image_fwhm_arcsec  # / 2.354
                     )
                     semi_minor_axis = (
                         aperture.semi_minor_axis_arcsec
-                        - aperture.cutout.filter.image_fwhm_arcsec / 2.354
-                        + cutout.filter.image_fwhm_arcsec / 2.354
+                        - aperture.cutout.filter.image_fwhm_arcsec  # / 2.354
+                        + cutout.filter.image_fwhm_arcsec  # / 2.354
                     )
 
                     query = {"name": f"{cutout.name}_global"}
@@ -388,6 +402,8 @@ class GlobalAperturePhotometry(TransientTaskRunner):
                 photometry = do_aperture_photometry(
                     image, aperture.sky_aperture, cutout.filter
                 )
+                if photometry["flux"] is None:
+                    continue
 
                 query = {
                     "aperture": aperture,
@@ -401,9 +417,10 @@ class GlobalAperturePhotometry(TransientTaskRunner):
                     "filter": cutout.filter,
                     "flux": photometry["flux"],
                     "flux_error": photometry["flux_error"],
-                    "magnitude": photometry["magnitude"],
-                    "magnitude_error": photometry["magnitude_error"],
                 }
+                if photometry["flux"] > 0:
+                    data["magnitude"] = photometry["magnitude"]
+                    data["magnitude_error"] = photometry["magnitude_error"]
 
                 self._overwrite_or_create_object(AperturePhotometry, query, data)
             except Exception as e:
@@ -463,7 +480,6 @@ class ValidateLocalPhotometry(TransientTaskRunner):
         for local_aperture_phot in local_aperture_photometry:
 
             is_validated = check_local_radius(
-                local_aperture_phot.aperture.semi_major_axis_arcsec,
                 redshift,
                 local_aperture_phot.filter.image_fwhm_arcsec,
             )
@@ -510,12 +526,13 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
         cutouts = Cutout.objects.filter(transient=transient)
         cutout_for_aperture = select_cutout_aperture(cutouts)[0]
         aperture_primary = Aperture.objects.get(
-            cutout=cutout_for_aperture, type="global"
+            cutout__name=cutout_for_aperture.name, type="global"
         )
 
         global_aperture_photometry = AperturePhotometry.objects.filter(
             transient=transient, aperture__type="global"
         )
+
         if not len(global_aperture_photometry):
             return "global photometry validation failed"
 
@@ -656,7 +673,7 @@ class HostSEDFitting(TransientTaskRunner):
         if mode == "test":
             prosp_results = prospector_result_to_blast(
                 transient,
-                aperture,
+                aperture[0],
                 posterior,
                 model_components,
                 observations,
@@ -664,7 +681,7 @@ class HostSEDFitting(TransientTaskRunner):
             )
         else:
             prosp_results = prospector_result_to_blast(
-                transient, aperture, posterior, model_components, observations
+                transient, aperture[0], posterior, model_components, observations
             )
 
         pr = SEDFittingResult.objects.create(**prosp_results)
