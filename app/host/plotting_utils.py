@@ -26,9 +26,9 @@ from bokeh.plotting import show
 from bokeh.transform import cumsum
 from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
+from host.models import Filter
 from host.photometric_calibration import maggies_to_mJy
 from host.prospector import build_obs  # , build_model
-from host.models import Filter
 
 from .models import Aperture
 
@@ -136,7 +136,7 @@ def plot_cutout_image(
         with fits.open(cutout.fits.name) as fits_file:
             image_data = fits_file[0].data
             wcs = WCS(fits_file[0].header)
-            
+
         transient_kwargs = {
             "legend_label": f"{transient.name}",
             "size": 30,
@@ -229,7 +229,10 @@ def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
         fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
         if obs["filters"] is not None:
             try:
-                pwave = [Filter.objects.get(name=f).transmission_curve().wave_effective for f in obs["filters"]]
+                pwave = [
+                    Filter.objects.get(name=f).transmission_curve().wave_effective
+                    for f in obs["filters"]
+                ]
             except:
                 pwave = [f.wave_effective for f in obs["filters"]]
             fig.circle(pwave, maggies_to_mJy(best["photometry"]))
