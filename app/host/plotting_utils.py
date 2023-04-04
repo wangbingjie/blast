@@ -44,7 +44,7 @@ def scale_image(image_data):
 def plot_image(image_data, figure):
 
     image_data = np.nan_to_num(image_data, nan=np.nanmin(image_data))
-    #image_data = np.nan_to_num(image_data, nan=np.median(image_data)) #np.amin(image_data))
+    # image_data = np.nan_to_num(image_data, nan=np.median(image_data)) #np.amin(image_data))
     image_data = image_data + abs(np.amin(image_data)) + 0.1
 
     scaled_image = scale_image(image_data)
