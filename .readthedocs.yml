@@ -5,8 +5,8 @@ build:
   tools:
     python: "3.8"
   apt_packages:
-    libcurl4-openssl-dev
-    libssl-dev
+    - libcurl4-openssl-dev
+    - libssl-dev
 
 sphinx:
    configuration: docs/conf.py
