@@ -107,4 +107,4 @@ fsps==0.4.2
 opencv_python==4.6.0.66
 extinction==0.4.6
 ipython==8.6.0
-astro-datalab==2.20.1
+#astro-datalab==2.20.1
