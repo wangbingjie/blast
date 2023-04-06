@@ -186,13 +186,14 @@ class TransientTaskRunner(TaskRunner):
         register = self.find_register_items_meeting_prerequisites()
         return self._select_highest_priority(register) if register.exists() else None
 
-    def run_process(self):
+    def run_process(self,task_register_item=None):
         """
         Runs task runner process.
         """
         # self.task = Task.objects.get(name__exact=self.task_name)
 
-        task_register_item = self.select_register_item()
+        if task_register_item is None:
+            task_register_item = self.select_register_item()
         processing_status = Status.objects.get(message__exact="processing")
 
         if task_register_item is not None:
