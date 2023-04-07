@@ -371,7 +371,7 @@ def SDSS_cutout(position, image_size=None, filter=None):
 
     sdss_baseurl = "https://dr14.sdss.org/sas"
     print(position)
-    xid = SDSS.query_region(position, radius=0.05 * u.deg)
+    xid = SDSS.query_region(position, radius=0.03 * u.deg)
     if xid is not None:
         sc = SkyCoord(xid["ra"], xid["dec"], unit=u.deg)
         sep = position.separation(sc).arcsec

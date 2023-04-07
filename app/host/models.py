@@ -267,7 +267,7 @@ class Filter(models.Model):
                 curve_name, delim_whitespace=True, header=None
             )
         except:
-            raise ValueError(f"{self.name}: Problem loading filter transmission curve")
+            raise ValueError(f"{self.name}: Problem loading filter transmission curve from {curve_name}")
 
         wavelength = transmission_curve[0].to_numpy()
         transmission = transmission_curve[1].to_numpy()
