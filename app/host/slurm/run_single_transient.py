@@ -23,7 +23,9 @@ tasks_in_order = ['Transient MWEBV',
                   'Transient information',
                   'Global aperture construction',
                   'Global aperture photometry',
+                  'Validate global photometry',
                   'Local aperture photometry',
+                  'Validate local photometry',
                   'Global host SED inference',
                   'Local host SED inference']
 
@@ -47,20 +49,25 @@ class run_single(CronJobBase):
         else:
             transient = transients[0]
 
-        task_count = 0
-        for t in tasks.periodic_tasks:
-            if t.task_name == tasks_in_order[task_count]:
+        for to in tasks_in_order:
+            for t in tasks.periodic_tasks:
+                if t.task_name == to: 
+                    #tasks_in_order[task_count]:
 
-                task = Task.objects.get(name__exact=t.task_name)
-                task_register = TaskRegister.objects.all()
-                task_register = task_register.filter(transient=transient, task=task)
+                    task = Task.objects.get(name__exact=t.task_name)
+                    task_register = TaskRegister.objects.all()
+                    task_register = task_register.filter(transient=transient, task=task)
 
-                if not len(task_register):
-                    task_register = TaskRegister.objects.create(
-                        transient=transient,task=task,status=Status.objects.get(message='not processed'),
-                        last_modified=datetime.datetime.now(),last_processing_time_seconds=0)
-                else:
-                    task_register = task_register[0]
+                    if not len(task_register):
+                        task_register = TaskRegister.objects.create(
+                            transient=transient,task=task,status=Status.objects.get(message='not processed'),
+                            last_modified=datetime.datetime.now(),last_processing_time_seconds=0)
+                    else:
+                        task_register = task_register[0]
 
-                status = t.run_process(task_register)
-                task_count += 1
+                    try:
+                        status = t.run_process(task_register)
+                    except Exception as e:
+                        raise e
+
+                    break
