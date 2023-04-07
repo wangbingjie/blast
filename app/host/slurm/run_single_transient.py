@@ -52,7 +52,6 @@ class run_single(CronJobBase):
         for to in tasks_in_order:
             for t in tasks.periodic_tasks:
                 if t.task_name == to: 
-                    #tasks_in_order[task_count]:
 
                     task = Task.objects.get(name__exact=t.task_name)
                     task_register = TaskRegister.objects.all()
