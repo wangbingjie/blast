@@ -1,8 +1,7 @@
 #!/bin/bash -l
 #SBATCH --job-name=blast_transient_<transient_name>
 #SBATCH --time=34:00:00
-#SBATCH --ntasks=2
-#SBATCH --array=1-2
+#SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --output=<outdir>/blast_transient_<transient_name>.log
 #SBATCH --mem=12GB
