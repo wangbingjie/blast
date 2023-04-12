@@ -3,6 +3,7 @@
 import astropy.table as at
 import os
 import argparse
+import time
 
 def main(
         batchfile,batchdir,
@@ -27,6 +28,7 @@ def main(
                     replace('<blastdir>',blastdir)
                 print(line,file=fout)
         os.system(f'sbatch {slurmfile}')
+        time.sleep(440)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='batch submission for slurm systems')
