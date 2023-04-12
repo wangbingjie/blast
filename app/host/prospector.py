@@ -95,11 +95,12 @@ def build_obs(transient, aperture_type):
         ext_corr = extinction.fitzpatrick99(np.array([wave_eff]), mwebv * 3.1, r_v=3.1)[
             0
         ]
-        flux_mwcorr = datapoint.flux * 10 ** (0.4 * ext_corr)
+        flux_mwcorr = datapoint.flux * 10 ** (-0.4 * filter.ab_offset) * 10 ** (0.4 * ext_corr)
+        fluxerr_mwcorr = datapoint.flux_error * 10 ** (-0.4 * filter.ab_offset) * 10 ** (0.4 * ext_corr)
 
         filters.append(filter.transmission_curve())
         flux_maggies.append(mJy_to_maggies(flux_mwcorr))
-        flux_maggies_error.append(mJy_to_maggies(datapoint.flux_error))
+        flux_maggies_error.append(mJy_to_maggies(fluxerr_mwcorr))
 
     obs_data = dict(
         wavelength=None,
@@ -161,6 +162,9 @@ def prospector_result_to_blast(
 
     if not os.path.exists(f"{sed_output_root}/{transient.name}"):
         os.makedirs(f"{sed_output_root}/{transient.name}/")
+    if os.path.exists(hdf5_file):
+        # prospector won't overwrite, which causes problems
+        os.remove(hdf5_file)
 
     writer.write_hdf5(
         hdf5_file,
