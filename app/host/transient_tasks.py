@@ -313,7 +313,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
                     "flux_error": photometry["flux_error"],
                 }
 
-                if photometry["flux"] > 0:
+                if photometry["flux"] is not None and photometry["flux"] > 0:
                     data["magnitude"] = photometry["magnitude"]
                     data["magnitude_error"] = photometry["magnitude_error"]
 
