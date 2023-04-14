@@ -190,7 +190,9 @@ def galex_cutout(position, image_size=None, filter=None):
         fits_image = fits.open(
             obs["dataURL"][0]
             .replace("-exp.fits.gz", "-int.fits.gz")
+            .replace("-gsp.fits.gz", "-int.fits.gz")
             .replace("-rr.fits.gz", "-int.fits.gz")
+            .replace("-cnt.fits.gz", "-int.fits.gz")
             .replace("-xd-mcat.fits.gz", f"-{filter[0].lower()}d-int.fits.gz")
         )
 
@@ -371,7 +373,12 @@ def SDSS_cutout(position, image_size=None, filter=None):
 
     sdss_baseurl = "https://dr14.sdss.org/sas"
     print(position)
-    xid = SDSS.query_region(position, radius=0.03 * u.deg)
+
+    xid = SDSS.query_region(position, radius=0.01 * u.deg)
+    #if xid is not None and 'titleSkyserver_Errortitle' in xid.keys():
+    #    RuntimeWarning(f'SDSS query fail for position {position.ra.deg},{position.dec.deg}')
+    #    return None
+
     if xid is not None:
         sc = SkyCoord(xid["ra"], xid["dec"], unit=u.deg)
         sep = position.separation(sc).arcsec
