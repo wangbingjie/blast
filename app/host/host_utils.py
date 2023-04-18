@@ -188,6 +188,18 @@ def do_aperture_photometry(image, sky_aperture, filter):
             "magnitude_error": None,
         }
 
+    # is the aperture inside the image?
+    bbox = sky_aperture.to_pixel(wcs).bbox
+    if bbox.ixmin < 0 or bbox.iymin < 0 or \
+       bbox.ixmax > image_data.shape[1] or \
+       bbox.iymax > image_data.shape[0]:
+        return {
+            "flux": None,
+            "flux_error": None,
+            "magnitude": None,
+            "magnitude_error": None,
+        }
+
     background_subtracted_data = image_data - background.background
 
     if filter.image_pixel_units == "counts/sec":
