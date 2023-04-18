@@ -374,10 +374,10 @@ def SDSS_cutout(position, image_size=None, filter=None):
     sdss_baseurl = "https://dr14.sdss.org/sas"
     print(position)
 
-    xid = SDSS.query_region(position, radius=0.01 * u.deg)
-    #if xid is not None and 'titleSkyserver_Errortitle' in xid.keys():
-    #    RuntimeWarning(f'SDSS query fail for position {position.ra.deg},{position.dec.deg}')
-    #    return None
+    xid = SDSS.query_region(position, radius=0.05 * u.deg)
+    if xid is not None and 'titleSkyserver_Errortitle' in xid.keys():
+        RuntimeWarning(f'SDSS query fail for position {position.ra.deg},{position.dec.deg}')
+        return None
 
     if xid is not None:
         sc = SkyCoord(xid["ra"], xid["dec"], unit=u.deg)
