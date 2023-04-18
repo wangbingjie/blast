@@ -28,7 +28,7 @@ def main(
                     replace('<blastdir>',blastdir)
                 print(line,file=fout)
         os.system(f'sbatch {slurmfile}')
-        time.sleep(440)
+        time.sleep(120)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='batch submission for slurm systems')

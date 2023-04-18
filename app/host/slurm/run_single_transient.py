@@ -68,6 +68,7 @@ class run_single(CronJobBase):
                     try:
                         status = t.run_process(task_register)
                     except Exception as e:
+                        print(e)
                         raise e
 
                     break

@@ -3,10 +3,12 @@ import os
 
 from astro_ghost.ghostHelperFunctions import getGHOST
 from astro_ghost.ghostHelperFunctions import getTransientHosts
+from astro_ghost.photoz_helper import calc_photoz
 from astropy.coordinates import SkyCoord
 from django.conf import settings
 
 from .models import Host
+
 
 
 def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
@@ -44,6 +46,8 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
         # ascentMatch=False,
     )
 
+    host_data = calc_photoz(host_data)
+
     # clean up after GHOST...
     # dir_list = glob.glob('transients_*/*/*')
     # for dir in dir_list: os.remove(dir)
@@ -60,4 +64,11 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
             dec_deg=host_data["decMean"][0],
             name=host_data["objName"][0],
         )
+
+        if host_data['NED_redshift'][0] == host_data['NED_redshift'][0]:
+            host.redshift = ghost_hosts['NED_redshift'][0]
+
+        if 'photo_z' in host_data.keys() and host_data['photo_z'][0] == host_data['photo_z'][0]:
+            host.photometric_redshift = host_data['photo_z'][0]
+
     return host
