@@ -475,7 +475,7 @@ class ValidateLocalPhotometry(TransientTaskRunner):
                 local_aperture_phot.save()
 
         if not len(local_aperture_photometry):
-            return "local photometry validation failed"
+            return "phot valid failed"
 
         for local_aperture_phot in local_aperture_photometry:
 
@@ -602,11 +602,15 @@ class HostInformation(TransientTaskRunner):
             return "no host"
 
         galaxy_ned_data = query_ned(host.sky_coord)
-        galaxy_sdss_data = query_sdss(host.sky_coord)
+        ### too many SDSS errors
+        try:
+            galaxy_sdss_data = query_sdss(host.sky_coord)
+        except:
+            galaxy_sdss_data = None
 
         status_message = "processed"
 
-        if galaxy_sdss_data["redshift"] is not None and not math.isnan(
+        if galaxy_sdss_data is not None and galaxy_sdss_data["redshift"] is not None and not math.isnan(
             galaxy_sdss_data["redshift"]
         ):
             host.redshift = galaxy_sdss_data["redshift"]
