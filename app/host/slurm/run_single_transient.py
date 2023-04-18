@@ -52,7 +52,6 @@ class run_single(CronJobBase):
         for to in tasks_in_order:
             for t in tasks.periodic_tasks:
                 if t.task_name == to: 
-
                     task = Task.objects.get(name__exact=t.task_name)
                     task_register = TaskRegister.objects.all()
                     task_register = task_register.filter(transient=transient, task=task)
@@ -64,6 +63,8 @@ class run_single(CronJobBase):
                     else:
                         task_register = task_register[0]
 
+                    if task_register.status.message != 'processed':
+                        task_register.status = Status.objects.get(message='not processed')
                     try:
                         status = t.run_process(task_register)
                     except Exception as e:
