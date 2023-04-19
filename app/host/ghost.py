@@ -66,7 +66,7 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
         )
 
         if host_data['NED_redshift'][0] == host_data['NED_redshift'][0]:
-            host.redshift = ghost_hosts['NED_redshift'][0]
+            host.redshift = host_data['NED_redshift'][0]
 
         if 'photo_z' in host_data.keys() and host_data['photo_z'][0] == host_data['photo_z'][0]:
             host.photometric_redshift = host_data['photo_z'][0]
