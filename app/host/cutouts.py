@@ -23,7 +23,37 @@ from pyvo.dal import sia
 
 from .models import Cutout
 from .models import Filter
+#from host import SkyServer
 
+def getRADecBox(ra,dec,size):
+    RAboxsize = DECboxsize = size
+
+    # get the maximum 1.0/cos(DEC) term: used for RA cut
+    minDec = dec-0.5*DECboxsize
+    if minDec<=-90.0:minDec=-89.9
+    maxDec = dec+0.5*DECboxsize
+    if maxDec>=90.0:maxDec=89.9
+
+    invcosdec = max(1.0/np.cos(dec*np.pi/180.0),
+                    1.0/np.cos(minDec  *np.pi/180.0),
+                    1.0/np.cos(maxDec  *np.pi/180.0))
+
+    ramin = ra-0.5*RAboxsize*invcosdec
+    ramax = ra+0.5*RAboxsize*invcosdec
+    decmin = dec-0.5*DECboxsize
+    decmax = dec+0.5*DECboxsize
+
+    if ra<0.0: ra+=360.0
+    if ra>=360.0: ra-=360.0
+
+    if ramin!=None:
+        if (ra-ramin)<-180:
+            ramin-=360.0
+            ramax-=360.0
+        elif (ra-ramin)>180:
+            ramin+=360.0
+            ramax+=360.0
+    return(ramin,ramax,decmin,decmax)
 
 def download_and_save_cutouts(
     transient,
@@ -374,36 +404,54 @@ def SDSS_cutout(position, image_size=None, filter=None):
     sdss_baseurl = "https://dr14.sdss.org/sas"
     print(position)
 
-    xid = SDSS.query_region(position, radius=0.05 * u.deg)
-    if xid is not None and 'titleSkyserver_Errortitle' in xid.keys():
-        RuntimeWarning(f'SDSS query fail for position {position.ra.deg},{position.dec.deg}')
+    #xid = SDSS.query_region(position, radius=0.05 * u.deg)
+    #ramin,ramax,decmin,decmax = getRADecBox(position.ra.deg,position.dec.deg,size=0.02)
+    #sqlquery = f"""SELECT DISTINCT p.ra, p.dec, p.objid, p.run, p.rerun, p.camcol, p.field FROM PhotoObjAll AS p WHERE p.ra between {ramin} and {ramax} and p.dec between {decmin} and {decmax}"""
+    #import pdb; pdb.set_trace()
+    #xid = SkyServer.sqlSearch(sqlquery)
+
+    url = f"https://dr12.sdss.org/fields/raDec?ra={position.ra.deg}&dec={position.dec.deg}"
+    rt = requests.get(url)
+    if 'Error: Couldn\'t find field covering' in rt.text:
         return None
 
-    if xid is not None:
-        sc = SkyCoord(xid["ra"], xid["dec"], unit=u.deg)
-        sep = position.separation(sc).arcsec
-        iSep = np.where(sep == min(sep))[0][0]
+    #if not len(xid):
+    #    return None
+    #if xid is not None and 'titleSkyserver_Errortitle' in xid.keys():
+    #    RuntimeWarning(f'SDSS query fail for position {position.ra.deg},{position.dec.deg}')
+    #    return None
 
-        link = SDSS.IMAGING_URL_SUFFIX.format(
-            base=sdss_baseurl,
-            run=xid[iSep]["run"],
-            dr=14,
-            instrument="eboss",
-            rerun=xid[iSep]["rerun"],
-            camcol=xid[iSep]["camcol"],
-            field=xid[iSep]["field"],
-            band=filter,
-        )
+    #if len(xid) and xid is not None:
+        #sc = SkyCoord(xid["ra"], xid["dec"], unit=u.deg)
+        #sep = position.separation(sc).arcsec
+        #iSep = np.where(sep == min(sep))[0][0]
 
-        fits_image = fits.open(link)
+    regex = '<dt>run<\/dt>.*<dd>.*<\/dd>'
+    run = re.findall('<dt>run</dt>\n.*<dd>([0-9]+)</dd>',rt.text)[0]
+    rerun = re.findall('<dt>rerun</dt>\n.*<dd>([0-9]+)</dd>',rt.text)[0]
+    camcol = re.findall('<dt>camcol</dt>\n.*<dd>([0-9]+)</dd>',rt.text)[0]
+    field = re.findall('<dt>field</dt>\n.*<dd>([0-9]+)</dd>',rt.text)[0]
 
-        wcs = WCS(fits_image[0].header)
-        cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
-        fits_image[0].data = cutout.data
-        fits_image[0].header.update(cutout.wcs.to_header())
+    link = SDSS.IMAGING_URL_SUFFIX.format(
+        base=sdss_baseurl,
+        run=xid["run"][iSep],
+        dr=14,
+        instrument="eboss",
+        rerun=xid["rerun"][iSep],
+        camcol=xid["camcol"][iSep],
+        field=xid["field"][iSep],
+        band=filter,
+    )
 
-    else:
-        fits_image = None
+    fits_image = fits.open(link)
+
+    wcs = WCS(fits_image[0].header)
+    cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
+    fits_image[0].data = cutout.data
+    fits_image[0].header.update(cutout.wcs.to_header())
+
+    #else:
+    #    fits_image = None
 
     return fits_image
 
