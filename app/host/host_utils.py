@@ -220,6 +220,15 @@ def do_aperture_photometry(image, sky_aperture, filter):
     uncalibrated_flux = phot_table["aperture_sum"].value[0]
     uncalibrated_flux_err = phot_table["aperture_sum_err"].value[0]
 
+    # check for correlated errors
+    aprad,err_adjust = filter.correlation_model()
+    if aprad is not None:
+        image_aperture = sky_aperture.to_pixel(wcs)
+        
+        err_adjust_interp = np.interp((image_aperture.a+image_aperture.b)/2.,aprad,err_adjust)
+        uncalibrated_flux_err *= err_adjust_interp
+
+
     if filter.magnitude_zero_point_keyword is not None:
         zpt = image[0].header[filter.magnitude_zero_point_keyword]
     elif filter.image_pixel_units == "counts/sec":
