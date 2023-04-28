@@ -10,6 +10,7 @@ from django.db import models
 from django_celery_beat.models import PeriodicTask
 from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
+import os
 
 from .managers import ApertureManager
 from .managers import CatalogManager
@@ -275,6 +276,25 @@ class Filter(models.Model):
         return observate.Filter(
             kname=self.name, nick=self.name, data=(wavelength, transmission)
         )
+
+    def correlation_model(self):
+        """
+        Returns the model for correlated errors of the filter, if it exists
+        """
+        corr_model_name = f"{settings.TRANSMISSION_CURVES_ROOT}/{self.name}_corrmodel.txt"
+        if not os.path.exists(corr_model_name):
+            return None,None
+
+        try:
+            corr_model = pd.read_csv(
+                corr_model_name, delim_whitespace=True, header=None
+            )
+        except:
+            raise ValueError(f"{self.name}: Problem loading filter transmission curve from {curve_name}")
+
+        app_radius = corr_model[0].to_numpy()
+        error_adjust = corr_model[1].to_numpy()**(1/2.)
+        return app_radius,error_adjust
 
 
 class Catalog(models.Model):
