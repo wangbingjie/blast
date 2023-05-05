@@ -434,12 +434,12 @@ def SDSS_cutout(position, image_size=None, filter=None):
 
     link = SDSS.IMAGING_URL_SUFFIX.format(
         base=sdss_baseurl,
-        run=xid["run"][iSep],
+        run=int(run),
         dr=14,
         instrument="eboss",
-        rerun=xid["rerun"][iSep],
-        camcol=xid["camcol"][iSep],
-        field=xid["field"][iSep],
+        rerun=int(rerun),
+        camcol=int(camcol),
+        field=int(field),
         band=filter,
     )
 

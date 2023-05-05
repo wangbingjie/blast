@@ -46,7 +46,11 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
         # ascentMatch=False,
     )
 
-    host_data = calc_photoz(host_data)
+    # sometimes photo-zs randomly fail
+    try:
+        host_data = calc_photoz(host_data)
+    except:
+        pass
 
     # clean up after GHOST...
     # dir_list = glob.glob('transients_*/*/*')

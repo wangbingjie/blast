@@ -11,9 +11,14 @@ from host import tasks
 from host.models import Transient, Task, TaskRegister, Status
 import os
 import datetime
+import host.transient_tasks
 transient_name = os.environ['BLAST_TRANSIENT_NAME']
 transient_ra = os.environ['BLAST_TRANSIENT_RA']
 transient_dec = os.environ['BLAST_TRANSIENT_DEC']
+try:
+    transient_redshift = os.environ['BLAST_TRANSIENT_REDSHIFT']
+except:
+    transient_redshift = None
 
 tasks_in_order = ['Transient MWEBV',
                   'Host match',
@@ -28,6 +33,19 @@ tasks_in_order = ['Transient MWEBV',
                   'Validate local photometry',
                   'Global host SED inference',
                   'Local host SED inference']
+tasks_classes_in_order = [host.transient_tasks.MWEBV_Transient(),
+                          host.transient_tasks.Ghost(),
+                          host.transient_tasks.MWEBV_Host(),
+                          host.transient_tasks.ImageDownload(),
+                          host.transient_tasks.HostInformation(),
+                          host.transient_tasks.TransientInformation(),
+                          host.transient_tasks.GlobalApertureConstruction(),
+                          host.transient_tasks.GlobalAperturePhotometry(),
+                          host.transient_tasks.ValidateGlobalPhotometry(),
+                          host.transient_tasks.LocalAperturePhotometry(),
+                          host.transient_tasks.ValidateLocalPhotometry(),
+                          host.transient_tasks.GlobalHostSEDFitting(),
+                          host.transient_tasks.LocalHostSEDFitting()]
 
 class run_single(CronJobBase):
 
@@ -45,11 +63,12 @@ class run_single(CronJobBase):
         transients = Transient.objects.filter(name=transient_name)
         if not len(transients):
             transient = Transient.objects.create(
-                name=transient_name,ra_deg=transient_ra,dec_deg=transient_dec,tns_id=1)
+                name=transient_name,ra_deg=transient_ra,dec_deg=transient_dec,tns_id=1,
+                redshift=transient_redshift)
         else:
             transient = transients[0]
 
-        for to in tasks_in_order:
+        for to,tc in zip(tasks_in_order,tasks_classes_in_order):
             for t in tasks.periodic_tasks:
                 if t.task_name == to: 
                     task = Task.objects.get(name__exact=t.task_name)
@@ -63,12 +82,16 @@ class run_single(CronJobBase):
                     else:
                         task_register = task_register[0]
 
-                    if task_register.status.message != 'processed':
-                        task_register.status = Status.objects.get(message='not processed')
+                    #if task_register.status.message != 'processed':
+                    task_register.status = Status.objects.get(message='not processed')
                     try:
                         status = t.run_process(task_register)
                     except Exception as e:
                         print(e)
+                        #import pdb; pdb.set_trace()
+                        #status = tc._run_process(transient)
+                        #task_register.status = Status.objects.get(message=status)
+                        #task_register.save()
                         raise e
 
                     break
