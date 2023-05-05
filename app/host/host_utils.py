@@ -190,9 +190,12 @@ def do_aperture_photometry(image, sky_aperture, filter):
 
     # is the aperture inside the image?
     bbox = sky_aperture.to_pixel(wcs).bbox
-    if bbox.ixmin < 0 or bbox.iymin < 0 or \
-       bbox.ixmax > image_data.shape[1] or \
-       bbox.iymax > image_data.shape[0]:
+    if (
+        bbox.ixmin < 0
+        or bbox.iymin < 0
+        or bbox.ixmax > image_data.shape[1]
+        or bbox.iymax > image_data.shape[0]
+    ):
         return {
             "flux": None,
             "flux_error": None,
@@ -221,13 +224,14 @@ def do_aperture_photometry(image, sky_aperture, filter):
     uncalibrated_flux_err = phot_table["aperture_sum_err"].value[0]
 
     # check for correlated errors
-    aprad,err_adjust = filter.correlation_model()
+    aprad, err_adjust = filter.correlation_model()
     if aprad is not None:
         image_aperture = sky_aperture.to_pixel(wcs)
-        
-        err_adjust_interp = np.interp((image_aperture.a+image_aperture.b)/2.,aprad,err_adjust)
-        uncalibrated_flux_err *= err_adjust_interp
 
+        err_adjust_interp = np.interp(
+            (image_aperture.a + image_aperture.b) / 2.0, aprad, err_adjust
+        )
+        uncalibrated_flux_err *= err_adjust_interp
 
     if filter.magnitude_zero_point_keyword is not None:
         zpt = image[0].header[filter.magnitude_zero_point_keyword]

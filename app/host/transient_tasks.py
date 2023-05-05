@@ -610,8 +610,10 @@ class HostInformation(TransientTaskRunner):
 
         status_message = "processed"
 
-        if galaxy_sdss_data is not None and galaxy_sdss_data["redshift"] is not None and not math.isnan(
-            galaxy_sdss_data["redshift"]
+        if (
+            galaxy_sdss_data is not None
+            and galaxy_sdss_data["redshift"] is not None
+            and not math.isnan(galaxy_sdss_data["redshift"])
         ):
             host.redshift = galaxy_sdss_data["redshift"]
         elif galaxy_ned_data["redshift"] is not None and not math.isnan(
