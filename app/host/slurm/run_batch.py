@@ -4,6 +4,7 @@ import astropy.table as at
 import os
 import argparse
 import time
+import glob
 
 def main(
         batchfile,batchdir,
@@ -14,6 +15,10 @@ def main(
         os.makedirs(batchdir)
 
     for d in data:
+        sedfiles = glob.glob(f"../../../data/sed_output/{d['transient_name']}/*global*")
+        if len(sedfiles):
+            os.system(f"rm {sedfiles[0]}")
+            #continue
         slurmfile = f"{batchdir}/slurm_{d['transient_name']}.sh"
 
         with open('slurm_template.sh','r') as fin, \
@@ -26,9 +31,13 @@ def main(
                     replace('<transient_dec>',str(d['transient_dec'])).\
                     replace('<outdir>',batchdir).\
                     replace('<blastdir>',blastdir)
+                if 'transient_redshift' in d.keys():
+                    line = line.replace('<transient_redshift>',str(d['transient_redshift']))
+                else:
+                    line = line.replace('export BLAST_TRANSIENT_REDSHIFT=<transient_redshift>','')
                 print(line,file=fout)
         os.system(f'sbatch {slurmfile}')
-        time.sleep(120)
+        time.sleep(60*30)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='batch submission for slurm systems')
