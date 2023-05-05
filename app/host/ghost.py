@@ -10,7 +10,6 @@ from django.conf import settings
 from .models import Host
 
 
-
 def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
     """
     Finds the information about the host galaxy given the position of the supernova.
@@ -69,10 +68,13 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
             name=host_data["objName"][0],
         )
 
-        if host_data['NED_redshift'][0] == host_data['NED_redshift'][0]:
-            host.redshift = host_data['NED_redshift'][0]
+        if host_data["NED_redshift"][0] == host_data["NED_redshift"][0]:
+            host.redshift = host_data["NED_redshift"][0]
 
-        if 'photo_z' in host_data.keys() and host_data['photo_z'][0] == host_data['photo_z'][0]:
-            host.photometric_redshift = host_data['photo_z'][0]
+        if (
+            "photo_z" in host_data.keys()
+            and host_data["photo_z"][0] == host_data["photo_z"][0]
+        ):
+            host.photometric_redshift = host_data["photo_z"][0]
 
     return host
