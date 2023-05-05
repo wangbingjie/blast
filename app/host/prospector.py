@@ -95,11 +95,18 @@ def build_obs(transient, aperture_type):
         ext_corr = extinction.fitzpatrick99(np.array([wave_eff]), mwebv * 3.1, r_v=3.1)[
             0
         ]
-        flux_mwcorr = datapoint.flux * 10 ** (-0.4 * filter.ab_offset) * 10 ** (0.4 * ext_corr)
-        fluxerr_mwcorr = datapoint.flux_error * 10 ** (-0.4 * filter.ab_offset) * 10 ** (0.4 * ext_corr)
+        flux_mwcorr = (
+            datapoint.flux * 10 ** (-0.4 * filter.ab_offset) * 10 ** (0.4 * ext_corr)
+        )
+        fluxerr_mwcorr = (
+            datapoint.flux_error
+            * 10 ** (-0.4 * filter.ab_offset)
+            * 10 ** (0.4 * ext_corr)
+        )
 
         # TEST - are low-S/N observations messing up prospector?
-        if flux_mwcorr/fluxerr_mwcorr < 3: continue
+        if flux_mwcorr / fluxerr_mwcorr < 3:
+            continue
 
         filters.append(filter.transmission_curve())
         flux_maggies.append(mJy_to_maggies(flux_mwcorr))

@@ -186,7 +186,7 @@ class TransientTaskRunner(TaskRunner):
         register = self.find_register_items_meeting_prerequisites()
         return self._select_highest_priority(register) if register.exists() else None
 
-    def run_process(self,task_register_item=None):
+    def run_process(self, task_register_item=None):
         """
         Runs task runner process.
         """
