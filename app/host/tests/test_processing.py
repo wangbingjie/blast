@@ -110,7 +110,6 @@ class TaskRunnerTest(TestCase):
         self.two_prereqs_suc_runner = TestRunnerTwoPrereqsSuc()
 
     def test_run_process(self):
-
         self.processed_runner.run_process()
 
         # 2022testone is the oldest transient so should be selected and
@@ -126,7 +125,6 @@ class TaskRunnerTest(TestCase):
         self.assertTrue(task_register.status.message == "processed")
 
     def test_run_failed(self):
-
         try:
             self.failed_runner.run_process()
         except ValueError:

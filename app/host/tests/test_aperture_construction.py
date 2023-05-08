@@ -12,7 +12,6 @@ from ..transient_tasks import GlobalApertureConstruction
 
 
 class TestApertureConstruction(TestCase):
-
     fixtures = [
         "../fixtures/initial/setup_survey_data.yaml",
         "../fixtures/initial/setup_filter_data.yaml",
@@ -33,7 +32,6 @@ class TestApertureConstruction(TestCase):
         assert status_message == "processed"
 
     def test_aperture_failures(self):
-
         data = np.zeros((500, 5000), dtype=np.float64)
         hdu = fits.PrimaryHDU(data=data)
         hdulist = fits.HDUList(hdus=[hdu])

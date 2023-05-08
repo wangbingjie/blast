@@ -276,7 +276,6 @@ def check_global_contamination(global_aperture_phot, aperture_primary):
         global_aperture_phot.aperture.cutout.fits.name,
         aperture_primary.cutout.fits.name,
     ]:
-
         # UV photons are too sparse, segmentation map
         # builder cannot easily handle these
         if "/GALEX/" in cutout_name:
@@ -341,7 +340,6 @@ def select_cutout_aperture(cutouts):
 
 
 def select_aperture(transient):
-
     cutouts = Cutout.objects.filter(transient=transient)
     if len(cutouts):
         cutout_for_aperture = select_cutout_aperture(cutouts)

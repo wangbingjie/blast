@@ -19,7 +19,6 @@ class EBVTest(TestCase):
     ]
 
     def test_mwebv_transient(self):
-
         transient = Transient.objects.get(name="2010H")
         mwebv_cls = MWEBV_Transient()
         status_message = mwebv_cls._run_process(transient)

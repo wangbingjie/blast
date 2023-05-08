@@ -45,7 +45,6 @@ def psi_from_sfh(mass, tage, tau):
 
 
 def build_obs(transient, aperture_type):
-
     """
     This functions is required by prospector and should return
     a dictionary defined by
@@ -153,7 +152,6 @@ def prospector_result_to_blast(
     observations,
     sed_output_root=settings.SED_OUTPUT_ROOT,
 ):
-
     # write the results
     hdf5_file = (
         f"{sed_output_root}/{transient.name}/{transient.name}_{aperture.type}.h5"

@@ -34,7 +34,6 @@ from .models import Aperture
 
 
 def scale_image(image_data):
-
     transform = AsinhStretch() + PercentileInterval(99.5)
     scaled_data = transform(image_data)
 
@@ -42,7 +41,6 @@ def scale_image(image_data):
 
 
 def plot_image(image_data, figure):
-
     image_data = np.nan_to_num(image_data, nan=np.nanmin(image_data))
     # image_data = np.nan_to_num(image_data, nan=np.median(image_data)) #np.amin(image_data))
     image_data = image_data + abs(np.amin(image_data)) + 0.1
@@ -92,7 +90,6 @@ def plot_aperture(figure, aperture, wcs, plotting_kwargs=None):
 
 
 def plot_image_grid(image_dict, apertures=None):
-
     figures = []
     for survey, image in image_dict.items():
         fig = figure(
@@ -119,7 +116,6 @@ def plot_image_grid(image_dict, apertures=None):
 def plot_cutout_image(
     cutout=None, transient=None, global_aperture=None, local_aperture=None
 ):
-
     title = cutout.filter if cutout is not None else "No cutout selected"
     fig = figure(
         title=f"{title}",
@@ -196,7 +192,6 @@ def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
     """
 
     if aperture_photometry.exists():
-
         flux = [measurement.flux for measurement in aperture_photometry]
         flux_error = [measurement.flux_error for measurement in aperture_photometry]
         wavelength = [
@@ -322,7 +317,6 @@ def plot_pie_chart(data_dict):
 
 
 def plot_timeseries():
-
     fig = figure(
         title="",
         width=700,

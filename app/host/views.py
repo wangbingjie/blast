@@ -42,11 +42,9 @@ def transient_list(request):
 
 
 def analytics(request):
-
     analytics_results = {}
 
     for aggregate in ["total", "not completed", "completed", "waiting"]:
-
         transients = TaskRegisterSnapshot.objects.filter(
             aggregate_type__exact=aggregate
         )
@@ -194,11 +192,9 @@ def acknowledgements(request):
 
 
 def home(request):
-
     analytics_results = {}
 
     for aggregate in ["total", "not completed", "completed", "waiting"]:
-
         transients = TaskRegisterSnapshot.objects.filter(
             aggregate_type__exact=aggregate
         )
