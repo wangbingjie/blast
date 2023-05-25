@@ -32,7 +32,7 @@ from photutils.segmentation import detect_sources
 from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
 from photutils.utils import calc_total_error
-from photutils.background import MeanBackground,SExtractorBackground
+from photutils.background import MeanBackground, SExtractorBackground
 from astropy.stats import SigmaClip
 
 from .photometric_calibration import ab_mag_to_mJy
@@ -180,7 +180,7 @@ def do_aperture_photometry(image, sky_aperture, filter):
 
     # get the background
     try:
-        background = estimate_background(image,filter.name)
+        background = estimate_background(image, filter.name)
     except ValueError:
         # indicates poor image data
         return {
@@ -420,7 +420,7 @@ def select_aperture(transient):
 #    return host_position
 
 
-def estimate_background(image,filter_name=None):
+def estimate_background(image, filter_name=None):
     """
     Estimates the background of an image
     Parameters
@@ -436,7 +436,7 @@ def estimate_background(image,filter_name=None):
     box_size = int(0.1 * np.sqrt(image_data.size))
 
     # GALEX needs mean, not median - median just always comes up with zero
-    if filter_name is not None and 'GALEX' in filter_name:
+    if filter_name is not None and "GALEX" in filter_name:
         bkg = MeanBackground(SigmaClip(sigma=3.0))
     else:
         bkg = SExtractorBackground(sigma_clip=None)
@@ -444,7 +444,9 @@ def estimate_background(image,filter_name=None):
     try:
         return Background2D(image_data, box_size=box_size, bkg_estimator=bkg)
     except ValueError:
-        return Background2D(image_data, box_size=box_size, exclude_percentile=50, bkg_estimator=bkg)
+        return Background2D(
+            image_data, box_size=box_size, exclude_percentile=50, bkg_estimator=bkg
+        )
 
 
 def construct_aperture(image, position):
