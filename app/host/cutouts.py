@@ -220,6 +220,12 @@ def galex_cutout(position, image_size=None, filter=None):
         & (obs["filters"] == filter)
         & (obs["distance"] == 0)
     ]
+
+    # avoid masked regions
+    center = SkyCoord(obs['s_ra'],obs['s_dec'],unit=u.deg)
+    sep = position.separation(center).deg
+    obs = obs[sep < 0.55]
+
     if len(obs) > 1:
         obs = obs[obs["t_exptime"] == max(obs["t_exptime"])]
 
@@ -326,7 +332,11 @@ def DES_cutout(position, image_size=None, filter=None):
     if len(valid_urls):
         # we need both the depth and the image
 
-        fits_image = fits.open(valid_urls[0].replace("-depth-", "-image-"))
+        try:
+            fits_image = fits.open(valid_urls[0].replace("-depth-", "-image-"))
+        except:
+            ### found some bad links...
+            return None
         if np.shape(fits_image[0].data)[0] == 1 or np.shape(fits_image[0].data)[1] == 1:
             # no idea what's happening here but this is a mess
             return None
