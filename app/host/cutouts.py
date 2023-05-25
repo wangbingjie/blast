@@ -222,7 +222,7 @@ def galex_cutout(position, image_size=None, filter=None):
     ]
 
     # avoid masked regions
-    center = SkyCoord(obs['s_ra'],obs['s_dec'],unit=u.deg)
+    center = SkyCoord(obs["s_ra"], obs["s_dec"], unit=u.deg)
     sep = position.separation(center).deg
     obs = obs[sep < 0.55]
 
