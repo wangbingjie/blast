@@ -436,6 +436,11 @@ class SEDFittingResult(models.Model):
     log_mass_50 = models.FloatField(null=True, blank=True)
     log_mass_84 = models.FloatField(null=True, blank=True)
 
+    # from Prospector, we need to save the ratio of 
+    # surviving stellar mass to the formed mass
+    mass_surviving_ratio = models.FloatField(null=True, blank=True)
+    
+
     log_sfr_16 = models.FloatField(null=True, blank=True)
     log_sfr_50 = models.FloatField(null=True, blank=True)
     log_sfr_84 = models.FloatField(null=True, blank=True)
