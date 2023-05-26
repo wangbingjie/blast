@@ -203,7 +203,7 @@ def prospector_result_to_blast(
         theta_max = resultpars['chain'][imax, :].copy()
         flatchain = resultpars["chain"]
         _, _, mfrac = \
-            model_components["model"].predict(theta_max, obs=resultpars['obs'], sps=model_components["sps"])
+            model_components["model"].predict(theta_max, obs=observations, sps=model_components["sps"])
 
     # logmass, age, tau
     logmass = np.log10(
