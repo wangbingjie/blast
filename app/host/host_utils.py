@@ -207,9 +207,7 @@ def do_aperture_photometry(image, sky_aperture, filter):
 
     # if the image pixels are all zero, let's assume this is masked
     # even GALEX FUV should have *something*
-    phot_table_maskcheck = aperture_photometry(
-        image_data, sky_aperture, wcs=wcs
-    )
+    phot_table_maskcheck = aperture_photometry(image_data, sky_aperture, wcs=wcs)
     if phot_table_maskcheck["aperture_sum"].value[0] == 0:
         return {
             "flux": None,
@@ -217,7 +215,6 @@ def do_aperture_photometry(image, sky_aperture, filter):
             "magnitude": None,
             "magnitude_error": None,
         }
-
 
     background_subtracted_data = image_data - background.background
 

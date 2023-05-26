@@ -191,19 +191,20 @@ def prospector_result_to_blast(
     # load up the hdf5 file to get the results
     resultpars, obs, _ = reader.results_from(hdf5_file, dangerous=False)
 
-    imax = np.argmax(resultpars['lnprobability'])
+    imax = np.argmax(resultpars["lnprobability"])
     csz = resultpars["chain"].shape
     if resultpars["chain"].ndim > 2:
         # emcee
-        i, j = np.unravel_index(imax, resultpars['lnprobability'].shape)
-        theta_max = resultpars['chain'][i, j, :].copy()
+        i, j = np.unravel_index(imax, resultpars["lnprobability"].shape)
+        theta_max = resultpars["chain"][i, j, :].copy()
         flatchain = resultpars["chain"].resultparshape(csz[0] * csz[1], csz[2])
     else:
         # dynesty
-        theta_max = resultpars['chain'][imax, :].copy()
+        theta_max = resultpars["chain"][imax, :].copy()
         flatchain = resultpars["chain"]
-        _, _, mfrac = \
-            model_components["model"].predict(theta_max, obs=observations, sps=model_components["sps"])
+    _, _, mfrac = model_components["model"].predict(
+        theta_max, obs=observations, sps=model_components["sps"]
+    )
 
     # logmass, age, tau
     logmass = np.log10(
@@ -257,7 +258,7 @@ def prospector_result_to_blast(
         "log_tau_16": tau16,
         "log_tau_50": tau50,
         "log_tau_84": tau84,
-        "mass_surviving_ratio": mfrac
+        "mass_surviving_ratio": mfrac,
     }
 
     return prosp_results
