@@ -351,13 +351,14 @@ def DES_cutout(position, image_size=None, filter=None):
             exptime = depth_image[0].data[0][0]
         else:
             exptime = depth_image[0].data[int(yc), int(xc)]
-
-        wcs = WCS(fits_image[0].header)
-        cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
-        fits_image[0].data = cutout.data
-        fits_image[0].header.update(cutout.wcs.to_header())
-        fits_image[0].header["EXPTIME"] = exptime
-
+        if exptime == 0:
+            fits_image = None
+        else:
+            wcs = WCS(fits_image[0].header)
+            cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
+            fits_image[0].data = cutout.data
+            fits_image[0].header.update(cutout.wcs.to_header())
+            fits_image[0].header["EXPTIME"] = exptime
     else:
         fits_image = None
 
