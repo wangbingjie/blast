@@ -237,15 +237,22 @@ def do_aperture_photometry(image, sky_aperture, filter):
         background_subtracted_data, sky_aperture, wcs=wcs, error=error
     )
     uncalibrated_flux = phot_table["aperture_sum"].value[0]
-    if '2MASS' not in filter.name:
+    if "2MASS" not in filter.name:
         uncalibrated_flux_err = phot_table["aperture_sum_err"].value[0]
     else:
         # 2MASS is annoying
         # https://wise2.ipac.caltech.edu/staff/jarrett/2mass/3chan/noise/
-        n_pix = np.pi*sky_aperture.a.value*sky_aperture.b.value*filter.pixel_size_arcsec**2.
-        uncalibrated_flux_err = \
-            np.sqrt(uncalibrated_flux/(10*6) + 4*n_pix*1.7**2.*np.median(background.background_rms)**2)
-    
+        n_pix = (
+            np.pi
+            * sky_aperture.a.value
+            * sky_aperture.b.value
+            * filter.pixel_size_arcsec**2.0
+        )
+        uncalibrated_flux_err = np.sqrt(
+            uncalibrated_flux / (10 * 6)
+            + 4 * n_pix * 1.7**2.0 * np.median(background.background_rms) ** 2
+        )
+
     # check for correlated errors
     aprad, err_adjust = filter.correlation_model()
     if aprad is not None:
