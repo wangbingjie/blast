@@ -44,7 +44,7 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
         starcut="gentle",
         # ascentMatch=False,
     )
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     # sometimes photo-zs randomly fail
     try:
         host_data = calc_photoz(host_data)
