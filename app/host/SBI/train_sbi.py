@@ -259,6 +259,21 @@ class TrainSBI:
                 list_phot_single = np.append(list_phot_single,[phot_random,phot_err])
             list_phot.append(list_phot_single)
             print(len(list_phot))
+
+        save_phot = True
+        if save_phot:
+            hf_phot = h5py.File('host/SBI/sbi_phot.h5', 'w')
+            hf_phot.create_dataset('wphot', data=obs["phot_wave"])
+            hf_phot.create_dataset('phot', data=list_phot)
+            hf_phot.create_dataset('mfrac', data=list_mfrac)
+            hf_phot.create_dataset('theta', data=list_thetas)
+
+            try:
+                hf_phot.close()
+            except(AttributeError):
+                pass
+
+
         x_train = np.array(list_thetas); y_train = np.array(list_phot)
         #import pdb; pdb.set_trace()
         # now do the training
@@ -278,20 +293,8 @@ class TrainSBI:
         pickle.dump(anpe._summary, open(fsumm, 'wb'))
         print(anpe._summary)
 
-        save_phot = True
-        if save_phot:
-            hf_phot = h5py.File('host/SBI/sbi_phot.h5', 'w')
-            hf_phot.create_dataset('wphot', data=obs["phot_wave"])
-            hf_phot.create_dataset('phot', data=list_phot)
-            hf_phot.create_dataset('mfrac', data=list_mfrac)
-            hf_phot.create_dataset('theta', data=list_thetas)
 
-            try:
-                hf_phot.close()
-            except(AttributeError):
-                pass
-
-            print('Finished.')
+        print('Finished.')
 
 if __name__ == "__main__":
     ts = TrainSBI()
