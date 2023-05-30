@@ -1,52 +1,58 @@
 #!/usr/bin/env python
 # D. Jones - 5/26/23
 """Implementation of SBI++ training for Blast"""
-
-import numpy as np
-from host.models import *
-from host.prospector import build_obs,build_model
-from prospect.fitting import fit_model as fit_model_prospect
-from prospect.fitting import lnprobfn
-from prospect.io import write_results as writer
-from prospect.models import SpecModel
-from prospect.models.templates import TemplateLibrary
-from prospect.sources import CSPSpecBasis
-from prospect.utils.obsutils import fix_obs
-from prospect.models import priors, transforms
-from prospect.models import priors_beta as pb
-import h5py
-from django.db.models import Q
-from astropy.cosmology import WMAP9 as cosmo
-from scipy.interpolate import interp1d, UnivariateSpline
-from scipy.stats import t
 import pickle
-# torch
+
+import h5py
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from sbi import utils as Ut
+from astropy.cosmology import WMAP9 as cosmo
+from django.db.models import Q
+from host.models import *
+from host.photometric_calibration import ab_mag_to_mJy
+from host.photometric_calibration import mJy_to_maggies
+from host.prospector import build_model
+from host.prospector import build_obs
+from prospect.fitting import fit_model as fit_model_prospect
+from prospect.fitting import lnprobfn
+from prospect.io import write_results as writer
+from prospect.models import priors
+from prospect.models import priors_beta as pb
+from prospect.models import SpecModel
+from prospect.models import transforms
+from prospect.models.templates import TemplateLibrary
+from prospect.sources import CSPSpecBasis
+from prospect.utils.obsutils import fix_obs
 from sbi import inference as Inference
+from sbi import utils as Ut
+from scipy.interpolate import interp1d
+from scipy.interpolate import UnivariateSpline
+from scipy.stats import t
+# torch
 
-from host.photometric_calibration import ab_mag_to_mJy,mJy_to_maggies
-
-all_filters = Filter.objects.filter(~Q(name='DES_i') & ~Q(name='DES_Y'))
-massmet = np.loadtxt('host/SBI/gallazzi_05_massmet.txt')
-z_age, age = np.loadtxt('host/SBI/wmap9_z_age.txt', unpack=True)
+all_filters = Filter.objects.filter(~Q(name="DES_i") & ~Q(name="DES_Y"))
+massmet = np.loadtxt("host/SBI/gallazzi_05_massmet.txt")
+z_age, age = np.loadtxt("host/SBI/wmap9_z_age.txt", unpack=True)
 f_age_z = interp1d(age, z_age)
-z_b19, tl_b19, sfrd_b19 = np.loadtxt('host/SBI/behroozi_19_sfrd.txt', unpack=True)
+z_b19, tl_b19, sfrd_b19 = np.loadtxt("host/SBI/behroozi_19_sfrd.txt", unpack=True)
 spl_z_sfrd = UnivariateSpline(z_b19, sfrd_b19, s=0, ext=1)
-spl_tl_sfrd = UnivariateSpline(tl_b19, sfrd_b19, s=0, ext=1) # tl in yrs
+spl_tl_sfrd = UnivariateSpline(tl_b19, sfrd_b19, s=0, ext=1)  # tl in yrs
 
-nhidden = 500 # architecture
-nblocks = 15 # architecture
+nhidden = 500  # architecture
+nblocks = 15  # architecture
 
-fanpe = 'host/SBI/SBI_model.pt' # name for the .pt file where the trained model will be saved
-fsumm = 'host/SBI/SBI_model_summary.p' # name for the .p file where the training summary will be saved; useful if want to check the convergence, etc.
+fanpe = "host/SBI/SBI_model.pt"  # name for the .pt file where the trained model will be saved
+fsumm = "host/SBI/SBI_model_summary.p"  # name for the .p file where the training summary will be saved; useful if want to check the convergence, etc.
 
-if torch.cuda.is_available(): device = 'cuda'
-else: device = 'cpu'
+if torch.cuda.is_available():
+    device = "cuda"
+else:
+    device = "cpu"
 
-def build_obs(**extras): ##transient, aperture_type):
+
+def build_obs(**extras):  ##transient, aperture_type):
 
     """
     This functions is required by prospector and should return
@@ -65,7 +71,7 @@ def build_obs(**extras): ##transient, aperture_type):
         unc=None,
         mask=None,
         ##redshift=z,
-        maggies=np.ones(len(all_filters)), #np.array(flux_maggies),
+        maggies=np.ones(len(all_filters)),  # np.array(flux_maggies),
         maggies_unc=np.ones(len(all_filters)),
         filters=filters,
     )
@@ -75,7 +81,7 @@ def build_obs(**extras): ##transient, aperture_type):
     return fix_obs(obs_data)
 
 
-def build_model(observations=None,**extras):
+def build_model(observations=None, **extras):
     """
     Construct all model components
     """
@@ -87,24 +93,29 @@ def build_model(observations=None,**extras):
     sps = CSPSpecBasis(zcontinuous=1)
     noise_model = (None, None)
 
-    return model ###{"model": model, "sps": sps, "noise_model": noise_model}
+    return model  ###{"model": model, "sps": sps, "noise_model": noise_model}
+
 
 def build_sps(zcontinuous=2, compute_vega_mags=False, **extras):
     sps = CSPSpecBasis(
-        zcontinuous=zcontinuous,
-        compute_vega_mags=compute_vega_mags)  # special to remove redshifting issue
+        zcontinuous=zcontinuous, compute_vega_mags=compute_vega_mags
+    )  # special to remove redshifting issue
     return sps
+
 
 def build_noise(**extras):
     return None, None
 
+
 def loc(mass):
     return np.interp(mass, massmet[:, 0], massmet[:, 1])
+
 
 def scale(mass):
     upper_84 = np.interp(mass, massmet[:, 0], massmet[:, 3])
     lower_16 = np.interp(mass, massmet[:, 0], massmet[:, 2])
-    return (upper_84-lower_16)
+    return upper_84 - lower_16
+
 
 def expe_logsfr_ratios(this_z, this_m, shift=True, rtn_sfr=False):
 
@@ -134,28 +145,37 @@ def expe_logsfr_ratios(this_z, this_m, shift=True, rtn_sfr=False):
     sfr_shifted = np.zeros(nsfrbins)
     sfr_shifted_ctr = np.zeros(nsfrbins)
     for i in range(nsfrbins):
-        a = agebins_in_yr_rescaled_shifted[i,0]
-        b = agebins_in_yr_rescaled_shifted[i,1]
+        a = agebins_in_yr_rescaled_shifted[i, 0]
+        b = agebins_in_yr_rescaled_shifted[i, 1]
         sfr_shifted[i] = spl_tl_sfrd.integral(a=a, b=b)
         sfr_shifted_ctr[i] = spl_tl_sfrd(agebins_in_yr_rescaled_shifted_ctr[i])
 
-    logsfr_ratios_shifted = np.zeros(nsfrbins-1)
-    with np.errstate(invalid='ignore', divide='ignore'):
-        for i in range(nsfrbins-1):
-            logsfr_ratios_shifted[i] = np.log10(sfr_shifted[i]/sfr_shifted[i+1])
+    logsfr_ratios_shifted = np.zeros(nsfrbins - 1)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        for i in range(nsfrbins - 1):
+            logsfr_ratios_shifted[i] = np.log10(sfr_shifted[i] / sfr_shifted[i + 1])
     logsfr_ratios_shifted = np.clip(logsfr_ratios_shifted, -5.0, 5.0)
 
     if not np.all(np.isfinite(logsfr_ratios_shifted)):
         # set nan accord. to its neighbor
         nan_idx = np.isnan(logsfr_ratios_shifted)
-        finite_idx = np.min(np.where(nan_idx==True))-1
+        finite_idx = np.min(np.where(nan_idx == True)) - 1
         neigh = logsfr_ratios_shifted[finite_idx]
-        nan_idx = np.arange(6-finite_idx-1) + finite_idx + 1
+        nan_idx = np.arange(6 - finite_idx - 1) + finite_idx + 1
         for i in range(len(nan_idx)):
-            logsfr_ratios_shifted[nan_idx[i]] = neigh * 1.
-    import pdb; pdb.set_trace()
+            logsfr_ratios_shifted[nan_idx[i]] = neigh * 1.0
+    import pdb
+
+    pdb.set_trace()
     if rtn_sfr:
-        print('delta', delta_t_dex(this_m), 'age_shifted', age_shifted, 'z_shifted', z_shifted)
+        print(
+            "delta",
+            delta_t_dex(this_m),
+            "age_shifted",
+            age_shifted,
+            "z_shifted",
+            z_shifted,
+        )
         return (agebins_in_yr_rescaled_shifted_ctr, sfr_shifted_ctr)
     else:
         return logsfr_ratios_shifted
@@ -164,43 +184,53 @@ def expe_logsfr_ratios(this_z, this_m, shift=True, rtn_sfr=False):
 def draw_thetas():
     # draw a zred from pdf(z)
     # redshifts up to 0.2
-    #zred = priors.FastUniform(a=0.0, b=0.2).sample()
-    #import pdb; pdb.set_trace()
+    # zred = priors.FastUniform(a=0.0, b=0.2).sample()
+    # import pdb; pdb.set_trace()
     ##zred = u #???
-    #zred = finterp_cdf_z(u)
+    # zred = finterp_cdf_z(u)
 
     # draw from the mass function at the above zred
-    mass = priors.LogUniform(mini=100000000.0,maxi=1000000000000.0).sample()
+    mass = priors.LogUniform(mini=100000000.0, maxi=1000000000000.0).sample()
     # given mass from above, draw logzsol
-    logzsol = priors.FastUniform(a=-2,b=0.19).sample()
+    logzsol = priors.FastUniform(a=-2, b=0.19).sample()
 
     # dust
-    dust2 = priors.FastUniform(a=0.0,b=2.0).sample()
+    dust2 = priors.FastUniform(a=0.0, b=2.0).sample()
 
     # tage
-    tage = priors.FastUniform(a=0.001,b=13.8).sample()
+    tage = priors.FastUniform(a=0.001, b=13.8).sample()
 
     # tau
-    tau = priors.LogUniform(mini=0.1,maxi=30).sample()
+    tau = priors.LogUniform(mini=0.1, maxi=30).sample()
 
     return np.concatenate(
-        [np.atleast_1d(mass),np.atleast_1d(logzsol),np.atleast_1d(dust2),np.atleast_1d(tage),np.atleast_1d(tau)])
+        [
+            np.atleast_1d(mass),
+            np.atleast_1d(logzsol),
+            np.atleast_1d(dust2),
+            np.atleast_1d(tage),
+            np.atleast_1d(tau),
+        ]
+    )
+
 
 class TrainSBI:
     def __init__(self):
         pass
 
-    def build_all(self,**kwargs):
-        return (build_obs(**kwargs), build_model(**kwargs),
-                build_sps(**kwargs),
-                build_noise(**kwargs))
+    def build_all(self, **kwargs):
+        return (
+            build_obs(**kwargs),
+            build_model(**kwargs),
+            build_sps(**kwargs),
+            build_noise(**kwargs),
+        )
 
     def main(self):
 
         # parameters
-        needed_size=5000
-        run_params = {'ichunk':0,
-                      'needed_size':needed_size}
+        needed_size = 5000
+        run_params = {"ichunk": 0, "needed_size": needed_size}
         run_params["add_duste"] = True
         run_params["add_igm"] = True
         run_params["add_neb"] = True
@@ -214,15 +244,17 @@ class TrainSBI:
         run_params["param_file"] = __file__
 
         # get the minimum, maximum magnitudes
-        cat_min,cat_max,cat_full = {},{},{}
+        cat_min, cat_max, cat_full = {}, {}, {}
         for f in all_filters:
-            mag,snr = np.loadtxt(f'host/SBI/snrfiles/{f.name}_magvsnr.txt',unpack=True)
-            #mag = ab_mag_to_mJy(mag)*10 ** (-0.4 * filter.ab_offset)
-            #mJy = mJy_to_maggies(mag)
+            mag, snr = np.loadtxt(
+                f"host/SBI/snrfiles/{f.name}_magvsnr.txt", unpack=True
+            )
+            # mag = ab_mag_to_mJy(mag)*10 ** (-0.4 * filter.ab_offset)
+            # mJy = mJy_to_maggies(mag)
 
             cat_min[f.name] = np.min(mag)
             cat_max[f.name] = np.max(mag)
-            cat_full[f.name] = (mag,snr)
+            cat_full[f.name] = (mag, snr)
 
         ### start putting together the synthetic data
         list_thetas = []
@@ -234,29 +266,34 @@ class TrainSBI:
             # call prospector
             # generate the model SED at given theta
             zred = priors.FastUniform(a=0.0, b=0.2).sample()
-            model.params['zred'] = np.atleast_1d(zred)
+            model.params["zred"] = np.atleast_1d(zred)
             spec, phot, mfrac = model.predict(theta, obs=obs, sps=sps)
-            predicted_mags = -2.5*np.log10(phot)
+            predicted_mags = -2.5 * np.log10(phot)
 
             flag = True
-            for i,f in enumerate(all_filters):
+            for i, f in enumerate(all_filters):
                 # probably gonna have some unit issues here
-                flag &= (predicted_mags[i] >= cat_min[f.name]) & (predicted_mags[i] <= cat_max[f.name])
+                flag &= (predicted_mags[i] >= cat_min[f.name]) & (
+                    predicted_mags[i] <= cat_max[f.name]
+                )
 
             # if all phot is within valid range, we can proceed
-            if not flag: continue
-            
+            if not flag:
+                continue
+
             list_thetas.append(theta)
             list_mfrac.append(mfrac)
 
             # simulate the noised-up photometry
             list_phot_single = np.array([])
-            for i,f in enumerate(all_filters):
-                snr = np.interp(predicted_mags[i],cat_full[f.name][0],cat_full[f.name][1])
-                phot_err = phot[i]/snr
-                phot_random = np.random.normal(phot[i],phot_err)
+            for i, f in enumerate(all_filters):
+                snr = np.interp(
+                    predicted_mags[i], cat_full[f.name][0], cat_full[f.name][1]
+                )
+                phot_err = phot[i] / snr
+                phot_random = np.random.normal(phot[i], phot_err)
 
-                list_phot_single = np.append(list_phot_single,[phot_random,phot_err])
+                list_phot_single = np.append(list_phot_single, [phot_random, phot_err])
             list_phot.append(list_phot_single)
             print(len(list_phot))
 
@@ -275,26 +312,30 @@ class TrainSBI:
 
 
         x_train = np.array(list_thetas); y_train = np.array(list_phot)
-        #import pdb; pdb.set_trace()
         # now do the training
         anpe = Inference.SNPE(
-            density_estimator=Ut.posterior_nn('maf', hidden_features=nhidden, num_transforms=nblocks),
-            device=device)
+            density_estimator=Ut.posterior_nn(
+                "maf", hidden_features=nhidden, num_transforms=nblocks
+            ),
+            device=device,
+        )
         # because we append_simulations, training set == prior
         anpe.append_simulations(
-            torch.as_tensor(x_train.astype(np.float32), device='cpu'),
-            torch.as_tensor(y_train.astype(np.float32), device='cpu'))
+            torch.as_tensor(x_train.astype(np.float32), device="cpu"),
+            torch.as_tensor(y_train.astype(np.float32), device="cpu"),
+        )
         p_x_y_estimator = anpe.train()
 
         # save trained ANPE
         torch.save(p_x_y_estimator.state_dict(), fanpe)
 
         # save training summary
-        pickle.dump(anpe._summary, open(fsumm, 'wb'))
+        pickle.dump(anpe._summary, open(fsumm, "wb"))
         print(anpe._summary)
 
 
         print('Finished.')
+
 
 if __name__ == "__main__":
     ts = TrainSBI()
