@@ -8,6 +8,7 @@ Just ASCII file output should be fine
 from host.models import *
 import numpy as np
 from scipy.stats import binned_statistic
+import h5py
 
 def main():
     
