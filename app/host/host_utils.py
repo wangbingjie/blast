@@ -364,7 +364,7 @@ def check_global_contamination(global_aperture_phot, aperture_primary):
     return is_contam
 
 
-def select_cutout_aperture(cutouts,choice=0):
+def select_cutout_aperture(cutouts, choice=0):
     """
     Select cutout for aperture
     """
@@ -494,23 +494,23 @@ def construct_aperture(image, position):
             image, background, threshhold_sigma=threshhold_sigma
         )
         source_data = match_source(position, catalog, wcs)
-        
+
         source_ra, source_dec = wcs.wcs_pix2world(
             source_data.xcentroid, source_data.ycentroid, 0
         )
         source_position = SkyCoord(source_ra, source_dec, unit=u.deg)
         source_separation_arcsec = position.separation(source_position).arcsec
-        return source_data,source_separation_arcsec
+        return source_data, source_separation_arcsec
 
     iter = 0
     source_separation_arcsec = 100
     while source_separation_arcsec > 5 and iter < 5:
-        source_data,source_separation_arcsec = get_source_data(5 * (iter + 1))
+        source_data, source_separation_arcsec = get_source_data(5 * (iter + 1))
         iter += 1
-    # look for sub-threshold sources 
+    # look for sub-threshold sources
     # if we still can't find the host
     if source_separation_arcsec > 5:
-        source_data,source_separation_arcsec = get_source_data(2)
+        source_data, source_separation_arcsec = get_source_data(2)
 
     # make sure we know this failed
     if source_separation_arcsec > 5:

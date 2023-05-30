@@ -30,6 +30,7 @@ from sbi import utils as Ut
 from scipy.interpolate import interp1d
 from scipy.interpolate import UnivariateSpline
 from scipy.stats import t
+
 # torch
 
 all_filters = Filter.objects.filter(~Q(name="DES_i") & ~Q(name="DES_Y"))
@@ -299,19 +300,19 @@ class TrainSBI:
 
         save_phot = True
         if save_phot:
-            hf_phot = h5py.File('host/SBI/sbi_phot.h5', 'w')
-            hf_phot.create_dataset('wphot', data=obs["phot_wave"])
-            hf_phot.create_dataset('phot', data=list_phot)
-            hf_phot.create_dataset('mfrac', data=list_mfrac)
-            hf_phot.create_dataset('theta', data=list_thetas)
+            hf_phot = h5py.File("host/SBI/sbi_phot.h5", "w")
+            hf_phot.create_dataset("wphot", data=obs["phot_wave"])
+            hf_phot.create_dataset("phot", data=list_phot)
+            hf_phot.create_dataset("mfrac", data=list_mfrac)
+            hf_phot.create_dataset("theta", data=list_thetas)
 
             try:
                 hf_phot.close()
-            except(AttributeError):
+            except (AttributeError):
                 pass
 
-
-        x_train = np.array(list_thetas); y_train = np.array(list_phot)
+        x_train = np.array(list_thetas)
+        y_train = np.array(list_phot)
         # now do the training
         anpe = Inference.SNPE(
             density_estimator=Ut.posterior_nn(
@@ -333,8 +334,7 @@ class TrainSBI:
         pickle.dump(anpe._summary, open(fsumm, "wb"))
         print(anpe._summary)
 
-
-        print('Finished.')
+        print("Finished.")
 
 
 if __name__ == "__main__":
