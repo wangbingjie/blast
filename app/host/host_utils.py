@@ -364,7 +364,7 @@ def check_global_contamination(global_aperture_phot, aperture_primary):
     return is_contam
 
 
-def select_cutout_aperture(cutouts):
+def select_cutout_aperture(cutouts,choice=0):
     """
     Select cutout for aperture
     """
@@ -381,7 +381,8 @@ def select_cutout_aperture(cutouts):
         "2MASS_H",
     ]
 
-    choice = 0
+    #### choice = 0
+    ### edited to allow initial offset
     filter_choice = filter_names[choice]
 
     while not cutouts.filter(filter__name=filter_choice).exists():
@@ -488,21 +489,32 @@ def construct_aperture(image, position):
 
     ### found an edge case where deblending isn't working how I'd like it to
     ### so if it's not finding the host, play with the default threshold
-    iter = 0
-    source_separation_arcsec = 100
-    while source_separation_arcsec > 5 and iter < 5:
+    def get_source_data(threshhold_sigma):
         catalog = build_source_catalog(
-            image, background, threshhold_sigma=5 * (iter + 1)
+            image, background, threshhold_sigma=threshhold_sigma
         )
         source_data = match_source(position, catalog, wcs)
-
+        
         source_ra, source_dec = wcs.wcs_pix2world(
             source_data.xcentroid, source_data.ycentroid, 0
         )
         source_position = SkyCoord(source_ra, source_dec, unit=u.deg)
         source_separation_arcsec = position.separation(source_position).arcsec
+        return source_data,source_separation_arcsec
 
+    iter = 0
+    source_separation_arcsec = 100
+    while source_separation_arcsec > 5 and iter < 5:
+        source_data,source_separation_arcsec = get_source_data(5 * (iter + 1))
         iter += 1
+    # look for sub-threshold sources 
+    # if we still can't find the host
+    if source_separation_arcsec > 5:
+        source_data,source_separation_arcsec = get_source_data(2)
+
+    # make sure we know this failed
+    if source_separation_arcsec > 5:
+        return None
 
     return elliptical_sky_aperture(source_data, wcs)
 
