@@ -4,10 +4,10 @@
 Create S/N vs. mag files for every filter
 Just ASCII file output should be fine
 """
+import h5py
 import numpy as np
 from host.models import *
 from scipy.stats import binned_statistic
-import h5py
 
 
 def main():
