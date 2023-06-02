@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # D. Jones - 5/26/23
 """Implementation of SBI++ training for Blast"""
+import math
 import pickle
 
-from django_cron import CronJobBase
-from django_cron import Schedule
-import math
 import h5py
 import numpy as np
 import torch
@@ -13,6 +11,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from astropy.cosmology import WMAP9 as cosmo
 from django.db.models import Q
+from django_cron import CronJobBase
+from django_cron import Schedule
 from host.models import *
 from host.photometric_calibration import ab_mag_to_mJy
 from host.photometric_calibration import mJy_to_maggies
@@ -40,7 +40,9 @@ all_filters = Filter.objects.filter(~Q(name="DES_i") & ~Q(name="DES_Y"))
 massmet = np.loadtxt("host/SBI/priors/gallazzi_05_massmet.txt")
 z_age, age = np.loadtxt("host/SBI/priors/wmap9_z_age.txt", unpack=True)
 f_age_z = interp1d(age, z_age)
-z_b19, tl_b19, sfrd_b19 = np.loadtxt("host/SBI/priors/behroozi_19_sfrd.txt", unpack=True)
+z_b19, tl_b19, sfrd_b19 = np.loadtxt(
+    "host/SBI/priors/behroozi_19_sfrd.txt", unpack=True
+)
 spl_z_sfrd = UnivariateSpline(z_b19, sfrd_b19, s=0, ext=1)
 spl_tl_sfrd = UnivariateSpline(tl_b19, sfrd_b19, s=0, ext=1)  # tl in yrs
 
@@ -55,12 +57,13 @@ if torch.cuda.is_available():
 else:
     device = "cpu"
 
+
 def maggies_to_asinh(x):
-   '''asinh magnitudes
-   '''
-   a = 2.50*np.log10(np.e)
-   mu = 35.0
-   return -a * math.asinh((x/2.0) * np.exp(mu/a) ) + mu
+    """asinh magnitudes"""
+    a = 2.50 * np.log10(np.e)
+    mu = 35.0
+    return -a * math.asinh((x / 2.0) * np.exp(mu / a)) + mu
+
 
 def build_obs(**extras):  ##transient, aperture_type):
 
@@ -116,6 +119,7 @@ def build_sps(zcontinuous=2, compute_vega_mags=False, **extras):
 def build_noise(**extras):
     return None, None
 
+
 def draw_thetas():
 
     # draw from the mass function at the above zred
@@ -150,7 +154,6 @@ class TrainSBI(CronJobBase):
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = "host.SBI.train_SBI.TrainSBI"
-
 
     def build_all(self, **kwargs):
         return (
@@ -226,11 +229,13 @@ class TrainSBI(CronJobBase):
                 phot_err = phot[i] / snr
                 phot_random = np.random.normal(phot[i], phot_err)
                 phot_random_mags = maggies_to_asinh(phot_random)
-                phot_err_mags = 2.5/np.log(10)*phot_err/phot[i]
+                phot_err_mags = 2.5 / np.log(10) * phot_err / phot[i]
 
                 list_phot_single = np.append(list_phot_single, [phot_random_mags])
-                list_phot_errs_single = np.append(list_phot_errs_single, [phot_err_mags])
-            list_phot.append(np.append(list_phot_single,list_phot_errs_single))
+                list_phot_errs_single = np.append(
+                    list_phot_errs_single, [phot_err_mags]
+                )
+            list_phot.append(np.append(list_phot_single, list_phot_errs_single))
             print(len(list_phot))
 
         save_phot = True
