@@ -219,9 +219,10 @@ class GlobalApertureConstruction(TransientTaskRunner):
 
         cutouts = Cutout.objects.filter(transient=transient)
 
-        choice = 0; aperture = None
+        choice = 0
+        aperture = None
         while aperture is None and choice <= 8:
-            aperture_cutout = select_cutout_aperture(cutouts,choice=choice)
+            aperture_cutout = select_cutout_aperture(cutouts, choice=choice)
 
             image = fits.open(aperture_cutout[0].fits.name)
             aperture = construct_aperture(image, transient.host.sky_coord)
