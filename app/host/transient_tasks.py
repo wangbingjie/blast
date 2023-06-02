@@ -359,10 +359,15 @@ class GlobalAperturePhotometry(TransientTaskRunner):
         """Code goes here"""
 
         cutouts = Cutout.objects.filter(transient=transient)
-        cutout_for_aperture = select_cutout_aperture(cutouts)[0]
-        aperture = Aperture.objects.get(
-            cutout__name=cutout_for_aperture.name, type="global"
-        )
+        choice = 0; aperture = None
+        for choice in range(9):
+            cutout_for_aperture = select_cutout_aperture(cutouts,choice=choice)[0]
+            aperture = Aperture.objects.filter(
+                    cutout__name=cutout_for_aperture.name, type="global"
+            )
+            if aperture.exists():
+                aperture = aperture[0]
+                break
         query = {"name": f"{cutout_for_aperture.name}_global"}
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
