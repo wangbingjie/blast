@@ -3,6 +3,9 @@
 """Implementation of SBI++ training for Blast"""
 import pickle
 
+from django_cron import CronJobBase
+from django_cron import Schedule
+import math
 import h5py
 import numpy as np
 import torch
@@ -33,10 +36,10 @@ from scipy.stats import t
 # torch
 
 all_filters = Filter.objects.filter(~Q(name="DES_i") & ~Q(name="DES_Y"))
-massmet = np.loadtxt("host/SBI/gallazzi_05_massmet.txt")
-z_age, age = np.loadtxt("host/SBI/wmap9_z_age.txt", unpack=True)
+massmet = np.loadtxt("host/SBI/priors/gallazzi_05_massmet.txt")
+z_age, age = np.loadtxt("host/SBI/priors/wmap9_z_age.txt", unpack=True)
 f_age_z = interp1d(age, z_age)
-z_b19, tl_b19, sfrd_b19 = np.loadtxt("host/SBI/behroozi_19_sfrd.txt", unpack=True)
+z_b19, tl_b19, sfrd_b19 = np.loadtxt("host/SBI/priors/behroozi_19_sfrd.txt", unpack=True)
 spl_z_sfrd = UnivariateSpline(z_b19, sfrd_b19, s=0, ext=1)
 spl_tl_sfrd = UnivariateSpline(tl_b19, sfrd_b19, s=0, ext=1)  # tl in yrs
 
@@ -51,6 +54,12 @@ if torch.cuda.is_available():
 else:
     device = "cpu"
 
+def maggies_to_asinh(x):
+   '''asinh magnitudes
+   '''
+   a = 2.50*np.log10(np.e)
+   mu = 35.0
+   return -a * math.asinh((x/2.0) * np.exp(mu/a) ) + mu
 
 def build_obs(**extras):  ##transient, aperture_type):
 
@@ -106,91 +115,11 @@ def build_sps(zcontinuous=2, compute_vega_mags=False, **extras):
 def build_noise(**extras):
     return None, None
 
-
-def loc(mass):
-    return np.interp(mass, massmet[:, 0], massmet[:, 1])
-
-
-def scale(mass):
-    upper_84 = np.interp(mass, massmet[:, 0], massmet[:, 3])
-    lower_16 = np.interp(mass, massmet[:, 0], massmet[:, 2])
-    return upper_84 - lower_16
-
-
-def expe_logsfr_ratios(this_z, this_m, shift=True, rtn_sfr=False):
-
-    if shift:
-        age_shifted = np.log10(cosmo.age(this_z).value) + pb.delta_t_dex(this_m)
-        age_shifted = 10**age_shifted
-
-        zmin_thres = 1e-4
-        zmax_thres = 20
-        if age_shifted < age[-1]:
-            z_shifted = zmax_thres * 1
-        elif age_shifted > age[0]:
-            z_shifted = zmin_thres * 1
-        else:
-            z_shifted = f_age_z(age_shifted)
-            if z_shifted > zmax_thres:
-                z_shifted = zmax_thres * 1
-    else:
-        z_shifted = this_z * 1
-
-    agebins_in_yr_rescaled_shifted = pb.z_to_agebins_rescale(z_shifted)
-    agebins_in_yr_rescaled_shifted = 10**agebins_in_yr_rescaled_shifted
-    agebins_in_yr_rescaled_shifted_ctr = np.mean(agebins_in_yr_rescaled_shifted, axis=1)
-
-    nsfrbins = agebins_in_yr_rescaled_shifted.shape[0]
-
-    sfr_shifted = np.zeros(nsfrbins)
-    sfr_shifted_ctr = np.zeros(nsfrbins)
-    for i in range(nsfrbins):
-        a = agebins_in_yr_rescaled_shifted[i, 0]
-        b = agebins_in_yr_rescaled_shifted[i, 1]
-        sfr_shifted[i] = spl_tl_sfrd.integral(a=a, b=b)
-        sfr_shifted_ctr[i] = spl_tl_sfrd(agebins_in_yr_rescaled_shifted_ctr[i])
-
-    logsfr_ratios_shifted = np.zeros(nsfrbins - 1)
-    with np.errstate(invalid="ignore", divide="ignore"):
-        for i in range(nsfrbins - 1):
-            logsfr_ratios_shifted[i] = np.log10(sfr_shifted[i] / sfr_shifted[i + 1])
-    logsfr_ratios_shifted = np.clip(logsfr_ratios_shifted, -5.0, 5.0)
-
-    if not np.all(np.isfinite(logsfr_ratios_shifted)):
-        # set nan accord. to its neighbor
-        nan_idx = np.isnan(logsfr_ratios_shifted)
-        finite_idx = np.min(np.where(nan_idx == True)) - 1
-        neigh = logsfr_ratios_shifted[finite_idx]
-        nan_idx = np.arange(6 - finite_idx - 1) + finite_idx + 1
-        for i in range(len(nan_idx)):
-            logsfr_ratios_shifted[nan_idx[i]] = neigh * 1.0
-    import pdb
-
-    pdb.set_trace()
-    if rtn_sfr:
-        print(
-            "delta",
-            delta_t_dex(this_m),
-            "age_shifted",
-            age_shifted,
-            "z_shifted",
-            z_shifted,
-        )
-        return (agebins_in_yr_rescaled_shifted_ctr, sfr_shifted_ctr)
-    else:
-        return logsfr_ratios_shifted
-
-
 def draw_thetas():
-    # draw a zred from pdf(z)
-    # redshifts up to 0.2
-    # zred = priors.FastUniform(a=0.0, b=0.2).sample()
-    # import pdb; pdb.set_trace()
-    ##zred = u #???
-    # zred = finterp_cdf_z(u)
 
     # draw from the mass function at the above zred
     mass = priors.LogUniform(mini=100000000.0, maxi=1000000000000.0).sample()
+
     # given mass from above, draw logzsol
     logzsol = priors.FastUniform(a=-2, b=0.19).sample()
 
@@ -214,9 +143,13 @@ def draw_thetas():
     )
 
 
-class TrainSBI:
-    def __init__(self):
-        pass
+class TrainSBI(CronJobBase):
+
+    RUN_EVERY_MINS = 3
+
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = "host.SBI.train_SBI.TrainSBI"
+
 
     def build_all(self, **kwargs):
         return (
@@ -226,10 +159,10 @@ class TrainSBI:
             build_noise(**kwargs),
         )
 
-    def main(self):
+    def do(self):
 
         # parameters
-        needed_size = 5000
+        needed_size = 150000
         run_params = {"ichunk": 0, "needed_size": needed_size}
         run_params["add_duste"] = True
         run_params["add_igm"] = True
@@ -249,8 +182,6 @@ class TrainSBI:
             mag, snr = np.loadtxt(
                 f"host/SBI/snrfiles/{f.name}_magvsnr.txt", unpack=True
             )
-            # mag = ab_mag_to_mJy(mag)*10 ** (-0.4 * filter.ab_offset)
-            # mJy = mJy_to_maggies(mag)
 
             cat_min[f.name] = np.min(mag)
             cat_max[f.name] = np.max(mag)
@@ -286,15 +217,19 @@ class TrainSBI:
 
             # simulate the noised-up photometry
             list_phot_single = np.array([])
+            list_phot_errs_single = np.array([])
             for i, f in enumerate(all_filters):
                 snr = np.interp(
                     predicted_mags[i], cat_full[f.name][0], cat_full[f.name][1]
                 )
                 phot_err = phot[i] / snr
                 phot_random = np.random.normal(phot[i], phot_err)
+                phot_random_mags = maggies_to_asinh(phot_random)
+                phot_err_mags = 2.5/np.log(10)*phot_err/phot[i]
 
-                list_phot_single = np.append(list_phot_single, [phot_random, phot_err])
-            list_phot.append(list_phot_single)
+                list_phot_single = np.append(list_phot_single, [phot_random_mags])
+                list_phot_errs_single = np.append(list_phot_errs_single, [phot_err_mags])
+            list_phot.append(np.append(list_phot_single,list_phot_errs_single))
             print(len(list_phot))
 
         save_phot = True
