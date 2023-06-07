@@ -23,10 +23,10 @@ from prospect.fitting import fit_model as fit_model_prospect
 from prospect.io import write_results as writer
 from prospect.models import priors
 from prospect.models import SpecModel
-from prospect.sources import FastStepBasis
 from prospect.models.sedmodel import PolySpecModel
 from prospect.models.templates import TemplateLibrary
 from prospect.sources import CSPSpecBasis
+from prospect.sources import FastStepBasis
 from prospect.utils.obsutils import fix_obs
 from sbi import inference as Inference
 from sbi import utils as Ut
@@ -85,162 +85,260 @@ def build_obs(**extras):  ##transient, aperture_type):
 
 
 def build_model(obs=None, **extras):
-    '''prospector-alpha
-    '''
-    fit_order = ['zred', 'logmass', 'logzsol', 'logsfr_ratios',
-                 'dust2', 'dust_index', 'dust1_fraction', 'log_fagn', 'log_agn_tau',
-                 'gas_logz', 'duste_qpah', 'duste_umin', 'log_duste_gamma']
+    """prospector-alpha"""
+    fit_order = [
+        "zred",
+        "logmass",
+        "logzsol",
+        "logsfr_ratios",
+        "dust2",
+        "dust_index",
+        "dust1_fraction",
+        "log_fagn",
+        "log_agn_tau",
+        "gas_logz",
+        "duste_qpah",
+        "duste_umin",
+        "log_duste_gamma",
+    ]
 
     # -------------
     # MODEL_PARAMS
     model_params = {}
 
     # --- BASIC PARAMETERS ---
-    model_params['zred'] = {'N': 1, 'isfree': True,
-                            'init': 0.5,
-                            'prior': priors.FastUniform(a=0, b=0.4)}
+    model_params["zred"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 0.5,
+        "prior": priors.FastUniform(a=0, b=0.4),
+    }
 
-    model_params['logmass'] = {'N': 1, 'isfree': True,
-                              'init': 8.0,
-                              'units': 'Msun',
-                              'prior': priors.FastUniform(a=7.0, b=12.5)}
+    model_params["logmass"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 8.0,
+        "units": "Msun",
+        "prior": priors.FastUniform(a=7.0, b=12.5),
+    }
 
-    model_params['logzsol'] = {'N': 1, 'isfree': True,
-                               'init': -0.5,
-                               'units': r'$\log (Z/Z_\odot)$',
-                               'prior': priors.FastUniform(a=-1.98, b=0.19)}
+    model_params["logzsol"] = {
+        "N": 1,
+        "isfree": True,
+        "init": -0.5,
+        "units": r"$\log (Z/Z_\odot)$",
+        "prior": priors.FastUniform(a=-1.98, b=0.19),
+    }
 
-    model_params['imf_type'] =  {'N': 1,
-                                'isfree': False,
-                                'init': 1, #1 = chabrier
-                                'units': None,
-                                'prior': None}
-    model_params['add_igm_absorption'] = {'N': 1, 'isfree': False, 'init': True}
-    model_params["add_agb_dust_model"] = {'N': 1, 'isfree': False, 'init': True}
-    model_params["pmetals"] = {'N': 1, 'isfree': False, 'init': -99}
+    model_params["imf_type"] = {
+        "N": 1,
+        "isfree": False,
+        "init": 1,  # 1 = chabrier
+        "units": None,
+        "prior": None,
+    }
+    model_params["add_igm_absorption"] = {"N": 1, "isfree": False, "init": True}
+    model_params["add_agb_dust_model"] = {"N": 1, "isfree": False, "init": True}
+    model_params["pmetals"] = {"N": 1, "isfree": False, "init": -99}
 
     # --- SFH ---
     nbins_sfh = 7
-    model_params["sfh"] = {'N': 1, 'isfree': False, 'init': 3}
-    model_params['logsfr_ratios'] = {'N': 6, 'isfree': True,
-                                     'init': 0.0,
-                                     'prior': priors.FastTruncatedEvenStudentTFreeDeg2(hw=np.ones(6)*5.0, sig=np.ones(6)*0.3)}
+    model_params["sfh"] = {"N": 1, "isfree": False, "init": 3}
+    model_params["logsfr_ratios"] = {
+        "N": 6,
+        "isfree": True,
+        "init": 0.0,
+        "prior": priors.FastTruncatedEvenStudentTFreeDeg2(
+            hw=np.ones(6) * 5.0, sig=np.ones(6) * 0.3
+        ),
+    }
 
     # add redshift scaling to agebins, such that
     # t_max = t_univ
-    def zred_to_agebins(zred=None,**extras):
+    def zred_to_agebins(zred=None, **extras):
         amin = 7.1295
         nbins_sfh = 7
-        tuniv = cosmo.age(zred)[0].value*1e9
-        tbinmax = (tuniv*0.9)
-        if (zred <= 3.):
-            agelims = [0.0,7.47712] + np.linspace(8.0,np.log10(tbinmax),nbins_sfh-2).tolist() + [np.log10(tuniv)]
+        tuniv = cosmo.age(zred)[0].value * 1e9
+        tbinmax = tuniv * 0.9
+        if zred <= 3.0:
+            agelims = (
+                [0.0, 7.47712]
+                + np.linspace(8.0, np.log10(tbinmax), nbins_sfh - 2).tolist()
+                + [np.log10(tuniv)]
+            )
         else:
-            agelims = np.linspace(amin,np.log10(tbinmax),nbins_sfh).tolist() + [np.log10(tuniv)]
+            agelims = np.linspace(amin, np.log10(tbinmax), nbins_sfh).tolist() + [
+                np.log10(tuniv)
+            ]
             agelims[0] = 0
 
         agebins = np.array([agelims[:-1], agelims[1:]])
         return agebins.T
 
-
-    def logsfr_ratios_to_masses(logmass=None, logsfr_ratios=None, agebins=None, **extras):
+    def logsfr_ratios_to_masses(
+        logmass=None, logsfr_ratios=None, agebins=None, **extras
+    ):
         """This converts from an array of log_10(SFR_j / SFR_{j+1}) and a value of
         log10(\Sum_i M_i) to values of M_i.  j=0 is the most recent bin in lookback
         time.
         """
         nbins = agebins.shape[0]
-        sratios = 10**np.clip(logsfr_ratios, -100, 100)
-        dt = (10**agebins[:, 1] - 10**agebins[:, 0])
-        coeffs = np.array([ (1. / np.prod(sratios[:i])) * (np.prod(dt[1: i+1]) / np.prod(dt[: i]))
-                            for i in range(nbins)])
+        sratios = 10 ** np.clip(logsfr_ratios, -100, 100)
+        dt = 10 ** agebins[:, 1] - 10 ** agebins[:, 0]
+        coeffs = np.array(
+            [
+                (1.0 / np.prod(sratios[:i]))
+                * (np.prod(dt[1 : i + 1]) / np.prod(dt[:i]))
+                for i in range(nbins)
+            ]
+        )
         m1 = (10**logmass) / coeffs.sum()
 
         return m1 * coeffs
 
-    model_params["mass"] = {'N': 7,
-                            'isfree': False,
-                            'init': 1e6,
-                            'units': r'M$_\odot$',
-                            'depends_on': logsfr_ratios_to_masses}
+    model_params["mass"] = {
+        "N": 7,
+        "isfree": False,
+        "init": 1e6,
+        "units": r"M$_\odot$",
+        "depends_on": logsfr_ratios_to_masses,
+    }
 
-    model_params['agebins'] = {'N': 7, 'isfree': False,
-                               'init': zred_to_agebins(np.atleast_1d(0.5)),
-                               'prior': None,
-                               'depends_on': zred_to_agebins}
+    model_params["agebins"] = {
+        "N": 7,
+        "isfree": False,
+        "init": zred_to_agebins(np.atleast_1d(0.5)),
+        "prior": None,
+        "depends_on": zred_to_agebins,
+    }
 
     # --- Dust Absorption ---
-    model_params['dust_type'] = {"N": 1, "isfree": False, "init": 4, "units": "FSPS index"}
-    model_params['dust1_fraction'] = {'N': 1, 'isfree': True,
-                                      'init': 1.0,
-                                      'prior': priors.FastTruncatedNormal(a=0.0, b=2.0, mu=1.0, sig=0.3)}
+    model_params["dust_type"] = {
+        "N": 1,
+        "isfree": False,
+        "init": 4,
+        "units": "FSPS index",
+    }
+    model_params["dust1_fraction"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 1.0,
+        "prior": priors.FastTruncatedNormal(a=0.0, b=2.0, mu=1.0, sig=0.3),
+    }
 
-    model_params['dust2'] = {'N': 1, 'isfree': True,
-                             'init': 0.0,
-                             'units': '',
-                             'prior': priors.FastTruncatedNormal(a=0.0, b=4.0, mu=0.3, sig=1.0)}
+    model_params["dust2"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 0.0,
+        "units": "",
+        "prior": priors.FastTruncatedNormal(a=0.0, b=4.0, mu=0.3, sig=1.0),
+    }
 
     def to_dust1(dust1_fraction=None, dust1=None, dust2=None, **extras):
-        return dust1_fraction*dust2
+        return dust1_fraction * dust2
 
-    model_params['dust1'] = {"N": 1,
-                             "isfree": False,
-                             'depends_on': to_dust1,
-                             "init": 0.0, "units": "optical depth towards young stars",
-                             "prior": None}
-    model_params['dust_index'] = {'N': 1, 'isfree': True,
-                                  'init': 0.7,
-                                  'units': '',
-                                  'prior': priors.FastUniform(a=-1.0, b=0.4)}
+    model_params["dust1"] = {
+        "N": 1,
+        "isfree": False,
+        "depends_on": to_dust1,
+        "init": 0.0,
+        "units": "optical depth towards young stars",
+        "prior": None,
+    }
+    model_params["dust_index"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 0.7,
+        "units": "",
+        "prior": priors.FastUniform(a=-1.0, b=0.4),
+    }
 
     # --- Nebular Emission ---
-    model_params['add_neb_emission'] = {'N': 1, 'isfree': False, 'init': True}
-    model_params['add_neb_continuum'] = {'N': 1, 'isfree': False, 'init': True}
-    model_params['gas_logz'] = {'N': 1, 'isfree': True,
-                                'init': -0.5,
-                                'units': r'log Z/Z_\odot',
-                                'prior': priors.FastUniform(a=-2.0, b=0.5)}
-    model_params['gas_logu'] = {"N": 1, 'isfree': False,
-                                'init': -1.0, 'units': r"Q_H/N_H",
-                                'prior': priors.FastUniform(a=-4, b=-1)}
+    model_params["add_neb_emission"] = {"N": 1, "isfree": False, "init": True}
+    model_params["add_neb_continuum"] = {"N": 1, "isfree": False, "init": True}
+    model_params["gas_logz"] = {
+        "N": 1,
+        "isfree": True,
+        "init": -0.5,
+        "units": r"log Z/Z_\odot",
+        "prior": priors.FastUniform(a=-2.0, b=0.5),
+    }
+    model_params["gas_logu"] = {
+        "N": 1,
+        "isfree": False,
+        "init": -1.0,
+        "units": r"Q_H/N_H",
+        "prior": priors.FastUniform(a=-4, b=-1),
+    }
 
     # --- AGN dust ---
-    model_params['add_agn_dust'] = {"N": 1, "isfree": False, "init": True}
+    model_params["add_agn_dust"] = {"N": 1, "isfree": False, "init": True}
 
-    model_params['log_fagn'] = {'N': 1, 'isfree': True,
-                                'init': -7.0e-5,
-                                'prior': priors.FastUniform(a=-5.0, b=-4.9)}
+    model_params["log_fagn"] = {
+        "N": 1,
+        "isfree": True,
+        "init": -7.0e-5,
+        "prior": priors.FastUniform(a=-5.0, b=-4.9),
+    }
+
     def to_fagn(log_fagn=None, **extras):
         return 10**log_fagn
-    model_params['fagn'] = {"N": 1, "isfree": False, "init": 0, "depends_on": to_fagn}
 
-    model_params['log_agn_tau'] = {'N': 1, 'isfree': True,
-                                   'init': np.log10(20.0),
-                                   'prior': priors.FastUniform(a=np.log10(15.0), b=np.log10(15.1))}
+    model_params["fagn"] = {"N": 1, "isfree": False, "init": 0, "depends_on": to_fagn}
+
+    model_params["log_agn_tau"] = {
+        "N": 1,
+        "isfree": True,
+        "init": np.log10(20.0),
+        "prior": priors.FastUniform(a=np.log10(15.0), b=np.log10(15.1)),
+    }
+
     def to_agn_tau(log_agn_tau=None, **extras):
         return 10**log_agn_tau
-    model_params['agn_tau'] = {"N": 1, "isfree": False, "init": 0, "depends_on": to_agn_tau}
+
+    model_params["agn_tau"] = {
+        "N": 1,
+        "isfree": False,
+        "init": 0,
+        "depends_on": to_agn_tau,
+    }
 
     # --- Dust Emission ---
-    model_params['duste_qpah'] = {'N':1, 'isfree':True,
-                                  'init': 2.0,
-                                  'prior': priors.FastTruncatedNormal(a=0.9, b=1.1, mu=2.0, sig=2.0)}
+    model_params["duste_qpah"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 2.0,
+        "prior": priors.FastTruncatedNormal(a=0.9, b=1.1, mu=2.0, sig=2.0),
+    }
 
-    model_params['duste_umin'] = {'N':1, 'isfree':True,
-                                  'init': 1.0,
-                                  'prior': priors.FastTruncatedNormal(a=0.9, b=1.1, mu=1.0, sig=10.0)}
+    model_params["duste_umin"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 1.0,
+        "prior": priors.FastTruncatedNormal(a=0.9, b=1.1, mu=1.0, sig=10.0),
+    }
 
-    model_params['log_duste_gamma'] = {'N':1, 'isfree':True,
-                                       'init': -2.0,
-                                       'prior': priors.FastTruncatedNormal(a=-2.1, b=-1.9, mu=-2.0, sig=1.0)}
+    model_params["log_duste_gamma"] = {
+        "N": 1,
+        "isfree": True,
+        "init": -2.0,
+        "prior": priors.FastTruncatedNormal(a=-2.1, b=-1.9, mu=-2.0, sig=1.0),
+    }
 
     def to_duste_gamma(log_duste_gamma=None, **extras):
         return 10**log_duste_gamma
-    model_params['duste_gamma'] = {"N": 1, "isfree": False, "init": 0, "depends_on": to_duste_gamma}
 
-    #---- Units ----
-    model_params['peraa'] = {'N': 1, 'isfree': False, 'init': False}
+    model_params["duste_gamma"] = {
+        "N": 1,
+        "isfree": False,
+        "init": 0,
+        "depends_on": to_duste_gamma,
+    }
 
-    model_params['mass_units'] = {'N': 1, 'isfree': False, 'init': 'mformed'}
+    # ---- Units ----
+    model_params["peraa"] = {"N": 1, "isfree": False, "init": False}
+
+    model_params["mass_units"] = {"N": 1, "isfree": False, "init": "mformed"}
 
     tparams = {}
     for i in fit_order:
@@ -261,18 +359,21 @@ def build_sps(zcontinuous=2, compute_vega_mags=False, **extras):
 def build_noise(**extras):
     return None, None
 
+
 def scale(mass):
     upper_84 = np.interp(mass, massmet[:, 0], massmet[:, 3])
     lower_16 = np.interp(mass, massmet[:, 0], massmet[:, 2])
-    return (upper_84-lower_16)
+    return upper_84 - lower_16
+
 
 def loc(mass):
     return np.interp(mass, massmet[:, 0], massmet[:, 1])
 
+
 def draw_thetas(flat=False):
 
     if flat:
-        zred = priors.FastUniform(a=0.0, b=0.4+1e-3).sample()
+        zred = priors.FastUniform(a=0.0, b=0.4 + 1e-3).sample()
         logmass = priors.FastUniform(a=7.0, b=12.5).sample()
         logzsol = priors.FastUniform(a=-1.98, b=0.19).sample()
 
@@ -294,32 +395,69 @@ def draw_thetas(flat=False):
         log_duste_gamma = priors.FastUniform(a=-4.0, b=0.0).sample()
 
     else:
-        zred = priors.FastUniform(a=0.0, b=0.4+1e-3).sample()
+        zred = priors.FastUniform(a=0.0, b=0.4 + 1e-3).sample()
         logmass = priors.FastUniform(a=7.0, b=12.5).sample()
-        logzsol = priors.FastTruncatedNormal(a=-1.98, b=0.19, mu=loc(logmass), sig=scale(logmass)).sample()
+        logzsol = priors.FastTruncatedNormal(
+            a=-1.98, b=0.19, mu=loc(logmass), sig=scale(logmass)
+        ).sample()
 
-        logsfrratio_0 = priors.FastTruncatedEvenStudentTFreeDeg2(hw=5.0, sig=0.3).sample()
-        logsfrratio_1 = priors.FastTruncatedEvenStudentTFreeDeg2(hw=5.0, sig=0.3).sample()
-        logsfrratio_2 = priors.FastTruncatedEvenStudentTFreeDeg2(hw=5.0, sig=0.3).sample()
-        logsfrratio_3 = priors.FastTruncatedEvenStudentTFreeDeg2(hw=5.0, sig=0.3).sample()
-        logsfrratio_4 = priors.FastTruncatedEvenStudentTFreeDeg2(hw=5.0, sig=0.3).sample()
-        logsfrratio_5 = priors.FastTruncatedEvenStudentTFreeDeg2(hw=5.0, sig=0.3).sample()
+        logsfrratio_0 = priors.FastTruncatedEvenStudentTFreeDeg2(
+            hw=5.0, sig=0.3
+        ).sample()
+        logsfrratio_1 = priors.FastTruncatedEvenStudentTFreeDeg2(
+            hw=5.0, sig=0.3
+        ).sample()
+        logsfrratio_2 = priors.FastTruncatedEvenStudentTFreeDeg2(
+            hw=5.0, sig=0.3
+        ).sample()
+        logsfrratio_3 = priors.FastTruncatedEvenStudentTFreeDeg2(
+            hw=5.0, sig=0.3
+        ).sample()
+        logsfrratio_4 = priors.FastTruncatedEvenStudentTFreeDeg2(
+            hw=5.0, sig=0.3
+        ).sample()
+        logsfrratio_5 = priors.FastTruncatedEvenStudentTFreeDeg2(
+            hw=5.0, sig=0.3
+        ).sample()
 
         dust2 = priors.FastTruncatedNormal(a=0.0, b=4.0, mu=0.3, sig=1.0).sample()
         dust_index = priors.FastUniform(a=-1.0, b=0.4).sample()
-        dust1_fraction = priors.FastTruncatedNormal(a=0.0, b=2.0, mu=1.0, sig=0.3).sample()
+        dust1_fraction = priors.FastTruncatedNormal(
+            a=0.0, b=2.0, mu=1.0, sig=0.3
+        ).sample()
         log_fagn = priors.FastUniform(a=-5.0, b=np.log10(3.0)).sample()
         log_agn_tau = priors.FastUniform(a=np.log10(5.0), b=np.log10(150.0)).sample()
         gas_logz = priors.FastUniform(a=-2.0, b=0.5).sample()
         duste_qpah = priors.FastTruncatedNormal(a=0.0, b=7.0, mu=2.0, sig=2.0).sample()
-        duste_umin = priors.FastTruncatedNormal(a=0.1, b=25.0, mu=1.0, sig=10.0).sample()
-        log_duste_gamma = priors.FastTruncatedNormal(a=-4.0, b=0.0, mu=-2.0, sig=1.0).sample()
+        duste_umin = priors.FastTruncatedNormal(
+            a=0.1, b=25.0, mu=1.0, sig=10.0
+        ).sample()
+        log_duste_gamma = priors.FastTruncatedNormal(
+            a=-4.0, b=0.0, mu=-2.0, sig=1.0
+        ).sample()
 
-    return np.array([zred, logmass, logzsol,
-                     logsfrratio_0, logsfrratio_1, logsfrratio_2,
-                     logsfrratio_3, logsfrratio_4, logsfrratio_5,
-                     dust2, dust_index, dust1_fraction, log_fagn, log_agn_tau,
-                     gas_logz, duste_qpah, duste_umin, log_duste_gamma])
+    return np.array(
+        [
+            zred,
+            logmass,
+            logzsol,
+            logsfrratio_0,
+            logsfrratio_1,
+            logsfrratio_2,
+            logsfrratio_3,
+            logsfrratio_4,
+            logsfrratio_5,
+            dust2,
+            dust_index,
+            dust1_fraction,
+            log_fagn,
+            log_agn_tau,
+            gas_logz,
+            duste_qpah,
+            duste_umin,
+            log_duste_gamma,
+        ]
+    )
 
 
 class TrainSBI(CronJobBase):
