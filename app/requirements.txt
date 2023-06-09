@@ -3,7 +3,7 @@ dynesty==1.2.3
 alabaster==0.7.12
 amqp==5.0.9
 asgiref==3.4.1
-astro-ghost==0.1.53
+astro-ghost==2.0.2
 astro-prospector==1.0.0
 astropy==5.0.4
 astroquery==0.4.4
