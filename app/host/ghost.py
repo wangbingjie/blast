@@ -38,7 +38,7 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
 
     host_data = getTransientHosts(
         snCoord=[transient_position],
-        snName=[transient_name],
+        transientName=[transient_name],
         verbose=1,
         savepath=output_dir,
         starcut="gentle",
