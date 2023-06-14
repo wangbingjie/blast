@@ -549,7 +549,11 @@ class TrainSBI(CronJobBase):
                     list_phot_errs_single, [phot_err_mags]
                 )
             # adding in the redshift here
-            list_phot.append(np.concatenate((list_phot_single, list_phot_errs_single, [theta[0]]),))
+            list_phot.append(
+                np.concatenate(
+                    (list_phot_single, list_phot_errs_single, [theta[0]]),
+                )
+            )
             print(len(list_phot))
 
         save_phot = True
