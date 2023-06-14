@@ -508,7 +508,10 @@ class TrainSBI(CronJobBase):
         list_mfrac = []
         list_phot = []
         while len(list_phot) < needed_size:
-            theta = draw_thetas()
+            if not len(list_phot) % 3:
+                theta = draw_thetas(flat=True)
+            else:
+                theta = draw_thetas(flat=False)
 
             # call prospector
             # generate the model SED at given theta
@@ -545,7 +548,8 @@ class TrainSBI(CronJobBase):
                 list_phot_errs_single = np.append(
                     list_phot_errs_single, [phot_err_mags]
                 )
-            list_phot.append(np.append(list_phot_single, list_phot_errs_single))
+            # adding in the redshift here
+            list_phot.append(np.concatenate((list_phot_single, list_phot_errs_single, thetas[0]),))
             print(len(list_phot))
 
         save_phot = True
