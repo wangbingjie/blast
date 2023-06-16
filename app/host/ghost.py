@@ -64,7 +64,7 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
         host = Host(
             ra_deg=host_data["raMean"][0],
             dec_deg=host_data["decMean"][0],
-            name=host_data["transientName"][0],
+            name=host_data["TransientName"][0],
         )
 
         if host_data["NED_redshift"][0] == host_data["NED_redshift"][0]:
