@@ -58,14 +58,13 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
     # for level in ['*/*/', '*/']:
     #    dir_list = glob.glob('transients_' + level)
     #    for dir in dir_list: os.rmdir(dir)
-
     if len(host_data) == 0:
         host = None
     else:
         host = Host(
             ra_deg=host_data["raMean"][0],
             dec_deg=host_data["decMean"][0],
-            name=host_data["objName"][0],
+            name=host_data["transientName"][0],
         )
 
         if host_data["NED_redshift"][0] == host_data["NED_redshift"][0]:
