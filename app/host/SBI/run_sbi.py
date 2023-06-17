@@ -109,10 +109,10 @@ def main():
         "host/SBI/snrfiles/PanSTARRS_r_magvsnr.txt", dtype=float, unpack=True
     )
     meds_sigs = interp1d(
-        toy_noise_x, toy_noise_x/toy_noise_y, kind="slinear", fill_value="extrapolate"
+        toy_noise_x, toy_noise_x / toy_noise_y, kind="slinear", fill_value="extrapolate"
     )
     stds_sigs = interp1d(
-        toy_noise_x, toy_noise_x/toy_noise_y, kind="slinear", fill_value="extrapolate"
+        toy_noise_x, toy_noise_x / toy_noise_y, kind="slinear", fill_value="extrapolate"
     )
 
     # prepare to pass the reconstructed model to sbi_pp
@@ -141,10 +141,12 @@ def main():
     obs = {}
     obs["mags"] = mags  ##np.array([maggies_to_asinh(p) for p in pobs['maggies']])
     obs["mags_unc"] = mags_unc  ##2.5/np.log(10)*pobs['maggies_unc']/pobs['maggies']
-    obs['redshift'] = pobs['redshift']
-    
+    obs["redshift"] = pobs["redshift"]
+
     # Run SBI++
     chain, obs, flags = sbi_pp.sbi_pp(
         obs=obs, run_params=run_params, sbi_params=sbi_params
     )
-    import pdb; pdb.set_trace()
+    import pdb
+
+    pdb.set_trace()
