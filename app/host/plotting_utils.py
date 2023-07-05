@@ -85,7 +85,7 @@ def plot_aperture(figure, aperture, wcs, plotting_kwargs=None):
         "angle": theta_rad,
         "fill_color": "#cab2d6",
         "fill_alpha": 0.1,
-        "line_width": 4
+        "line_width": 4,
     }
 
     plot_dict = {**plot_dict, **plotting_kwargs}
