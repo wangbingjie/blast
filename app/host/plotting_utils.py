@@ -1,5 +1,6 @@
 from math import pi
 
+import extinction
 import numpy as np
 import pandas as pd
 import prospect.io.read_results as reader
@@ -29,7 +30,6 @@ from host.host_utils import survey_list
 from host.models import Filter
 from host.photometric_calibration import maggies_to_mJy
 from host.prospector import build_obs  # , build_model
-import extinction
 
 from .models import Aperture
 
@@ -199,15 +199,25 @@ def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
 
     if aperture_photometry.exists():
 
-        flux, flux_error, wavelength = [],[],[]
+        flux, flux_error, wavelength = [], [], []
         for measurement in aperture_photometry:
-            if measurement.flux/measurement.flux_error > 3:
+            if measurement.flux / measurement.flux_error > 3:
                 wave_eff = measurement.filter.transmission_curve().wave_effective
-                ext_corr = extinction.fitzpatrick99(np.array([wave_eff]), measurement.transient.host.milkyway_dust_reddening * 3.1, r_v=3.1)[
-                    0
+                ext_corr = extinction.fitzpatrick99(
+                    np.array([wave_eff]),
+                    measurement.transient.host.milkyway_dust_reddening * 3.1,
+                    r_v=3.1,
+                )[0]
+                flux += [
+                    measurement.flux
+                    * 10 ** (-0.4 * measurement.filter.ab_offset)
+                    * 10 ** (0.4 * ext_corr)
                 ]
-                flux += [measurement.flux * 10 ** (-0.4 * measurement.filter.ab_offset) * 10 ** (0.4 * ext_corr)]
-                flux_error += [measurement.flux_error * 10 ** (-0.4 * measurement.filter.ab_offset) * 10 ** (0.4 * ext_corr)]
+                flux_error += [
+                    measurement.flux_error
+                    * 10 ** (-0.4 * measurement.filter.ab_offset)
+                    * 10 ** (0.4 * ext_corr)
+                ]
                 wavelength += [measurement.filter.wavelength_eff_angstrom]
     else:
         flux, flux_error, wavelength = [], [], []
@@ -225,7 +235,14 @@ def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
         y_axis_label="Flux",
     )
 
-    fig = plot_errorbar(fig, wavelength, flux, yerr=flux_error, point_kwargs={'size':10},error_kwargs={'width':2})
+    fig = plot_errorbar(
+        fig,
+        wavelength,
+        flux,
+        yerr=flux_error,
+        point_kwargs={"size": 10},
+        error_kwargs={"width": 2},
+    )
 
     if sed_results_file is not None:
         print(sed_results_file)
@@ -242,7 +259,7 @@ def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
                 ]
             except:
                 pwave = [f.wave_effective for f in obs["filters"]]
-            fig.circle(pwave, maggies_to_mJy(best["photometry"]),size=10)
+            fig.circle(pwave, maggies_to_mJy(best["photometry"]), size=10)
 
     # xaxis = LinearAxis()
     # figure.add_layout(xaxis, 'below')
