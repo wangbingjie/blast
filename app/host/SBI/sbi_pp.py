@@ -145,7 +145,7 @@ def sbi_missingband(obs, run_params, sbi_params):
 
     hatp_x_y = sbi_params["hatp_x_y"]
     y_train = sbi_params["y_train"]
-
+    ##y_train = y_train[np.abs(y_train[:,-1] - obs['redshift']) < 0.02,:]
     y_obs = np.copy(obs["mags_sbi"])
     sig_obs = np.copy(obs["mags_unc_sbi"])
     invalid_mask = np.copy(obs["missing_mask"])
@@ -193,6 +193,7 @@ def sbi_missingband(obs, run_params, sbi_params):
         chi2_selected = y_train[:, valid_idx][idx_chi2_selected]
         # get distribution of the missing band
         guess_ndata = y_train[:, not_valid_idx][idx_chi2_selected]
+
     dists = np.linalg.norm(y_obs_valid_only - chi2_selected, axis=1)
     neighs_weights = 1 / dists
 
@@ -213,24 +214,32 @@ def sbi_missingband(obs, run_params, sbi_params):
     # draw monte carlo samples from the nearest neighbor approximation
     # later we will average over the monte-carlo posterior samples to attain the final posterior estimation
     while cnt < run_params["nmc"]:
-        signal.alarm(run_params["tmax_per_obj"])  # max time spent on one object in sec
+        #signal.alarm(run_params["tmax_per_obj"])  # max time spent on one object in sec
         try:
             x = np.copy(observed)
-            for j in range(len(not_valid_idx)):
+            # D. Jones edit
+            for j,idx in enumerate(not_valid_idx): ##range(len(not_valid_idx)):
                 x[not_valid_idx[j]] = kdes[j].resample(size=1)
                 x[not_valid_idx_unc[j]] = toy_noise(
                     flux=x[not_valid_idx[j]],
-                    meds_sigs=sbi_params["toynoise_meds_sigs"],
-                    stds_sigs=sbi_params["toynoise_stds_sigs"],
+                    meds_sigs=sbi_params["toynoise_meds_sigs"][idx],
+                    stds_sigs=sbi_params["toynoise_stds_sigs"][idx],
                     verbose=run_params["verbose"],
                 )[1]
             all_x.append(x)
 
-            noiseless_theta = hatp_x_y.sample(
-                (run_params["nposterior"],),
-                x=torch.as_tensor(x.astype(np.float32)).to(device),
-                show_progress_bars=False,
-            )
+            signal.alarm(run_params["tmax_per_iter"])  # max time spent on one object in sec
+            try:
+                noiseless_theta = hatp_x_y.sample(
+                    (run_params["nposterior"],),
+                    x=torch.as_tensor(x.astype(np.float32)).to(device),
+                    show_progress_bars=False,
+                )
+            except TimeoutException:
+                signal.alarm(0)
+                #print('timeout!')
+                continue
+            signal.alarm(0)
             noiseless_theta = noiseless_theta.detach().numpy()
 
             ave_theta.append(noiseless_theta)
@@ -372,8 +381,8 @@ def sbi_mcnoise(obs, run_params, sbi_params):
         if _nnflag:
             samp_y_guess[noisy_idx + nbands] = toy_noise(
                 flux=samp_y_guess[noisy_idx],
-                meds_sigs=sbi_params["toynoise_meds_sigs"],
-                stds_sigs=sbi_params["toynoise_stds_sigs"],
+                meds_sigs=sbi_params["toynoise_meds_sigs"][noisy_idx],
+                stds_sigs=sbi_params["toynoise_stds_sigs"][noisy_idx],
                 verbose=run_params["verbose"],
             )[1]
             signal.alarm(run_params["tmax_per_obj"])
@@ -462,8 +471,8 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
             samp_y_guess[not_valid_idx[j]] = kdes[j].resample(size=1)
             samp_y_guess[not_valid_idx_unc[j]] = toy_noise(
                 flux=samp_y_guess[not_valid_idx[j]],
-                meds_sigs=sbi_params["toynoise_meds_sigs"],
-                stds_sigs=sbi_params["toynoise_stds_sigs"],
+                meds_sigs=sbi_params["toynoise_meds_sigs"][not_valid_idx[j]],
+                stds_sigs=sbi_params["toynoise_stds_sigs"][not_valid_idx[j]],
                 verbose=run_params["verbose"],
             )[1]
         # second, deal with OOD noise
@@ -478,8 +487,8 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
         if _nnflag:
             samp_y_guess[noisy_idx + nbands] = toy_noise(
                 flux=samp_y_guess[noisy_idx],
-                meds_sigs=sbi_params["toynoise_meds_sigs"],
-                stds_sigs=sbi_params["toynoise_stds_sigs"],
+                meds_sigs=sbi_params["toynoise_meds_sigs"][noisy_idx],
+                stds_sigs=sbi_params["toynoise_stds_sigs"][noisy_idx],
                 verbose=run_params["verbose"],
             )[1]
 
@@ -616,8 +625,8 @@ def sbi_pp(obs, run_params, sbi_params):
     for j in range(nbands):
         _toynoise = toy_noise(
             flux=y_obs[j],
-            meds_sigs=sbi_params["toynoise_meds_sigs"],
-            stds_sigs=sbi_params["toynoise_stds_sigs"],
+            meds_sigs=sbi_params["toynoise_meds_sigs"][j],
+            stds_sigs=sbi_params["toynoise_stds_sigs"][j],
             verbose=run_params["verbose"],
         )
         noisy_mask[j] = (sig_obs[j] - _toynoise[1]) / _toynoise[2] >= run_params[
