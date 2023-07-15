@@ -12,6 +12,7 @@ from prospect.models import SpecModel
 from prospect.models.templates import TemplateLibrary
 from prospect.sources import CSPSpecBasis
 from prospect.utils.obsutils import fix_obs
+from prospect.models.transforms import zred_to_agebins, logsfr_ratios_to_sfrs
 from scipy.special import gamma
 from scipy.special import gammainc
 
@@ -21,6 +22,27 @@ from .models import Filter
 from .models import hdf5_file_path
 from .photometric_calibration import mJy_to_maggies  ##jansky_to_maggies
 
+# add redshift scaling to agebins, such that
+# t_max = t_univ
+def zred_to_agebins(zred=None, **extras):
+    amin = 7.1295
+    nbins_sfh = 7
+    tuniv = cosmo.age(zred)[0].value * 1e9
+    tbinmax = tuniv * 0.9
+    if zred <= 3.0:
+        agelims = (
+            [0.0, 7.47712]
+            + np.linspace(8.0, np.log10(tbinmax), nbins_sfh - 2).tolist()
+            + [np.log10(tuniv)]
+        )
+    else:
+        agelims = np.linspace(amin, np.log10(tbinmax), nbins_sfh).tolist() + [
+            np.log10(tuniv)
+        ]
+        agelims[0] = 0
+
+    agebins = np.array([agelims[:-1], agelims[1:]])
+    return agebins.T
 
 def get_CI(chain):
     chainlen = len(chain)
@@ -124,17 +146,286 @@ def build_obs(transient, aperture_type):
 
     return fix_obs(obs_data)
 
+def build_model_nonparam(obs=None, **extras):
+    """prospector-alpha"""
+    fit_order = [
+        "zred",
+        "logmass",
+        "logzsol",
+        "logsfr_ratios",
+        "dust2",
+        "dust_index",
+        "dust1_fraction",
+        "log_fagn",
+        "log_agn_tau",
+        "gas_logz",
+        "duste_qpah",
+        "duste_umin",
+        "log_duste_gamma",
+    ]
+
+    # -------------
+    # MODEL_PARAMS
+    model_params = {}
+
+    # --- BASIC PARAMETERS ---
+    model_params["zred"] = {
+        "N": 1,
+        "isfree": False,
+        "init": obs['redshift'],
+        #"prior": priors.FastUniform(a=0, b=0.2),
+    }
+
+    model_params["logmass"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 8.0,
+        "units": "Msun",
+        "prior": priors.FastUniform(a=7.0, b=12.5),
+    }
+
+    model_params["logzsol"] = {
+        "N": 1,
+        "isfree": True,
+        "init": -0.5,
+        "units": r"$\log (Z/Z_\odot)$",
+        "prior": priors.FastUniform(a=-1.98, b=0.19),
+    }
+
+    model_params["imf_type"] = {
+        "N": 1,
+        "isfree": False,
+        "init": 1,  # 1 = chabrier
+        "units": None,
+        "prior": None,
+    }
+    model_params["add_igm_absorption"] = {"N": 1, "isfree": False, "init": True}
+    model_params["add_agb_dust_model"] = {"N": 1, "isfree": False, "init": True}
+    model_params["pmetals"] = {"N": 1, "isfree": False, "init": -99}
+
+    # --- SFH ---
+    nbins_sfh = 7
+    model_params["sfh"] = {"N": 1, "isfree": False, "init": 3}
+    model_params["logsfr_ratios"] = {
+        "N": 6,
+        "isfree": True,
+        "init": 0.0,
+        "prior": priors.FastTruncatedEvenStudentTFreeDeg2(
+            hw=np.ones(6) * 5.0, sig=np.ones(6) * 0.3
+        ),
+    }
+
+    # add redshift scaling to agebins, such that
+    # t_max = t_univ
+    def zred_to_agebins(zred=None, **extras):
+        amin = 7.1295
+        nbins_sfh = 7
+        tuniv = cosmo.age(zred)[0].value * 1e9
+        tbinmax = tuniv * 0.9
+        if zred <= 3.0:
+            agelims = (
+                [0.0, 7.47712]
+                + np.linspace(8.0, np.log10(tbinmax), nbins_sfh - 2).tolist()
+                + [np.log10(tuniv)]
+            )
+        else:
+            agelims = np.linspace(amin, np.log10(tbinmax), nbins_sfh).tolist() + [
+                np.log10(tuniv)
+            ]
+            agelims[0] = 0
+
+        agebins = np.array([agelims[:-1], agelims[1:]])
+        return agebins.T
+
+    def logsfr_ratios_to_masses(
+        logmass=None, logsfr_ratios=None, agebins=None, **extras
+    ):
+        """This converts from an array of log_10(SFR_j / SFR_{j+1}) and a value of
+        log10(\Sum_i M_i) to values of M_i.  j=0 is the most recent bin in lookback
+        time.
+        """
+        nbins = agebins.shape[0]
+        sratios = 10 ** np.clip(logsfr_ratios, -100, 100)
+        dt = 10 ** agebins[:, 1] - 10 ** agebins[:, 0]
+        coeffs = np.array(
+            [
+                (1.0 / np.prod(sratios[:i]))
+                * (np.prod(dt[1 : i + 1]) / np.prod(dt[:i]))
+                for i in range(nbins)
+            ]
+        )
+        m1 = (10**logmass) / coeffs.sum()
+
+        return m1 * coeffs
+
+    model_params["mass"] = {
+        "N": 7,
+        "isfree": False,
+        "init": 1e6,
+        "units": r"M$_\odot$",
+        "depends_on": logsfr_ratios_to_masses,
+    }
+
+    model_params["agebins"] = {
+        "N": 7,
+        "isfree": False,
+        "init": zred_to_agebins(np.atleast_1d(0.5)),
+        "prior": None,
+        "depends_on": zred_to_agebins,
+    }
+
+    # --- Dust Absorption ---
+    model_params["dust_type"] = {
+        "N": 1,
+        "isfree": False,
+        "init": 4,
+        "units": "FSPS index",
+    }
+    model_params["dust1_fraction"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 1.0,
+        "prior": priors.FastTruncatedNormal(a=0.0, b=2.0, mu=1.0, sig=0.3),
+    }
+
+    model_params["dust2"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 0.0,
+        "units": "",
+        "prior": priors.FastTruncatedNormal(a=0.0, b=4.0, mu=0.3, sig=1.0),
+    }
+
+    def to_dust1(dust1_fraction=None, dust1=None, dust2=None, **extras):
+        return dust1_fraction * dust2
+
+    model_params["dust1"] = {
+        "N": 1,
+        "isfree": False,
+        "depends_on": to_dust1,
+        "init": 0.0,
+        "units": "optical depth towards young stars",
+        "prior": None,
+    }
+    model_params["dust_index"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 0.7,
+        "units": "",
+        "prior": priors.FastUniform(a=-1.0, b=0.4),
+    }
+
+    # --- Nebular Emission ---
+    model_params["add_neb_emission"] = {"N": 1, "isfree": False, "init": True}
+    model_params["add_neb_continuum"] = {"N": 1, "isfree": False, "init": True}
+    model_params["gas_logz"] = {
+        "N": 1,
+        "isfree": True,
+        "init": -0.5,
+        "units": r"log Z/Z_\odot",
+        "prior": priors.FastUniform(a=-2.0, b=0.5),
+    }
+    model_params["gas_logu"] = {
+        "N": 1,
+        "isfree": False,
+        "init": -1.0,
+        "units": r"Q_H/N_H",
+        "prior": priors.FastUniform(a=-4, b=-1),
+    }
+
+    # --- AGN dust ---
+    model_params["add_agn_dust"] = {"N": 1, "isfree": False, "init": True}
+
+    model_params["log_fagn"] = {
+        "N": 1,
+        "isfree": True,
+        "init": -7.0e-5,
+        "prior": priors.FastUniform(a=-5.0, b=-4.9),
+    }
+
+    def to_fagn(log_fagn=None, **extras):
+        return 10**log_fagn
+
+    model_params["fagn"] = {"N": 1, "isfree": False, "init": 0, "depends_on": to_fagn}
+
+    model_params["log_agn_tau"] = {
+        "N": 1,
+        "isfree": True,
+        "init": np.log10(20.0),
+        "prior": priors.FastUniform(a=np.log10(15.0), b=np.log10(15.1)),
+    }
+
+    def to_agn_tau(log_agn_tau=None, **extras):
+        return 10**log_agn_tau
+
+    model_params["agn_tau"] = {
+        "N": 1,
+        "isfree": False,
+        "init": 0,
+        "depends_on": to_agn_tau,
+    }
+
+    # --- Dust Emission ---
+    model_params["duste_qpah"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 2.0,
+        "prior": priors.FastTruncatedNormal(a=0.9, b=1.1, mu=2.0, sig=2.0),
+    }
+
+    model_params["duste_umin"] = {
+        "N": 1,
+        "isfree": True,
+        "init": 1.0,
+        "prior": priors.FastTruncatedNormal(a=0.9, b=1.1, mu=1.0, sig=10.0),
+    }
+
+    model_params["log_duste_gamma"] = {
+        "N": 1,
+        "isfree": True,
+        "init": -2.0,
+        "prior": priors.FastTruncatedNormal(a=-2.1, b=-1.9, mu=-2.0, sig=1.0),
+    }
+
+    def to_duste_gamma(log_duste_gamma=None, **extras):
+        return 10**log_duste_gamma
+
+    model_params["duste_gamma"] = {
+        "N": 1,
+        "isfree": False,
+        "init": 0,
+        "depends_on": to_duste_gamma,
+    }
+
+    # ---- Units ----
+    model_params["peraa"] = {"N": 1, "isfree": False, "init": False}
+
+    model_params["mass_units"] = {"N": 1, "isfree": False, "init": "mformed"}
+
+    tparams = {}
+    for i in fit_order:
+        tparams[i] = model_params[i]
+    for i in list(model_params.keys()):
+        if i not in fit_order:
+            tparams[i] = model_params[i]
+    model_params = tparams
+
+    return PolySpecModel(model_params)
 
 def build_model(observations):
     """
     Construct all model components
     """
 
-    model_params = TemplateLibrary["parametric_sfh"]
-    model_params.update(TemplateLibrary["nebular"])
-    model_params["zred"]["init"] = observations["redshift"]
-    model = SpecModel(model_params)
-    sps = CSPSpecBasis(zcontinuous=1)
+    #model_params = TemplateLibrary["parametric_sfh"]
+    #model_params.update(TemplateLibrary["nebular"])
+    #model_params["zred"]["init"] = observations["redshift"]
+    #model = SpecModel(model_params)
+    model = build_model_nonparam(observations)
+    
+    # new SPS model
+    #sps = CSPSpecBasis(zcontinuous=1)
+    sps = FastStepBasis(zcontinuous=zcontinuous, compute_vega_mags=compute_vega_mags)
     noise_model = (None, None)
 
     return {"model": model, "sps": sps, "noise_model": noise_model}
@@ -163,6 +454,7 @@ def prospector_result_to_blast(
     model_components,
     observations,
     sed_output_root=settings.SED_OUTPUT_ROOT,
+    parameteric_sfh=False
 ):
 
     # write the results
@@ -213,28 +505,47 @@ def prospector_result_to_blast(
         ]
     )
     logmass16, logmass50, logmass84 = get_CI(logmass)
-    age = resultpars["chain"][
-        ..., np.where(np.array(resultpars["theta_labels"]) == "tage")[0][0]
-    ]
-    age16, age50, age84 = get_CI(age)
-    tau = resultpars["chain"][
-        ..., np.where(np.array(resultpars["theta_labels"]) == "tau")[0][0]
-    ]
-    tau16, tau50, tau84 = get_CI(tau)
+
+    if parametric_sfh:
+        age = resultpars["chain"][
+            ..., np.where(np.array(resultpars["theta_labels"]) == "tage")[0][0]
+        ]
+        age16, age50, age84 = get_CI(age)
+    else:
+        # ask Bingjie about this one
+        pass
+    
+    if not parametric_sfh:
+        tau = resultpars["chain"][
+            ..., np.where(np.array(resultpars["theta_labels"]) == "tau")[0][0]
+        ]
+        tau16, tau50, tau84 = get_CI(tau)
 
     # sfr, ssfr
-    sfr = psi_from_sfh(
-        resultpars["chain"][
-            ..., np.where(np.array(resultpars["theta_labels"]) == "mass")[0][0]
-        ],
-        resultpars["chain"][
-            ..., np.where(np.array(resultpars["theta_labels"]) == "tage")[0][0]
-        ],
-        resultpars["chain"][
-            ..., np.where(np.array(resultpars["theta_labels"]) == "tau")[0][0]
-        ],
-    )
-    logsfr = np.log10(sfr)
+    if parametric_sfh:
+        sfr = psi_from_sfh(
+            resultpars["chain"][
+                ..., np.where(np.array(resultpars["theta_labels"]) == "mass")[0][0]
+            ],
+            resultpars["chain"][
+                ..., np.where(np.array(resultpars["theta_labels"]) == "tage")[0][0]
+            ],
+            resultpars["chain"][
+                ..., np.where(np.array(resultpars["theta_labels"]) == "tau")[0][0]
+            ],
+        )
+        logsfr = np.log10(sfr)
+
+    else:
+        sfr = logsfr_ratios_to_sfrs(
+            logmass=logmass,
+            logsfr_ratios=resultpars["chain"][
+                ..., np.where(np.array(resultpars["theta_labels"]) == "logsfr_ratios")[0][0]
+            ],
+            agebins=zred_to_agebins(transient.best_redshift))
+        # can figure out the current SFR depending on which agebin is smallest?
+        import pdb; pdb.set_trace()
+    
     logssfr = np.log10(sfr) - logmass
     logsfr16, logsfr50, logsfr84 = get_CI(logsfr)
     logssfr16, logssfr50, logssfr84 = get_CI(logssfr)
@@ -255,10 +566,12 @@ def prospector_result_to_blast(
         "log_age_16": age16,
         "log_age_50": age50,
         "log_age_84": age84,
-        "log_tau_16": tau16,
-        "log_tau_50": tau50,
-        "log_tau_84": tau84,
         "mass_surviving_ratio": mfrac,
     }
+    if not parametric_sfh:
+        prosp_results["log_tau_16"] = tau16,
+        prosp_results["log_tau_50"] = tau50,
+        prosp_results["log_tau_84"] = tau84,
 
+    
     return prosp_results
