@@ -10,9 +10,10 @@ from prospect.fitting import lnprobfn
 from prospect.io import write_results as writer
 from prospect.models import SpecModel
 from prospect.models.templates import TemplateLibrary
+from prospect.models.transforms import logsfr_ratios_to_sfrs
+from prospect.models.transforms import zred_to_agebins
 from prospect.sources import CSPSpecBasis
 from prospect.utils.obsutils import fix_obs
-from prospect.models.transforms import zred_to_agebins, logsfr_ratios_to_sfrs
 from scipy.special import gamma
 from scipy.special import gammainc
 
@@ -43,6 +44,7 @@ def zred_to_agebins(zred=None, **extras):
 
     agebins = np.array([agelims[:-1], agelims[1:]])
     return agebins.T
+
 
 def get_CI(chain):
     chainlen = len(chain)
@@ -146,6 +148,7 @@ def build_obs(transient, aperture_type):
 
     return fix_obs(obs_data)
 
+
 def build_model_nonparam(obs=None, **extras):
     """prospector-alpha"""
     fit_order = [
@@ -172,8 +175,8 @@ def build_model_nonparam(obs=None, **extras):
     model_params["zred"] = {
         "N": 1,
         "isfree": False,
-        "init": obs['redshift'],
-        #"prior": priors.FastUniform(a=0, b=0.2),
+        "init": obs["redshift"],
+        # "prior": priors.FastUniform(a=0, b=0.2),
     }
 
     model_params["logmass"] = {
@@ -412,19 +415,20 @@ def build_model_nonparam(obs=None, **extras):
 
     return PolySpecModel(model_params)
 
+
 def build_model(observations):
     """
     Construct all model components
     """
 
-    #model_params = TemplateLibrary["parametric_sfh"]
-    #model_params.update(TemplateLibrary["nebular"])
-    #model_params["zred"]["init"] = observations["redshift"]
-    #model = SpecModel(model_params)
+    # model_params = TemplateLibrary["parametric_sfh"]
+    # model_params.update(TemplateLibrary["nebular"])
+    # model_params["zred"]["init"] = observations["redshift"]
+    # model = SpecModel(model_params)
     model = build_model_nonparam(observations)
-    
+
     # new SPS model
-    #sps = CSPSpecBasis(zcontinuous=1)
+    # sps = CSPSpecBasis(zcontinuous=1)
     sps = FastStepBasis(zcontinuous=zcontinuous, compute_vega_mags=compute_vega_mags)
     noise_model = (None, None)
 
@@ -454,7 +458,7 @@ def prospector_result_to_blast(
     model_components,
     observations,
     sed_output_root=settings.SED_OUTPUT_ROOT,
-    parameteric_sfh=False
+    parameteric_sfh=False,
 ):
 
     # write the results
@@ -514,7 +518,7 @@ def prospector_result_to_blast(
     else:
         # ask Bingjie about this one
         pass
-    
+
     if not parametric_sfh:
         tau = resultpars["chain"][
             ..., np.where(np.array(resultpars["theta_labels"]) == "tau")[0][0]
@@ -540,12 +544,16 @@ def prospector_result_to_blast(
         sfr = logsfr_ratios_to_sfrs(
             logmass=logmass,
             logsfr_ratios=resultpars["chain"][
-                ..., np.where(np.array(resultpars["theta_labels"]) == "logsfr_ratios")[0][0]
+                ...,
+                np.where(np.array(resultpars["theta_labels"]) == "logsfr_ratios")[0][0],
             ],
-            agebins=zred_to_agebins(transient.best_redshift))
+            agebins=zred_to_agebins(transient.best_redshift),
+        )
         # can figure out the current SFR depending on which agebin is smallest?
-        import pdb; pdb.set_trace()
-    
+        import pdb
+
+        pdb.set_trace()
+
     logssfr = np.log10(sfr) - logmass
     logsfr16, logsfr50, logsfr84 = get_CI(logsfr)
     logssfr16, logssfr50, logssfr84 = get_CI(logssfr)
@@ -569,9 +577,8 @@ def prospector_result_to_blast(
         "mass_surviving_ratio": mfrac,
     }
     if not parametric_sfh:
-        prosp_results["log_tau_16"] = tau16,
-        prosp_results["log_tau_50"] = tau50,
-        prosp_results["log_tau_84"] = tau84,
+        prosp_results["log_tau_16"] = (tau16,)
+        prosp_results["log_tau_50"] = (tau50,)
+        prosp_results["log_tau_84"] = (tau84,)
 
-    
     return prosp_results
