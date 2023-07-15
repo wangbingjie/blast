@@ -125,6 +125,7 @@ def main():
     sbi_params["toynoise_meds_sigs"] = meds_sigs
     sbi_params["toynoise_stds_sigs"] = stds_sigs
 
+
     for transient_name in \
         np.loadtxt(
             'host/slurm/hostgalmasses_list.csv',unpack=True,
