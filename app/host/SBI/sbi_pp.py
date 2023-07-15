@@ -83,7 +83,7 @@ def gauss_approx_missingband(obs, run_params, sbi_params):
     y_obs = np.copy(obs["mags_sbi"])
     sig_obs = np.copy(obs["mags_unc_sbi"])
     invalid_mask = np.copy(obs["missing_mask"])
-    observed = np.concatenate([y_obs, sig_obs, [obs['redshift']]])
+    observed = np.concatenate([y_obs, sig_obs, [obs["redshift"]]])
     y_obs_valid_only = y_obs[~invalid_mask]
     valid_idx = np.where(~invalid_mask)[0]
     not_valid_idx = np.where(invalid_mask)[0]
@@ -149,7 +149,7 @@ def sbi_missingband(obs, run_params, sbi_params):
     y_obs = np.copy(obs["mags_sbi"])
     sig_obs = np.copy(obs["mags_unc_sbi"])
     invalid_mask = np.copy(obs["missing_mask"])
-    observed = np.concatenate([y_obs, sig_obs, [obs['redshift']]])
+    observed = np.concatenate([y_obs, sig_obs, [obs["redshift"]]])
     y_obs_valid_only = y_obs[~invalid_mask]
     valid_idx = np.where(~invalid_mask)[0]
     not_valid_idx = np.where(invalid_mask)[0]
@@ -267,7 +267,7 @@ def sbi_missingband(obs, run_params, sbi_params):
     all_x_flux = all_x.T[:nbands]
     all_x_unc = all_x.T[nbands:]
     y_guess = np.concatenate(
-        [np.median(all_x_flux, axis=1), np.median(all_x_unc, axis=1), [obs['redshift']]]
+        [np.median(all_x_flux, axis=1), np.median(all_x_unc, axis=1), [obs["redshift"]]]
     )
 
     return ave_theta, y_guess, use_res, timeout_flag, cnt
@@ -284,7 +284,7 @@ def lim_of_noisy_guass(obs, run_params, sbi_params):
 
     y_obs = np.copy(obs["mags_sbi"])
     sig_obs = np.copy(obs["mags_unc_sbi"])
-    observed = np.concatenate([y_obs, sig_obs, [obs['redshift']]])
+    observed = np.concatenate([y_obs, sig_obs, [obs["redshift"]]])
     noisy_mask = np.copy(obs["noisy_mask"])
 
     noisy_idx = np.where(noisy_mask == True)[0]
@@ -344,7 +344,7 @@ def sbi_mcnoise(obs, run_params, sbi_params):
 
     y_obs = np.copy(obs["mags_sbi"])
     sig_obs = np.copy(obs["mags_unc_sbi"])
-    observed = np.concatenate([y_obs, sig_obs, [obs['redshift']]])
+    observed = np.concatenate([y_obs, sig_obs, [obs["redshift"]]])
     nbands = y_train.shape[1] // 2  # total number of bands
 
     noisy_mask = np.copy(obs["noisy_mask"])
@@ -434,7 +434,7 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
 
     y_obs = np.copy(obs["mags_sbi"])
     sig_obs = np.copy(obs["mags_unc_sbi"])
-    observed = np.concatenate([y_obs, sig_obs, [obs['redshift']]])
+    observed = np.concatenate([y_obs, sig_obs, [obs["redshift"]]])
     nbands = y_train.shape[1] // 2
 
     noisy_mask = np.copy(obs["noisy_mask"])
@@ -554,7 +554,7 @@ def sbi_baseline(obs, run_params, sbi_params):
     # missing data, if any, will be filled in later
     obs["mags_sbi"] = y_obs
     obs["mags_unc_sbi"] = sig_obs
-    observed = np.concatenate([y_obs, sig_obs, [obs['redshift']]])
+    observed = np.concatenate([y_obs, sig_obs, [obs["redshift"]]])
     nbands = y_train.shape[1] // 2  # total number of bands
 
     flags["use_res"] = 1
@@ -564,7 +564,7 @@ def sbi_baseline(obs, run_params, sbi_params):
     # call baseline sbi to draw posterior samples
     signal.alarm(run_params["tmax_per_obj"])  # max time spent on one object in sec
     try:
-        x = np.concatenate([y_obs, sig_obs, [obs['redshift']]])
+        x = np.concatenate([y_obs, sig_obs, [obs["redshift"]]])
         ave_theta = hatp_x_y.sample(
             (run_params["np_baseline"],),
             x=torch.as_tensor(x.astype(np.float32)).to(device),
@@ -614,7 +614,7 @@ def sbi_pp(obs, run_params, sbi_params):
     # missing data, if any, will be filled in later
     obs["mags_sbi"] = y_obs
     obs["mags_unc_sbi"] = sig_obs
-    observed = np.concatenate([y_obs, sig_obs, [obs['redshift']]])
+    observed = np.concatenate([y_obs, sig_obs, [obs["redshift"]]])
     nbands = y_train.shape[1] // 2  # total number of bands
 
     # decide if we need to deal with missing bands
@@ -649,7 +649,7 @@ def sbi_pp(obs, run_params, sbi_params):
 
         signal.alarm(run_params["tmax_per_obj"])  # max time spent on one object in sec
         try:
-            x = np.concatenate([y_obs, sig_obs, [obs['redshift']]])
+            x = np.concatenate([y_obs, sig_obs, [obs["redshift"]]])
             ave_theta = hatp_x_y.sample(
                 (run_params["np_baseline"],),
                 x=torch.as_tensor(x.astype(np.float32)).to(device),
