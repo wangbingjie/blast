@@ -214,11 +214,11 @@ def sbi_missingband(obs, run_params, sbi_params):
     # draw monte carlo samples from the nearest neighbor approximation
     # later we will average over the monte-carlo posterior samples to attain the final posterior estimation
     while cnt < run_params["nmc"]:
-        #signal.alarm(run_params["tmax_per_obj"])  # max time spent on one object in sec
+        # signal.alarm(run_params["tmax_per_obj"])  # max time spent on one object in sec
         try:
             x = np.copy(observed)
             # D. Jones edit
-            for j,idx in enumerate(not_valid_idx): ##range(len(not_valid_idx)):
+            for j, idx in enumerate(not_valid_idx):  ##range(len(not_valid_idx)):
                 x[not_valid_idx[j]] = kdes[j].resample(size=1)
                 x[not_valid_idx_unc[j]] = toy_noise(
                     flux=x[not_valid_idx[j]],
@@ -228,7 +228,9 @@ def sbi_missingband(obs, run_params, sbi_params):
                 )[1]
             all_x.append(x)
 
-            signal.alarm(run_params["tmax_per_iter"])  # max time spent on one object in sec
+            signal.alarm(
+                run_params["tmax_per_iter"]
+            )  # max time spent on one object in sec
             try:
                 noiseless_theta = hatp_x_y.sample(
                     (run_params["nposterior"],),
@@ -237,7 +239,7 @@ def sbi_missingband(obs, run_params, sbi_params):
                 )
             except TimeoutException:
                 signal.alarm(0)
-                #print('timeout!')
+                # print('timeout!')
                 continue
             signal.alarm(0)
             noiseless_theta = noiseless_theta.detach().numpy()
