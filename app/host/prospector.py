@@ -14,8 +14,17 @@ from prospect.models.transforms import logsfr_ratios_to_sfrs
 from prospect.models.transforms import zred_to_agebins
 from prospect.sources import CSPSpecBasis
 from prospect.utils.obsutils import fix_obs
+from host import postprocess_prosp as pp
 from scipy.special import gamma
 from scipy.special import gammainc
+from prospect.models import priors
+from astropy.cosmology import WMAP9 as cosmo
+from prospect.models.sedmodel import PolySpecModel
+from prospect.sources import FastStepBasis
+from host.SBI.run_sbi_blast import fit_sbi_pp
+import h5py
+import json
+from prospect.io.write_results import write_h5_header, write_obs_to_h5
 
 from .host_utils import get_dust_maps
 from .models import AperturePhotometry
@@ -429,25 +438,30 @@ def build_model(observations):
 
     # new SPS model
     # sps = CSPSpecBasis(zcontinuous=1)
-    sps = FastStepBasis(zcontinuous=zcontinuous, compute_vega_mags=compute_vega_mags)
+    sps = FastStepBasis(zcontinuous=2, compute_vega_mags=False)
     noise_model = (None, None)
 
     return {"model": model, "sps": sps, "noise_model": noise_model}
 
 
-def fit_model(observations, model_components, fitting_kwargs):
+def fit_model(observations, model_components, fitting_kwargs, sbipp=False):
     """Fit the model"""
 
-    output = fit_model_prospect(
-        observations,
-        model_components["model"],
-        model_components["sps"],
-        optimize=False,
-        dynesty=True,
-        lnprobfn=lnprobfn,
-        noise=model_components["noise_model"],
-        **fitting_kwargs,
-    )
+    if sbipp:
+        output = fit_sbi_pp(
+            observations
+        )            
+    else:
+        output = fit_model_prospect(
+            observations,
+            model_components["model"],
+            model_components["sps"],
+            optimize=False,
+            dynesty=True,
+            lnprobfn=lnprobfn,
+            noise=model_components["noise_model"],
+            **fitting_kwargs,
+        )
     return output
 
 
@@ -458,12 +472,14 @@ def prospector_result_to_blast(
     model_components,
     observations,
     sed_output_root=settings.SED_OUTPUT_ROOT,
-    parameteric_sfh=False,
+    parametric_sfh=False,
+    sbipp=False
 ):
 
     # write the results
+    hdf5_file_name = f"{sed_output_root}/{transient.name}/{transient.name}_{aperture.type}.h5"
     hdf5_file = (
-        f"{sed_output_root}/{transient.name}/{transient.name}_{aperture.type}.h5"
+        hdf5_file_name
     )
 
     if not os.path.exists(f"{sed_output_root}/{transient.name}"):
@@ -471,92 +487,80 @@ def prospector_result_to_blast(
     if os.path.exists(hdf5_file):
         # prospector won't overwrite, which causes problems
         os.remove(hdf5_file)
+    
+    if sbipp:
 
-    writer.write_hdf5(
-        hdf5_file,
-        {},
-        model_components["model"],
-        observations,
-        prospector_output["sampling"][0],
-        None,
-        sps=model_components["sps"],
-        tsample=prospector_output["sampling"][1],
-        toptimize=0.0,
-    )
+        hf = h5py.File(hdf5_file_name, "w")
 
+        sdat = hf.create_group('sampling')
+        sdat.create_dataset('chain',
+                            data=prospector_output["sampling"][0]['samples'])
+        sdat.attrs['theta_labels'] = \
+            json.dumps(list(model_components["model"].theta_labels()))
+        
+        # High level parameter and version info
+        write_h5_header(hf, {}, model_components["model"])
+        
+        # ----------------------
+        # Observational data
+        write_obs_to_h5(hf, observations)
+        hf.flush()
+    else:
+        writer.write_hdf5(
+            hdf5_file,
+            {},
+            model_components["model"],
+            observations,
+            prospector_output["sampling"][0],
+            None,
+            sps=model_components["sps"],
+            tsample=prospector_output["sampling"][1],
+            toptimize=0.0,
+        )
+        
     # load up the hdf5 file to get the results
     resultpars, obs, _ = reader.results_from(hdf5_file, dangerous=False)
 
-    imax = np.argmax(resultpars["lnprobability"])
-    csz = resultpars["chain"].shape
-    if resultpars["chain"].ndim > 2:
-        # emcee
-        i, j = np.unravel_index(imax, resultpars["lnprobability"].shape)
-        theta_max = resultpars["chain"][i, j, :].copy()
-        flatchain = resultpars["chain"].resultparshape(csz[0] * csz[1], csz[2])
+    if sbipp:
+        theta_max = np.mean(resultpars['chain'],axis=0)
     else:
-        # dynesty
-        theta_max = resultpars["chain"][imax, :].copy()
-        flatchain = resultpars["chain"]
+        imax = np.argmax(resultpars["lnprobability"])
+        csz = resultpars["chain"].shape
+        if resultpars["chain"].ndim > 2:
+            # emcee
+            i, j = np.unravel_index(imax, resultpars["lnprobability"].shape)
+            theta_max = resultpars["chain"][i, j, :].copy()
+        else:
+            # dynesty
+            theta_max = resultpars["chain"][imax, :].copy()
+
     _, _, mfrac = model_components["model"].predict(
         theta_max, obs=observations, sps=model_components["sps"]
     )
 
-    # logmass, age, tau
-    logmass = np.log10(
-        resultpars["chain"][
-            ..., np.where(np.array(resultpars["theta_labels"]) == "mass")[0][0]
-        ]
-    )
-    logmass16, logmass50, logmass84 = get_CI(logmass)
+    if not parametric_sfh:
+        use_weights = not sbipp
+        pp.run_all(hdf5_file_name, hdf5_file_name.replace('.h5','_chain.npz'),
+                   hdf5_file_name.replace('.h5','_perc.npz'),
+                   model_components["model"].init_config['zred']['init'],
+                   prior='p-alpha', mod_fsps=model_components["model"],
+                   sps=model_components["sps"], percents=[15.9,50,84.1],
+                   use_weights=use_weights,sbipp=sbipp,obs=observations)
+        percentiles = np.load(hdf5_file_name.replace('.h5','_perc.npz'), allow_pickle=True)
+        perc = np.atleast_1d(percentiles['percentiles'])[0]
+
+    
+    logmass16, logmass50, logmass84 = perc['stellar_mass']
+    age16, age50, age84 = perc['mwa']
+    logsfr16, logsfr50, logsfr84 = np.log10(perc['sfr'][0])
+    logssfr16, logssfr50, logssfr84 = np.log10(perc['ssfr'][0])
 
     if parametric_sfh:
-        age = resultpars["chain"][
-            ..., np.where(np.array(resultpars["theta_labels"]) == "tage")[0][0]
-        ]
-        age16, age50, age84 = get_CI(age)
-    else:
-        # ask Bingjie about this one
-        pass
-
-    if not parametric_sfh:
         tau = resultpars["chain"][
             ..., np.where(np.array(resultpars["theta_labels"]) == "tau")[0][0]
         ]
         tau16, tau50, tau84 = get_CI(tau)
 
-    # sfr, ssfr
-    if parametric_sfh:
-        sfr = psi_from_sfh(
-            resultpars["chain"][
-                ..., np.where(np.array(resultpars["theta_labels"]) == "mass")[0][0]
-            ],
-            resultpars["chain"][
-                ..., np.where(np.array(resultpars["theta_labels"]) == "tage")[0][0]
-            ],
-            resultpars["chain"][
-                ..., np.where(np.array(resultpars["theta_labels"]) == "tau")[0][0]
-            ],
-        )
-        logsfr = np.log10(sfr)
-
-    else:
-        sfr = logsfr_ratios_to_sfrs(
-            logmass=logmass,
-            logsfr_ratios=resultpars["chain"][
-                ...,
-                np.where(np.array(resultpars["theta_labels"]) == "logsfr_ratios")[0][0],
-            ],
-            agebins=zred_to_agebins(transient.best_redshift),
-        )
-        # can figure out the current SFR depending on which agebin is smallest?
-        import pdb
-
-        pdb.set_trace()
-
-    logssfr = np.log10(sfr) - logmass
-    logsfr16, logsfr50, logsfr84 = get_CI(logsfr)
-    logssfr16, logssfr50, logssfr84 = get_CI(logssfr)
 
     prosp_results = {
         "transient": transient,
@@ -576,7 +580,7 @@ def prospector_result_to_blast(
         "log_age_84": age84,
         "mass_surviving_ratio": mfrac,
     }
-    if not parametric_sfh:
+    if parametric_sfh:
         prosp_results["log_tau_16"] = (tau16,)
         prosp_results["log_tau_50"] = (tau50,)
         prosp_results["log_tau_84"] = (tau84,)

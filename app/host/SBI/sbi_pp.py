@@ -488,9 +488,9 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
 
         if _nnflag:
             samp_y_guess[noisy_idx + nbands] = toy_noise(
-                flux=samp_y_guess[noisy_idx],
-                meds_sigs=sbi_params["toynoise_meds_sigs"][noisy_idx],
-                stds_sigs=sbi_params["toynoise_stds_sigs"][noisy_idx],
+                flux=samp_y_guess[noisy_idx[ii]],
+                meds_sigs=sbi_params["toynoise_meds_sigs"][noisy_idx[ii]],
+                stds_sigs=sbi_params["toynoise_stds_sigs"][noisy_idx[ii]],
                 verbose=run_params["verbose"],
             )[1]
 
