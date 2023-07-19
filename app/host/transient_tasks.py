@@ -643,7 +643,7 @@ class HostInformation(TransientTaskRunner):
 class HostSEDFitting(TransientTaskRunner):
     """Task Runner to run host galaxy inference with prospector"""
 
-    def _run_process(self, transient, aperture_type="global", mode="fast"):
+    def _run_process(self, transient, aperture_type="global", mode="fast", sbipp=False):
         """Run the SED-fitting task"""
 
         query = {
@@ -658,7 +658,7 @@ class HostSEDFitting(TransientTaskRunner):
         observations = build_obs(transient, aperture_type)
         model_components = build_model(observations)
 
-        if mode == "test":
+        if mode == "test" and not sbipp:
             # garbage results but the test runs
             print("running in test mode")
             fitting_settings = dict(
@@ -671,7 +671,7 @@ class HostSEDFitting(TransientTaskRunner):
                 nested_maxiter=1,
                 verbose=True,
             )
-        elif mode == "fast":
+        elif mode == "fast" and not sbipp:
             # 3000 - "reasonable but approximate posteriors"
             print("running in fast mode")
             fitting_settings = dict(
@@ -688,7 +688,7 @@ class HostSEDFitting(TransientTaskRunner):
             )
 
         print("starting model fit")
-        posterior = fit_model(observations, model_components, fitting_settings)
+        posterior = fit_model(observations, model_components, fitting_settings, sbipp=sbipp)
         if mode == "test":
             prosp_results = prospector_result_to_blast(
                 transient,
@@ -700,7 +700,8 @@ class HostSEDFitting(TransientTaskRunner):
             )
         else:
             prosp_results = prospector_result_to_blast(
-                transient, aperture[0], posterior, model_components, observations
+                transient, aperture[0], posterior, model_components, observations,
+                sbipp=sbipp
             )
 
         pr = SEDFittingResult.objects.create(**prosp_results)

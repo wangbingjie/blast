@@ -3,6 +3,7 @@ import os
 
 from astro_ghost.ghostHelperFunctions import getGHOST
 from astro_ghost.ghostHelperFunctions import getTransientHosts
+
 from astro_ghost.photoz_helper import calc_photoz
 from astropy.coordinates import SkyCoord
 from django.conf import settings

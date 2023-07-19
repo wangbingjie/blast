@@ -78,7 +78,7 @@ def main():
     data = h5py.File(sbi_params["train_fname"], "r")
     x_train = np.array(data["theta"])  # physical parameters
     y_train = np.array(data["phot"])  # fluxes & uncertainties
-    # import pdb; pdb.set_trace()
+
     # we will only need the lower & upper limits to be passed to sbi as "priors"
     # here we simply read in the bounds from the training set
     prior_low = sbi_pp.prior_from_train("ll", x_train=x_train)
