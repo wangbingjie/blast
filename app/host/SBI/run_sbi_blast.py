@@ -118,14 +118,16 @@ sbi_params["hatp_x_y"] = hatp_x_y
 sbi_params["toynoise_meds_sigs"] = meds_sigs
 sbi_params["toynoise_stds_sigs"] = stds_sigs
 
+
 def maggies_to_asinh(x):
     """asinh magnitudes"""
     a = 2.50 * np.log10(np.e)
     mu = 35.0
     return -a * math.asinh((x / 2.0) * np.exp(mu / a)) + mu
 
+
 def fit_sbi_pp(observations):
-    print(len(observations['filternames']))
+    print(len(observations["filternames"]))
     np.random.seed(100)  # make results reproducible
 
     # a testing object of which the noises are OOD
@@ -147,8 +149,12 @@ def fit_sbi_pp(observations):
         filternames = np.append(filternames, f.name)
 
     obs = {}
-    obs["mags"] = mags  ##np.array([maggies_to_asinh(p) for p in observations['maggies']])
-    obs["mags_unc"] = mags_unc  ##2.5/np.log(10)*observations['maggies_unc']/observations['maggies']
+    obs[
+        "mags"
+    ] = mags  ##np.array([maggies_to_asinh(p) for p in observations['maggies']])
+    obs[
+        "mags_unc"
+    ] = mags_unc  ##2.5/np.log(10)*observations['maggies_unc']/observations['maggies']
     obs["redshift"] = observations["redshift"]
 
     # Run SBI++
@@ -157,5 +163,5 @@ def fit_sbi_pp(observations):
     )
 
     # pathological format as we're missing some stuff that prospector usually spits out
-    output = {'sampling':[{'samples':chain[:,1:],'eff':100},0]}
+    output = {"sampling": [{"samples": chain[:, 1:], "eff": 100}, 0]}
     return output
