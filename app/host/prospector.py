@@ -1,30 +1,31 @@
 # Utils and wrappers for the prospector SED fitting code
+import json
 import os
 
 import extinction
+import h5py
 import numpy as np
 import prospect.io.read_results as reader
+from astropy.cosmology import WMAP9 as cosmo
 from django.conf import settings
+from host import postprocess_prosp as pp
+from host.SBI.run_sbi_blast import fit_sbi_pp
 from prospect.fitting import fit_model as fit_model_prospect
 from prospect.fitting import lnprobfn
 from prospect.io import write_results as writer
+from prospect.io.write_results import write_h5_header
+from prospect.io.write_results import write_obs_to_h5
+from prospect.models import priors
 from prospect.models import SpecModel
+from prospect.models.sedmodel import PolySpecModel
 from prospect.models.templates import TemplateLibrary
 from prospect.models.transforms import logsfr_ratios_to_sfrs
 from prospect.models.transforms import zred_to_agebins
 from prospect.sources import CSPSpecBasis
+from prospect.sources import FastStepBasis
 from prospect.utils.obsutils import fix_obs
-from host import postprocess_prosp as pp
 from scipy.special import gamma
 from scipy.special import gammainc
-from prospect.models import priors
-from astropy.cosmology import WMAP9 as cosmo
-from prospect.models.sedmodel import PolySpecModel
-from prospect.sources import FastStepBasis
-from host.SBI.run_sbi_blast import fit_sbi_pp
-import h5py
-import json
-from prospect.io.write_results import write_h5_header, write_obs_to_h5
 
 from .host_utils import get_dust_maps
 from .models import AperturePhotometry
@@ -448,9 +449,7 @@ def fit_model(observations, model_components, fitting_kwargs, sbipp=False):
     """Fit the model"""
 
     if sbipp:
-        output = fit_sbi_pp(
-            observations
-        )            
+        output = fit_sbi_pp(observations)
     else:
         output = fit_model_prospect(
             observations,
@@ -473,34 +472,34 @@ def prospector_result_to_blast(
     observations,
     sed_output_root=settings.SED_OUTPUT_ROOT,
     parametric_sfh=False,
-    sbipp=False
+    sbipp=False,
 ):
 
     # write the results
-    hdf5_file_name = f"{sed_output_root}/{transient.name}/{transient.name}_{aperture.type}.h5"
-    hdf5_file = (
-        hdf5_file_name
+    hdf5_file_name = (
+        f"{sed_output_root}/{transient.name}/{transient.name}_{aperture.type}.h5"
     )
+    hdf5_file = hdf5_file_name
 
     if not os.path.exists(f"{sed_output_root}/{transient.name}"):
         os.makedirs(f"{sed_output_root}/{transient.name}/")
     if os.path.exists(hdf5_file):
         # prospector won't overwrite, which causes problems
         os.remove(hdf5_file)
-    
+
     if sbipp:
 
         hf = h5py.File(hdf5_file_name, "w")
 
-        sdat = hf.create_group('sampling')
-        sdat.create_dataset('chain',
-                            data=prospector_output["sampling"][0]['samples'])
-        sdat.attrs['theta_labels'] = \
-            json.dumps(list(model_components["model"].theta_labels()))
-        
+        sdat = hf.create_group("sampling")
+        sdat.create_dataset("chain", data=prospector_output["sampling"][0]["samples"])
+        sdat.attrs["theta_labels"] = json.dumps(
+            list(model_components["model"].theta_labels())
+        )
+
         # High level parameter and version info
         write_h5_header(hf, {}, model_components["model"])
-        
+
         # ----------------------
         # Observational data
         write_obs_to_h5(hf, observations)
@@ -517,12 +516,12 @@ def prospector_result_to_blast(
             tsample=prospector_output["sampling"][1],
             toptimize=0.0,
         )
-        
+
     # load up the hdf5 file to get the results
     resultpars, obs, _ = reader.results_from(hdf5_file, dangerous=False)
 
     if sbipp:
-        theta_max = np.mean(resultpars['chain'],axis=0)
+        theta_max = np.mean(resultpars["chain"], axis=0)
     else:
         imax = np.argmax(resultpars["lnprobability"])
         csz = resultpars["chain"].shape
@@ -540,27 +539,34 @@ def prospector_result_to_blast(
 
     if not parametric_sfh:
         use_weights = not sbipp
-        pp.run_all(hdf5_file_name, hdf5_file_name.replace('.h5','_chain.npz'),
-                   hdf5_file_name.replace('.h5','_perc.npz'),
-                   model_components["model"].init_config['zred']['init'],
-                   prior='p-alpha', mod_fsps=model_components["model"],
-                   sps=model_components["sps"], percents=[15.9,50,84.1],
-                   use_weights=use_weights,sbipp=sbipp,obs=observations)
-        percentiles = np.load(hdf5_file_name.replace('.h5','_perc.npz'), allow_pickle=True)
-        perc = np.atleast_1d(percentiles['percentiles'])[0]
+        pp.run_all(
+            hdf5_file_name,
+            hdf5_file_name.replace(".h5", "_chain.npz"),
+            hdf5_file_name.replace(".h5", "_perc.npz"),
+            model_components["model"].init_config["zred"]["init"],
+            prior="p-alpha",
+            mod_fsps=model_components["model"],
+            sps=model_components["sps"],
+            percents=[15.9, 50, 84.1],
+            use_weights=use_weights,
+            sbipp=sbipp,
+            obs=observations,
+        )
+        percentiles = np.load(
+            hdf5_file_name.replace(".h5", "_perc.npz"), allow_pickle=True
+        )
+        perc = np.atleast_1d(percentiles["percentiles"])[0]
 
-    
-    logmass16, logmass50, logmass84 = perc['stellar_mass']
-    age16, age50, age84 = perc['mwa']
-    logsfr16, logsfr50, logsfr84 = np.log10(perc['sfr'][0])
-    logssfr16, logssfr50, logssfr84 = np.log10(perc['ssfr'][0])
+    logmass16, logmass50, logmass84 = perc["stellar_mass"]
+    age16, age50, age84 = perc["mwa"]
+    logsfr16, logsfr50, logsfr84 = np.log10(perc["sfr"][0])
+    logssfr16, logssfr50, logssfr84 = np.log10(perc["ssfr"][0])
 
     if parametric_sfh:
         tau = resultpars["chain"][
             ..., np.where(np.array(resultpars["theta_labels"]) == "tau")[0][0]
         ]
         tau16, tau50, tau84 = get_CI(tau)
-
 
     prosp_results = {
         "transient": transient,
