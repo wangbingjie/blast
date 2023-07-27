@@ -89,29 +89,6 @@ p_x_y_estimator.load_state_dict(
 anpe._x_shape = Ut.x_shape_from_simulation(y_tensor)
 hatp_x_y = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
 
-# toy noise model
-meds_sigs, stds_sigs = [], []
-for f in all_filters:
-    toy_noise_x, toy_noise_y = np.loadtxt(
-        f"host/SBI/snrfiles/{f}_magvsnr.txt", dtype=float, unpack=True
-    )
-    meds_sigs += [
-        interp1d(
-            toy_noise_x,
-            1.0857 * 1 / toy_noise_y,
-            kind="slinear",
-            fill_value="extrapolate",
-        )
-    ]
-    stds_sigs += [
-        interp1d(
-            toy_noise_x,
-            1.0857 * 1 / toy_noise_y,
-            kind="slinear",
-            fill_value="extrapolate",
-        )
-    ]
-
 # prepare to pass the reconstructed model to sbi_pp
 sbi_params["y_train"] = y_train
 sbi_params["hatp_x_y"] = hatp_x_y
@@ -130,6 +107,31 @@ def fit_sbi_pp(observations):
     print(len(observations["filternames"]))
     np.random.seed(100)  # make results reproducible
 
+    # toy noise model
+    meds_sigs, stds_sigs = [], []
+
+    for f in all_filters:
+        toy_noise_x, toy_noise_y = np.loadtxt(
+            f"host/SBI/snrfiles/{f.name}_magvsnr.txt", dtype=float, unpack=True
+        )
+        meds_sigs += [
+            interp1d(
+                toy_noise_x,
+                1.0857 * 1 / toy_noise_y,
+                kind="slinear",
+                fill_value="extrapolate",
+            )
+        ]
+        stds_sigs += [
+            interp1d(
+                toy_noise_x,
+                1.0857 * 1 / toy_noise_y,
+                kind="slinear",
+                fill_value="extrapolate",
+            )
+        ]
+
+    
     # a testing object of which the noises are OOD
     mags, mags_unc, filternames = np.array([]), np.array([]), np.array([])
     for f in all_filters:
