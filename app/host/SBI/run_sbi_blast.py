@@ -131,7 +131,6 @@ def fit_sbi_pp(observations):
             )
         ]
 
-    
     # a testing object of which the noises are OOD
     mags, mags_unc, filternames = np.array([]), np.array([]), np.array([])
     for f in all_filters:
