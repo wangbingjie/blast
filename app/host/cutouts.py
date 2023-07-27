@@ -3,6 +3,7 @@ import re
 
 import astropy.table as at
 import astropy.units as u
+import astropy.utils.data
 import numpy as np
 import pandas as pd
 import requests
@@ -507,6 +508,8 @@ def cutout(transient, survey, fov=Quantity(0.1, unit="deg")):
         Image cutout in fits format or if the image cannot be download due to a
         `ReadTimeoutError` None will be returned.
     """
+    # need to make sure the cache doesn't overfill
+    astropy.utils.data.clear_download_cache()
     num_pixels = int(fov.to(u.arcsec).value / survey.pixel_size_arcsec)
 
     if survey.image_download_method == "hips":
