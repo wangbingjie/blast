@@ -3,6 +3,7 @@ import signal
 import sys
 import time
 import warnings
+from django.conf import settings
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 import numpy as np
@@ -44,12 +45,8 @@ run_params = {
 }
 
 sbi_params = {
-    "anpe_fname": "host/SBI/SBI_model.pt",  # trained sbi model
-    "train_fname": "host/SBI/sbi_phot.h5",  # training set
-    "test_fname": "host/SBI/test.i20.npz",  # testing set
-    "noise_fname": "host/SBI/toy_noise_xy.i20.txt",  # toy model used in training
-    # this files contains the median and the 1 sigma values
-    # of uncertainties in magnitude bins
+    "anpe_fname": f"{settings.SBIPP_ROOT}/SBI_model.pt",  # trained sbi model
+    "train_fname": f"{settings.SBIPP_ROOT}/sbi_phot.h5",  # training set
     "nhidden": 500,  # architecture of the trained density estimator
     "nblocks": 15,  # architecture of the trained density estimator
 }
@@ -92,8 +89,6 @@ hatp_x_y = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
 # prepare to pass the reconstructed model to sbi_pp
 sbi_params["y_train"] = y_train
 sbi_params["hatp_x_y"] = hatp_x_y
-sbi_params["toynoise_meds_sigs"] = meds_sigs
-sbi_params["toynoise_stds_sigs"] = stds_sigs
 
 
 def maggies_to_asinh(x):
@@ -130,6 +125,8 @@ def fit_sbi_pp(observations):
                 fill_value="extrapolate",
             )
         ]
+    sbi_params["toynoise_meds_sigs"] = meds_sigs
+    sbi_params["toynoise_stds_sigs"] = stds_sigs
 
     
     # a testing object of which the noises are OOD
