@@ -643,7 +643,7 @@ class HostInformation(TransientTaskRunner):
 class HostSEDFitting(TransientTaskRunner):
     """Task Runner to run host galaxy inference with prospector"""
 
-    def _run_process(self, transient, aperture_type="global", mode="fast", sbipp=False):
+    def _run_process(self, transient, aperture_type="global", mode="fast", sbipp=True):
         """Run the SED-fitting task"""
 
         query = {
