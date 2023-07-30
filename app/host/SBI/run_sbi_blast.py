@@ -128,7 +128,6 @@ def fit_sbi_pp(observations):
     sbi_params["toynoise_meds_sigs"] = meds_sigs
     sbi_params["toynoise_stds_sigs"] = stds_sigs
 
-    
     # a testing object of which the noises are OOD
     mags, mags_unc, filternames = np.array([]), np.array([]), np.array([])
     for f in all_filters:
