@@ -144,8 +144,9 @@ def main():
         dtype=str,
     )[1:]:
         print(transient_name)
-        if transient_name != '2020fhs': continue
-        
+        if transient_name != "2020fhs":
+            continue
+
         np.random.seed(200)  # make results reproducible
         pobs = build_obs(Transient.objects.get(name=transient_name), "global")
 
@@ -185,7 +186,4 @@ def main():
                 ).log_mass_50,
             )
         except:
-            print(
-                transient_name,
-                np.mean(chain[:, 1]),None)
-
+            print(transient_name, np.mean(chain[:, 1]), None)
