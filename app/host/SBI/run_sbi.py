@@ -144,7 +144,8 @@ def main():
         dtype=str,
     )[1:]:
         print(transient_name)
-
+        if transient_name != '2020fhs': continue
+        
         np.random.seed(200)  # make results reproducible
         pobs = build_obs(Transient.objects.get(name=transient_name), "global")
 
@@ -175,10 +176,16 @@ def main():
         chain, obs, flags = sbi_pp.sbi_pp(
             obs=obs, run_params=run_params, sbi_params=sbi_params
         )
-        print(
-            transient_name,
-            np.mean(chain[:, 1]),
-            SEDFittingResult.objects.get(
-                transient__name=transient_name, aperture__type="global"
-            ).log_mass_50,
-        )
+        try:
+            print(
+                transient_name,
+                np.mean(chain[:, 1]),
+                SEDFittingResult.objects.get(
+                    transient__name=transient_name, aperture__type="global"
+                ).log_mass_50,
+            )
+        except:
+            print(
+                transient_name,
+                np.mean(chain[:, 1]),None)
+
