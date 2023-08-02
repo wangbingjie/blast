@@ -139,6 +139,7 @@ SED_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../sed_output")
 GHOST_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../ghost_output")
 TNS_STAGING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../tns_staging")
 TRANSMISSION_CURVES_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../transmission")
+SBIPP_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../sbipp")
 
 CUTOUT_OVERWRITE = os.environ.get("CUTOUT_OVERWRITE", "False")
 
