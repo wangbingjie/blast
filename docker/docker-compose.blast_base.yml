@@ -13,6 +13,7 @@ services:
       - ../data/transmission:/transmission
       - ../data/dustmaps:/dustmaps
       - ../data/fsps/:/fsps
+      - ../data/sbipp/:/sbipp
   nginx_base:
     restart: always
     image: nginx:1.21-alpine
@@ -39,3 +40,4 @@ services:
       - ../data/transmission:/transmission
       - ../data/dustmaps:/dustmaps
       - ../data/fsps/:/fsps
+      - ../data/sbipp/:/sbipp
