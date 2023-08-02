@@ -59,10 +59,10 @@ run_params = {
 }
 
 sbi_params = {
-    "anpe_fname": "host/SBI/SBI_model.pt",  # trained sbi model
-    "train_fname": "host/SBI/sbi_phot.h5",  # training set
-    "test_fname": "host/SBI/test.i20.npz",  # testing set
-    "noise_fname": "host/SBI/toy_noise_xy.i20.txt",  # toy model used in training
+    "anpe_fname": "../data/sbipp/SBI_model.pt",  # trained sbi model
+    "train_fname": "../data/sbipp/sbi_phot.h5",  # training set
+    # "test_fname": "host/SBI/test.i20.npz",  # testing set
+    # "noise_fname": "host/SBI/toy_noise_xy.i20.txt",  # toy model used in training
     # this files contains the median and the 1 sigma values
     # of uncertainties in magnitude bins
     "nhidden": 500,  # architecture of the trained density estimator
@@ -142,7 +142,7 @@ def main():
         usecols=[0],
         delimiter=",",
         dtype=str,
-    )[5:]:
+    )[1:]:
         print(transient_name)
 
         np.random.seed(200)  # make results reproducible
