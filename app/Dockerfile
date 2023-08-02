@@ -2,7 +2,7 @@ FROM python:3.8
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update
-RUN apt-get install ffmpeg libsm6 libxext6 gfortran libhealpix-cxx-dev -y
+RUN apt-get install ffmpeg libsm6 libxext6 gfortran libhealpix-cxx-dev libhdf5-serial-dev netcdf-bin libnetcdf-dev -y
 
 COPY ./requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
