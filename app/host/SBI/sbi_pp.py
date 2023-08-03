@@ -66,6 +66,7 @@ def timeout_handler(signum, frame):
 
 signal.signal(signal.SIGALRM, timeout_handler)
 
+
 def absdiff(mags, obsphot, obsphot_unc):
     """abs difference in photometry"""
 
@@ -80,6 +81,7 @@ def chi2dof(mags, obsphot, obsphot_unc, individual=False):
     else:
         chi2 = np.nansum(((mags - obsphot) / obsphot_unc) ** 2, axis=1)
         return chi2 / np.sum(np.isfinite(obsphot))
+
 
 def gauss_approx_missingband(obs, run_params, sbi_params):
     """nearest neighbor approximation of missing bands;
@@ -192,8 +194,12 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
 
         if not seconditer:
             idx_chi2_selected = np.argsort(chi2_nei)
-            diffs = absdiff(mags=look_in_training, obsphot=y_obs[valid_idx], obsphot_unc=sig_obs[valid_idx])
-            diffs_best = np.sum(diffs[idx_chi2_selected[0:100]],axis=0)
+            diffs = absdiff(
+                mags=look_in_training,
+                obsphot=y_obs[valid_idx],
+                obsphot_unc=sig_obs[valid_idx],
+            )
+            diffs_best = np.sum(diffs[idx_chi2_selected[0:100]], axis=0)
             worst_band = np.where(diffs_best == np.max(diffs_best))[0]
             obs["missing_mask"][worst_band] = True
             print("Failed to find sufficient number of nearest neighbors!")
@@ -204,7 +210,7 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
         chi2_selected = y_train[:, valid_idx][idx_chi2_selected]
         # get distribution of the missing band
         guess_ndata = y_train[:, not_valid_idx][idx_chi2_selected]
-        
+
         if run_params["verbose"]:
             print("Failed to find sufficient number of nearest neighbors!")
             print(
@@ -704,12 +710,16 @@ def sbi_pp(obs, run_params, sbi_params):
 
         res = sbi_missingband(obs=obs, run_params=run_params, sbi_params=sbi_params)
         if len(res) != 5:
-            obs['missing_mask'] = res['missing_mask'][:]
-            res = sbi_missingband(obs=obs, run_params=run_params, sbi_params=sbi_params, seconditer=True)
+            obs["missing_mask"] = res["missing_mask"][:]
+            res = sbi_missingband(
+                obs=obs, run_params=run_params, sbi_params=sbi_params, seconditer=True
+            )
         else:
             if len(res) != 5:
-                raise RuntimeError('couldnt get good chi2 for nearest neighbors.  Aborting')
-        
+                raise RuntimeError(
+                    "couldnt get good chi2 for nearest neighbors.  Aborting"
+                )
+
         (
             ave_theta,
             y_guess,
@@ -717,7 +727,7 @@ def sbi_pp(obs, run_params, sbi_params):
             flags["timeout"],
             flags["nsamp_missing"],
         ) = res
-        
+
         flags["use_res"] = flags["use_res_missing"] * 1
 
     if not flags["missing_data"] and flags["noisy_data"]:
