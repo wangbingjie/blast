@@ -31,7 +31,7 @@ from prospect.utils.obsutils import fix_obs
 from sbi import inference as Inference
 from sbi import utils as Ut
 
-_outfile = os.environ.get('OUTFILE')
+_outfile = os.environ.get("OUTFILE")
 
 # torch
 
@@ -477,7 +477,7 @@ class TrainSBI(CronJobBase):
             build_noise(**kwargs),
         )
 
-    def do(self,do_phot=True,do_train=True):
+    def do(self, do_phot=True, do_train=True):
 
         # parameters
         needed_size = 150000
@@ -526,9 +526,9 @@ class TrainSBI(CronJobBase):
                 for i, f in enumerate(all_filters):
                     # probably gonna have some unit issues here
                     # expand the magnitude range a bit
-                    flag &= \
-                        (predicted_mags[i] >= cat_min[f.name] - 3) & \
-                        (predicted_mags[i] <= cat_max[f.name] + 2)
+                    flag &= (predicted_mags[i] >= cat_min[f.name] - 3) & (
+                        predicted_mags[i] <= cat_max[f.name] + 2
+                    )
 
                 # if all phot is within valid range, we can proceed
                 if not flag:
@@ -575,22 +575,28 @@ class TrainSBI(CronJobBase):
                     pass
 
         if do_train:
-            data = h5py.File('host/SBI/sbi_phot_1.h5', "r")
-            list_thetas,list_phot,list_mfrac,list_phot_wave = np.array(data['theta']),np.array(data['phot']),np.array(data['mfrac']),np.array(data['wphot'])
-            for i in range(2,11):
-                data2 = h5py.File(f'host/SBI/sbi_phot_{i}.h5', "r")
-                list_thetas = np.append(list_thetas,np.array(data2['theta']),axis=0)
-                list_phot = np.append(list_phot,np.array(data2['phot']),axis=0)
-                list_mfrac = np.append(list_mfrac,np.array(data2['mfrac']),axis=0)
-                list_phot_wave = np.append(list_phot_wave,np.array(data2['wphot']),axis=0)
-                hf_phot = h5py.File('host/SBI/sbi_phot.h5', "w")
+            data = h5py.File("host/SBI/sbi_phot_1.h5", "r")
+            list_thetas, list_phot, list_mfrac, list_phot_wave = (
+                np.array(data["theta"]),
+                np.array(data["phot"]),
+                np.array(data["mfrac"]),
+                np.array(data["wphot"]),
+            )
+            for i in range(2, 11):
+                data2 = h5py.File(f"host/SBI/sbi_phot_{i}.h5", "r")
+                list_thetas = np.append(list_thetas, np.array(data2["theta"]), axis=0)
+                list_phot = np.append(list_phot, np.array(data2["phot"]), axis=0)
+                list_mfrac = np.append(list_mfrac, np.array(data2["mfrac"]), axis=0)
+                list_phot_wave = np.append(
+                    list_phot_wave, np.array(data2["wphot"]), axis=0
+                )
+                hf_phot = h5py.File("host/SBI/sbi_phot.h5", "w")
                 hf_phot.create_dataset("wphot", data=list_phot_wave)
                 hf_phot.create_dataset("phot", data=list_phot)
                 hf_phot.create_dataset("mfrac", data=list_mfrac)
                 hf_phot.create_dataset("theta", data=list_thetas)
                 hf_phot.close()
-            
-            
+
             x_train = np.array(list_thetas)
             y_train = np.array(list_phot)
             # now do the training
