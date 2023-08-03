@@ -4,7 +4,7 @@ alabaster==0.7.12
 amqp==5.0.9
 asgiref==3.4.1
 astro-ghost==2.0.2
-astro-prospector==1.0.0
+astro-prospector @ git+https://github.com/bd-j/prospector.git@2fa085d
 astropy==5.0.4
 astroquery==0.4.4
 Babel==2.9.1
