@@ -127,7 +127,7 @@ def tns_to_blast_transient(tns_transient):
         dec_deg=tns_transient["decdeg"],
         tns_prefix=tns_transient["name_prefix"],
         public_timestamp=tns_transient["discoverydate"],
-        spectroscopic_class=tns_transient["object_type"]['name'],
+        spectroscopic_class=tns_transient["object_type"]["name"],
     )
     return blast_transient
 
