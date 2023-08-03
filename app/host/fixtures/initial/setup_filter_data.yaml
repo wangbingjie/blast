@@ -207,8 +207,8 @@
     vosa_id: PAN-STARRS/PS1.i
     image_download_method: custom
     wavelength_eff_angstrom: 7503.68
-    wavelength_min_angstrom: 6778.45
-    wavelength_max_angstrom: 8304.37
+    wavelength_min_angstrom: 6430.00
+    wavelength_max_angstrom: 8630.00
     vega_zero_point_jansky: 2577.03
     ab_offset: 0
     magnitude_zero_point: 25.0
@@ -260,7 +260,7 @@
     image_fwhm_arcsec: 1.26
     vosa_id: SLOAN/SDSS.i
     image_download_method: custom
-    wavelength_eff_angstrom: 4671.78
+    wavelength_eff_angstrom: 7470.60
     wavelength_min_angstrom: 3782.54
     wavelength_max_angstrom: 5549.26
     vega_zero_point_jansky: 3971.19
