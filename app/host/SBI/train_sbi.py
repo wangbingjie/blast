@@ -30,6 +30,7 @@ from prospect.sources import FastStepBasis
 from prospect.utils.obsutils import fix_obs
 from sbi import inference as Inference
 from sbi import utils as Ut
+import os
 
 _outfile = os.environ.get("OUTFILE")
 
@@ -477,7 +478,7 @@ class TrainSBI(CronJobBase):
             build_noise(**kwargs),
         )
 
-    def do(self, do_phot=True, do_train=True):
+    def do(self, do_phot=True, do_train=False):
 
         # parameters
         needed_size = 150000
