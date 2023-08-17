@@ -478,7 +478,7 @@ class TrainSBI(CronJobBase):
             build_noise(**kwargs),
         )
 
-    def do(self, do_phot=True, do_train=False):
+    def do(self, do_phot=False, do_train=True):
 
         # parameters
         needed_size = 150000
