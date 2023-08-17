@@ -3,6 +3,7 @@
 # modified by B. Wang - 6/7/23
 """Implementation of SBI++ training for Blast"""
 import math
+import os
 import pickle
 
 import h5py
@@ -30,7 +31,6 @@ from prospect.sources import FastStepBasis
 from prospect.utils.obsutils import fix_obs
 from sbi import inference as Inference
 from sbi import utils as Ut
-import os
 
 _outfile = os.environ.get("OUTFILE")
 
