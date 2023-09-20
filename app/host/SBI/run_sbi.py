@@ -8,6 +8,7 @@ import time
 import warnings
 
 from host.models import SEDFittingResult
+from host.prospector import build_model, build_obs
 
 # recommend running the full script without the line below first
 # if an error is threw, then uncomment this line
@@ -51,8 +52,8 @@ run_params = {
     "max_chi2": 500,  # the maximum chi^2 to reach in case we Incremently increase the chi^2
     # in the case of insufficient neighbors
     "noisy_sig": 3,  # deviation from the noise model, above which the measuremnt is taked as OOD
-    "tmax_per_obj": 120000,  # max time spent on one object / mc sample in secs
-    "tmax_all": 600000,  # max time spent on all mc samples in mins
+    "tmax_per_obj": 1200,  # max time spent on one object / mc sample in secs
+    "tmax_all": 40,  # max time spent on all mc samples in mins
     "outdir": "output",  # output directory
     "verbose": True,
     "tmax_per_iter": 20,
@@ -70,7 +71,6 @@ sbi_params = {
 }
 
 all_filters = Filter.objects.filter(~Q(name="DES_i") & ~Q(name="DES_Y"))
-
 
 def main():
 
@@ -142,7 +142,7 @@ def main():
         usecols=[0],
         delimiter=",",
         dtype=str,
-    )[1:]:
+    )[36:]:
         print(transient_name)
 
         np.random.seed(200)  # make results reproducible
@@ -167,21 +167,44 @@ def main():
             filternames = np.append(filternames, f.name)
 
         obs = {}
+        obs["bands"] = filternames
         obs["mags"] = mags  ##np.array([maggies_to_asinh(p) for p in pobs['maggies']])
         obs["mags_unc"] = mags_unc  ##2.5/np.log(10)*pobs['maggies_unc']/pobs['maggies']
         obs["redshift"] = pobs["redshift"]
-
+        ###obs["mags"][np.where(filternames == 'WISE_W3')[0][0]] = np.nan
         # Run SBI++
+        #signal.alarm(0)
+        #signal.alarm(600)
+        #try:
+        t = time.time()
         chain, obs, flags = sbi_pp.sbi_pp(
             obs=obs, run_params=run_params, sbi_params=sbi_params
         )
-        try:
-            print(
-                transient_name,
-                np.mean(chain[:, 1]),
-                SEDFittingResult.objects.get(
-                    transient__name=transient_name, aperture__type="global"
-                ).log_mass_50,
-            )
-        except:
-            print(transient_name, np.mean(chain[:, 1]), None)
+        print(f"SBI took {time.time()-t:.0f} seconds")
+
+        transient = Transient.objects.get(name=transient_name)
+        observations = build_obs(transient, "global")
+        model_components = build_model(observations)
+        theta_max = np.mean(chain[:,1:], axis=0)
+        _, _, mfrac = model_components["model"].predict(
+            theta_max, obs=observations, sps=model_components["sps"]
+        )
+        
+        #signal.alarm(0)
+        #except TimeoutException:
+        #    print('too slow!')
+        #    signal.alarm(0)
+        #    continue
+        signal.alarm(0)
+        with open('masses.txt','a') as fout:
+            try:
+                print(
+                    transient_name,
+                    np.mean(chain[:, 1]),mfrac,
+                    SEDFittingResult.objects.get(
+                        transient__name=transient_name, aperture__type="global"
+                    ).log_mass_50,
+                    file=fout)
+            except:
+                print(transient_name, np.mean(chain[:, 1]), mfrac, None,file=fout)
+                

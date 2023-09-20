@@ -643,7 +643,7 @@ class HostInformation(TransientTaskRunner):
 class HostSEDFitting(TransientTaskRunner):
     """Task Runner to run host galaxy inference with prospector"""
 
-    def _run_process(self, transient, aperture_type="global", mode="fast", sbipp=True):
+    def _run_process(self, transient, aperture_type="global", mode="fast", sbipp=True, save=True):
         """Run the SED-fitting task"""
 
         query = {
@@ -709,9 +709,11 @@ class HostSEDFitting(TransientTaskRunner):
                 observations,
                 sbipp=sbipp,
             )
-
-        pr = SEDFittingResult.objects.create(**prosp_results)
-
+        if save:
+            pr = SEDFittingResult.objects.create(**prosp_results)
+        else:
+            print('printing results')
+            print(prosp_results)
         return "processed"
 
 
@@ -779,9 +781,9 @@ class GlobalHostSEDFitting(HostSEDFitting):
         """
         return "failed"
 
-    def _run_process(self, transient, mode="fast"):
+    def _run_process(self, transient, mode="fast", save=True):
         """Run the SED-fitting task"""
 
-        super()._run_process(transient, aperture_type="global", mode=mode)
+        super()._run_process(transient, aperture_type="global", mode=mode, save=save)
 
         return "processed"

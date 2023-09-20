@@ -56,6 +56,13 @@ tasks_classes_in_order = [
     host.transient_tasks.LocalHostSEDFitting(),
 ]
 
+tasks_sed = [
+    "Global host SED inference",
+]
+tasks_sed_classes = [
+    host.transient_tasks.GlobalHostSEDFitting(),
+]
+
 
 class run_single(CronJobBase):
 
@@ -104,6 +111,63 @@ class run_single(CronJobBase):
                     task_register.status = Status.objects.get(message="not processed")
                     try:
                         status = t.run_process(task_register)
+                    except Exception as e:
+                        print(e)
+                        # import pdb; pdb.set_trace()
+                        # status = tc._run_process(transient)
+                        # task_register.status = Status.objects.get(message=status)
+                        # task_register.save()
+                        raise e
+
+                    break
+
+class run_single_sed(CronJobBase):
+
+    RUN_EVERY_MINS = 3
+
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = "host.slurm.run_single_transient.run_single"
+
+    def do(self):
+
+        self.run()
+
+    def run(self):
+
+        transients = Transient.objects.filter(name=transient_name)
+        if not len(transients):
+            transient = Transient.objects.create(
+                name=transient_name,
+                ra_deg=transient_ra,
+                dec_deg=transient_dec,
+                tns_id=1,
+                redshift=transient_redshift,
+            )
+        else:
+            transient = transients[0]
+
+        for to, tc in zip(tasks_sed, tasks_sed_classes):
+            for t in tasks.periodic_tasks:
+                if t.task_name == to:
+                    task = Task.objects.get(name__exact=t.task_name)
+                    task_register = TaskRegister.objects.all()
+                    task_register = task_register.filter(transient=transient, task=task)
+
+                    if not len(task_register):
+                        task_register = TaskRegister.objects.create(
+                            transient=transient,
+                            task=task,
+                            status=Status.objects.get(message="not processed"),
+                            last_modified=datetime.datetime.now(),
+                            last_processing_time_seconds=0,
+                        )
+                    else:
+                        task_register = task_register[0]
+
+                    # if task_register.status.message != 'processed':
+                    task_register.status = Status.objects.get(message="not processed")
+                    try:
+                        status = t.run_process(task_register,save=False)
                     except Exception as e:
                         print(e)
                         # import pdb; pdb.set_trace()
