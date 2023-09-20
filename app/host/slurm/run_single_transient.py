@@ -121,6 +121,7 @@ class run_single(CronJobBase):
 
                     break
 
+
 class run_single_sed(CronJobBase):
 
     RUN_EVERY_MINS = 3
@@ -167,7 +168,7 @@ class run_single_sed(CronJobBase):
                     # if task_register.status.message != 'processed':
                     task_register.status = Status.objects.get(message="not processed")
                     try:
-                        status = t.run_process(task_register,save=False)
+                        status = t.run_process(task_register, save=False)
                     except Exception as e:
                         print(e)
                         # import pdb; pdb.set_trace()

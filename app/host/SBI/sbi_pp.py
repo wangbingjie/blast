@@ -204,7 +204,7 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
             obs["missing_mask"][worst_band] = True
             print("Failed to find sufficient number of nearest neighbors!")
             print(f"Trying again after dropping band {worst_band[0]}")
-            obs["sbi_flag"] = 'chi2 fail'
+            obs["sbi_flag"] = "chi2 fail"
             return obs
 
         idx_chi2_selected = np.argsort(chi2_nei)[0:100]
@@ -252,8 +252,8 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
             # D. Jones edit
             idx_neighbor = np.random.choice(range(len(guess_ndata.T[0])))
             for j, idx in enumerate(not_valid_idx):  ##range(len(not_valid_idx)):
-                #import pdb; pdb.set_trace()
-                #x[not_valid_idx[j]] = guess_ndata.T[j,idx_neighbor] + \
+                # import pdb; pdb.set_trace()
+                # x[not_valid_idx[j]] = guess_ndata.T[j,idx_neighbor] + \
                 #    np.random.normal(loc=0,scale=sbi_params["toynoise_meds_sigs"][idx](guess_ndata.T[j,idx_neighbor])
                 #    )
                 x[not_valid_idx[j]] = kdes[j].resample(size=1)
@@ -412,7 +412,7 @@ def sbi_mcnoise(obs, run_params, sbi_params):
         # ensure positive uncertainties
         _nnflag = False
         for ii, this_noisy_flux in enumerate(samp_y_guess[noisy_idx]):
-            #print(lims[0][ii], lims[1][ii])
+            # print(lims[0][ii], lims[1][ii])
             if this_noisy_flux > lims[0][ii] and this_noisy_flux < lims[1][ii]:
                 _nnflag &= True
             else:
@@ -714,56 +714,71 @@ def sbi_pp(obs, run_params, sbi_params):
             flags["nsamp_noisy"],
         ) = sbi_missing_and_noisy(obs=obs, run_params=run_params, sbi_params=sbi_params)
         if flags["timeout"]:
-            for i,mask in enumerate([(obs["bands"] == 'WISE_W3') | (obs["bands"] == 'WISE_W4'),
-                                     (obs["bands"] == 'WISE_W1') | (obs["bands"] == 'WISE_W2'),
-                                     (obs["bands"] == 'GALEX_NUV') | (obs["bands"] == 'GALEX_FUV')]):
-                print('timeout!  trying without some filters')
-                if i == 2: run_params['tmax_all'] *= 3
+            for i, mask in enumerate(
+                [
+                    (obs["bands"] == "WISE_W3") | (obs["bands"] == "WISE_W4"),
+                    (obs["bands"] == "WISE_W1") | (obs["bands"] == "WISE_W2"),
+                    (obs["bands"] == "GALEX_NUV") | (obs["bands"] == "GALEX_FUV"),
+                ]
+            ):
+                print("timeout!  trying without some filters")
+                if i == 2:
+                    run_params["tmax_all"] *= 3
                 obs["missing_mask"][mask] = True
                 (
                     ave_theta,
                     flags["use_res"],
                     flags["timeout"],
                     flags["nsamp_noisy"],
-                ) = sbi_missing_and_noisy(obs=obs, run_params=run_params, sbi_params=sbi_params)
-                if not flags["timeout"]: break
-                
+                ) = sbi_missing_and_noisy(
+                    obs=obs, run_params=run_params, sbi_params=sbi_params
+                )
+                if not flags["timeout"]:
+                    break
+
     # separate cases
     if flags["missing_data"] and not flags["noisy_data"]:
-        res = sbi_missingband(obs=obs, run_params=run_params, sbi_params=sbi_params, seconditer=True)
-        #if len(res) != 5:
+        res = sbi_missingband(
+            obs=obs, run_params=run_params, sbi_params=sbi_params, seconditer=True
+        )
+        # if len(res) != 5:
         #    if sbi_flag == "chi2 fail":
         #        obs["missing_mask"] = res["missing_mask"][:]
         #        res = sbi_missingband(
         #            obs=obs, run_params=run_params, sbi_params=sbi_params, seconditer=True
-        #        )                
-        #else:
+        #        )
+        # else:
         # if things timed out, then we should try dropping
         # some problematic filters
-        (
-            ave_theta,
-            flags["use_res"],
-            flags["nsamp_noisy"],
-            flags["timeout"],
-            cnt
-        ) = res
+        (ave_theta, flags["use_res"], flags["nsamp_noisy"], flags["timeout"], cnt) = res
         if flags["timeout"]:
-            for i,mask in enumerate([(obs["bands"] == 'WISE_W3') | (obs["bands"] == 'WISE_W4'),
-                                     (obs["bands"] == 'WISE_W1') | (obs["bands"] == 'WISE_W2'),
-                                     (obs["bands"] == 'GALEX_NUV') | (obs["bands"] == 'GALEX_FUV')]):
-                print('timeout!  trying without some filters')
-                if i == 2: run_params['tmax_all'] *= 3
-                    
+            for i, mask in enumerate(
+                [
+                    (obs["bands"] == "WISE_W3") | (obs["bands"] == "WISE_W4"),
+                    (obs["bands"] == "WISE_W1") | (obs["bands"] == "WISE_W2"),
+                    (obs["bands"] == "GALEX_NUV") | (obs["bands"] == "GALEX_FUV"),
+                ]
+            ):
+                print("timeout!  trying without some filters")
+                if i == 2:
+                    run_params["tmax_all"] *= 3
+
                 obs["missing_mask"][mask] = True
                 (
                     ave_theta,
                     flags["use_res"],
                     flags["nsamp_noisy"],
                     flags["timeout"],
-                    cnt
-                ) = sbi_missingband(obs=obs, run_params=run_params, sbi_params=sbi_params,seconditer=True)
-                if not flags["timeout"]: break
-            
+                    cnt,
+                ) = sbi_missingband(
+                    obs=obs,
+                    run_params=run_params,
+                    sbi_params=sbi_params,
+                    seconditer=True,
+                )
+                if not flags["timeout"]:
+                    break
+
             if len(res) != 5:
                 raise RuntimeError(
                     "couldnt get good chi2 for nearest neighbors.  Aborting"
@@ -785,8 +800,8 @@ def sbi_pp(obs, run_params, sbi_params):
             ave_theta,
             flags["use_res_noisy"],
             flags["timeout"],
-###            flags["nsamp_noisy"],
-            cnt
+            ###            flags["nsamp_noisy"],
+            cnt,
         ) = sbi_mcnoise(obs=obs, run_params=run_params, sbi_params=sbi_params)
         flags["use_res"] = flags["use_res_noisy"] * 1
 

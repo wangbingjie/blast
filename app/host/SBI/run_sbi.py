@@ -8,7 +8,8 @@ import time
 import warnings
 
 from host.models import SEDFittingResult
-from host.prospector import build_model, build_obs
+from host.prospector import build_model
+from host.prospector import build_obs
 
 # recommend running the full script without the line below first
 # if an error is threw, then uncomment this line
@@ -71,6 +72,7 @@ sbi_params = {
 }
 
 all_filters = Filter.objects.filter(~Q(name="DES_i") & ~Q(name="DES_Y"))
+
 
 def main():
 
@@ -173,9 +175,9 @@ def main():
         obs["redshift"] = pobs["redshift"]
         ###obs["mags"][np.where(filternames == 'WISE_W3')[0][0]] = np.nan
         # Run SBI++
-        #signal.alarm(0)
-        #signal.alarm(600)
-        #try:
+        # signal.alarm(0)
+        # signal.alarm(600)
+        # try:
         t = time.time()
         chain, obs, flags = sbi_pp.sbi_pp(
             obs=obs, run_params=run_params, sbi_params=sbi_params
@@ -185,26 +187,27 @@ def main():
         transient = Transient.objects.get(name=transient_name)
         observations = build_obs(transient, "global")
         model_components = build_model(observations)
-        theta_max = np.mean(chain[:,1:], axis=0)
+        theta_max = np.mean(chain[:, 1:], axis=0)
         _, _, mfrac = model_components["model"].predict(
             theta_max, obs=observations, sps=model_components["sps"]
         )
-        
-        #signal.alarm(0)
-        #except TimeoutException:
+
+        # signal.alarm(0)
+        # except TimeoutException:
         #    print('too slow!')
         #    signal.alarm(0)
         #    continue
         signal.alarm(0)
-        with open('masses.txt','a') as fout:
+        with open("masses.txt", "a") as fout:
             try:
                 print(
                     transient_name,
-                    np.mean(chain[:, 1]),mfrac,
+                    np.mean(chain[:, 1]),
+                    mfrac,
                     SEDFittingResult.objects.get(
                         transient__name=transient_name, aperture__type="global"
                     ).log_mass_50,
-                    file=fout)
+                    file=fout,
+                )
             except:
-                print(transient_name, np.mean(chain[:, 1]), mfrac, None,file=fout)
-                
+                print(transient_name, np.mean(chain[:, 1]), mfrac, None, file=fout)
