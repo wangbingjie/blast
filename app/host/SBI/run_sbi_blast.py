@@ -53,11 +53,29 @@ sbi_params = {
 }
 
 all_filters = Filter.objects.filter(~Q(name="DES_i") & ~Q(name="DES_Y"))
-uv_filters = ['GALEX_NUV','GALEX_FUV','SDSS_u','DES_u']
-opt_filters = ['SDSS_g','SDSS_r','SDSS_i','SDSS_z',
-               'PanSTARRS_g','PanSTARRS_r','PanSTARRS_i','PanSTARRS_z','PanSTARRS_y',
-               'DES_g','DES_r']
-ir_filters = ['WISE_W1','WISE_W2','WISE_W3','WISE_W4','2MASS_J','2MASS_H','2MASS_K']
+uv_filters = ["GALEX_NUV", "GALEX_FUV", "SDSS_u", "DES_u"]
+opt_filters = [
+    "SDSS_g",
+    "SDSS_r",
+    "SDSS_i",
+    "SDSS_z",
+    "PanSTARRS_g",
+    "PanSTARRS_r",
+    "PanSTARRS_i",
+    "PanSTARRS_z",
+    "PanSTARRS_y",
+    "DES_g",
+    "DES_r",
+]
+ir_filters = [
+    "WISE_W1",
+    "WISE_W2",
+    "WISE_W3",
+    "WISE_W4",
+    "2MASS_J",
+    "2MASS_H",
+    "2MASS_K",
+]
 
 # training set
 data = h5py.File(sbi_params["train_fname"], "r")
@@ -104,7 +122,7 @@ def maggies_to_asinh(x):
     return -a * math.asinh((x / 2.0) * np.exp(mu / a)) + mu
 
 
-def fit_sbi_pp(observations,n_filt_cuts=True):
+def fit_sbi_pp(observations, n_filt_cuts=True):
     print(len(observations["filternames"]))
     np.random.seed(100)  # make results reproducible
 
@@ -137,7 +155,7 @@ def fit_sbi_pp(observations,n_filt_cuts=True):
     # a testing object of which the noises are OOD
     mags, mags_unc, filternames = np.array([]), np.array([]), np.array([])
 
-    has_uv,has_opt,has_ir = False,False,False
+    has_uv, has_opt, has_ir = False, False, False
     for f in all_filters:
         if f.name in observations["filternames"]:
             iflt = np.array(observations["filternames"]) == f.name
@@ -175,9 +193,9 @@ def fit_sbi_pp(observations,n_filt_cuts=True):
     )
 
     if n_filt_cuts and (not has_ir or not has_uv or not has_opt):
-        print('not enough filters for reliable/fast inference')
-        return {},1
-    
+        print("not enough filters for reliable/fast inference")
+        return {}, 1
+
     # pathological format as we're missing some stuff that prospector usually spits out
     output = {"sampling": [{"samples": chain[:, 1:], "eff": 100}, 0]}
-    return output,0
+    return output, 0
