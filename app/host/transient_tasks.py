@@ -688,9 +688,12 @@ class HostSEDFitting(TransientTaskRunner):
             )
 
         print("starting model fit")
-        posterior = fit_model(
+        posterior,errflag = fit_model(
             observations, model_components, fitting_settings, sbipp=sbipp
         )
+        if errflag:
+            return "failed"
+        
         if mode == "test":
             prosp_results = prospector_result_to_blast(
                 transient,
