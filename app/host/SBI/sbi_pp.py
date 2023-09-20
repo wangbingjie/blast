@@ -287,7 +287,7 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
             if run_params["verbose"]:
                 if cnt % 10 == 0:
                     print("mc samples:", cnt)
-
+                    
         except TimeoutException:
             cnt_timeout += 1
         else:
@@ -296,7 +296,8 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
         # set max time
         et = time.time()
         elapsed_time = et - st  # in secs
-        if elapsed_time / 60 > run_params["tmax_all"]:
+        if elapsed_time / 60 > run_params["tmax_all"] or \
+           (cnt < run_params["nmc"]/10 and elapsed_time / 60 * 10 > run_params["tmax_all"]):
             timeout_flag = True
             use_res = False
             break
@@ -448,7 +449,8 @@ def sbi_mcnoise(obs, run_params, sbi_params):
         # end time
         et = time.time()
         elapsed_time = et - st  # in secs
-        if elapsed_time / 60 > run_params["tmax_all"]:
+        if elapsed_time / 60 > run_params["tmax_all"]  or \
+           (cnt < run_params["nmc"]/10 and elapsed_time / 60 * 10 > run_params["tmax_all"]):
             timeout_flag = True
             use_res = False
             break
@@ -555,7 +557,8 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
         # end time
         et = time.time()
         elapsed_time = et - st  # in secs
-        if elapsed_time / 60 > run_params["tmax_all"]:
+        if elapsed_time / 60 > run_params["tmax_all"] or \
+           (cnt < run_params["nmc"]/10 and elapsed_time / 60 * 10 > run_params["tmax_all"]):
             timeout_flag = 1
             use_res = 0
             break
