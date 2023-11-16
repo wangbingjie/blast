@@ -286,17 +286,17 @@ def WISE_cutout(position, image_size=None, filter=None):
             break
 
     # remove the AWS crap messing up the CSV format
-    line_out = ''
-    for line in r.text.split('\n'):
+    line_out = ""
+    for line in r.text.split("\n"):
         try:
-            idx1 = line.index('{')
+            idx1 = line.index("{")
         except ValueError:
-            line_out += line[:]+'\n'
+            line_out += line[:] + "\n"
             continue
-        idx2 = line.index('}')
-        newline = line[0:idx1+1] + line[idx2:] + '\n'
+        idx2 = line.index("}")
+        newline = line[0 : idx1 + 1] + line[idx2:] + "\n"
         line_out += newline
-        
+
     data = at.Table.read(line_out, format="ascii.csv")
     exptime = data["t_exptime"][0]
 
@@ -448,7 +448,7 @@ def SDSS_cutout(position, image_size=None, filter=None):
     url = f"https://dr12.sdss.org/fields/raDec?ra={position.ra.deg}&dec={position.dec.deg}"
     print(url)
     rt = requests.get(url)
-    
+
     # a little latency so that we don't look like a bot to SDSS?
     time.sleep(1)
     if "Error: Couldn't find field covering" in rt.text:
