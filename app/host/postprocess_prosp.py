@@ -305,9 +305,9 @@ def run_all(
         modphots_all.append(modmags)  # model photometry
         modspecs_all.append(modspec)  # model spectrum
         _mass = res["chain"][int(_subidx)][mass_idx]
-        stellarmass.append(np.log10(10**_mass)) # * sm))
+        stellarmass.append(np.log10(10**_mass))  # * sm))
         ssfr.append(
-            chains["sfr"][i] / 10**_mass #* sm
+            chains["sfr"][i] / 10**_mass  # * sm
         )  # sfr chains are already sub-sampled
 
     stellarmass = np.array(stellarmass)

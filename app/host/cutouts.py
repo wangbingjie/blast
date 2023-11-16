@@ -194,7 +194,7 @@ def panstarrs_cutout(position, image_size=None, filter=None):
             f"{service}ra={position.ra.degree}&dec={position.dec.degree}"
             f"&size={image_size}&format=fits&red={filename}"
         )
-        fits_image = fits.open(fits_url,cache=None)
+        fits_image = fits.open(fits_url, cache=None)
     else:
         fits_image = None
 
@@ -241,7 +241,7 @@ def galex_cutout(position, image_size=None, filter=None):
             .replace("-rr.fits.gz", "-int.fits.gz")
             .replace("-cnt.fits.gz", "-int.fits.gz")
             .replace("-xd-mcat.fits.gz", f"-{filter[0].lower()}d-int.fits.gz"),
-            cache=None
+            cache=None,
         )
 
         wcs = WCS(fits_image[0].header)
@@ -302,7 +302,7 @@ def WISE_cutout(position, image_size=None, filter=None):
     exptime = data["t_exptime"][0]
 
     if url is not None:
-        fits_image = fits.open(url,cache=None)
+        fits_image = fits.open(url, cache=None)
 
         wcs = WCS(fits_image[0].header)
         cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
@@ -349,7 +349,9 @@ def DES_cutout(position, image_size=None, filter=None):
         # we need both the depth and the image
         time.sleep(1)
         try:
-            fits_image = fits.open(valid_urls[0].replace("-depth-", "-image-"),cache=None)
+            fits_image = fits.open(
+                valid_urls[0].replace("-depth-", "-image-"), cache=None
+            )
         except:
             ### found some bad links...
             return None
@@ -357,7 +359,7 @@ def DES_cutout(position, image_size=None, filter=None):
             # no idea what's happening here but this is a mess
             return None
 
-        depth_image = fits.open(valid_urls[0],cache=None)
+        depth_image = fits.open(valid_urls[0], cache=None)
         wcs_depth = WCS(depth_image[0].header)
         xc, yc = wcs_depth.wcs_world2pix(position.ra.deg, position.dec.deg, 0)
 
@@ -404,7 +406,7 @@ def TWOMASS_cutout(position, image_size=None, filter=None):
         if re.match(f"https://irsa.*{filter.lower()}i.*fits", line.split("]]>")[0]):
             fitsurl = line.split("]]")[0]
 
-            fits_image = fits.open(fitsurl,cache=None)
+            fits_image = fits.open(fitsurl, cache=None)
             wcs = WCS(fits_image[0].header)
 
             if position.contained_by(wcs):
@@ -483,7 +485,7 @@ def SDSS_cutout(position, image_size=None, filter=None):
         band=filter,
     )
 
-    fits_image = fits.open(link,cache=None)
+    fits_image = fits.open(link, cache=None)
 
     wcs = WCS(fits_image[0].header)
     cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
