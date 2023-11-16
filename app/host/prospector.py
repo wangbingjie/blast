@@ -449,7 +449,7 @@ def fit_model(observations, model_components, fitting_kwargs, sbipp=False):
     """Fit the model"""
 
     if sbipp:
-        output,errflag = fit_sbi_pp(observations)
+        output, errflag = fit_sbi_pp(observations)
     else:
         output = fit_model_prospect(
             observations,
@@ -462,7 +462,7 @@ def fit_model(observations, model_components, fitting_kwargs, sbipp=False):
             **fitting_kwargs,
         )
         errflag = 0
-    return output,errflag
+    return output, errflag
 
 
 def prospector_result_to_blast(
