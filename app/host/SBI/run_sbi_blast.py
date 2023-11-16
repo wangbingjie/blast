@@ -174,9 +174,9 @@ def fit_sbi_pp(observations,n_filt_cuts=True):
         obs=obs, run_params=run_params, sbi_params=sbi_params
     )
 
-    if n_filt_cuts and (not has_ir or not has_uv or not has_opt):
-        print('not enough filters for reliable/fast inference')
-        return {},1
+    #if n_filt_cuts and (not has_ir or not has_uv or not has_opt):
+    #    print('not enough filters for reliable/fast inference')
+    #    return {},1
     
     # pathological format as we're missing some stuff that prospector usually spits out
     output = {"sampling": [{"samples": chain[:, 1:], "eff": 100}, 0]}
