@@ -35,7 +35,7 @@
                 {% if item.user_warning %}
                   <button style="margin-bottom:5px;" type="button" class="report" onclick="window.open('{% url 'resolve_issue' item.pk %}','_self')">
                     <span>Resolve</span>
-                  </button>                  
+                  </button>
 		{% else %}
                   <button style="margin-bottom:5px;" type="button" class="report" onclick="window.open('{% url 'report_issue' item.pk %}','_self')">
                     <span>Report</span>
