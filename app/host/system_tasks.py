@@ -67,7 +67,7 @@ class TNSDataIngestion(SystemTaskRunner):
     
     @property
     def task_initially_enabled(self):
-        return False
+        return True
 
 
 class InitializeTransientTasks(SystemTaskRunner):
