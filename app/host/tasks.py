@@ -23,7 +23,10 @@ from .transient_tasks import TransientInformation
 from .transient_tasks import ValidateGlobalPhotometry
 from .transient_tasks import ValidateLocalPhotometry
 
+import time
+
 periodic_tasks = [
+    TNSDataIngestion(),
     MWEBV_Transient(),
     Ghost(),
     MWEBV_Host(),
@@ -37,7 +40,6 @@ periodic_tasks = [
     HostInformation(),
     GlobalHostSEDFitting(),
     LocalHostSEDFitting(),
-    TNSDataIngestion(),
     InitializeTransientTasks(),
     IngestMissedTNSTransients(),
     DeleteGHOSTFiles(),
@@ -47,4 +49,11 @@ periodic_tasks = [
 
 for task in periodic_tasks:
     func_name = task.task_name.replace(" ", "_").lower()
-    exec(f"@shared_task\ndef {func_name}(): {type(task).__name__}().run_process()")
+    exec(f"""
+@shared_task(time_limit=3800,soft_time_limit=3600)
+def {func_name}():
+
+    {type(task).__name__}().run_process()
+
+    return
+""")

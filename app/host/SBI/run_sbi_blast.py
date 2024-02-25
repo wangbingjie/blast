@@ -42,12 +42,14 @@ run_params = {
     "tmax_all": 600000,  # max time spent on all mc samples in mins
     "outdir": "output",  # output directory
     "verbose": True,
-    "tmax_per_iter": 20,
+    "tmax_per_iter": 60,
 }
 
 sbi_params = {
-    "anpe_fname": f"{settings.SBIPP_ROOT}/SBI_model.pt",  # trained sbi model
-    "train_fname": f"{settings.SBIPP_ROOT}/sbi_phot.h5",  # training set
+    "anpe_fname_global": f"{settings.SBIPP_ROOT}/SBI_model_global.pt",  # trained sbi model
+    "train_fname_global": f"{settings.SBIPP_ROOT}/sbi_phot_global.h5",  # training set
+    "anpe_fname_local": f"{settings.SBIPP_ROOT}/SBI_model_local.pt",  # trained sbi model
+    "train_fname_local": f"{settings.SBIPP_ROOT}/sbi_phot_local.h5",  # training set
     "nhidden": 500,  # architecture of the trained density estimator
     "nblocks": 15,  # architecture of the trained density estimator
 }
@@ -78,42 +80,46 @@ ir_filters = [
 ]
 
 # training set
-data = h5py.File(sbi_params["train_fname"], "r")
-x_train = np.array(data["theta"])  # physical parameters
-y_train = np.array(data["phot"])  # fluxes & uncertainties
+### --- GLOBAL --- ###
+for _fit_type in ["global","local"]:
+    data = h5py.File(sbi_params[f"train_fname_{_fit_type}"], "r")
+    x_train = np.array(data["theta"])  # physical parameters
+    y_train = np.array(data["phot"])  # fluxes & uncertainties
+        
+    # we will only need the lower & upper limits to be passed to sbi as "priors"
+    # here we simply read in the bounds from the training set
+    prior_low = sbi_pp.prior_from_train("ll", x_train=x_train)
+    prior_high = sbi_pp.prior_from_train("ul", x_train=x_train)
+    lower_bounds = torch.tensor(prior_low).to(device)
+    upper_bounds = torch.tensor(prior_high).to(device)
+    prior = Ut.BoxUniform(low=lower_bounds, high=upper_bounds, device=device)
 
-# we will only need the lower & upper limits to be passed to sbi as "priors"
-# here we simply read in the bounds from the training set
-prior_low = sbi_pp.prior_from_train("ll", x_train=x_train)
-prior_high = sbi_pp.prior_from_train("ul", x_train=x_train)
-lower_bounds = torch.tensor(prior_low).to(device)
-upper_bounds = torch.tensor(prior_high).to(device)
-prior = Ut.BoxUniform(low=lower_bounds, high=upper_bounds, device=device)
-
-# density estimater
-anpe = Inference.SNPE(
-    prior=prior,
-    density_estimator=Ut.posterior_nn(
-        "maf",
-        hidden_features=sbi_params["nhidden"],
-        num_transforms=sbi_params["nblocks"],
-    ),
-    device=device,
-)
-x_tensor = torch.as_tensor(x_train.astype(np.float32)).to(device)
-y_tensor = torch.as_tensor(y_train.astype(np.float32)).to(device)
-anpe.append_simulations(x_tensor, y_tensor)
-p_x_y_estimator = anpe._build_neural_net(x_tensor, y_tensor)
-p_x_y_estimator.load_state_dict(
-    torch.load(sbi_params["anpe_fname"], map_location=torch.device(device))
-)
-anpe._x_shape = Ut.x_shape_from_simulation(y_tensor)
-hatp_x_y = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
-
-# prepare to pass the reconstructed model to sbi_pp
-sbi_params["y_train"] = y_train
-sbi_params["hatp_x_y"] = hatp_x_y
-
+    # density estimater
+    anpe = Inference.SNPE(
+        prior=prior,
+        density_estimator=Ut.posterior_nn(
+            "maf",
+            hidden_features=sbi_params["nhidden"],
+            num_transforms=sbi_params["nblocks"],
+        ),
+        device=device,
+    )
+    x_tensor = torch.as_tensor(x_train.astype(np.float32)).to(device)
+    y_tensor = torch.as_tensor(y_train.astype(np.float32)).to(device)
+    anpe.append_simulations(x_tensor, y_tensor)
+    p_x_y_estimator = anpe._build_neural_net(x_tensor, y_tensor)
+    p_x_y_estimator.load_state_dict(
+        torch.load(sbi_params[f"anpe_fname_{_fit_type}"], map_location=torch.device(device))
+    )
+    anpe._x_shape = Ut.x_shape_from_simulation(y_tensor)
+    if _fit_type == "global":
+        hatp_x_y_global = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
+        y_train_global = y_train[:]
+        x_train_global = x_train[:]
+    elif _fit_type == "local":
+        hatp_x_y_local = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
+        y_train_local = y_train[:]
+        x_train_local = x_train[:]
 
 def maggies_to_asinh(x):
     """asinh magnitudes"""
@@ -122,8 +128,7 @@ def maggies_to_asinh(x):
     return -a * math.asinh((x / 2.0) * np.exp(mu / a)) + mu
 
 
-def fit_sbi_pp(observations, n_filt_cuts=True):
-    print(len(observations["filternames"]))
+def fit_sbi_pp(observations, n_filt_cuts=True, fit_type="global"):
     np.random.seed(100)  # make results reproducible
 
     # toy noise model
@@ -138,7 +143,8 @@ def fit_sbi_pp(observations, n_filt_cuts=True):
                 toy_noise_x,
                 1.0857 * 1 / toy_noise_y,
                 kind="slinear",
-                fill_value="extrapolate",
+                fill_value='extrapolate', #(0.01,1.0),
+                bounds_error=False
             )
         ]
         stds_sigs += [
@@ -146,14 +152,15 @@ def fit_sbi_pp(observations, n_filt_cuts=True):
                 toy_noise_x,
                 1.0857 * 1 / toy_noise_y,
                 kind="slinear",
-                fill_value="extrapolate",
+                fill_value='extrapolate', #(0.01,1.0),
+                bounds_error=False
             )
         ]
     sbi_params["toynoise_meds_sigs"] = meds_sigs
     sbi_params["toynoise_stds_sigs"] = stds_sigs
 
     # a testing object of which the noises are OOD
-    mags, mags_unc, filternames = np.array([]), np.array([]), np.array([])
+    mags, mags_unc, filternames, wavelengths = np.array([]), np.array([]), np.array([]), np.array([])
 
     has_uv, has_opt, has_ir = False, False, False
     for f in all_filters:
@@ -177,6 +184,7 @@ def fit_sbi_pp(observations, n_filt_cuts=True):
             mags = np.append(mags, np.nan)
             mags_unc = np.append(mags_unc, np.nan)
         filternames = np.append(filternames, f.name)
+        wavelengths = np.append(wavelengths, f.transmission_curve().wave_effective)
 
     obs = {}
     obs[
@@ -186,16 +194,29 @@ def fit_sbi_pp(observations, n_filt_cuts=True):
         "mags_unc"
     ] = mags_unc  ##2.5/np.log(10)*observations['maggies_unc']/observations['maggies']
     obs["redshift"] = observations["redshift"]
+    obs["wavelengths"] = wavelengths
+    obs["filternames"] = filternames
+    
+    if n_filt_cuts and not has_opt and (not has_ir or not has_uv):
+        print("not enough filters for reliable/fast inference")
+        return {}, 1
+
+    # prepare to pass the reconstructed model to sbi_pp
+    if fit_type == "global":
+        sbi_params["y_train"] = y_train_global
+        sbi_params["theta_train"] = x_train_global
+        sbi_params["hatp_x_y"] = hatp_x_y_global
+    elif fit_type == "local":
+        sbi_params["y_train"] = y_train_local
+        sbi_params["hatp_x_y"] = hatp_x_y_local
+        sbi_params["theta_train"] = x_train_local
 
     # Run SBI++
     chain, obs, flags = sbi_pp.sbi_pp(
         obs=obs, run_params=run_params, sbi_params=sbi_params
     )
 
-    if n_filt_cuts and (not has_ir or not has_uv or not has_opt):
-        print("not enough filters for reliable/fast inference")
-        return {}, 1
 
     # pathological format as we're missing some stuff that prospector usually spits out
-    output = {"sampling": [{"samples": chain[:, 1:], "eff": 100}, 0]}
+    output = {"sampling": [{"samples": chain[:, :], "eff": 100}, 0]}
     return output, 0

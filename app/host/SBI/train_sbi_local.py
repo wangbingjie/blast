@@ -377,7 +377,8 @@ def draw_thetas(flat=False):
 
     if flat:
         zred = priors.FastUniform(a=0.0, b=0.2 + 1e-3).sample()
-        logmass = priors.FastUniform(a=7.0, b=12.5).sample()
+        ### go 1.5 dex less for local
+        logmass = priors.FastUniform(a=5.5, b=11.0).sample()
         logzsol = priors.FastUniform(a=-1.98, b=0.19).sample()
 
         logsfrratio_0 = priors.FastUniform(a=-5.0, b=5.0).sample()
@@ -399,7 +400,7 @@ def draw_thetas(flat=False):
 
     else:
         zred = priors.FastUniform(a=0.0, b=0.2 + 1e-3).sample()
-        logmass = priors.FastUniform(a=7.0, b=12.5).sample()
+        logmass = priors.FastUniform(a=5.5, b=11.0).sample()
         logzsol = priors.FastTruncatedNormal(
             a=-1.98, b=0.19, mu=loc(logmass), sig=scale(logmass)
         ).sample()
@@ -520,7 +521,6 @@ class TrainSBI(CronJobBase):
                 # call prospector
                 # generate the model SED at given theta
                 spec, phot, mfrac = model.predict(theta, obs=obs, sps=sps)
-                
                 predicted_mags = -2.5 * np.log10(phot)
                 theta[1] += np.log10(mfrac)
 
@@ -577,7 +577,7 @@ class TrainSBI(CronJobBase):
                     pass
 
         if do_train:
-            data = h5py.File("host/SBI/sbi_phot_1.h5", "r")
+            data = h5py.File("host/SBI/sbi_local_phot_1.h5", "r")
             list_thetas, list_phot, list_mfrac, list_phot_wave = (
                 np.array(data["theta"]),
                 np.array(data["phot"]),
@@ -585,14 +585,14 @@ class TrainSBI(CronJobBase):
                 np.array(data["wphot"]),
             )
             for i in range(2, 11):
-                data2 = h5py.File(f"host/SBI/sbi_phot_{i}.h5", "r")
+                data2 = h5py.File(f"host/SBI/sbi_local_phot_{i}.h5", "r")
                 list_thetas = np.append(list_thetas, np.array(data2["theta"]), axis=0)
                 list_phot = np.append(list_phot, np.array(data2["phot"]), axis=0)
                 list_mfrac = np.append(list_mfrac, np.array(data2["mfrac"]), axis=0)
                 list_phot_wave = np.append(
                     list_phot_wave, np.array(data2["wphot"]), axis=0
                 )
-                hf_phot = h5py.File("host/SBI/sbi_phot.h5", "w")
+                hf_phot = h5py.File("host/SBI/sbi_local_phot.h5", "w")
                 hf_phot.create_dataset("wphot", data=list_phot_wave)
                 hf_phot.create_dataset("phot", data=list_phot)
                 hf_phot.create_dataset("mfrac", data=list_mfrac)

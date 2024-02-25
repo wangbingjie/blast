@@ -36,14 +36,16 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
     except:
         transient_name = transient.name
 
+    ### some issues with Pan-STARRS downloads
     host_data = getTransientHosts(
-        snCoord=[transient_position],
+        transientCoord=[transient_position],
         transientName=[transient_name],
         verbose=1,
         savepath=output_dir,
         starcut="gentle",
-        ascentMatch=True,
+        ascentMatch=False,
     )
+    
     # import pdb; pdb.set_trace()
     # sometimes photo-zs randomly fail
     try:

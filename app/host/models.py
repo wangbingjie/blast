@@ -10,6 +10,7 @@ from astropy.coordinates import SkyCoord
 from django.conf import settings
 from django.db import models
 from django_celery_beat.models import PeriodicTask
+from django.contrib.auth.models import User
 from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
 
@@ -117,7 +118,8 @@ class Transient(SkyObject):
     photometric_class = models.CharField(max_length=20, null=True, blank=True)
     milkyway_dust_reddening = models.FloatField(null=True, blank=True)
     processing_status = models.CharField(max_length=20, default="processing")
-
+    added_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
+    
     @property
     def progress(self):
         tasks = TaskRegister.objects.filter(transient__name__exact=self.name)
@@ -132,7 +134,12 @@ class Transient(SkyObject):
     def best_redshift(self):
         """get the best redshift for a transient"""
         if self.host is not None and self.host.redshift is not None:
-            z = self.host.redshift
+            if self.redshift is not None and abs(self.host.redshift-self.redshift) < 0.02:
+                z = self.host.redshift
+            elif self.redshift is None:
+                z = self.host.redshift
+            else:
+                z = self.redshift
         elif self.redshift is not None:
             z = self.redshift
         elif self.host is not None and self.host.photometric_redshift is not None:
@@ -199,6 +206,7 @@ class TaskRegister(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
+    user_warning = models.BooleanField(default=False)
     last_modified = models.DateTimeField(blank=True, null=True)
     last_processing_time_seconds = models.FloatField(blank=True, null=True)
 
@@ -267,7 +275,7 @@ class Filter(models.Model):
 
         try:
             transmission_curve = pd.read_csv(
-                curve_name, delim_whitespace=True, header=None
+                curve_name, sep='\s+', header=None
             )
         except:
             raise ValueError(
@@ -292,7 +300,7 @@ class Filter(models.Model):
 
         try:
             corr_model = pd.read_csv(
-                corr_model_name, delim_whitespace=True, header=None
+                corr_model_name, sep='\s+', header=None
             )
         except:
             raise ValueError(
@@ -339,6 +347,24 @@ def hdf5_file_path(instance):
     Constructs a file path for a HDF5 image
     """
     return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}.h5"
+
+def npz_chains_file_path(instance):
+    """
+    Constructs a file path for a npz file
+    """
+    return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}_chain.npz"
+
+def npz_percentiles_file_path(instance):
+    """
+    Constructs a file path for a npz file
+    """
+    return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}_perc.npz"
+
+def npz_model_file_path(instance):
+    """
+    Constructs a file path for a npz file
+    """
+    return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}_modeldata.npz"
 
 
 class Cutout(models.Model):
@@ -411,7 +437,7 @@ class AperturePhotometry(models.Model):
     flux_error = models.FloatField(blank=True, null=True)
     magnitude = models.FloatField(blank=True, null=True)
     magnitude_error = models.FloatField(blank=True, null=True)
-    is_validated = models.BooleanField(blank=True, null=True)
+    is_validated = models.CharField(blank=True, null=True, max_length=40)
 
     @property
     def flux_rounded(self):
@@ -458,6 +484,9 @@ class SEDFittingResult(models.Model):
     log_tau_50 = models.FloatField(null=True, blank=True)
     log_tau_84 = models.FloatField(null=True, blank=True)
 
+    chains_file = models.FileField(upload_to=npz_chains_file_path, null=True, blank=True)
+    percentiles_file = models.FileField(upload_to=npz_percentiles_file_path, null=True, blank=True)
+    model_file = models.FileField(upload_to=npz_model_file_path, null=True, blank=True)
 
 class TaskRegisterSnapshot(models.Model):
     """

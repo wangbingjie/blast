@@ -2,6 +2,7 @@ from abc import ABC
 from abc import abstractmethod
 from abc import abstractproperty
 from time import process_time
+from billiard.exceptions import SoftTimeLimitExceeded
 
 from django.utils import timezone
 
@@ -203,6 +204,9 @@ class TransientTaskRunner(TaskRunner):
             start_time = process_time()
             try:
                 status_message = self._run_process(transient)
+            except SoftTimeLimitExceeded:
+                status_message = 'time limit exceeded'
+                raise
             except:
                 status_message = self._failed_status_message()
                 raise
@@ -305,5 +309,11 @@ def initialise_all_tasks_status(transient):
     not_processed = Status.objects.get(message__exact="not processed")
 
     for task in tasks:
-        task_status = TaskRegister(task=task, transient=transient)
-        update_status(task_status, not_processed)
+        task_status = TaskRegister.objects.filter(task=task, transient=transient)
+        if not len(task_status):
+            task_status = TaskRegister(task=task, transient=transient)
+            ### if the task already exists, let's not change it
+            ### because bad things seem to happen....
+            update_status(task_status, not_processed)
+        else:
+            task_status = task_status[0]

@@ -32,6 +32,7 @@ from photutils.segmentation import detect_sources
 from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
 from photutils.utils import calc_total_error
+from photutils.background import LocalBackground
 from photutils.background import MeanBackground, SExtractorBackground
 from astropy.stats import SigmaClip
 
@@ -218,6 +219,14 @@ def do_aperture_photometry(image, sky_aperture, filter):
 
     background_subtracted_data = image_data - background.background
 
+    # I think we need a local background subtraction for WISE
+    ### the others haven't given major problems
+    if "WISE" in filter.name:
+        aper_pix = sky_aperture.to_pixel(wcs)
+        lbg = LocalBackground(aper_pix.a,aper_pix.a*2)
+        local_background = lbg(background_subtracted_data,aper_pix.positions[0],aper_pix.positions[1])
+        background_subtracted_data -= local_background
+        
     if filter.image_pixel_units == "counts/sec":
         error = calc_total_error(
             background_subtracted_data,
@@ -313,7 +322,7 @@ def check_local_radius(redshift, image_fwhm_arcsec):
         dadist * 1000 * (np.pi / 180.0 / 3600.0)
     )  # 2 kpc aperture radius is this many arcsec
 
-    return apr_arcsec > image_fwhm_arcsec
+    return "true" if apr_arcsec > image_fwhm_arcsec else "false"
 
 
 def check_global_contamination(global_aperture_phot, aperture_primary):
@@ -524,11 +533,15 @@ def query_ned(position):
 
     result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
     result_table = result_table[result_table["Redshift"].mask == False]
-
+    
     redshift = result_table["Redshift"].value
 
     if len(redshift):
-        galaxy_data = {"redshift": redshift[0]}
+        pos = SkyCoord(result_table['RA'].value,result_table['DEC'].value,unit=u.deg)
+        sep = position.separation(pos).arcsec
+        iBest = np.where(sep == np.min(sep))[0][0]
+        
+        galaxy_data = {"redshift": redshift[iBest]}
     else:
         galaxy_data = {"redshift": None}
 

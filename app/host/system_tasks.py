@@ -10,6 +10,7 @@ from .base_tasks import SystemTaskRunner
 from .models import TaskRegister
 from .models import TaskRegisterSnapshot
 from .models import Transient
+from .models import Status
 from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
@@ -19,25 +20,51 @@ from .transient_name_server import update_blast_transient
 
 
 class TNSDataIngestion(SystemTaskRunner):
-    def run_process(self, interval_minutes=100):
+    
+    def run_process(self, interval_minutes=200):
+        print('TNS STARTED')
         now = timezone.now()
         time_delta = datetime.timedelta(minutes=interval_minutes)
         tns_credentials = get_tns_credentials()
         recent_transients = get_transients_from_tns(
             now - time_delta, tns_credentials=tns_credentials
         )
+        print('TNS DONE')
         saved_transients = Transient.objects.all()
-
+        count = 0
         for transient in recent_transients:
             try:
-                saved_transients.get(name__exact=transient.name)
+                saved_transient = saved_transients.get(name__exact=transient.name)
+
+                # if there was *not* a redshift before and there *is* one now
+                # then it would be safest to reprocess everything
+                if not saved_transient.redshift and transient.redshift:
+                    tasks = TaskRegister.objects.filter(transient=saved_transient)
+                    for t in tasks:
+                        t.status = Status.objects.get(message='not processed')
+                        t.save()
+
+                ### update info
+                new_transient_dict = transient.__dict__
+                if 'host_id' in new_transient_dict.keys(): del new_transient_dict['host_id']
+                del new_transient_dict['_state']
+                del new_transient_dict['id']
+                saved_transients.filter(name__exact=transient.name).update(**new_transient_dict)
+
             except Transient.DoesNotExist:
                 transient.save()
+                count += 1
+        print(f"Added {count} new transients")
+        print('TNS UPLOADED')
 
     @property
     def task_name(self):
         return "TNS data ingestion"
 
+    @property
+    def task_frequency_seconds(self):
+	    return 240
+    
     @property
     def task_initially_enabled(self):
         return False
@@ -162,7 +189,9 @@ class LogTransientProgress(SystemTaskRunner):
 
         for transient in transients:
             tasks = TaskRegister.objects.filter(transient__name__exact=transient.name)
-
+            processing_task_qs = TaskRegister.objects.filter(transient__name__exact=transient.name,
+                                                             task__name=self.task_name)
+            
             total_tasks = len(tasks)
             completed_tasks = len(
                 [task for task in tasks if task.status.message == "processed"]
@@ -180,6 +209,14 @@ class LogTransientProgress(SystemTaskRunner):
             elif blocked > 0:
                 progress = "blocked"
 
+            # save task
+            if len(processing_task_qs) == 1:
+                processing_task = processing_task_qs[0]
+                processing_task.status = \
+                    Status.objects.get(message=progress if progress != 'completed' else 'processed')
+                processing_task.save()
+
+            # save transient progress
             transient.processing_status = progress
             transient.save()
 

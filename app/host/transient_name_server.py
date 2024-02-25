@@ -34,6 +34,7 @@ def query_tns(data, headers, search_url):
     """
     Query the TNS server
     """
+
     response = requests.post(search_url, headers=headers, data=data)
     response = json.loads(response.text)
 
@@ -109,6 +110,51 @@ def get_transients_from_tns(time_after, sandbox=False, tns_credentials=None):
 
     return blast_transients
 
+def get_transients_from_tns_by_name(transient_list, sandbox=False, tns_credentials=None):
+    """
+    Gets transient data from TNS for all transients with public
+    timestamp after time_after.
+
+    Args:
+        time_after (datetime.datetime):  Time to search the transient name
+            server for new transients.
+        sandbox (bool): If true uses the transient name server sandbox API,
+            else uses the live transisent name server API
+        tns_credentials (dict): Transient name server credentials, need to have
+            the keys, TNS_BOT_ID, TNS_BOT_NAME, and TNS_BOT_API_KEY.
+    Returns:
+        (list): List of Transients retrieved transients from the transient name
+            server.
+    """
+
+    if tns_credentials is None:
+        tns_credentials = get_tns_credentials()
+    
+    tns_bot_id = tns_credentials["TNS_BOT_ID"]
+    tns_bot_name = tns_credentials["TNS_BOT_NAME"]
+    tns_bot_api_key = tns_credentials["TNS_BOT_API_KEY"]
+
+    headers = build_tns_header(tns_bot_id, tns_bot_name)
+
+    entry = "sandbox" if sandbox else "www"
+    tns_api_url = f"https://{entry}.wis-tns.org/api/get"
+
+    get_tns_url = build_tns_url(tns_api_url, mode="get")
+
+    transients = []
+    for t in transient_list:
+        transients += [{'objname':t,'objid':t}]
+    
+    blast_transients = []
+
+    for transient in transients:
+        get_data = build_tns_get_query_data(tns_bot_api_key, transient)
+        tns_transient = rate_limit_query_tns(get_data, headers, get_tns_url)
+        blast_transient = tns_to_blast_transient(tns_transient)
+        blast_transients.append(blast_transient)
+
+    return blast_transients
+
 
 def tns_to_blast_transient(tns_transient):
     """Convert transient name server transient into blast transient data model.
@@ -128,6 +174,7 @@ def tns_to_blast_transient(tns_transient):
         tns_prefix=tns_transient["name_prefix"],
         public_timestamp=tns_transient["discoverydate"],
         spectroscopic_class=tns_transient["object_type"]["name"],
+        redshift=tns_transient['redshift']
     )
     return blast_transient
 
@@ -194,7 +241,7 @@ def build_tns_header(tns_bot_id, tns_bot_name):
         (dict): Transient name server header dictionary.
     """
     tns_marker = (
-        f'tns_marker{{"tns_id": {int(tns_bot_id)},'
+        f'tns_marker{{"tns_id": "{int(tns_bot_id)}",'
         f'"type": "bot", "name": "{tns_bot_name}"}}'
     )
     return {"User-Agent": tns_marker}
@@ -226,7 +273,7 @@ def build_tns_url(tns_api_url, mode=None):
         (str) Full transient name server api url
     """
     if mode == "search":
-        url_end_point = "/Search"
+        url_end_point = "/search"
     elif mode == "get":
         url_end_point = "/object"
     else:

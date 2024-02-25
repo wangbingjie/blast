@@ -277,9 +277,9 @@ class LocalAperturePhotometry(TransientTaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        if transient.best_redshift is None:
+        if transient.best_redshift is None or transient.best_redshift < 0:
             return "failed"
-
+        
         aperture_size = get_local_aperture_size(transient.best_redshift)
 
         query = {"name__exact": f"{transient.name}_local"}
@@ -484,7 +484,7 @@ class ValidateLocalPhotometry(TransientTaskRunner):
         # we can't measure the local aperture if we don't know the redshift
         if redshift is None:
             for local_aperture_phot in local_aperture_photometry:
-                local_aperture_phot.is_validated = False
+                local_aperture_phot.is_validated = "false"
                 local_aperture_phot.save()
 
         if not len(local_aperture_photometry):
@@ -549,6 +549,9 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
         if not len(global_aperture_photometry):
             return "global photometry validation failed"
 
+        is_contam_list = []
+        # issue_warning = True
+        no_contam_count = 0
         for global_aperture_phot in global_aperture_photometry:
             # check if there are contaminating objects in the
             # cutout image used for aperture construction at
@@ -559,7 +562,19 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
             is_contam = check_global_contamination(
                 global_aperture_phot, aperture_primary
             )
-            global_aperture_phot.is_validated = not is_contam
+
+            # if all of our photometry is contaminated, the best move is just to
+            # go ahead and compute things, then warn the user
+            # otherwise, nearby galaxies are gonna be a huge pain
+            is_contam_list += [is_contam]
+        # issue warning and proceed if max 1 un-contaminated photometry point
+        issue_warning = True if len(np.where(~np.array(is_contam_list))[0]) <= 1 else False
+
+        for global_aperture_phot,is_contam in zip(global_aperture_photometry,is_contam_list):
+            if issue_warning:
+                contam_message = "contamination warning" if is_contam else "true"
+            else: contam_message = "false" if is_contam else "true"
+            global_aperture_phot.is_validated = contam_message
             global_aperture_phot.save()
 
         return "processed"
@@ -633,6 +648,10 @@ class HostInformation(TransientTaskRunner):
             galaxy_ned_data["redshift"]
         ):
             host.redshift = galaxy_ned_data["redshift"]
+        elif host.photometric_redshift is not None:
+            pass
+        elif transient.redshift is not None:
+            pass
         else:
             status_message = "no host redshift"
 
@@ -653,6 +672,10 @@ class HostSEDFitting(TransientTaskRunner):
             "type__exact": aperture_type,
         }
 
+        if transient.best_redshift is None or transient.best_redshift > 0.2:
+            ### training sample doesn't work here
+            return "redshift too high"
+        
         aperture = Aperture.objects.filter(**query)
         if len(aperture) == 0:
             raise RuntimeError(f"no apertures found for transient {transient.name}")
@@ -691,10 +714,10 @@ class HostSEDFitting(TransientTaskRunner):
 
         print("starting model fit")
         posterior, errflag = fit_model(
-            observations, model_components, fitting_settings, sbipp=sbipp
+            observations, model_components, fitting_settings, sbipp=sbipp, fit_type=aperture_type
         )
         if errflag:
-            return "failed"
+            return "not enough filters"
 
         if mode == "test":
             prosp_results = prospector_result_to_blast(
@@ -715,7 +738,11 @@ class HostSEDFitting(TransientTaskRunner):
                 sbipp=sbipp,
             )
         if save:
-            pr = SEDFittingResult.objects.create(**prosp_results)
+            pr = SEDFittingResult.objects.filter(transient=transient,aperture__type=aperture_type)
+            if len(pr):
+                pr.update(**prosp_results)
+            else:
+                pr = SEDFittingResult.objects.create(**prosp_results)
         else:
             print("printing results")
             print(prosp_results)
@@ -735,6 +762,7 @@ class LocalHostSEDFitting(HostSEDFitting):
             "Local aperture photometry": "processed",
             "Validate local photometry": "processed",
             "Local host SED inference": "not processed",
+            "Transient MWEBV": "processed"
         }
 
     @property
@@ -753,9 +781,9 @@ class LocalHostSEDFitting(HostSEDFitting):
     def _run_process(self, transient, mode="fast"):
         """Run the SED-fitting task"""
 
-        super()._run_process(transient, aperture_type="local", mode=mode)
+        status_message = super()._run_process(transient, aperture_type="local", mode=mode)
 
-        return "processed"
+        return status_message
 
 
 class GlobalHostSEDFitting(HostSEDFitting):
@@ -771,6 +799,7 @@ class GlobalHostSEDFitting(HostSEDFitting):
             "Global aperture photometry": "processed",
             "Validate global photometry": "processed",
             "Global host SED inference": "not processed",
+            "Host MWEBV": "processed"
         }
 
     @property
@@ -789,6 +818,6 @@ class GlobalHostSEDFitting(HostSEDFitting):
     def _run_process(self, transient, mode="fast", save=True):
         """Run the SED-fitting task"""
 
-        super()._run_process(transient, aperture_type="global", mode=mode, save=save)
+        status_message = super()._run_process(transient, aperture_type="global", mode=mode, save=save)
 
-        return "processed"
+        return status_message
