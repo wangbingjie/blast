@@ -13,7 +13,8 @@ use docker. It is so strongly recommended in fact, that I'm not going to write
 documentation on how to install and run blast any other way. The first step is to
 install the docker desktop application, which can be found
 `here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux. Make
-sure you have Docker Compose version 1.28.0 or later.
+sure you have Docker Compose version 1.28.0 or later.  We recommend allocating
+at least 32 GB of memory in the docker settings.
 
 Clone the blast repository
 --------------------------
@@ -66,7 +67,14 @@ usually sufficient for front end web development, you can run:
     bash run/blast.run.sh slim_dev
 
 Then go to `http://0.0.0.0:8000/ <http://0.0.0.0:8000/>`_  in your web browser,
-after all the containers have started, and blast should be running.
+after all the containers have started, and blast should be running.  If you
+have started up blast previously and do not want to re-download cutout images, use
+the :code:`noclean` argurment, for example:
+
+.. code:: none
+
+    bash run/blast.run.sh slim_dev noclean
+
 
 Running blast in these two modes means you can edit most code and you will see
 the resulting live changes in the web interface.
