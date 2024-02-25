@@ -110,7 +110,10 @@ def get_transients_from_tns(time_after, sandbox=False, tns_credentials=None):
 
     return blast_transients
 
-def get_transients_from_tns_by_name(transient_list, sandbox=False, tns_credentials=None):
+
+def get_transients_from_tns_by_name(
+    transient_list, sandbox=False, tns_credentials=None
+):
     """
     Gets transient data from TNS for all transients with public
     timestamp after time_after.
@@ -129,7 +132,7 @@ def get_transients_from_tns_by_name(transient_list, sandbox=False, tns_credentia
 
     if tns_credentials is None:
         tns_credentials = get_tns_credentials()
-    
+
     tns_bot_id = tns_credentials["TNS_BOT_ID"]
     tns_bot_name = tns_credentials["TNS_BOT_NAME"]
     tns_bot_api_key = tns_credentials["TNS_BOT_API_KEY"]
@@ -143,8 +146,8 @@ def get_transients_from_tns_by_name(transient_list, sandbox=False, tns_credentia
 
     transients = []
     for t in transient_list:
-        transients += [{'objname':t,'objid':t}]
-    
+        transients += [{"objname": t, "objid": t}]
+
     blast_transients = []
 
     for transient in transients:
@@ -174,7 +177,7 @@ def tns_to_blast_transient(tns_transient):
         tns_prefix=tns_transient["name_prefix"],
         public_timestamp=tns_transient["discoverydate"],
         spectroscopic_class=tns_transient["object_type"]["name"],
-        redshift=tns_transient['redshift']
+        redshift=tns_transient["redshift"],
     )
     return blast_transient
 

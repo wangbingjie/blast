@@ -1,16 +1,13 @@
 # $ conda activate sbi_env
+import copy
 import os
 import signal
 import sys
 import time
 import warnings
+
 import pylab as plt
 from astropy.stats import sigma_clipped_stats
-import copy
-#import importlib
-#importlib.import_module("host.prospector.build_model")
-#importlib.import_module("host.prospector.build_obs")
-
 from prospect.fitting import fit_model as fit_model_prospect
 from prospect.fitting import lnprobfn
 from prospect.io import write_results as writer
@@ -24,6 +21,9 @@ from prospect.models.transforms import logsfr_ratios_to_sfrs
 from prospect.models.transforms import zred_to_agebins
 from prospect.sources import CSPSpecBasis
 from prospect.sources import FastStepBasis
+# import importlib
+# importlib.import_module("host.prospector.build_model")
+# importlib.import_module("host.prospector.build_obs")
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 from operator import itemgetter
@@ -34,8 +34,9 @@ from scipy.interpolate import interp1d
 
 # torch
 import torch
+
 torch.set_num_threads(1)
-#torch.multiprocessing.set_start_method('forkserver',force=True)
+# torch.multiprocessing.set_start_method('forkserver',force=True)
 # spawn
 import torch.nn as nn
 import torch.nn.functional as F
@@ -55,6 +56,8 @@ if torch.cuda.is_available():
 else:
     device = "cpu"
 all_filters = Filter.objects.filter(~Q(name="DES_i") & ~Q(name="DES_Y"))
+
+
 def build_all(**kwargs):
     return (
         build_obs(**kwargs),
@@ -62,7 +65,8 @@ def build_all(**kwargs):
         build_sps(**kwargs),
         build_noise(**kwargs),
     )
-    
+
+
 def build_obs(**extras):  ##transient, aperture_type):
 
     """
@@ -366,7 +370,8 @@ def build_sps(zcontinuous=2, compute_vega_mags=False, **extras):
 
 def build_noise(**extras):
     return None, None
-    
+
+
 # prior
 def prior_from_train(ll_or_ul, x_train):
     """We will only need the lower & upper limits to be passed to sbi as 'priors'
@@ -407,9 +412,6 @@ def timeout_handler(signum, frame):
     raise TimeoutException
 
 
-
-
-
 def absdiff(mags, obsphot, obsphot_unc):
     """abs difference in photometry"""
 
@@ -424,6 +426,7 @@ def chi2dof(mags, obsphot, obsphot_unc, individual=False):
     else:
         chi2 = np.nansum(((mags - obsphot) / obsphot_unc) ** 2, axis=1)
         return chi2 / np.sum(np.isfinite(obsphot))
+
 
 def chidof(mags, obsphot, obsphot_unc, individual=False):
     """reduced chi^2"""
@@ -536,12 +539,16 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
     cnt = 0
     use_res = True
     while _chi2_thres <= run_params["max_chi2"]:
-        #idx_chi2_selected = np.where(chi2_nei[redshift_idx] <= _chi2_thres)[0]
-        #if len(idx_chi2_selected) >= 100 and np.abs(np.median(chi_nei[redshift_idx][idx_chi2_selected])) < 0.25:
+        # idx_chi2_selected = np.where(chi2_nei[redshift_idx] <= _chi2_thres)[0]
+        # if len(idx_chi2_selected) >= 100 and np.abs(np.median(chi_nei[redshift_idx][idx_chi2_selected])) < 0.25:
 
         # let's not allow any matches with giant overall offsets
-        idx_chi2_selected = np.where(chi2_nei <= _chi2_thres)[0] # & (np.abs(chi_nei) < 0.25))[0]
-        if len(idx_chi2_selected) >= max_neighbors: # and np.abs(np.median(chi_nei[idx_chi2_selected])) < 0.25:
+        idx_chi2_selected = np.where(chi2_nei <= _chi2_thres)[
+            0
+        ]  # & (np.abs(chi_nei) < 0.25))[0]
+        if (
+            len(idx_chi2_selected) >= max_neighbors
+        ):  # and np.abs(np.median(chi_nei[idx_chi2_selected])) < 0.25:
             break
         else:
             _chi2_thres += 5
@@ -550,12 +557,12 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
     if _chi2_thres > run_params["max_chi2"]:
         use_res = False
         chi2_selected = y_train[:, valid_idx]
-        #chi2_selected = chi2_selected[redshift_idx][:100]
+        # chi2_selected = chi2_selected[redshift_idx][:100]
         chi2_selected = chi2_selected[:max_neighbors]
         guess_ndata = y_train[:, not_valid_idx]
         guess_ndata = guess_ndata[:max_neighbors]
 
-        #if not seconditer:
+        # if not seconditer:
         #    idx_chi2_selected = np.argsort(chi2_nei)
         #    diffs = absdiff(
         #        mags=look_in_training,
@@ -570,9 +577,9 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
         #    obs["sbi_flag"] = "chi2 fail"
         #    return obs
 
-        #idx_chi2_selected = np.argsort(chi2_nei[redshift_idx])[0:100]
+        # idx_chi2_selected = np.argsort(chi2_nei[redshift_idx])[0:100]
         idx_chi2_selected = np.argsort(chi2_nei)[0:max_neighbors]
-        
+
         if run_params["verbose"]:
             print("Failed to find sufficient number of nearest neighbors!")
             print(
@@ -582,14 +589,13 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
                 len(guess_ndata),
             )
 
-            
     ### sometimes one bad photometry point messes up everything
-    #std_out,iBad = np.array([]),np.array([],dtype=int)
-    #for i in idx_chi2_selected[0:100]:
+    # std_out,iBad = np.array([]),np.array([],dtype=int)
+    # for i in idx_chi2_selected[0:100]:
     #    std_out = np.append(std_out,[sigma_clipped_stats(y_obs[valid_idx]-y_train[redshift_idx][i][0:22][valid_idx[0:22]])[2]])
     #    iBad = np.append(iBad,np.where(np.abs(y_obs[valid_idx]-y_train[redshift_idx][i][0:22][valid_idx[0:22]]) > 3*std_out[-1])[0])
     # hack!
-    #if len(iBad):
+    # if len(iBad):
     #    iBad,counts = np.unique(iBad,return_counts=True)
     #    iBad = iBad[counts >= 10]; counts = counts[counts >= 10]
     #    iBad = iBad[np.argsort(counts)[::-1]][0:2] ## remove max two outliers, choose the ones that are most commonly outliers
@@ -598,9 +604,9 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
     #    valid_idx = np.where(~invalid_mask)[0]
     #    not_valid_idx = np.where(invalid_mask)[0]
 
-    #chi2_selected = y_train[:, valid_idx][redshift_idx][idx_chi2_selected]
+    # chi2_selected = y_train[:, valid_idx][redshift_idx][idx_chi2_selected]
     # get distribution of the missing band
-    #guess_ndata = y_train[:, not_valid_idx][redshift_idx][idx_chi2_selected]
+    # guess_ndata = y_train[:, not_valid_idx][redshift_idx][idx_chi2_selected]
     chi2_selected = y_train[:, valid_idx][idx_chi2_selected]
     # get distribution of the missing band
 
@@ -609,13 +615,11 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
     dists = np.linalg.norm(y_obs_valid_only - chi2_selected, axis=1)
     neighs_weights = 1 / dists
 
-
-    
     kdes = []
     for i in range(guess_ndata.shape[1]):
         kde = stats.gaussian_kde(guess_ndata.T[i], 0.2, weights=neighs_weights)
         kdes.append(kde)
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     # ------------------------------------------------
 
     nbands = y_train.shape[1] // 2  # total number of bands
@@ -631,66 +635,72 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
     # hack!
     while cnt < run_params["nmc"]:
         ### hack!
-        signal.alarm(0) #run_params["tmax_per_obj"])  # max time spent on one object in sec
+        signal.alarm(
+            0
+        )  # run_params["tmax_per_obj"])  # max time spent on one object in sec
         try:
             x = np.copy(observed)
-            # D. Jones edit            
-            #idx_neighbor = np.random.choice(range(len(guess_ndata.T[0])))
-            #while abs(y_train[idx_chi2_selected][idx_neighbor][-1] - observed[-1]) > 0.05:
-                #idx_neighbor = np.random.choice(range(len(guess_ndata.T[0])))
-            
+            # D. Jones edit
+            # idx_neighbor = np.random.choice(range(len(guess_ndata.T[0])))
+            # while abs(y_train[idx_chi2_selected][idx_neighbor][-1] - observed[-1]) > 0.05:
+            # idx_neighbor = np.random.choice(range(len(guess_ndata.T[0])))
+
             for j, idx in enumerate(not_valid_idx):  ##range(len(not_valid_idx)):
-                x[not_valid_idx[j]] = np.random.choice(guess_ndata.T[j]) #np.clip(kdes[j].resample(size=1),0,23) ### I think these crazy non-detections are destroying the fit?
+                x[not_valid_idx[j]] = np.random.choice(
+                    guess_ndata.T[j]
+                )  # np.clip(kdes[j].resample(size=1),0,23) ### I think these crazy non-detections are destroying the fit?
                 # hack!
-                #x[not_valid_idx[j]] = kdes[j].resample(size=1) ##np.clip(kdes[j].resample(size=1),0,23) ### I think these crazy non-detections are destroying the fit?
-                #x[22:][not_valid_idx[j]] = y_train[idx_chi2_selected][idx_neighbor][22:][not_valid_idx[j]]
+                # x[not_valid_idx[j]] = kdes[j].resample(size=1) ##np.clip(kdes[j].resample(size=1),0,23) ### I think these crazy non-detections are destroying the fit?
+                # x[22:][not_valid_idx[j]] = y_train[idx_chi2_selected][idx_neighbor][22:][not_valid_idx[j]]
 
                 # let's just randomly sample the neighbors instead of unpredictable toy noise model
-                x[22:][not_valid_idx[j]] = y_train[idx_chi2_selected][np.random.choice(range(len(guess_ndata.T[j])))][22:][not_valid_idx[j]]
-                #x[not_valid_idx_unc[j]] = toy_noise(
+                x[22:][not_valid_idx[j]] = y_train[idx_chi2_selected][
+                    np.random.choice(range(len(guess_ndata.T[j])))
+                ][22:][not_valid_idx[j]]
+                # x[not_valid_idx_unc[j]] = toy_noise(
                 #    flux=x[not_valid_idx[j]],
                 #    meds_sigs=sbi_params["toynoise_meds_sigs"][idx],
                 #    stds_sigs=sbi_params["toynoise_stds_sigs"][idx],
                 #    verbose=run_params["verbose"],
-                #)[1]
+                # )[1]
 
             # the noise model in the training isn't quite right
             # Pan-STARRS in particular seems a little off
             # we'll have to re-train at some point, but for now just pull
-            # uncertainties from the training sample 
-            for idx,fname in zip(valid_idx,obs['filternames'][valid_idx]):
-                #if 'PanSTARRS' in fname or '2MASS' in fname or 'SDSS' in fname or 'DES' in fname:
+            # uncertainties from the training sample
+            for idx, fname in zip(valid_idx, obs["filternames"][valid_idx]):
+                # if 'PanSTARRS' in fname or '2MASS' in fname or 'SDSS' in fname or 'DES' in fname:
                 chc = np.random.choice(range(len(y_train[idx_chi2_selected])))
                 # hack!
-                #x[22:-1][idx] = y_train[idx_chi2_selected][0][22:-1][idx]
+                # x[22:-1][idx] = y_train[idx_chi2_selected][0][22:-1][idx]
                 x[22:-1][idx] = y_train[idx_chi2_selected][chc][22:-1][idx]
-                #x[22:-1][idx] = y_train[idx_chi2_selected][idx_neighbor][22:-1][idx]
-                
-            #import pdb; pdb.set_trace()
-            #x = y_train[idx_chi2_selected][2150] ###guess_ndata.T[:,idx_neighbor]
+                # x[22:-1][idx] = y_train[idx_chi2_selected][idx_neighbor][22:-1][idx]
+
+            # import pdb; pdb.set_trace()
+            # x = y_train[idx_chi2_selected][2150] ###guess_ndata.T[:,idx_neighbor]
 
             all_x.append(x)
 
-            #ixtest = np.where(chi2_nei <= 100)[0]
-            #ixtest = np.where(chi2_nei == np.min(chi2_nei))[0]
-            #plt.errorbar(obs['wavelengths'],obs['mags'],obs['mags_unc'],fmt='.',zorder=100)
-            #plt.errorbar(obs['wavelengths'],obs['mags_sbi'],obs['mags_unc_sbi'],fmt='.')
-            #plt.errorbar(obs['wavelengths'],x[0:22],yerr=x[22:-1],fmt='.')
+            # ixtest = np.where(chi2_nei <= 100)[0]
+            # ixtest = np.where(chi2_nei == np.min(chi2_nei))[0]
+            # plt.errorbar(obs['wavelengths'],obs['mags'],obs['mags_unc'],fmt='.',zorder=100)
+            # plt.errorbar(obs['wavelengths'],obs['mags_sbi'],obs['mags_unc_sbi'],fmt='.')
+            # plt.errorbar(obs['wavelengths'],x[0:22],yerr=x[22:-1],fmt='.')
             ##plt.errorbar(obs['wavelengths'],y_train[ixtest[4]][:22],yerr=y_train[ixtest[4]][22:-1],fmt='.')
-            #plt.errorbar(obs['wavelengths'],y_train[idx_chi2_selected[30]][:22],yerr=y_train[idx_chi2_selected[30]][22:-1],fmt='.',zorder=101)
-            #plt.ylim([21,16])
-            #plt.savefig('tmp.png',dpi=200)
-            #x = y_train[idx_chi2_selected[30]]
-            #x[1] += np.log10(0.7290672783420541)
-            #import pdb; pdb.set_trace()
+            # plt.errorbar(obs['wavelengths'],y_train[idx_chi2_selected[30]][:22],yerr=y_train[idx_chi2_selected[30]][22:-1],fmt='.',zorder=101)
+            # plt.ylim([21,16])
+            # plt.savefig('tmp.png',dpi=200)
+            # x = y_train[idx_chi2_selected[30]]
+            # x[1] += np.log10(0.7290672783420541)
+            # import pdb; pdb.set_trace()
 
             # if we can't get one posterior sample in one second, we should move along
             # to the next MC sample
             do_continue = False
-            for tmax,npost in zip([1,run_params["tmax_per_iter"]],[1,run_params["nposterior"]]):
-                signal.alarm(
-                    tmax
-                )  # max time spent on one object in sec
+            for tmax, npost in zip(
+                [1, run_params["tmax_per_iter"]], [1, run_params["nposterior"]]
+            ):
+                signal.alarm(tmax)  # max time spent on one object in sec
                 try:
                     noiseless_theta = hatp_x_y.sample(
                         (npost,),
@@ -699,7 +709,7 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
                     )
                 except TimeoutException:
                     signal.alarm(0)
-                    do_continue=True
+                    do_continue = True
                     break
 
             if do_continue:
@@ -708,53 +718,79 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
             signal.alarm(0)
 
             noiseless_theta = noiseless_theta.detach().numpy()
-            #if np.median(noiseless_theta[:,1]) > 9:
+            # if np.median(noiseless_theta[:,1]) > 9:
 
             ave_theta.append(noiseless_theta)
 
             ### debug!
-            #transient = Transient.objects.get(name='PS15bwh')
+            # transient = Transient.objects.get(name='PS15bwh')
             #### all these lines
-            if not 'hi':
-                print('getting photometry')
-                observations = build_obs() #transient, "global")
+            if not "hi":
+                print("getting photometry")
+                observations = build_obs()  # transient, "global")
                 model_components = build_model(obs)
-                model_mfrac = copy.deepcopy(model_components) #["model"])
-                #sps = build_sps()
+                model_mfrac = copy.deepcopy(model_components)  # ["model"])
+                # sps = build_sps()
                 for i in range(1):
                     print(i)
                     if i == 0:
-                        best_spec, best_phot, mfrac = model_components.predict( #["model"]
-	                        noiseless_theta[i,:], obs=observations, sps=sps #model_components["sps"]
+                        (
+                            best_spec,
+                            best_phot,
+                            mfrac,
+                        ) = model_components.predict(  # ["model"]
+                            noiseless_theta[i, :],
+                            obs=observations,
+                            sps=sps,  # model_components["sps"]
                         )
-                        noiseless_theta[i,1] -= np.log10(mfrac)
-                        best_spec, best_phot, mfrac = model_components.predict( #["model"]
-	                        noiseless_theta[i,:], obs=observations, sps=sps #model_components["sps"]
+                        noiseless_theta[i, 1] -= np.log10(mfrac)
+                        (
+                            best_spec,
+                            best_phot,
+                            mfrac,
+                        ) = model_components.predict(  # ["model"]
+                            noiseless_theta[i, :],
+                            obs=observations,
+                            sps=sps,  # model_components["sps"]
                         )
                     else:
-                        best_spec, best_phot_s, mfrac = model_components.predict( #["model"]
-	                        noiseless_theta[i,:], obs=observations, sps=sps #model_components["sps"]
+                        (
+                            best_spec,
+                            best_phot_s,
+                            mfrac,
+                        ) = model_components.predict(  # ["model"]
+                            noiseless_theta[i, :],
+                            obs=observations,
+                            sps=sps,  # model_components["sps"]
                         )
-                        noiseless_theta[i,1] -= np.log10(mfrac)
-                        best_spec, best_phot, mfrac = model_components.predict( #["model"]
-	                        noiseless_theta[i,:], obs=observations, sps=sps #model_components["sps"]
+                        noiseless_theta[i, 1] -= np.log10(mfrac)
+                        (
+                            best_spec,
+                            best_phot,
+                            mfrac,
+                        ) = model_components.predict(  # ["model"]
+                            noiseless_theta[i, :],
+                            obs=observations,
+                            sps=sps,  # model_components["sps"]
                         )
-                        best_phot = np.vstack([best_phot,best_phot_s])
-                print(-2.5*np.log10(best_phot)) #np.median(best_phot,axis=0)))
-                import pdb; pdb.set_trace()
-            #avg_theta = np.median(noiseless_theta,axis=0)
-            #avg_theta[1] -= np.log10(mfrac)
-            #best_spec2, best_phot2, mfrac2 = model_mfrac.predict(
-	        #    avg_theta, obs=observations, sps=build_sps()
-            #)
+                        best_phot = np.vstack([best_phot, best_phot_s])
+                print(-2.5 * np.log10(best_phot))  # np.median(best_phot,axis=0)))
+                import pdb
 
-            #theta_test = np.array([ 0.12240195,  8.47703558, -1.34368912, -3.72383187, -2.20004498,
+                pdb.set_trace()
+            # avg_theta = np.median(noiseless_theta,axis=0)
+            # avg_theta[1] -= np.log10(mfrac)
+            # best_spec2, best_phot2, mfrac2 = model_mfrac.predict(
+            #    avg_theta, obs=observations, sps=build_sps()
+            # )
+
+            # theta_test = np.array([ 0.12240195,  8.47703558, -1.34368912, -3.72383187, -2.20004498,
             #                   3.03045638,  1.43847368,  2.05204451,  0.95743611,  0.55960846,
             #                   0.22913056,  1.28790968, -2.26064742,  1.67065051, -0.15686861,
             #                   1.51209086,  3.13108879, -0.39720158])
-            #theta_test = np.array([ 0.08959557,  9.91042752, -0.16129237, -0.05564067, -0.47920846, 0.04121112,  0.03795635,  0.49733082,  0.02108837,  0.42442192, 0.17738165,  0.52207115, -0.82690121,  1.12715198, -1.3099881, 1.17192278, 10.65062175, -2.48147237])
-            #obs, model, sps, noise = build_all(**run_params)
-            #best_spec, best_phot, mfrac = model.predict(theta_test, obs=observations, sps=build_sps())
+            # theta_test = np.array([ 0.08959557,  9.91042752, -0.16129237, -0.05564067, -0.47920846, 0.04121112,  0.03795635,  0.49733082,  0.02108837,  0.42442192, 0.17738165,  0.52207115, -0.82690121,  1.12715198, -1.3099881, 1.17192278, 10.65062175, -2.48147237])
+            # obs, model, sps, noise = build_all(**run_params)
+            # best_spec, best_phot, mfrac = model.predict(theta_test, obs=observations, sps=build_sps())
 
             #    age_interp, allsfhs_interp, allMWA, allsfrs = getSFH(
             # chain, theta_index=theta_index, rtn_chains=True, zred=zred
@@ -765,16 +801,16 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
             #         0.06441716, -0.19440235,  0.11935996,  0.37152376,  0.34494525,
             #        -0.42501956,  0.51024255, -2.06271797,  1.37400889, -1.21739342,
             #         3.32965967,  1.28220919, -1.79931691])
-            #(Pdb) noiseless_theta[0]
+            # (Pdb) noiseless_theta[0]
             # array([ 0.11942666, 10.399073  , -1.2320234 ,  0.11172969,  0.34717456,
             #         0.3892678 , -0.6431147 ,  0.24748906, -0.5234739 ,  0.27822632,
             #        -0.52583283,  1.187651  , -1.2531726 ,  1.9812987 , -1.2108788 ,
             #         2.0470366 ,  2.0370784 , -2.9912286 ], dtype=float32)
 
-            #import pdb; pdb.set_trace()
-            
+            # import pdb; pdb.set_trace()
+
             cnt += 1
-            #print(x)
+            # print(x)
             if run_params["verbose"]:
                 if cnt % 10 == 0:
                     print("mc samples:", cnt)
@@ -797,7 +833,7 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
     # ------------------------------------------------
 
     all_x = np.array(all_x)
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     all_x_flux = all_x.T[:nbands]
     all_x_unc = all_x.T[nbands:]
     y_guess = np.concatenate(
@@ -868,12 +904,12 @@ def sbi_mcnoise(obs, run_params, sbi_params, max_neighbors=200):
     see sec. 4.1.1 for details
     """
     signal.signal(signal.SIGALRM, timeout_handler)
-    
+
     if run_params["verbose"]:
         print("sbi mc noise")
 
     ave_theta = []
-    
+
     hatp_x_y = sbi_params["hatp_x_y"]
     y_train = sbi_params["y_train"]
 
@@ -896,9 +932,7 @@ def sbi_mcnoise(obs, run_params, sbi_params, max_neighbors=200):
     scale = sig_obs[noisy_idx]
 
     ### temporary for getting errors, because error model not good enough
-    chi2_nei = chi2dof(
-        mags=y_train[:,:22], obsphot=y_obs, obsphot_unc=sig_obs
-    )
+    chi2_nei = chi2dof(mags=y_train[:, :22], obsphot=y_obs, obsphot_unc=sig_obs)
 
     _chi2_thres = run_params["ini_chi2"] * 1
     while _chi2_thres <= run_params["max_chi2"]:
@@ -916,7 +950,6 @@ def sbi_mcnoise(obs, run_params, sbi_params, max_neighbors=200):
     else:
         chi2_selected = y_train[idx_chi2_selected]
 
-    
     cnt = 0
     cnt_timeout = 0
     timeout_flag = False
@@ -934,7 +967,7 @@ def sbi_mcnoise(obs, run_params, sbi_params, max_neighbors=200):
                 _nnflag &= True
             else:
                 _nnflag &= False
-            
+
             if _nnflag:
                 samp_y_guess[noisy_idx + nbands] = toy_noise(
                     flux=samp_y_guess[noisy_idx],
@@ -942,18 +975,19 @@ def sbi_mcnoise(obs, run_params, sbi_params, max_neighbors=200):
                     stds_sigs=sbi_params["toynoise_stds_sigs"][ii],
                     verbose=run_params["verbose"],
                 )[1]
-                #signal.alarm(run_params["tmax_per_obj"])
+                # signal.alarm(run_params["tmax_per_obj"])
 
-                for idx,fname in enumerate(obs['filternames']):
+                for idx, fname in enumerate(obs["filternames"]):
                     chc = np.random.choice(range(len(y_train[idx_chi2_selected])))
-                    samp_y_guess[22:-1][idx] = y_train[idx_chi2_selected][chc][22:-1][idx]
+                    samp_y_guess[22:-1][idx] = y_train[idx_chi2_selected][chc][22:-1][
+                        idx
+                    ]
 
-                
                 do_continue = False
-                for tmax,npost in zip([run_params["tmax_per_iter"]],[run_params["nposterior"]]):
-                    signal.alarm(
-                        tmax
-                    )  # max time spent on one object in sec
+                for tmax, npost in zip(
+                    [run_params["tmax_per_iter"]], [run_params["nposterior"]]
+                ):
+                    signal.alarm(tmax)  # max time spent on one object in sec
                     try:
                         noiseless_theta = hatp_x_y.sample(
                             (run_params["nposterior"],),
@@ -962,7 +996,7 @@ def sbi_mcnoise(obs, run_params, sbi_params, max_neighbors=200):
                         )
                     except TimeoutException:
                         signal.alarm(0)
-                        do_continue=True
+                        do_continue = True
                         break
 
                 if do_continue:
@@ -977,9 +1011,9 @@ def sbi_mcnoise(obs, run_params, sbi_params, max_neighbors=200):
                     if cnt % 10 == 0:
                         print("mc samples:", cnt)
 
-            #except TimeoutException:
+            # except TimeoutException:
             #    cnt_timeout += 1
-            #else:
+            # else:
             signal.alarm(0)
 
         # end time
@@ -1003,7 +1037,7 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
     then mc the noisy bands
     """
     signal.signal(signal.SIGALRM, timeout_handler)
-    
+
     if run_params["verbose"]:
         print("sbi missing and noisy bands")
 
@@ -1028,7 +1062,9 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
     not_valid_idx_unc = not_valid_idx + nbands
 
     # ------------------------------------------------
-    kdes, use_res_missing, idx_chi2_selected = gauss_approx_missingband(obs, run_params, sbi_params)
+    kdes, use_res_missing, idx_chi2_selected = gauss_approx_missingband(
+        obs, run_params, sbi_params
+    )
 
     # start time
     st = time.time()
@@ -1048,17 +1084,19 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
 
         # first, fill in the missing bands
         for j in range(len(not_valid_idx)):
-            #samp_y_guess[not_valid_idx[j]] = kdes[j].resample(size=1)
-            #samp_y_guess[not_valid_idx_unc[j]] = toy_noise(
+            # samp_y_guess[not_valid_idx[j]] = kdes[j].resample(size=1)
+            # samp_y_guess[not_valid_idx_unc[j]] = toy_noise(
             #    flux=samp_y_guess[not_valid_idx[j]],
             #    meds_sigs=sbi_params["toynoise_meds_sigs"][not_valid_idx[j]],
             #    stds_sigs=sbi_params["toynoise_stds_sigs"][not_valid_idx[j]],
             #    verbose=run_params["verbose"],
-            #)[1]
-            samp_y_guess[not_valid_idx[j]] = \
-                y_train[idx_chi2_selected][np.random.choice(range(len(idx_chi2_selected)))][not_valid_idx[j]]
-            samp_y_guess[not_valid_idx_unc[j]] = \
-                y_train[idx_chi2_selected][np.random.choice(range(len(idx_chi2_selected)))][not_valid_idx_unc[j]]
+            # )[1]
+            samp_y_guess[not_valid_idx[j]] = y_train[idx_chi2_selected][
+                np.random.choice(range(len(idx_chi2_selected)))
+            ][not_valid_idx[j]]
+            samp_y_guess[not_valid_idx_unc[j]] = y_train[idx_chi2_selected][
+                np.random.choice(range(len(idx_chi2_selected)))
+            ][not_valid_idx_unc[j]]
 
         # second, deal with OOD noise
         samp_y_guess[noisy_idx] = stats.norm.rvs(loc=loc, scale=scale)
@@ -1070,32 +1108,32 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
                 _nnflag &= False
 
             if _nnflag:
-                samp_y_guess[noisy_idx[ii] + nbands] = \
-                    y_train[idx_chi2_selected][np.random.choice(range(len(idx_chi2_selected)))][noisy_idx[ii] + nbands]
-                #samp_y_guess[noisy_idx + nbands] = toy_noise(
+                samp_y_guess[noisy_idx[ii] + nbands] = y_train[idx_chi2_selected][
+                    np.random.choice(range(len(idx_chi2_selected)))
+                ][noisy_idx[ii] + nbands]
+                # samp_y_guess[noisy_idx + nbands] = toy_noise(
                 #    flux=samp_y_guess[noisy_idx[ii]],
                 #    meds_sigs=sbi_params["toynoise_meds_sigs"][noisy_idx[ii]],
                 #    stds_sigs=sbi_params["toynoise_stds_sigs"][noisy_idx[ii]],
                 #    verbose=run_params["verbose"],
-                #)[1]
+                # )[1]
 
             # the noise model in the training isn't quite right
             # Pan-STARRS in particular seems a little off
             # we'll have to re-train at some point, but for now just pull
-            # uncertainties from the training sample 
-            for idx,fname in zip(valid_idx,obs['filternames'][valid_idx]):
-                #if 'PanSTARRS' in fname or '2MASS' in fname or 'SDSS' in fname or 'DES' in fname:
+            # uncertainties from the training sample
+            for idx, fname in zip(valid_idx, obs["filternames"][valid_idx]):
+                # if 'PanSTARRS' in fname or '2MASS' in fname or 'SDSS' in fname or 'DES' in fname:
                 chc = np.random.choice(range(len(y_train[idx_chi2_selected])))
                 samp_y_guess[22:][idx] = y_train[idx_chi2_selected][chc][22:][idx]
 
-            
             # if we can't get one posterior sample in one second, we should move along
             # to the next MC sample
             do_continue = False
-            for tmax,npost in zip([1,run_params["tmax_per_iter"]],[1,run_params["nposterior"]]):
-                signal.alarm(
-                    tmax
-                )  # max time spent on one object in sec
+            for tmax, npost in zip(
+                [1, run_params["tmax_per_iter"]], [1, run_params["nposterior"]]
+            ):
+                signal.alarm(tmax)  # max time spent on one object in sec
                 try:
                     noiseless_theta = hatp_x_y.sample(
                         (npost,),
@@ -1104,13 +1142,13 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
                     )
                 except TimeoutException:
                     signal.alarm(0)
-                    do_continue=True
+                    do_continue = True
                     break
 
             if do_continue:
                 continue
 
-            signal.alarm(0)            
+            signal.alarm(0)
             noiseless_theta = noiseless_theta.detach().numpy()
 
             ave_theta.append(noiseless_theta)
@@ -1119,7 +1157,6 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
             if run_params["verbose"]:
                 if cnt % 10 == 0:
                     print("mc samples:", cnt)
-
 
         # end time
         et = time.time()
@@ -1173,9 +1210,7 @@ def sbi_baseline(obs, run_params, sbi_params, max_neighbors=200):
     flags["timeout"] = False
 
     ### temporary for getting errors, because error model not good enough
-    chi2_nei = chi2dof(
-        mags=y_train[:,:22], obsphot=y_obs, obsphot_unc=sig_obs
-    )
+    chi2_nei = chi2dof(mags=y_train[:, :22], obsphot=y_obs, obsphot_unc=sig_obs)
 
     _chi2_thres = run_params["ini_chi2"] * 1
     while _chi2_thres <= run_params["max_chi2"]:
@@ -1193,14 +1228,13 @@ def sbi_baseline(obs, run_params, sbi_params, max_neighbors=200):
     else:
         chi2_selected = y_train[idx_chi2_selected]
 
-    
     # ------------------------------------------------
     # call baseline sbi to draw posterior samples
     signal.alarm(run_params["tmax_per_obj"])  # max time spent on one object in sec
 
     x = np.concatenate([y_obs, sig_obs, [obs["redshift"]]])
 
-    for idx,fname in enumerate(obs['filternames']):
+    for idx, fname in enumerate(obs["filternames"]):
         chc = np.random.choice(range(len(y_train[idx_chi2_selected])))
         x[22:-1][idx] = y_train[idx_chi2_selected][chc][22:-1][idx]
 
@@ -1274,7 +1308,7 @@ def sbi_pp(obs, run_params, sbi_params, max_neighbors=200):
         noisy_mask[j] = (sig_obs[j] - _toynoise[1]) / _toynoise[2] >= run_params[
             "noisy_sig"
         ]
-        #if noisy_mask[j]:
+        # if noisy_mask[j]:
         #    import pdb; pdb.set_trace()
     noisy_mask &= np.isfinite(y_obs)  # idx of noisy bands
     obs["noisy_mask"] = noisy_mask
@@ -1292,9 +1326,7 @@ def sbi_pp(obs, run_params, sbi_params, max_neighbors=200):
             print("baseline sbi")
 
         ### temporary for getting errors, because error model not good enough
-        chi2_nei = chi2dof(
-            mags=y_train[:,:22], obsphot=y_obs, obsphot_unc=sig_obs
-        )
+        chi2_nei = chi2dof(mags=y_train[:, :22], obsphot=y_obs, obsphot_unc=sig_obs)
 
         _chi2_thres = run_params["ini_chi2"] * 1
         while _chi2_thres <= run_params["max_chi2"]:
@@ -1312,16 +1344,15 @@ def sbi_pp(obs, run_params, sbi_params, max_neighbors=200):
         else:
             chi2_selected = y_train[idx_chi2_selected]
 
-            
         signal.alarm(run_params["tmax_per_obj"])  # max time spent on one object in sec
 
         x = np.concatenate([y_obs, sig_obs, [obs["redshift"]]])
 
-        for idx,fname in enumerate(obs['filternames']):
+        for idx, fname in enumerate(obs["filternames"]):
             chc = np.random.choice(range(len(y_train[idx_chi2_selected])))
             x[22:-1][idx] = y_train[idx_chi2_selected][chc][22:-1][idx]
 
-        try:                
+        try:
             ave_theta = hatp_x_y.sample(
                 (run_params["np_baseline"],),
                 x=torch.as_tensor(x.astype(np.float32)).to(device),

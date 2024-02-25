@@ -8,9 +8,9 @@ import pandas as pd
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 from django_celery_beat.models import PeriodicTask
-from django.contrib.auth.models import User
 from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
 
@@ -119,7 +119,7 @@ class Transient(SkyObject):
     milkyway_dust_reddening = models.FloatField(null=True, blank=True)
     processing_status = models.CharField(max_length=20, default="processing")
     added_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
-    
+
     @property
     def progress(self):
         tasks = TaskRegister.objects.filter(transient__name__exact=self.name)
@@ -134,7 +134,10 @@ class Transient(SkyObject):
     def best_redshift(self):
         """get the best redshift for a transient"""
         if self.host is not None and self.host.redshift is not None:
-            if self.redshift is not None and abs(self.host.redshift-self.redshift) < 0.02:
+            if (
+                self.redshift is not None
+                and abs(self.host.redshift - self.redshift) < 0.02
+            ):
                 z = self.host.redshift
             elif self.redshift is None:
                 z = self.host.redshift
@@ -274,9 +277,7 @@ class Filter(models.Model):
         curve_name = f"{settings.TRANSMISSION_CURVES_ROOT}/{self.name}.txt"
 
         try:
-            transmission_curve = pd.read_csv(
-                curve_name, sep='\s+', header=None
-            )
+            transmission_curve = pd.read_csv(curve_name, sep="\s+", header=None)
         except:
             raise ValueError(
                 f"{self.name}: Problem loading filter transmission curve from {curve_name}"
@@ -299,9 +300,7 @@ class Filter(models.Model):
             return None, None
 
         try:
-            corr_model = pd.read_csv(
-                corr_model_name, sep='\s+', header=None
-            )
+            corr_model = pd.read_csv(corr_model_name, sep="\s+", header=None)
         except:
             raise ValueError(
                 f"{self.name}: Problem loading filter transmission curve from {curve_name}"
@@ -348,17 +347,20 @@ def hdf5_file_path(instance):
     """
     return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}.h5"
 
+
 def npz_chains_file_path(instance):
     """
     Constructs a file path for a npz file
     """
     return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}_chain.npz"
 
+
 def npz_percentiles_file_path(instance):
     """
     Constructs a file path for a npz file
     """
     return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}_perc.npz"
+
 
 def npz_model_file_path(instance):
     """
@@ -484,9 +486,14 @@ class SEDFittingResult(models.Model):
     log_tau_50 = models.FloatField(null=True, blank=True)
     log_tau_84 = models.FloatField(null=True, blank=True)
 
-    chains_file = models.FileField(upload_to=npz_chains_file_path, null=True, blank=True)
-    percentiles_file = models.FileField(upload_to=npz_percentiles_file_path, null=True, blank=True)
+    chains_file = models.FileField(
+        upload_to=npz_chains_file_path, null=True, blank=True
+    )
+    percentiles_file = models.FileField(
+        upload_to=npz_percentiles_file_path, null=True, blank=True
+    )
     model_file = models.FileField(upload_to=npz_model_file_path, null=True, blank=True)
+
 
 class TaskRegisterSnapshot(models.Model):
     """

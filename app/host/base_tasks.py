@@ -2,8 +2,8 @@ from abc import ABC
 from abc import abstractmethod
 from abc import abstractproperty
 from time import process_time
-from billiard.exceptions import SoftTimeLimitExceeded
 
+from billiard.exceptions import SoftTimeLimitExceeded
 from django.utils import timezone
 
 from .models import Status
@@ -205,7 +205,7 @@ class TransientTaskRunner(TaskRunner):
             try:
                 status_message = self._run_process(transient)
             except SoftTimeLimitExceeded:
-                status_message = 'time limit exceeded'
+                status_message = "time limit exceeded"
                 raise
             except:
                 status_message = self._failed_status_message()

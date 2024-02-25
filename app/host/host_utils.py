@@ -223,10 +223,12 @@ def do_aperture_photometry(image, sky_aperture, filter):
     ### the others haven't given major problems
     if "WISE" in filter.name:
         aper_pix = sky_aperture.to_pixel(wcs)
-        lbg = LocalBackground(aper_pix.a,aper_pix.a*2)
-        local_background = lbg(background_subtracted_data,aper_pix.positions[0],aper_pix.positions[1])
+        lbg = LocalBackground(aper_pix.a, aper_pix.a * 2)
+        local_background = lbg(
+            background_subtracted_data, aper_pix.positions[0], aper_pix.positions[1]
+        )
         background_subtracted_data -= local_background
-        
+
     if filter.image_pixel_units == "counts/sec":
         error = calc_total_error(
             background_subtracted_data,
@@ -533,14 +535,14 @@ def query_ned(position):
 
     result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
     result_table = result_table[result_table["Redshift"].mask == False]
-    
+
     redshift = result_table["Redshift"].value
 
     if len(redshift):
-        pos = SkyCoord(result_table['RA'].value,result_table['DEC'].value,unit=u.deg)
+        pos = SkyCoord(result_table["RA"].value, result_table["DEC"].value, unit=u.deg)
         sep = position.separation(pos).arcsec
         iBest = np.where(sep == np.min(sep))[0][0]
-        
+
         galaxy_data = {"redshift": redshift[iBest]}
     else:
         galaxy_data = {"redshift": None}

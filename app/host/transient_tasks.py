@@ -279,7 +279,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
 
         if transient.best_redshift is None or transient.best_redshift < 0:
             return "failed"
-        
+
         aperture_size = get_local_aperture_size(transient.best_redshift)
 
         query = {"name__exact": f"{transient.name}_local"}
@@ -568,12 +568,17 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
             # otherwise, nearby galaxies are gonna be a huge pain
             is_contam_list += [is_contam]
         # issue warning and proceed if max 1 un-contaminated photometry point
-        issue_warning = True if len(np.where(~np.array(is_contam_list))[0]) <= 1 else False
+        issue_warning = (
+            True if len(np.where(~np.array(is_contam_list))[0]) <= 1 else False
+        )
 
-        for global_aperture_phot,is_contam in zip(global_aperture_photometry,is_contam_list):
+        for global_aperture_phot, is_contam in zip(
+            global_aperture_photometry, is_contam_list
+        ):
             if issue_warning:
                 contam_message = "contamination warning" if is_contam else "true"
-            else: contam_message = "false" if is_contam else "true"
+            else:
+                contam_message = "false" if is_contam else "true"
             global_aperture_phot.is_validated = contam_message
             global_aperture_phot.save()
 
@@ -675,7 +680,7 @@ class HostSEDFitting(TransientTaskRunner):
         if transient.best_redshift is None or transient.best_redshift > 0.2:
             ### training sample doesn't work here
             return "redshift too high"
-        
+
         aperture = Aperture.objects.filter(**query)
         if len(aperture) == 0:
             raise RuntimeError(f"no apertures found for transient {transient.name}")
@@ -714,7 +719,11 @@ class HostSEDFitting(TransientTaskRunner):
 
         print("starting model fit")
         posterior, errflag = fit_model(
-            observations, model_components, fitting_settings, sbipp=sbipp, fit_type=aperture_type
+            observations,
+            model_components,
+            fitting_settings,
+            sbipp=sbipp,
+            fit_type=aperture_type,
         )
         if errflag:
             return "not enough filters"
@@ -738,7 +747,9 @@ class HostSEDFitting(TransientTaskRunner):
                 sbipp=sbipp,
             )
         if save:
-            pr = SEDFittingResult.objects.filter(transient=transient,aperture__type=aperture_type)
+            pr = SEDFittingResult.objects.filter(
+                transient=transient, aperture__type=aperture_type
+            )
             if len(pr):
                 pr.update(**prosp_results)
             else:
@@ -762,7 +773,7 @@ class LocalHostSEDFitting(HostSEDFitting):
             "Local aperture photometry": "processed",
             "Validate local photometry": "processed",
             "Local host SED inference": "not processed",
-            "Transient MWEBV": "processed"
+            "Transient MWEBV": "processed",
         }
 
     @property
@@ -781,7 +792,9 @@ class LocalHostSEDFitting(HostSEDFitting):
     def _run_process(self, transient, mode="fast"):
         """Run the SED-fitting task"""
 
-        status_message = super()._run_process(transient, aperture_type="local", mode=mode)
+        status_message = super()._run_process(
+            transient, aperture_type="local", mode=mode
+        )
 
         return status_message
 
@@ -799,7 +812,7 @@ class GlobalHostSEDFitting(HostSEDFitting):
             "Global aperture photometry": "processed",
             "Validate global photometry": "processed",
             "Global host SED inference": "not processed",
-            "Host MWEBV": "processed"
+            "Host MWEBV": "processed",
         }
 
     @property
@@ -818,6 +831,8 @@ class GlobalHostSEDFitting(HostSEDFitting):
     def _run_process(self, transient, mode="fast", save=True):
         """Run the SED-fitting task"""
 
-        status_message = super()._run_process(transient, aperture_type="global", mode=mode, save=save)
+        status_message = super()._run_process(
+            transient, aperture_type="global", mode=mode, save=save
+        )
 
         return status_message

@@ -64,7 +64,7 @@ Transient filtering options
 
 Example:
 :code:`<blast_base_url>/api/transient/?redshift_gte=0.02`
-  
+
 Host fields
 +++++++++++
 
@@ -87,7 +87,7 @@ Host filtering options
 Example:
 :code:`<blast_base_url>/api/host/?photometric_redshift_lte=0.02`
 
-  
+
 Aperture fields
 +++++++++++++++
 
@@ -100,7 +100,7 @@ API link: :code:`/api/aperture/`
 * :code:`semi_minor_axis_arcsec` - semi minor axis of the aperture in arcseconds
 * :code:`cutout` - link to the :code:`Cutout` object used to create aperture, described below
 * :code:`type` - "local" or "global" aperture
-  
+
 Aperture filtering options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -124,7 +124,7 @@ API link: :code:`/api/photometry/`
 * :code:`transient` - link to :code:`Transient` object
 * :code:`is_validated` - checks on contaminating objects in the aperture (global apertures only) or ability to resolve 2 kpc in physical scale (local apertures only)
 
-  
+
 Photometry filtering options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -136,7 +136,7 @@ Example:
 
 
 .. _sedfittingresult:
-      
+
 SEDFittingResult fit fields
 +++++++++++++++++++++++++++
 
@@ -161,7 +161,7 @@ which can either be "16", "50" ot "84"
 * :code:`percentiles_file` - 16,50,84th percentiles for all parameters in the prospector-alpha model; files can be downloaded with the URL path :code:`<base_blast_url>/download_percentiles/<transient_name>/<aperture_type>`
 * :code:`model_file` - best-fit spectrum, photometry, and uncertainties; files can be downloaded with the URL path :code:`<base_blast_url>/download_modelfit/<transient_name>/<aperture_type>`
 
-  
+
 SED filtering options
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -172,7 +172,7 @@ Example:
 
 * :code:`<blast_base_url>/api/sedfittingresult/?transient=2010h`
 * :code:`<blast_base_url>/api/sedfittingresult/?aperture_type=local`
-  
+
 Cutout fields
 +++++++++++++
 
@@ -181,7 +181,7 @@ API link: :code:`/api/cutout/`
 :code:`name` - the name of the cutout object
 :code:`transient` - link to :code:`Transient` object
 :code:`filter` - link to photometric :code:`Filter` object
-      
+
 Cutout filtering options
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -190,7 +190,7 @@ Cutout filtering options
 
 Example:
 :code:`<blast_base_url>/api/cutout/?transient=2010h`
-  
+
 Task fields
 +++++++++++
 
@@ -260,7 +260,7 @@ Transient fields
     be populated at the current time. "blocked" - this transient has not been
     successfully fully processed by blast and some parts of the science payload
     will not be populated.
-    
+
 Host fields
 +++++++++++
 
@@ -269,7 +269,7 @@ Host fields
 * :code:`host_dec_deg` - host declination in decimal degrees e.g., 60.123424
 * :code:`host_redshift` - transient redshift e.g., 0.01
 * :code:`host_milkyway_dust_reddening` - host E(B-V) e.g, 0.2
-  
+
 Aperture fields
 +++++++++++++++
 

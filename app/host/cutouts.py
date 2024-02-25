@@ -110,7 +110,8 @@ def download_and_save_cutouts(
         if file_exists or fits:
             cutout_name = f"{transient.name}_{filter.name}"
             cutout_object = Cutout.objects.filter(
-                name=cutout_name, filter=filter, transient=transient)
+                name=cutout_name, filter=filter, transient=transient
+            )
 
             if not cutout_object.exists():
                 cutout_object = Cutout(

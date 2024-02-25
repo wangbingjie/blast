@@ -213,15 +213,33 @@ def get_all_outputs_and_chains(
     for key in keys:
         percentiles[key] = getPercentiles(chain, key, theta_index)
 
-    ### 
-    train_pars = np.array([ 0.11929193, 10.39623445, -1.32188065,  0.18913014,  0.16209094,
-                            0.06441716, -0.19440235,  0.11935996,  0.37152376,  0.34494525,
-                            -0.42501956,  0.51024255, -2.06271797,  1.37400889, -1.21739342,
-                            3.32965967,  1.28220919, -1.79931691])
+    ###
+    train_pars = np.array(
+        [
+            0.11929193,
+            10.39623445,
+            -1.32188065,
+            0.18913014,
+            0.16209094,
+            0.06441716,
+            -0.19440235,
+            0.11935996,
+            0.37152376,
+            0.34494525,
+            -0.42501956,
+            0.51024255,
+            -2.06271797,
+            1.37400889,
+            -1.21739342,
+            3.32965967,
+            1.28220919,
+            -1.79931691,
+        ]
+    )
     age_interp, allsfhs_interp, allMWA, allsfrs = getSFH(
         chain, theta_index=theta_index, rtn_chains=True, zred=zred
     )
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     # sfr and MWA percentiles
     # rtn_chains is defaulted to False: so need to transpose sfh and sfr
     allsfhs_interp[np.isnan(allsfhs_interp)] = 0
@@ -241,7 +259,7 @@ def get_all_outputs_and_chains(
         sub_idx = random.sample(range(res["chain"].shape[0]), chain_len)
     else:
         sub_idx = random.sample(range(res["chain"].shape[0]), nsamp)
-    
+
     chain = res["chain"][sub_idx]
     chains = {
         "age_interp": age_interp,
@@ -308,7 +326,7 @@ def run_all(
     ssfr = []
     modphots_all = []
     modspecs_all = []
-    
+
     for i, _subidx in enumerate(sub_idx):
         modspec, modmags, sm = mod_fsps.predict(
             res["chain"][int(_subidx)], sps=sps, obs=obs
@@ -316,11 +334,13 @@ def run_all(
         modphots_all.append(modmags)  # model photometry
         modspecs_all.append(modspec)  # model spectrum
         _mass = res["chain"][int(_subidx)][mass_idx]
-        
-        stellarmass.append(_mass) ## mass is already converted to surviving mass in training
+
+        stellarmass.append(
+            _mass
+        )  ## mass is already converted to surviving mass in training
 
         ssfr.append(
-            chains["sfr"][i] / 10**stellarmass[-1]
+            chains["sfr"][i] / 10 ** stellarmass[-1]
         )  # sfr chains are already sub-sampled
     stellarmass = np.array(stellarmass)
     ssfr = np.array(ssfr)

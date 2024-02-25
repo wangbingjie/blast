@@ -81,11 +81,11 @@ ir_filters = [
 
 # training set
 ### --- GLOBAL --- ###
-for _fit_type in ["global","local"]:
+for _fit_type in ["global", "local"]:
     data = h5py.File(sbi_params[f"train_fname_{_fit_type}"], "r")
     x_train = np.array(data["theta"])  # physical parameters
     y_train = np.array(data["phot"])  # fluxes & uncertainties
-        
+
     # we will only need the lower & upper limits to be passed to sbi as "priors"
     # here we simply read in the bounds from the training set
     prior_low = sbi_pp.prior_from_train("ll", x_train=x_train)
@@ -109,7 +109,9 @@ for _fit_type in ["global","local"]:
     anpe.append_simulations(x_tensor, y_tensor)
     p_x_y_estimator = anpe._build_neural_net(x_tensor, y_tensor)
     p_x_y_estimator.load_state_dict(
-        torch.load(sbi_params[f"anpe_fname_{_fit_type}"], map_location=torch.device(device))
+        torch.load(
+            sbi_params[f"anpe_fname_{_fit_type}"], map_location=torch.device(device)
+        )
     )
     anpe._x_shape = Ut.x_shape_from_simulation(y_tensor)
     if _fit_type == "global":
@@ -120,6 +122,7 @@ for _fit_type in ["global","local"]:
         hatp_x_y_local = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
         y_train_local = y_train[:]
         x_train_local = x_train[:]
+
 
 def maggies_to_asinh(x):
     """asinh magnitudes"""
@@ -143,8 +146,8 @@ def fit_sbi_pp(observations, n_filt_cuts=True, fit_type="global"):
                 toy_noise_x,
                 1.0857 * 1 / toy_noise_y,
                 kind="slinear",
-                fill_value='extrapolate', #(0.01,1.0),
-                bounds_error=False
+                fill_value="extrapolate",  # (0.01,1.0),
+                bounds_error=False,
             )
         ]
         stds_sigs += [
@@ -152,15 +155,20 @@ def fit_sbi_pp(observations, n_filt_cuts=True, fit_type="global"):
                 toy_noise_x,
                 1.0857 * 1 / toy_noise_y,
                 kind="slinear",
-                fill_value='extrapolate', #(0.01,1.0),
-                bounds_error=False
+                fill_value="extrapolate",  # (0.01,1.0),
+                bounds_error=False,
             )
         ]
     sbi_params["toynoise_meds_sigs"] = meds_sigs
     sbi_params["toynoise_stds_sigs"] = stds_sigs
 
     # a testing object of which the noises are OOD
-    mags, mags_unc, filternames, wavelengths = np.array([]), np.array([]), np.array([]), np.array([])
+    mags, mags_unc, filternames, wavelengths = (
+        np.array([]),
+        np.array([]),
+        np.array([]),
+        np.array([]),
+    )
 
     has_uv, has_opt, has_ir = False, False, False
     for f in all_filters:
@@ -196,7 +204,7 @@ def fit_sbi_pp(observations, n_filt_cuts=True, fit_type="global"):
     obs["redshift"] = observations["redshift"]
     obs["wavelengths"] = wavelengths
     obs["filternames"] = filternames
-    
+
     if n_filt_cuts and not has_opt and (not has_ir or not has_uv):
         print("not enough filters for reliable/fast inference")
         return {}, 1
@@ -215,7 +223,6 @@ def fit_sbi_pp(observations, n_filt_cuts=True, fit_type="global"):
     chain, obs, flags = sbi_pp.sbi_pp(
         obs=obs, run_params=run_params, sbi_params=sbi_params
     )
-
 
     # pathological format as we're missing some stuff that prospector usually spits out
     output = {"sampling": [{"samples": chain[:, :], "eff": 100}, 0]}
