@@ -33,7 +33,7 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
     try:
         float(transient.name)
         transient_name = "sn" + str(transient.name)
-    except:
+    except Exception as e:
         transient_name = transient.name
 
     ### some issues with Pan-STARRS downloads
@@ -46,11 +46,10 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
         ascentMatch=False,
     )
 
-    # import pdb; pdb.set_trace()
     # sometimes photo-zs randomly fail
     try:
         host_data = calc_photoz(host_data)
-    except:
+    except Exception as e:
         pass
 
     # clean up after GHOST...

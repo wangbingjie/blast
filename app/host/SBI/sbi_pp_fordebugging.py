@@ -1470,7 +1470,7 @@ def sbi_pp(obs, run_params, sbi_params, max_neighbors=200):
     ave_theta = np.array(ave_theta)
     try:
         ave_theta = np.concatenate(ave_theta)
-    except:
+    except Exception as e:
         pass
 
     return ave_theta, obs, flags

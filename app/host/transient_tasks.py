@@ -99,7 +99,7 @@ class MWEBV_Transient(TransientTaskRunner):
 
         try:
             mwebv = get_dust_maps(transient.sky_coord)
-        except:
+        except Exception as e:
             mwebv = None
 
         if mwebv is not None:
@@ -143,7 +143,7 @@ class MWEBV_Host(TransientTaskRunner):
         if transient.host is not None:
             try:
                 mwebv = get_dust_maps(transient.host.sky_coord)
-            except:
+            except Exception as e:
                 mwebv = None
 
             if mwebv is not None:
@@ -638,7 +638,7 @@ class HostInformation(TransientTaskRunner):
         ### too many SDSS errors
         try:
             galaxy_sdss_data = query_sdss(host.sky_coord)
-        except:
+        except Exception as e:
             galaxy_sdss_data = None
 
         status_message = "processed"

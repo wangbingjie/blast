@@ -208,7 +208,7 @@ def panstarrs_cutout(position, image_size=None, filter=None):
         )
         try:
             r = requests.get(fits_url, stream=True)
-        except:
+        except Exception as e:
             time.sleep(5)
             r = requests.get(fits_url, stream=True)
         fits_image = fits.open(BytesIO(r.content))
@@ -370,7 +370,7 @@ def DES_cutout(position, image_size=None, filter=None):
             fits_image = fits.open(
                 valid_urls[0].replace("-depth-", "-image-"), cache=None
             )
-        except:
+        except Exception as e:
             ### found some bad links...
             return None
         if np.shape(fits_image[0].data)[0] == 1 or np.shape(fits_image[0].data)[1] == 1:
@@ -379,7 +379,7 @@ def DES_cutout(position, image_size=None, filter=None):
 
         try:
             depth_image = fits.open(valid_urls[0])
-        except:
+        except Exception as e:
             # wonder if there's some issue with other tasks clearing the cache
             time.sleep(5)
             depth_image = fits.open(valid_urls[0])
@@ -559,7 +559,7 @@ def cutout(transient, survey, fov=Quantity(0.1, unit="deg")):
     if survey.image_download_method == "hips":
         try:
             fits = hips_cutout(transient, survey, image_size=num_pixels)
-        except:
+        except Exception as e:
             print(f"Conection timed out, could not download {survey.name} data")
             fits = None
     else:

@@ -192,11 +192,6 @@ def main():
             theta_max, obs=observations, sps=model_components["sps"]
         )
 
-        # signal.alarm(0)
-        # except TimeoutException:
-        #    print('too slow!')
-        #    signal.alarm(0)
-        #    continue
         signal.alarm(0)
         with open("masses.txt", "a") as fout:
             try:
@@ -209,5 +204,5 @@ def main():
                     ).log_mass_50,
                     file=fout,
                 )
-            except:
+            except Exception as e:
                 print(transient_name, np.mean(chain[:, 1]), mfrac, None, file=fout)

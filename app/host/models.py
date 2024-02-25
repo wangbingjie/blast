@@ -278,7 +278,7 @@ class Filter(models.Model):
 
         try:
             transmission_curve = pd.read_csv(curve_name, sep="\s+", header=None)
-        except:
+        except Exception as e:
             raise ValueError(
                 f"{self.name}: Problem loading filter transmission curve from {curve_name}"
             )

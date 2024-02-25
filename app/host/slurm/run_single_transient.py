@@ -22,7 +22,7 @@ transient_ra = os.environ["BLAST_TRANSIENT_RA"]
 transient_dec = os.environ["BLAST_TRANSIENT_DEC"]
 try:
     transient_redshift = os.environ["BLAST_TRANSIENT_REDSHIFT"]
-except:
+except Exception as e:
     transient_redshift = None
 
 tasks_in_order = [
