@@ -32,18 +32,19 @@ def theta_index(prior="p-alpha"):
     #         'log_fagn': slice(12, 13, None), 'log_agn_tau': slice(13, 14, None), 'gas_logz': slice(14, 15, None),
     #         'duste_qpah': slice(15, 16, None), 'duste_umin': slice(16, 17, None), 'log_duste_gamma': slice(17, 18, None)}
     index = {
-        "logmass": slice(0, 1, None),
-        "logzsol": slice(1, 2, None),
-        "logsfr_ratios": slice(2, 8, None),
-        "dust2": slice(8, 9, None),
-        "dust_index": slice(9, 10, None),
-        "dust1_fraction": slice(10, 11, None),
-        "log_fagn": slice(11, 12, None),
-        "log_agn_tau": slice(12, 13, None),
-        "gas_logz": slice(13, 14, None),
-        "duste_qpah": slice(14, 15, None),
-        "duste_umin": slice(15, 16, None),
-        "log_duste_gamma": slice(16, 17, None),
+        "zred": slice(0, 1, None),
+        "logmass": slice(1, 2, None),
+        "logzsol": slice(2, 3, None),
+        "logsfr_ratios": slice(3, 9, None),
+        "dust2": slice(9, 10, None),
+        "dust_index": slice(10, 11, None),
+        "dust1_fraction": slice(11, 12, None),
+        "log_fagn": slice(12, 13, None),
+        "log_agn_tau": slice(13, 14, None),
+        "gas_logz": slice(14, 15, None),
+        "duste_qpah": slice(15, 16, None),
+        "duste_umin": slice(16, 17, None),
+        "log_duste_gamma": slice(17, 18, None),
     }
 
     return index
@@ -212,9 +213,15 @@ def get_all_outputs_and_chains(
     for key in keys:
         percentiles[key] = getPercentiles(chain, key, theta_index)
 
+    ### 
+    train_pars = np.array([ 0.11929193, 10.39623445, -1.32188065,  0.18913014,  0.16209094,
+                            0.06441716, -0.19440235,  0.11935996,  0.37152376,  0.34494525,
+                            -0.42501956,  0.51024255, -2.06271797,  1.37400889, -1.21739342,
+                            3.32965967,  1.28220919, -1.79931691])
     age_interp, allsfhs_interp, allMWA, allsfrs = getSFH(
         chain, theta_index=theta_index, rtn_chains=True, zred=zred
     )
+    #import pdb; pdb.set_trace()
     # sfr and MWA percentiles
     # rtn_chains is defaulted to False: so need to transpose sfh and sfr
     allsfhs_interp[np.isnan(allsfhs_interp)] = 0
@@ -229,7 +236,12 @@ def get_all_outputs_and_chains(
     percentiles["sfr"] = sfr.T
 
     # saved chains are subsampled, so that we can plot stellar mass on the corner plot
-    sub_idx = random.sample(range(res["chain"].shape[0]), nsamp)
+    chain_len = res["chain"].shape[0]
+    if nsamp > chain_len:
+        sub_idx = random.sample(range(res["chain"].shape[0]), chain_len)
+    else:
+        sub_idx = random.sample(range(res["chain"].shape[0]), nsamp)
+    
     chain = res["chain"][sub_idx]
     chains = {
         "age_interp": age_interp,
@@ -275,7 +287,7 @@ def run_all(
     """
 
     # zred_idx = 0
-    mass_idx = 0
+    mass_idx = 1
     # scalar outputs that do not need transform functions
     keys = [
         "logzsol",
@@ -289,7 +301,6 @@ def run_all(
         "duste_umin",
         "log_duste_gamma",
     ]
-
     percentiles, chains, sub_idx = get_all_outputs_and_chains(res, keys=keys, zred=zred)
 
     # ---------- total mass formed -> stellar mass
@@ -297,7 +308,7 @@ def run_all(
     ssfr = []
     modphots_all = []
     modspecs_all = []
-
+    
     for i, _subidx in enumerate(sub_idx):
         modspec, modmags, sm = mod_fsps.predict(
             res["chain"][int(_subidx)], sps=sps, obs=obs
@@ -305,11 +316,11 @@ def run_all(
         modphots_all.append(modmags)  # model photometry
         modspecs_all.append(modspec)  # model spectrum
         _mass = res["chain"][int(_subidx)][mass_idx]
-        stellarmass.append(np.log10(10**_mass * sm))
+        stellarmass.append(_mass) ## mass is already converted to surviving mass in training
+        ### np.log10(10**_mass * sm))
         ssfr.append(
-            chains["sfr"][i] / 10**_mass * sm
+            chains["sfr"][i] / 10**stellarmass[-1] ###10**_mass * sm
         )  # sfr chains are already sub-sampled
-
     stellarmass = np.array(stellarmass)
     ssfr = np.array(ssfr)
     modphots_all = np.array(modphots_all)

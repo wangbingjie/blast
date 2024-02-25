@@ -1,6 +1,7 @@
 import os
 import re
 import time
+from io import BytesIO
 
 import astropy.table as at
 import astropy.units as u
@@ -69,7 +70,7 @@ def getRADecBox(ra, dec, size):
 def download_and_save_cutouts(
     transient,
     fov=Quantity(0.1, unit="deg"),
-    media_root=settings.MEDIA_ROOT,
+    media_root=settings.CUTOUT_ROOT,
     overwrite=settings.CUTOUT_OVERWRITE,
 ):
     """
@@ -97,24 +98,29 @@ def download_and_save_cutouts(
         path_to_fits = save_dir + f"{filter.name}.fits"
         file_exists = os.path.exists(path_to_fits)
 
-        if file_exists and overwrite == "False":
-            cutout_name = f"{transient.name}_{filter.name}"
-            cutout_object = Cutout(name=cutout_name, filter=filter, transient=transient)
-            cutout_object.fits.name = path_to_fits
-            cutout_object.save()
-        else:
+        fits = None
+        if not file_exists or not overwrite == "False":
             fits = cutout(transient.sky_coord, filter, fov=fov)
             if fits:
                 save_dir = f"{media_root}/{transient.name}/{filter.survey.name}/"
                 os.makedirs(save_dir, exist_ok=True)
                 path_to_fits = save_dir + f"{filter.name}.fits"
                 fits.writeto(path_to_fits, overwrite=True)
-                cutout_name = f"{transient.name}_{filter.name}"
+
+        if file_exists or fits:
+            cutout_name = f"{transient.name}_{filter.name}"
+            cutout_object = Cutout.objects.filter(
+                name=cutout_name, filter=filter, transient=transient)
+
+            if not cutout_object.exists():
                 cutout_object = Cutout(
                     name=cutout_name, filter=filter, transient=transient
                 )
-                cutout_object.fits.name = path_to_fits
-                cutout_object.save()
+            else:
+                cutout_object = cutout_object[0]
+
+            cutout_object.fits.name = path_to_fits
+            cutout_object.save()
 
 
 def panstarrs_image_filename(position, image_size=None, filter=None):
@@ -137,7 +143,11 @@ def panstarrs_image_filename(position, image_size=None, filter=None):
         f"&size={image_size}&format=fits&filters={filter}"
     )
 
-    filename_table = pd.read_csv(url, delim_whitespace=True)["filename"]
+    ### having SSL errors with pandas, so let's run it through requests
+    ### in an unsafe way
+    r = requests.get(url,verify=False,stream=True)
+    r.raw.decode_content = True
+    filename_table = pd.read_csv(r.raw, delim_whitespace=True)["filename"]
     return filename_table[0] if len(filename_table) > 0 else None
 
 
@@ -187,6 +197,7 @@ def panstarrs_cutout(position, image_size=None, filter=None):
     -------
     :cutout : :class:`~astropy.io.fits.HDUList` or None
     """
+
     filename = panstarrs_image_filename(position, image_size=image_size, filter=filter)
     if filename is not None:
         service = "https://ps1images.stsci.edu/cgi-bin/fitscut.cgi?"
@@ -194,7 +205,15 @@ def panstarrs_cutout(position, image_size=None, filter=None):
             f"{service}ra={position.ra.degree}&dec={position.dec.degree}"
             f"&size={image_size}&format=fits&red={filename}"
         )
-        fits_image = fits.open(fits_url)
+
+        ### try twice
+        try:
+            r = requests.get(fits_url,verify=False,stream=True)
+        except:
+            time.sleep(5)
+            r = requests.get(fits_url,verify=False,stream=True)
+        fits_image = fits.open(BytesIO(r.content))
+
     else:
         fits_image = None
 
@@ -356,7 +375,12 @@ def DES_cutout(position, image_size=None, filter=None):
             # no idea what's happening here but this is a mess
             return None
 
-        depth_image = fits.open(valid_urls[0])
+        try:
+            depth_image = fits.open(valid_urls[0])
+        except:
+            # wonder if there's some issue with other tasks clearing the cache
+            time.sleep(5)
+            depth_image = fits.open(valid_urls[0])
         wcs_depth = WCS(depth_image[0].header)
         xc, yc = wcs_depth.wcs_world2pix(position.ra.deg, position.dec.deg, 0)
 
