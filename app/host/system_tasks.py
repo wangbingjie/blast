@@ -4,6 +4,7 @@ import shutil
 
 from django.conf import settings
 from django.utils import timezone
+from django.db.models import Q
 
 from .base_tasks import initialise_all_tasks_status
 from .base_tasks import SystemTaskRunner
@@ -188,7 +189,10 @@ class LogTransientProgress(SystemTaskRunner):
         transients = Transient.objects.all()
 
         for transient in transients:
-            tasks = TaskRegister.objects.filter(transient__name__exact=transient.name)
+            tasks = TaskRegister.objects.filter(
+                Q(transient__name__exact=transient.name) &
+                ~Q(task__name=self.task_name)
+            )
             processing_task_qs = TaskRegister.objects.filter(transient__name__exact=transient.name,
                                                              task__name=self.task_name)
             
