@@ -1,13 +1,13 @@
-from math import pi
+import math
 import os
-
+from math import pi
 
 import extinction
 import numpy as np
-import math
 import pandas as pd
 import prospect.io.read_results as reader
 from astropy.coordinates import SkyCoord
+from astropy.cosmology import WMAP9 as cosmo
 from astropy.io import fits
 from astropy.visualization import AsinhStretch
 from astropy.visualization import PercentileInterval
@@ -19,25 +19,26 @@ from bokeh.models import ColumnDataSource
 from bokeh.models import Cross
 from bokeh.models import Ellipse
 from bokeh.models import Grid
+from bokeh.models import HoverTool
 from bokeh.models import LabelSet
+from bokeh.models import Legend
 from bokeh.models import LinearAxis
 from bokeh.models import LogColorMapper
 from bokeh.models import Plot
-from bokeh.models import Scatter
 from bokeh.models import Range1d
-from bokeh.models import HoverTool
+from bokeh.models import Scatter
 from bokeh.palettes import Category20
+from bokeh.plotting import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.plotting import show
-from bokeh.plotting import ColumnDataSource
-from bokeh.models import Legend
 from bokeh.transform import cumsum
 from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
 from host.models import Filter
-from host.photometric_calibration import maggies_to_mJy, mJy_to_maggies
-from host.prospector import build_obs, build_model
-from astropy.cosmology import WMAP9 as cosmo
+from host.photometric_calibration import maggies_to_mJy
+from host.photometric_calibration import mJy_to_maggies
+from host.prospector import build_model
+from host.prospector import build_obs
 
 from .models import Aperture
 
@@ -54,7 +55,7 @@ def plot_image(image_data, figure):
 
     # sometimes low image mins mess up the plotting
     perc01 = np.nanpercentile(image_data, 1)
-    
+
     image_data = np.nan_to_num(image_data, nan=perc01)
     image_data = image_data + abs(np.amin(image_data)) + 0.1
 
@@ -131,7 +132,6 @@ def plot_cutout_image(
 ):
 
     title = cutout.filter if cutout is not None else "No cutout selected"
-    
 
     if cutout is not None:
         with fits.open(cutout.fits.name) as fits_file:
@@ -143,13 +143,12 @@ def plot_cutout_image(
             x_axis_label="",
             y_axis_label="",
             plot_width=700,
-            plot_height=int(np.shape(image_data)[0]/np.shape(image_data)[1]*700),
+            plot_height=int(np.shape(image_data)[0] / np.shape(image_data)[1] * 700),
         )
         fig.axis.visible = False
         fig.xgrid.visible = False
         fig.ygrid.visible = False
 
-            
         transient_kwargs = {
             "legend_label": f"{transient.name}",
             "size": 30,
@@ -202,12 +201,11 @@ def plot_cutout_image(
             x_axis_label="",
             y_axis_label="",
             plot_width=700,
-            plot_height=700
+            plot_height=700,
         )
         fig.axis.visible = False
         fig.xgrid.visible = False
         fig.ygrid.visible = False
-
 
     plot_image(image_data, fig)
     script, div = components(fig)
@@ -220,12 +218,12 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
     """
 
     try:
-        obs = build_obs(transient,type,use_mag_offset=False)
+        obs = build_obs(transient, type, use_mag_offset=False)
     except ValueError:
-        obs = {'filters':[],'maggies':[],'maggies_unc':[]}
+        obs = {"filters": [], "maggies": [], "maggies_unc": []}
     except AssertionError:
-        obs = {'filters':[],'maggies':[],'maggies_unc':[]}
-    
+        obs = {"filters": [], "maggies": [], "maggies_unc": []}
+
     def maggies_to_asinh(x):
         """asinh magnitudes"""
         a = 2.50 * np.log10(np.e)
@@ -235,18 +233,17 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
     def asinh_to_maggies(x):
         mu = 35.0
         a = 2.50 * np.log10(np.e)
-        return np.array([2*math.sinh((mu-x1)/a)*np.exp(-mu/a) for x1 in x])
+        return np.array([2 * math.sinh((mu - x1) / a) * np.exp(-mu / a) for x1 in x])
 
-        
     flux, flux_error, wavelength, filters, mag, mag_error = [], [], [], [], [], []
-    for fl,f,fe in zip(obs['filters'],obs['maggies'],obs['maggies_unc']):
+    for fl, f, fe in zip(obs["filters"], obs["maggies"], obs["maggies_unc"]):
         wavelength += [fl.wave_effective]
         flux += [maggies_to_mJy(f)]
         flux_error += [maggies_to_mJy(fe)]
         filters += [fl.name]
-        mag += [-2.5*np.log10(f)]
-        mag_error += [1.086*fe/f]
-        
+        mag += [-2.5 * np.log10(f)]
+        mag_error += [1.086 * fe / f]
+
     fig = figure(
         title="",
         width=700,
@@ -258,8 +255,8 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
         y_axis_label="Flux",
     )
     if len(flux):
-        fig.y_range=Range1d(-0.05*np.max(flux), 1.5*np.max(flux))
-        fig.x_range=Range1d(np.min(wavelength)*0.5,np.max(wavelength)*1.5)        
+        fig.y_range = Range1d(-0.05 * np.max(flux), 1.5 * np.max(flux))
+        fig.x_range = Range1d(np.min(wavelength) * 0.5, np.max(wavelength) * 1.5)
 
     source = ColumnDataSource(
         data=dict(
@@ -268,7 +265,7 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
             flux_error=flux_error,
             filters=filters,
             mag=mag,
-            mag_error=mag_error
+            mag_error=mag_error,
         )
     )
 
@@ -279,45 +276,74 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
         yerr=flux_error,
         point_kwargs={"size": 10, "legend_label": "data"},
         error_kwargs={"width": 2},
-        source=source
+        source=source,
     )
 
     # mouse-over for data
     TOOLTIPS = [
-        ('flux (mJy)','$y'),
-        ('flux error (mJy)','@flux_error'),
-        ('wavelength','$x'),
-        ('band','@filters'),
-        ('mag (AB)','@mag'),
-        ('mag error (AB)','@mag_error')]
-    hover = HoverTool(renderers=[p],
-                         tooltips=TOOLTIPS,toggleable=False)
+        ("flux (mJy)", "$y"),
+        ("flux error (mJy)", "@flux_error"),
+        ("wavelength", "$x"),
+        ("band", "@filters"),
+        ("mag (AB)", "@mag"),
+        ("mag error (AB)", "@mag_error"),
+    ]
+    hover = HoverTool(renderers=[p], tooltips=TOOLTIPS, toggleable=False)
     fig.add_tools(hover)
 
-    
     # second check on SED file
     # long-term shouldn't be necessary, just a result of debugging
-    if sed_results_file is not None and \
-       os.path.exists(sed_results_file.replace(".h5", "_modeldata.npz")):
+    if sed_results_file is not None and os.path.exists(
+        sed_results_file.replace(".h5", "_modeldata.npz")
+    ):
         result, obs, _ = reader.results_from(sed_results_file, dangerous=False)
         model_data = np.load(
             sed_results_file.replace(".h5", "_modeldata.npz"), allow_pickle=True
         )
-        
-        #best = result["bestfit"]
+
+        # best = result["bestfit"]
         if transient.best_redshift < 0.015:
-            a = result["obs"]["redshift"]-0.015 + 1
-            mag_off = cosmo.distmod(result["obs"]["redshift"]).value - cosmo.distmod(result["obs"]["redshift"]-0.015).value
+            a = result["obs"]["redshift"] - 0.015 + 1
+            mag_off = (
+                cosmo.distmod(result["obs"]["redshift"]).value
+                - cosmo.distmod(result["obs"]["redshift"] - 0.015).value
+            )
             print(f"mag off: {mag_off}")
-            fig.line(a * model_data['rest_wavelength'], maggies_to_mJy(model_data['spec'])*10**(0.4*mag_off),legend_label='average model')
-            fig.line(a * model_data['rest_wavelength'], maggies_to_mJy(model_data['spec_16'])*10**(0.4*mag_off),line_dash='dashed',legend_label='68% CI')
-            fig.line(a * model_data['rest_wavelength'], maggies_to_mJy(model_data['spec_84'])*10**(0.4*mag_off),line_dash='dashed')
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec"]) * 10 ** (0.4 * mag_off),
+                legend_label="average model",
+            )
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec_16"]) * 10 ** (0.4 * mag_off),
+                line_dash="dashed",
+                legend_label="68% CI",
+            )
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec_84"]) * 10 ** (0.4 * mag_off),
+                line_dash="dashed",
+            )
         else:
             mag_off = 0
             a = result["obs"]["redshift"] + 1
-            fig.line(a * model_data['rest_wavelength'], maggies_to_mJy(model_data['spec']),legend_label='average model')
-            fig.line(a * model_data['rest_wavelength'], maggies_to_mJy(model_data['spec_16']),line_dash='dashed',legend_label='68% CI')
-            fig.line(a * model_data['rest_wavelength'], maggies_to_mJy(model_data['spec_84']),line_dash='dashed')
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec"]),
+                legend_label="average model",
+            )
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec_16"]),
+                line_dash="dashed",
+                legend_label="68% CI",
+            )
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec_84"]),
+                line_dash="dashed",
+            )
 
         #  pre-SBI++ version: fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
         if obs["filters"] is not None:
@@ -330,43 +356,53 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
                 pwave = [f.wave_effective for f in obs["filters"]]
 
             if transient.best_redshift < 0.015:
-                fig.circle(pwave, maggies_to_mJy(model_data['phot'])*10**(0.4*mag_off), size=10)
+                fig.circle(
+                    pwave,
+                    maggies_to_mJy(model_data["phot"]) * 10 ** (0.4 * mag_off),
+                    size=10,
+                )
             else:
-                fig.circle(pwave, maggies_to_mJy(model_data['phot']), size=10)
+                fig.circle(pwave, maggies_to_mJy(model_data["phot"]), size=10)
 
-
-    #test_phot_4 = np.array([18.44917736, 19.0289876 , 18.27045845, 18.3987695 , 18.66701225,
+    # test_phot_4 = np.array([18.44917736, 19.0289876 , 18.27045845, 18.3987695 , 18.66701225,
     #   17.11904966, 16.89851784, 27.20550304, 28.29986009, 22.65926304,
     #   21.47196493, 20.65010897, 20.08061676, 19.67643617, 20.67766742,
     #   21.48831115, 24.9984856 , 19.94890003, 22.83564872, 22.70354309,
     #   21.30523937, 19.85459949])
-    #wavelengths = np.array([ 16457.51649924,  12358.16563326,  21603.19726738,  33683.74452296,
+    # wavelengths = np.array([ 16457.51649924,  12358.16563326,  21603.19726738,  33683.74452296,
     #                         46179.17938567, 120804.55139845, 221937.56629762,   2271.12579359,
     #                         1528.05943437,   4814.28808341,   6174.34957128,   7515.76770146,
     #                         8663.63218297,   9616.86645988,   7470.59733873,   6156.34741146,
     #                         3545.96999013,   8917.60458074,   4669.63995746,   4771.73622989,
     #                         6388.82325327,   9148.74613645])
-    #iNotNan = test_model_phot == test_model_phot
+    # iNotNan = test_model_phot == test_model_phot
 
-
-    #fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_model_phot[0:22][iNotNan[0:22]])), size=10, color='green')
-    #fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_phot_3[0:22][iNotNan[0:22]])), size=10, color='blue')
-    #fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_phot_4[0:22][iNotNan[0:22]])), size=10, color='black')
-    #fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_phot_2[0:22][iNotNan[0:22]])), size=10, color='black')    
+    # fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_model_phot[0:22][iNotNan[0:22]])), size=10, color='green')
+    # fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_phot_3[0:22][iNotNan[0:22]])), size=10, color='blue')
+    # fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_phot_4[0:22][iNotNan[0:22]])), size=10, color='black')
+    # fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_phot_2[0:22][iNotNan[0:22]])), size=10, color='black')
 
     # see which filters are causing problems:
     # GALEX - 7,8 (NUV, FUV)
     # WISE - 3,4,5,6
     # 2MASS - 0,1,2
     # optical
-    
+
     fig.legend.location = "top_left"
     script, div = components(fig)
     return {f"bokeh_sed_{type}_script": script, f"bokeh_sed_{type}_div": div}
 
 
 def plot_errorbar(
-        figure, x, y, xerr=None, yerr=None, color="red", point_kwargs={}, error_kwargs={}, source=None
+    figure,
+    x,
+    y,
+    xerr=None,
+    yerr=None,
+    color="red",
+    point_kwargs={},
+    error_kwargs={},
+    source=None,
 ):
     """
     Plot data points with error bars on a bokeh plot
@@ -374,10 +410,10 @@ def plot_errorbar(
 
     # to do the mouse-over
     if source is not None:
-        p = figure.circle('x', 'y', color=color, source=source, **point_kwargs)
+        p = figure.circle("x", "y", color=color, source=source, **point_kwargs)
     else:
         p = figure.circle(x, y, color=color, source=source, **point_kwargs)
-        
+
     if xerr:
         x_err_x = []
         x_err_y = []

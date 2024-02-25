@@ -520,7 +520,7 @@ class TrainSBI(CronJobBase):
                 # call prospector
                 # generate the model SED at given theta
                 spec, phot, mfrac = model.predict(theta, obs=obs, sps=sps)
-                
+
                 predicted_mags = -2.5 * np.log10(phot)
                 theta[1] += np.log10(mfrac)
 

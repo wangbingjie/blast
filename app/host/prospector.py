@@ -1,7 +1,7 @@
 # Utils and wrappers for the prospector SED fitting code
+import copy
 import json
 import os
-import copy
 import time
 
 import extinction
@@ -10,6 +10,7 @@ import numpy as np
 import prospect.io.read_results as reader
 from astropy.cosmology import WMAP9 as cosmo
 from django.conf import settings
+from django.db.models import Q
 from host import postprocess_prosp as pp
 from host.SBI.run_sbi_blast import fit_sbi_pp
 from prospect.fitting import fit_model as fit_model_prospect
@@ -34,7 +35,6 @@ from .models import AperturePhotometry
 from .models import Filter
 from .models import hdf5_file_path
 from .photometric_calibration import mJy_to_maggies  ##jansky_to_maggies
-from django.db.models import Q
 
 # add redshift scaling to agebins, such that
 # t_max = t_univ
@@ -92,10 +92,7 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
 
     photometry = AperturePhotometry.objects.filter(
         transient=transient, aperture__type__exact=aperture_type
-    ).\
-    filter(
-        Q(is_validated="true") | Q(is_validated="contamination warning")
-    )
+    ).filter(Q(is_validated="true") | Q(is_validated="contamination warning"))
 
     if not photometry.exists():
         raise ValueError(f"No host photometry of type {aperture_type}")
@@ -109,11 +106,11 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
         z += 0.015
     else:
         mag_offset = 0
-        
+
     filters, flux_maggies, flux_maggies_error = [], [], []
 
     for filter in Filter.objects.all():
-        #if 'PanSTARRS' in filter.name or 'DES' in filter.name: continue
+        # if 'PanSTARRS' in filter.name or 'DES' in filter.name: continue
         try:
             datapoint = photometry.get(filter=filter)
         except AperturePhotometry.DoesNotExist:
@@ -121,10 +118,10 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
             continue
         except AperturePhotometry.MultipleObjectsReturned:
             raise
-        
+
         if datapoint.flux is None:
             continue
-        
+
         # correct for MW reddening
         if aperture_type == "global":
             mwebv = transient.host.milkyway_dust_reddening
@@ -148,20 +145,25 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
             datapoint.flux * 10 ** (-0.4 * filter.ab_offset) * 10 ** (0.4 * ext_corr)
         )
         # 1% error floor
-        fluxerr_mwcorr = (
-            np.sqrt((datapoint.flux_error
-                     * 10 ** (-0.4 * filter.ab_offset)
-                     * 10 ** (0.4 * ext_corr))**2. + \
-                    (0.01*flux_mwcorr)**2.)
+        fluxerr_mwcorr = np.sqrt(
+            (
+                datapoint.flux_error
+                * 10 ** (-0.4 * filter.ab_offset)
+                * 10 ** (0.4 * ext_corr)
+            )
+            ** 2.0
+            + (0.01 * flux_mwcorr) ** 2.0
         )
-        
+
         # TEST - are low-S/N observations messing up prospector?
         if flux_mwcorr / fluxerr_mwcorr < 3:
             continue
-        
+
         filters.append(filter.transmission_curve())
-        flux_maggies.append(mJy_to_maggies(flux_mwcorr*10**(-0.4*mag_offset)))
-        flux_maggies_error.append(mJy_to_maggies(fluxerr_mwcorr*10**(-0.4*mag_offset)))
+        flux_maggies.append(mJy_to_maggies(flux_mwcorr * 10 ** (-0.4 * mag_offset)))
+        flux_maggies_error.append(
+            mJy_to_maggies(fluxerr_mwcorr * 10 ** (-0.4 * mag_offset))
+        )
 
     obs_data = dict(
         wavelength=None,
@@ -172,8 +174,9 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
         maggies_unc=np.array(flux_maggies_error),
         filters=filters,
     )
-    
+
     return fix_obs(obs_data)
+
 
 def build_model_nonparam(obs=None, **extras):
     """prospector-alpha"""
@@ -728,11 +731,13 @@ def build_model(observations):
     return {"model": model, "sps": sps, "noise_model": noise_model}
 
 
-def fit_model(observations, model_components, fitting_kwargs, sbipp=False, fit_type="global"):
+def fit_model(
+    observations, model_components, fitting_kwargs, sbipp=False, fit_type="global"
+):
     """Fit the model"""
 
     if sbipp:
-        output, errflag = fit_sbi_pp(observations,fit_type=fit_type)
+        output, errflag = fit_sbi_pp(observations, fit_type=fit_type)
     else:
         output = fit_model_prospect(
             observations,
@@ -805,26 +810,28 @@ def prospector_result_to_blast(
     # load up the hdf5 file to get the results
     resultpars, obs, _ = reader.results_from(hdf5_file, dangerous=False)
 
-   # if sbipp:
-   #     theta_max = resultpars["chain"][100] #np.mean(resultpars["chain"], axis=0) # + np.std(resultpars["chain"], axis=0)
-    #else:
+    # if sbipp:
+    #     theta_max = resultpars["chain"][100] #np.mean(resultpars["chain"], axis=0) # + np.std(resultpars["chain"], axis=0)
+    # else:
     #    imax = np.argmax(resultpars["lnprobability"])
     #    csz = resultpars["chain"].shape
     #    if resultpars["chain"].ndim > 2:
-            # emcee
+    # emcee
     #        i, j = np.unravel_index(imax, resultpars["lnprobability"].shape)
     #        theta_max = resultpars["chain"][i, j, :].copy()
     #    else:
-            # dynesty
+    # dynesty
     #        theta_max = resultpars["chain"][imax, :].copy()
 
     model_init = copy.deepcopy(model_components["model"])
     tstart = time.time()
     ### take the mean of 50 random samples to get the "best fit" model
-    #best_phot_store = np.array([])
+    # best_phot_store = np.array([])
     for i in range(50):
-        theta = resultpars["chain"][np.random.choice(np.arange(np.shape(resultpars["chain"])[0])),:]
-        theta[0] = observations['redshift']
+        theta = resultpars["chain"][
+            np.random.choice(np.arange(np.shape(resultpars["chain"])[0])), :
+        ]
+        theta[0] = observations["redshift"]
         if i == 0:
             best_spec, best_phot, mfrac = model_components["model"].predict(
                 theta, obs=observations, sps=model_components["sps"]
@@ -839,29 +846,29 @@ def prospector_result_to_blast(
             best_phot_store = best_phot[:]
             best_spec_store = best_spec[:]
         else:
-            best_spec_single, best_phot_single, mfrac_single = model_components["model"].predict(
-                theta, obs=observations, sps=model_components["sps"]
-            )
+            best_spec_single, best_phot_single, mfrac_single = model_components[
+                "model"
+            ].predict(theta, obs=observations, sps=model_components["sps"])
             theta[1] -= np.log10(mfrac)
             ### we need our mass to be conv to total \
             ###    formed mass for the model to be accurate
             best_spec_single, best_phot_single, mfrac_single = model_init.predict(
                 theta, obs=observations, sps=model_components["sps"]
             )
-            
+
             # iteratively update the mean
-            best_spec = (best_spec*i + best_spec_single)/(i+1)
-            best_phot = (best_phot*i + best_phot_single)/(i+1)
-            mfrac = (mfrac*i + mfrac_single)/(i+1)
-            best_phot_store = np.vstack([best_phot_store,best_phot_single])
-            best_spec_store = np.vstack([best_spec_store,best_spec_single])
-    best_phot = np.median(best_phot_store,axis=0)
-    best_spec = np.median(best_spec_store,axis=0)
-    phot_16,phot_84 = np.percentile(best_phot_store,[16,84],axis=0)
-    spec_16,spec_84 = np.percentile(best_spec_store,[16,84],axis=0)
+            best_spec = (best_spec * i + best_spec_single) / (i + 1)
+            best_phot = (best_phot * i + best_phot_single) / (i + 1)
+            mfrac = (mfrac * i + mfrac_single) / (i + 1)
+            best_phot_store = np.vstack([best_phot_store, best_phot_single])
+            best_spec_store = np.vstack([best_spec_store, best_spec_single])
+    best_phot = np.median(best_phot_store, axis=0)
+    best_spec = np.median(best_spec_store, axis=0)
+    phot_16, phot_84 = np.percentile(best_phot_store, [16, 84], axis=0)
+    spec_16, spec_84 = np.percentile(best_spec_store, [16, 84], axis=0)
     tfin = time.time()
     print(f"sampling chains to get best-fit model took {tfin-tstart:.0f} seconds")
-    
+
     if not parametric_sfh:
         use_weights = not sbipp
 
@@ -899,9 +906,9 @@ def prospector_result_to_blast(
         "transient": transient,
         "aperture": aperture,
         "posterior": hdf5_file,
-        "chains_file":hdf5_file_name.replace(".h5", "_chain.npz"),
-        "percentiles_file":hdf5_file_name.replace(".h5", "_perc.npz"),
-        "model_file":hdf5_file_name.replace(".h5", "_modeldata.npz"),
+        "chains_file": hdf5_file_name.replace(".h5", "_chain.npz"),
+        "percentiles_file": hdf5_file_name.replace(".h5", "_perc.npz"),
+        "model_file": hdf5_file_name.replace(".h5", "_modeldata.npz"),
         "log_mass_16": logmass16,
         "log_mass_50": logmass50,
         "log_mass_84": logmass84,
@@ -921,6 +928,15 @@ def prospector_result_to_blast(
         prosp_results["log_tau_50"] = (tau50,)
         prosp_results["log_tau_84"] = (tau84,)
 
-    np.savez(hdf5_file_name.replace(".h5", "_modeldata.npz"),rest_wavelength=model_components['sps'].wavelengths,spec=best_spec,phot=best_phot,spec_16=spec_16,spec_84=spec_84,phot_16=phot_16,phot_84=phot_84)
-    
+    np.savez(
+        hdf5_file_name.replace(".h5", "_modeldata.npz"),
+        rest_wavelength=model_components["sps"].wavelengths,
+        spec=best_spec,
+        phot=best_phot,
+        spec_16=spec_16,
+        spec_84=spec_84,
+        phot_16=phot_16,
+        phot_84=phot_84,
+    )
+
     return prosp_results

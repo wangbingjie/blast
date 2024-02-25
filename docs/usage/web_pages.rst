@@ -25,7 +25,7 @@ The individual transient pages list details of a given transient as well as its
 downloaded cutout images, photometric apertures, photometry, and SED properties.  Cutout image and SED plots are interactive via Bokeh.  The status of a transient's processing is given as well, and users can use the "Report" button to flag if a stage has yielded suspect results (for example, a poor estimation of isophotal aperture radius, or a SED model that does not fit the data).  The goal of this button is to help users avoid suspect results, but there is no need to flag stages that already have a "failed" status.
 
 .. image:: ../_static/blast_transient_information_2.png
-	   
+
 Downloading data
 ++++++++++++++++
 

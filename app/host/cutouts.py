@@ -110,7 +110,8 @@ def download_and_save_cutouts(
         if file_exists or fits:
             cutout_name = f"{transient.name}_{filter.name}"
             cutout_object = Cutout.objects.filter(
-                name=cutout_name, filter=filter, transient=transient)
+                name=cutout_name, filter=filter, transient=transient
+            )
 
             if not cutout_object.exists():
                 cutout_object = Cutout(
@@ -145,7 +146,7 @@ def panstarrs_image_filename(position, image_size=None, filter=None):
 
     ### having SSL errors with pandas, so let's run it through requests
     ### in an unsafe way
-    r = requests.get(url,verify=False,stream=True)
+    r = requests.get(url, verify=False, stream=True)
     r.raw.decode_content = True
     filename_table = pd.read_csv(r.raw, delim_whitespace=True)["filename"]
     return filename_table[0] if len(filename_table) > 0 else None
@@ -206,10 +207,10 @@ def panstarrs_cutout(position, image_size=None, filter=None):
             f"&size={image_size}&format=fits&red={filename}"
         )
         try:
-            r = requests.get(fits_url,verify=False,stream=True)
+            r = requests.get(fits_url, verify=False, stream=True)
         except:
             time.sleep(5)
-            r = requests.get(fits_url,verify=False,stream=True)
+            r = requests.get(fits_url, verify=False, stream=True)
         fits_image = fits.open(BytesIO(r.content))
 
     else:

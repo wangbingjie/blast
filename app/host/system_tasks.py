@@ -3,15 +3,15 @@ import glob
 import shutil
 
 from django.conf import settings
-from django.utils import timezone
 from django.db.models import Q
+from django.utils import timezone
 
 from .base_tasks import initialise_all_tasks_status
 from .base_tasks import SystemTaskRunner
+from .models import Status
 from .models import TaskRegister
 from .models import TaskRegisterSnapshot
 from .models import Transient
-from .models import Status
 from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
@@ -21,16 +21,15 @@ from .transient_name_server import update_blast_transient
 
 
 class TNSDataIngestion(SystemTaskRunner):
-    
     def run_process(self, interval_minutes=200):
-        print('TNS STARTED')
+        print("TNS STARTED")
         now = timezone.now()
         time_delta = datetime.timedelta(minutes=interval_minutes)
         tns_credentials = get_tns_credentials()
         recent_transients = get_transients_from_tns(
             now - time_delta, tns_credentials=tns_credentials
         )
-        print('TNS DONE')
+        print("TNS DONE")
         saved_transients = Transient.objects.all()
         count = 0
         for transient in recent_transients:
@@ -42,21 +41,24 @@ class TNSDataIngestion(SystemTaskRunner):
                 if not saved_transient.redshift and transient.redshift:
                     tasks = TaskRegister.objects.filter(transient=saved_transient)
                     for t in tasks:
-                        t.status = Status.objects.get(message='not processed')
+                        t.status = Status.objects.get(message="not processed")
                         t.save()
 
                 ### update info
                 new_transient_dict = transient.__dict__
-                if 'host_id' in new_transient_dict.keys(): del new_transient_dict['host_id']
-                del new_transient_dict['_state']
-                del new_transient_dict['id']
-                saved_transients.filter(name__exact=transient.name).update(**new_transient_dict)
+                if "host_id" in new_transient_dict.keys():
+                    del new_transient_dict["host_id"]
+                del new_transient_dict["_state"]
+                del new_transient_dict["id"]
+                saved_transients.filter(name__exact=transient.name).update(
+                    **new_transient_dict
+                )
 
             except Transient.DoesNotExist:
                 transient.save()
                 count += 1
         print(f"Added {count} new transients")
-        print('TNS UPLOADED')
+        print("TNS UPLOADED")
 
     @property
     def task_name(self):
@@ -64,8 +66,8 @@ class TNSDataIngestion(SystemTaskRunner):
 
     @property
     def task_frequency_seconds(self):
-	    return 240
-    
+        return 240
+
     @property
     def task_initially_enabled(self):
         return True
@@ -190,12 +192,12 @@ class LogTransientProgress(SystemTaskRunner):
 
         for transient in transients:
             tasks = TaskRegister.objects.filter(
-                Q(transient__name__exact=transient.name) &
-                ~Q(task__name=self.task_name)
+                Q(transient__name__exact=transient.name) & ~Q(task__name=self.task_name)
             )
-            processing_task_qs = TaskRegister.objects.filter(transient__name__exact=transient.name,
-                                                             task__name=self.task_name)
-            
+            processing_task_qs = TaskRegister.objects.filter(
+                transient__name__exact=transient.name, task__name=self.task_name
+            )
+
             total_tasks = len(tasks)
             completed_tasks = len(
                 [task for task in tasks if task.status.message == "processed"]
@@ -216,8 +218,9 @@ class LogTransientProgress(SystemTaskRunner):
             # save task
             if len(processing_task_qs) == 1:
                 processing_task = processing_task_qs[0]
-                processing_task.status = \
-                    Status.objects.get(message=progress if progress != 'completed' else 'processed')
+                processing_task.status = Status.objects.get(
+                    message=progress if progress != "completed" else "processed"
+                )
                 processing_task.save()
 
             # save transient progress

@@ -1,15 +1,16 @@
+import django_filters
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.urls import re_path
 from django.urls import reverse_lazy
-from django.db.models import Q
-from django.contrib.auth.decorators import login_required
 from django_tables2 import RequestConfig
 from revproxy.views import ProxyView
-from django.shortcuts import get_object_or_404
 
 from .forms import ImageGetForm
 from .forms import TransientSearchForm
@@ -22,80 +23,110 @@ from .models import AperturePhotometry
 from .models import Cutout
 from .models import Filter
 from .models import SEDFittingResult
-from .models import TaskRegisterSnapshot
-from .models import TaskRegister
-from .models import Transient
 from .models import Status
+from .models import TaskRegister
+from .models import TaskRegisterSnapshot
+from .models import Transient
 from .plotting_utils import plot_cutout_image
 from .plotting_utils import plot_pie_chart
 from .plotting_utils import plot_sed
 from .plotting_utils import plot_timeseries
 from .tables import TransientTable
 from .transient_name_server import get_transients_from_tns_by_name
-import django_filters
+
 
 class TransientFilter(django_filters.FilterSet):
 
     hostmatch = django_filters.ChoiceFilter(
         choices=[
-            ("All Transients","All Transients"),
-            ("Transients with Matched Hosts","Transients with Matched Hosts"),
-            ("Transients with Photometry","Transients with Photometry"),
-            ("Transients with SED Fitting","Transients with SED Fitting"),
-            ("Finished Transients","Finished Transients")
+            ("All Transients", "All Transients"),
+            ("Transients with Matched Hosts", "Transients with Matched Hosts"),
+            ("Transients with Photometry", "Transients with Photometry"),
+            ("Transients with SED Fitting", "Transients with SED Fitting"),
+            ("Finished Transients", "Finished Transients"),
         ],
-        method='filter_transients',label='Search',
-        empty_label = None,
-        null_label = None
+        method="filter_transients",
+        label="Search",
+        empty_label=None,
+        null_label=None,
     )
-    ex = django_filters.CharFilter(field_name='name',lookup_expr='contains',label='Name')
-    
+    ex = django_filters.CharFilter(
+        field_name="name", lookup_expr="contains", label="Name"
+    )
+
     class Meta:
         model = Transient
-        fields = ['hostmatch','ex']
-        
+        fields = ["hostmatch", "ex"]
+
     def filter_transients(self, qs, name, value):
 
         if value == "Transients with Matched Hosts":
             qs = qs.filter(
-                pk__in=TaskRegister.objects.filter(task__name='Host match',status__message='processed').values('transient')
+                pk__in=TaskRegister.objects.filter(
+                    task__name="Host match", status__message="processed"
+                ).values("transient")
             )
         elif value == "Transients with Photometry":
             qs = qs.filter(
-                Q(pk__in=TaskRegister.objects.filter(task__name='Local aperture photometry',status__message='processed').values('transient')) |
-                Q(pk__in=TaskRegister.objects.filter(task__name='Global aperture photometry',status__message='processed').values('transient'))
+                Q(
+                    pk__in=TaskRegister.objects.filter(
+                        task__name="Local aperture photometry",
+                        status__message="processed",
+                    ).values("transient")
+                )
+                | Q(
+                    pk__in=TaskRegister.objects.filter(
+                        task__name="Global aperture photometry",
+                        status__message="processed",
+                    ).values("transient")
+                )
             )
         elif value == "Transients with SED Fitting":
             qs = qs.filter(
-                        Q(pk__in=TaskRegister.objects.filter(task__name='Local host SED inference',status__message='processed').values('transient')) |
-                        Q(pk__in=TaskRegister.objects.filter(task__name='Global host SED inference',status__message='processed').values('transient'))
-                    )
+                Q(
+                    pk__in=TaskRegister.objects.filter(
+                        task__name="Local host SED inference",
+                        status__message="processed",
+                    ).values("transient")
+                )
+                | Q(
+                    pk__in=TaskRegister.objects.filter(
+                        task__name="Global host SED inference",
+                        status__message="processed",
+                    ).values("transient")
+                )
+            )
         elif value == "Finished Transients":
             qs = qs.filter(
-                ~Q(pk__in=TaskRegister.objects.filter(~Q(status__message='processed')).values('transient'))
+                ~Q(
+                    pk__in=TaskRegister.objects.filter(
+                        ~Q(status__message="processed")
+                    ).values("transient")
+                )
             )
-            
+
         return qs
-        
-def transient_list(request):    
+
+
+def transient_list(request):
 
     transients = Transient.objects.all().order_by("-public_timestamp")
 
     transientfilter = TransientFilter(request.GET, queryset=transients)
 
-
     table = TransientTable(transientfilter.qs)
-    RequestConfig(request, paginate={'per_page': 50}).configure(table)
-    
-    context = {"transients": transients, "table":table, "filter":transientfilter}
+    RequestConfig(request, paginate={"per_page": 50}).configure(table)
+
+    context = {"transients": transients, "table": table, "filter": transientfilter}
     return render(request, "transient_list.html", context)
+
 
 @login_required
 def transient_uploads(request):
 
     errors = []
     uploaded_transient_names = []
-    
+
     ### add transients -- either from TNS or from RA/Dec/redshift
     if request.method == "POST":
         form = TransientUploadForm(request.POST)
@@ -103,7 +134,7 @@ def transient_uploads(request):
         if form.is_valid():
             info = form.cleaned_data["tns_names"]
             if info:
-                transient_names = info.split('\n')
+                transient_names = info.split("\n")
                 blast_transients = get_transients_from_tns_by_name(transient_names)
 
                 saved_transients = Transient.objects.all()
@@ -117,34 +148,39 @@ def transient_uploads(request):
 
             info = form.cleaned_data["full_info"]
             if info:
-                for line in info.split('\n'):
+                for line in info.split("\n"):
                     ### name, ra, dec, redshift, type
-                    name,ra,dec,redshift,specclass = line.split(',')
-                    redshift = None if redshift.lower() == 'none' else redshift
-                    specclass = None if specclass.lower() == 'none' else specclass
-                    info_dict = {'name':name,
-                                 'ra_deg':ra,
-                                 'dec_deg':dec,
-                                 'redshift':redshift,
-                                 'spectroscopic_class':specclass,
-                                 'tns_id':0,
-                                 'tns_prefix':'',
-                                 'added_by':request.user}
+                    name, ra, dec, redshift, specclass = line.split(",")
+                    redshift = None if redshift.lower() == "none" else redshift
+                    specclass = None if specclass.lower() == "none" else specclass
+                    info_dict = {
+                        "name": name,
+                        "ra_deg": ra,
+                        "dec_deg": dec,
+                        "redshift": redshift,
+                        "spectroscopic_class": specclass,
+                        "tns_id": 0,
+                        "tns_prefix": "",
+                        "added_by": request.user,
+                    }
                     ### check if exists
                     ### if not, add it
                     try:
                         Transient.objects.get(name=name)
-                        errors += [f'Transient {name} already exists in the database']
+                        errors += [f"Transient {name} already exists in the database"]
                     except:
                         Transient.objects.create(**info_dict)
                         uploaded_transient_names += [name]
     else:
         form = TransientUploadForm()
-    
-    context = {'form':form,'errors':errors,'uploaded_transient_names':uploaded_transient_names}
-    return render(
-        request, "transient_uploads.html", context
-    )
+
+    context = {
+        "form": form,
+        "errors": errors,
+        "uploaded_transient_names": uploaded_transient_names,
+    }
+    return render(request, "transient_uploads.html", context)
+
 
 def analytics(request):
 
@@ -186,14 +222,15 @@ def results(request, slug):
         is_validated="true",
     )
     global_aperture_photometry = AperturePhotometry.objects.filter(
-        transient=transient,
-        aperture__type__exact="global",
-        flux__isnull=False
-    ).filter(Q(is_validated="true") | Q(is_validated = "contamination warning"))
+        transient=transient, aperture__type__exact="global", flux__isnull=False
+    ).filter(Q(is_validated="true") | Q(is_validated="contamination warning"))
 
-    
-    contam_warning = True if len(global_aperture_photometry.filter(is_validated = "contamination warning")) else False
-    
+    contam_warning = (
+        True
+        if len(global_aperture_photometry.filter(is_validated="contamination warning"))
+        else False
+    )
+
     local_sed_obj = SEDFittingResult.objects.filter(
         transient=transient, aperture__type__exact="local"
     )
@@ -249,15 +286,18 @@ def results(request, slug):
 
         cutouts = Cutout.objects.filter(transient__name__exact=slug)
         ## choose a cutout, if possible
-        cutout = None; choice = 0
+        cutout = None
+        choice = 0
         try:
             while cutout is None and choice <= 8:
                 cutout = select_cutout_aperture(cutouts, choice=choice)
-            if not len(cutout): cutout = None
-            else: cutout = cutout[0]
+            if not len(cutout):
+                cutout = None
+            else:
+                cutout = cutout[0]
         except IndexError:
             cutout = None
-            
+
     bokeh_context = plot_cutout_image(
         cutout=cutout,
         transient=transient,
@@ -275,7 +315,6 @@ def results(request, slug):
         sed_results_file=global_sed_file,
     )
 
-    
     if local_aperture.exists():
         local_aperture = local_aperture[0]
     else:
@@ -288,7 +327,7 @@ def results(request, slug):
 
     # check for user warnings
     is_warning = False
-    for u in transient.taskregister_set.all().values_list('user_warning',flat=True):
+    for u in transient.taskregister_set.all().values_list("user_warning", flat=True):
         is_warning |= u
 
     context = {
@@ -304,7 +343,7 @@ def results(request, slug):
             "global_sed_results": global_sed_results,
             "warning": is_warning,
             "contam_warning": contam_warning,
-            "is_auth": request.user.is_authenticated
+            "is_auth": request.user.is_authenticated,
         },
         **bokeh_context,
         **bokeh_sed_local_context,
@@ -313,43 +352,53 @@ def results(request, slug):
 
     return render(request, "results.html", context)
 
-def reprocess_transient(request,slug):
+
+def reprocess_transient(request, slug):
 
     tasks = TaskRegister.objects.filter(transient__name=slug)
     for t in tasks:
-        t.status = Status.objects.get(message='not processed')
+        t.status = Status.objects.get(message="not processed")
         t.save()
 
-    return HttpResponseRedirect(reverse_lazy('results',kwargs={'slug':slug}))
+    return HttpResponseRedirect(reverse_lazy("results", kwargs={"slug": slug}))
 
-def download_chains(request,slug,aperture_type):
 
-    sed_result = get_object_or_404(SEDFittingResult,transient__name=slug,aperture__type=aperture_type)
+def download_chains(request, slug, aperture_type):
 
-    filename = sed_result.chains_file.name.split('/')[-1]
-    response = HttpResponse(sed_result.chains_file, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename={filename}'
-    
+    sed_result = get_object_or_404(
+        SEDFittingResult, transient__name=slug, aperture__type=aperture_type
+    )
+
+    filename = sed_result.chains_file.name.split("/")[-1]
+    response = HttpResponse(sed_result.chains_file, content_type="text/plain")
+    response["Content-Disposition"] = f"attachment; filename={filename}"
+
     return response
 
-def download_modelfit(request,slug,aperture_type):
 
-    sed_result = get_object_or_404(SEDFittingResult,transient__name=slug,aperture__type=aperture_type)
+def download_modelfit(request, slug, aperture_type):
 
-    filename = sed_result.model_file.name.split('/')[-1]
-    response = HttpResponse(sed_result.model_file, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename={filename}'
-    
+    sed_result = get_object_or_404(
+        SEDFittingResult, transient__name=slug, aperture__type=aperture_type
+    )
+
+    filename = sed_result.model_file.name.split("/")[-1]
+    response = HttpResponse(sed_result.model_file, content_type="text/plain")
+    response["Content-Disposition"] = f"attachment; filename={filename}"
+
     return response
 
-def download_percentiles(request,slug,aperture_type):
 
-    sed_result = get_object_or_404(SEDFittingResult,transient__name=slug,aperture__type=aperture_type)
+def download_percentiles(request, slug, aperture_type):
 
-    filename = sed_result.percentiles_file.name.split('/')[-1]
-    response = HttpResponse(sed_result.percentiles_file, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename={filename}'
-    
+    sed_result = get_object_or_404(
+        SEDFittingResult, transient__name=slug, aperture__type=aperture_type
+    )
+
+    filename = sed_result.percentiles_file.name.split("/")[-1]
+    response = HttpResponse(sed_result.percentiles_file, content_type="text/plain")
+    response["Content-Disposition"] = f"attachment; filename={filename}"
+
     return response
 
 
@@ -393,18 +442,25 @@ def flower_view(request):
     response["X-Accel-Redirect"] = path
     return response
 
+
 def report_issue(request, item_id):
     item = TaskRegister.objects.get(pk=item_id)
     item.user_warning = True
     item.save()
-    return HttpResponseRedirect(reverse_lazy('results',kwargs={'slug':item.transient.name}))
+    return HttpResponseRedirect(
+        reverse_lazy("results", kwargs={"slug": item.transient.name})
+    )
+
 
 def resolve_issue(request, item_id):
     item = TaskRegister.objects.get(pk=item_id)
     item.user_warning = False
     item.save()
-    return HttpResponseRedirect(reverse_lazy('results',kwargs={'slug':item.transient.name}))
-    
+    return HttpResponseRedirect(
+        reverse_lazy("results", kwargs={"slug": item.transient.name})
+    )
+
+
 class FlowerProxyView(UserPassesTestMixin, ProxyView):
     # `flower` is Docker container, you can use `localhost` instead
     upstream = "http://{}:{}".format("0.0.0.0", 8888)
