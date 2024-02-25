@@ -922,7 +922,7 @@ def sbi_pp(obs, run_params, sbi_params, max_neighbors=200):
         res = sbi_missingband(
             obs=obs, run_params=run_params, sbi_params=sbi_params, seconditer=True
         )
-        
+
         # if things timed out, then we should try dropping
         # some problematic filters
         # I think this is mostly deprecated now
