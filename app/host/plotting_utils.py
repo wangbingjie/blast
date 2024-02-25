@@ -364,29 +364,6 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
             else:
                 fig.circle(pwave, maggies_to_mJy(model_data["phot"]), size=10)
 
-    # test_phot_4 = np.array([18.44917736, 19.0289876 , 18.27045845, 18.3987695 , 18.66701225,
-    #   17.11904966, 16.89851784, 27.20550304, 28.29986009, 22.65926304,
-    #   21.47196493, 20.65010897, 20.08061676, 19.67643617, 20.67766742,
-    #   21.48831115, 24.9984856 , 19.94890003, 22.83564872, 22.70354309,
-    #   21.30523937, 19.85459949])
-    # wavelengths = np.array([ 16457.51649924,  12358.16563326,  21603.19726738,  33683.74452296,
-    #                         46179.17938567, 120804.55139845, 221937.56629762,   2271.12579359,
-    #                         1528.05943437,   4814.28808341,   6174.34957128,   7515.76770146,
-    #                         8663.63218297,   9616.86645988,   7470.59733873,   6156.34741146,
-    #                         3545.96999013,   8917.60458074,   4669.63995746,   4771.73622989,
-    #                         6388.82325327,   9148.74613645])
-    # iNotNan = test_model_phot == test_model_phot
-
-    # fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_model_phot[0:22][iNotNan[0:22]])), size=10, color='green')
-    # fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_phot_3[0:22][iNotNan[0:22]])), size=10, color='blue')
-    # fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_phot_4[0:22][iNotNan[0:22]])), size=10, color='black')
-    # fig.circle(wavelengths[iNotNan[0:22]], maggies_to_mJy(asinh_to_maggies(test_phot_2[0:22][iNotNan[0:22]])), size=10, color='black')
-
-    # see which filters are causing problems:
-    # GALEX - 7,8 (NUV, FUV)
-    # WISE - 3,4,5,6
-    # 2MASS - 0,1,2
-    # optical
 
     fig.legend.location = "top_left"
     script, div = components(fig)

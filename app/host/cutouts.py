@@ -144,8 +144,8 @@ def panstarrs_image_filename(position, image_size=None, filter=None):
         f"&size={image_size}&format=fits&filters={filter}"
     )
 
-    ### having SSL errors with pandas, so let's run it through requests
-    ### in an unsafe way
+    ### was having SSL errors with pandas, so let's run it through requests
+    ### optionally, can edit to do this in an unsafe way
     r = requests.get(url, stream=True)
     r.raw.decode_content = True
     filename_table = pd.read_csv(r.raw, delim_whitespace=True)["filename"]

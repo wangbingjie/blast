@@ -234,27 +234,10 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
     if _chi2_thres > run_params["max_chi2"]:
         use_res = False
         chi2_selected = y_train[:, valid_idx]
-        # chi2_selected = chi2_selected[redshift_idx][:100]
         chi2_selected = chi2_selected[:max_neighbors]
         guess_ndata = y_train[:, not_valid_idx]
         guess_ndata = guess_ndata[:max_neighbors]
 
-        # if not seconditer:
-        #    idx_chi2_selected = np.argsort(chi2_nei)
-        #    diffs = absdiff(
-        #        mags=look_in_training,
-        #        obsphot=y_obs[valid_idx],
-        #        obsphot_unc=sig_obs[valid_idx],
-        #    )
-        #    diffs_best = np.sum(diffs[idx_chi2_selected[0:100]], axis=0)
-        #    worst_band = np.where(diffs_best == np.max(diffs_best))[0]
-        #    obs["missing_mask"][worst_band] = True
-        #    print("Failed to find sufficient number of nearest neighbors!")
-        #    print(f"Trying again after dropping band {worst_band[0]}")
-        #    obs["sbi_flag"] = "chi2 fail"
-        #    return obs
-
-        # idx_chi2_selected = np.argsort(chi2_nei[redshift_idx])[0:100]
         idx_chi2_selected = np.argsort(chi2_nei)[0:max_neighbors]
 
         if run_params["verbose"]:
@@ -939,15 +922,10 @@ def sbi_pp(obs, run_params, sbi_params, max_neighbors=200):
         res = sbi_missingband(
             obs=obs, run_params=run_params, sbi_params=sbi_params, seconditer=True
         )
-        # if len(res) != 5:
-        #    if sbi_flag == "chi2 fail":
-        #        obs["missing_mask"] = res["missing_mask"][:]
-        #        res = sbi_missingband(
-        #            obs=obs, run_params=run_params, sbi_params=sbi_params, seconditer=True
-        #        )
-        # else:
+        
         # if things timed out, then we should try dropping
         # some problematic filters
+        # I think this is mostly deprecated now
         (ave_theta, flags["use_res"], flags["nsamp_noisy"], flags["timeout"], cnt) = res
         if flags["timeout"]:
             for i, mask in enumerate(

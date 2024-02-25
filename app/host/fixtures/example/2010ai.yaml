@@ -7,7 +7,7 @@
     ra_deg: 194.85012
     dec_deg: 27.99642
     tasks_initialized: True
-    spectroscopic_class: SN 1a
+    spectroscopic_class: SN Ia
 - model: host.TaskRegister
   fields:
     transient: [2010ai]

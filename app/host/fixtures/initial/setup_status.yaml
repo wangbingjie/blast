@@ -34,3 +34,19 @@
   fields:
     message: phot valid failed
     type: error
+- model: host.Status
+  fields:
+    message: not enough filters
+    type: error
+- model: host.Status
+  fields:
+    message: time limit exceeded
+    type: error
+- model: host.Status
+  fields:
+    message: blocked
+    type: error
+- model: host.Status
+  fields:
+    message: redshift too high
+    type: error
