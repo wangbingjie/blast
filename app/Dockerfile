@@ -16,6 +16,11 @@ RUN mkdir /data/sed_output
 RUN mkdir /ghost_output
 RUN mkdir /fsps
 
+RUN curl -LJO https://zenodo.org/records/10703208/files/sbi_phot_global.h5
+RUN curl -LJO https://zenodo.org/records/10703208/files/sbi_phot_local.h5
+RUN cp sbi_phot_global.h5 /sbipp/
+RUN cp sbi_phot_local.h5 /sbipp/
+
 RUN
 COPY . /app
 WORKDIR /app
