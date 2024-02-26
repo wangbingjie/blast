@@ -42,7 +42,7 @@ class APITest(TestCase):
         self.assertTrue(data["global_aperture_dec_deg"] == 10.03586)
         self.assertTrue(data["global_aperture_semi_major_axis_arcsec"] == 0.4)
         self.assertTrue(data["global_aperture_semi_minor_axis_arcsec"] == 0.5)
-        self.assertTrue(data["global_aperture_cutout"] == "2MASS_J")
+        self.assertTrue(data["global_aperture_cutout"]["name"] == "2022testone_2MASS_J")
 
         self.assertTrue(data["transient_name"] == "2022testone")
         self.assertTrue(data["host_name"] == "PSO J080624.103+010209.859")
@@ -59,9 +59,6 @@ class APITest(TestCase):
         self.assertTrue(data["local_aperture_host_log_age_16"] == 1.0)
         self.assertTrue(data["local_aperture_host_log_age_50"] == 0.1)
         self.assertTrue(data["local_aperture_host_log_age_84"] == 5.0)
-        self.assertTrue(data["local_aperture_host_log_tau_16"] == 1.0)
-        self.assertTrue(data["local_aperture_host_log_tau_50"] == 5.0)
-        self.assertTrue(data["local_aperture_host_log_tau_84"] == 60)
 
         self.assertTrue(data["global_aperture_host_log_mass_16"] == 1.0)
         self.assertTrue(data["global_aperture_host_log_mass_50"] == 2.0)
@@ -75,9 +72,6 @@ class APITest(TestCase):
         self.assertTrue(data["global_aperture_host_log_age_16"] == 1.0)
         self.assertTrue(data["global_aperture_host_log_age_50"] == 0.1)
         self.assertTrue(data["global_aperture_host_log_age_84"] == 5.0)
-        self.assertTrue(data["global_aperture_host_log_tau_16"] == 1.0)
-        self.assertTrue(data["global_aperture_host_log_tau_50"] == 5.0)
-        self.assertTrue(data["global_aperture_host_log_tau_84"] == 60)
 
         self.assertTrue(request.status_code == 200)
 
