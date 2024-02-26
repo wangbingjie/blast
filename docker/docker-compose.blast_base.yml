@@ -6,20 +6,21 @@ services:
       context: ../app/
     volumes:
       - ../app:/app
-      - ../data/cutout_cdn:/cutout_cdn
+      - ../data/cutout_cdn:/data/cutout_cdn
       - ../data/ghost_output:/ghost_output
-      - ../data/sed_output:/sed_output
+      - ../data/sed_output:/data/sed_output
       - ../data/tns_staging:/tns_staging
       - ../data/transmission:/transmission
       - ../data/dustmaps:/dustmaps
       - ../data/fsps/:/fsps
       - ../data/sbipp/:/sbipp
+      - ../data/.dustmapsrc:/root/.dustmapsrc
   nginx_base:
     restart: always
     image: nginx:1.21-alpine
     volumes:
       - ../app/static:/static
-      - ../data/cutout_cdn:/cutout_cdn
+      - ../data/cutout_cdn:/data/cutout_cdn
     ports:
       - 80:${WEB_SERVER_PORT}
   database_base:
@@ -33,9 +34,9 @@ services:
     image: ghcr.io/astrophpeter/blast:latest
     volumes:
       - ../app:/app
-      - ../data/cutout_cdn:/cutout_cdn
+      - ../data/cutout_cdn:/data/cutout_cdn
       - ../data/ghost_output:/ghost_output
-      - ../data/sed_output:/sed_output
+      - ../data/sed_output:/data/sed_output
       - ../data/tns_staging:/tns_staging
       - ../data/transmission:/transmission
       - ../data/dustmaps:/dustmaps
