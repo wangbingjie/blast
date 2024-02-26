@@ -15,7 +15,7 @@ RUN mkdir /data/cutout_cdn
 RUN mkdir /data/sed_output
 RUN mkdir /ghost_output
 RUN mkdir /fsps
-RUN mkdir /sbipp_phot
+### RUN mkdir /sbipp_phot
 
 RUN
 COPY . /app

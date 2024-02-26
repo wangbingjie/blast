@@ -14,7 +14,7 @@ services:
       - ../data/dustmaps:/dustmaps
       - ../data/fsps/:/fsps
       - ../data/sbipp/:/sbipp
-###      - ../data/.dustmapsrc:/root/.dustmapsrc
+      - ../data/sbipp_phot/:/sbipp_phot
   nginx_base:
     restart: always
     image: nginx:1.21-alpine
@@ -42,3 +42,4 @@ services:
       - ../data/dustmaps:/dustmaps
       - ../data/fsps/:/fsps
       - ../data/sbipp/:/sbipp
+      - ../data/sbipp_phot/:/sbipp_phot
