@@ -15,12 +15,6 @@ RUN mkdir /data/cutout_cdn
 RUN mkdir /data/sed_output
 RUN mkdir /ghost_output
 RUN mkdir /fsps
-### RUN mkdir /sbipp_phot
-
-### RUN curl -LJO https://zenodo.org/records/10703208/files/sbi_phot_global.h5
-### RUN curl -LJO https://zenodo.org/records/10703208/files/sbi_phot_local.h5
-### RUN mv sbi_phot_global.h5 /sbipp_phot/
-### RUN mv sbi_phot_local.h5 /sbipp_phot/
 
 RUN
 COPY . /app
