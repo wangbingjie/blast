@@ -11,4 +11,3 @@ else
   mv sbi_phot_global.h5 data/sbipp_phot/ &&
   mv sbi_phot_local.h5 data/sbipp_phot/
 fi
-
