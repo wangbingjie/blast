@@ -1,4 +1,8 @@
 #!/bin/env bash
+curl -LJO https://zenodo.org/records/10703208/files/sbi_phot_global.h5 &&
+curl -LJO https://zenodo.org/records/10703208/files/sbi_phot_local.h5 &&
+mv sbi_phot_global.h5 /sbipp_phot/ &&
+mv sbi_phot_local.h5 /sbipp_phot/ &&
 bash entrypoints/wait-for-it.sh ${DATABASE_HOST}:${DATABASE_PORT} --timeout=0 &&
 python manage.py makemigrations &&
 python manage.py migrate &&
