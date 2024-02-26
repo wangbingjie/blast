@@ -148,7 +148,7 @@ def panstarrs_image_filename(position, image_size=None, filter=None):
     ### optionally, can edit to do this in an unsafe way
     r = requests.get(url, stream=True)
     r.raw.decode_content = True
-    filename_table = pd.read_csv(r.raw, sep='\s+')["filename"]
+    filename_table = pd.read_csv(r.raw, sep="\s+")["filename"]
     return filename_table[0] if len(filename_table) > 0 else None
 
 
