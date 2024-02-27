@@ -1,6 +1,6 @@
 astro-datalab==2.20.1
 astro-ghost==2.0.19
-astro-prospector==1.2.1.dev30+g2fa085d
+astro-prospector @ git+https://github.com/bd-j/prospector.git@2fa085d
 astro-sedpy==0.3.2
 bokeh==2.4.2
 coverage==7.4.2
