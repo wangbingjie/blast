@@ -5,7 +5,7 @@ RUN apt-get update
 RUN apt-get install ffmpeg libsm6 libxext6 gfortran libhealpix-cxx-dev libhdf5-serial-dev netcdf-bin libnetcdf-dev -y
 
 COPY ./requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt
+RUN pip install -r /requirements.txt --no-cache-dir
 
 COPY ./debug/debug_ipython.py /root/.ipython/profile_default/startup/
 
