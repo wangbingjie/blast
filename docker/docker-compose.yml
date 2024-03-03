@@ -39,6 +39,7 @@ services:
       - 15672:${MESSAGE_BROKER_MANAGEMENT_PORT}
     volumes:
       - ../data/rabbitmq_data:/data
+      - ../data/rabbitmq_data/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     env_file:
       - ../env/.env.dev
     profiles: ["full_prod", "full_dev", "batch"]

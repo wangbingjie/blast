@@ -1,9 +1,13 @@
+import math
+import os
 from math import pi
 
+import extinction
 import numpy as np
 import pandas as pd
 import prospect.io.read_results as reader
 from astropy.coordinates import SkyCoord
+from astropy.cosmology import WMAP9 as cosmo
 from astropy.io import fits
 from astropy.visualization import AsinhStretch
 from astropy.visualization import PercentileInterval
@@ -15,12 +19,16 @@ from bokeh.models import ColumnDataSource
 from bokeh.models import Cross
 from bokeh.models import Ellipse
 from bokeh.models import Grid
+from bokeh.models import HoverTool
 from bokeh.models import LabelSet
+from bokeh.models import Legend
 from bokeh.models import LinearAxis
 from bokeh.models import LogColorMapper
 from bokeh.models import Plot
+from bokeh.models import Range1d
 from bokeh.models import Scatter
 from bokeh.palettes import Category20
+from bokeh.plotting import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.plotting import show
 from bokeh.transform import cumsum
@@ -28,7 +36,9 @@ from host.catalog_photometry import filter_information
 from host.host_utils import survey_list
 from host.models import Filter
 from host.photometric_calibration import maggies_to_mJy
-from host.prospector import build_obs  # , build_model
+from host.photometric_calibration import mJy_to_maggies
+from host.prospector import build_model
+from host.prospector import build_obs
 
 from .models import Aperture
 
@@ -43,20 +53,20 @@ def scale_image(image_data):
 
 def plot_image(image_data, figure):
 
-    image_data = np.nan_to_num(image_data, nan=np.nanmin(image_data))
-    # image_data = np.nan_to_num(image_data, nan=np.median(image_data)) #np.amin(image_data))
+    # sometimes low image mins mess up the plotting
+    perc01 = np.nanpercentile(image_data, 1)
+
+    image_data = np.nan_to_num(image_data, nan=perc01)
     image_data = image_data + abs(np.amin(image_data)) + 0.1
 
     scaled_image = scale_image(image_data)
     figure.image(image=[scaled_image])
-    # color_mapper = LogColorMapper(palette="Greys256")
     figure.image(
         image=[scaled_image],
         x=0,
         y=0,
-        dw=len(image_data),
-        dh=len(image_data),
-        # color_mapper=color_mapper,
+        dw=np.shape(image_data)[1],
+        dh=np.shape(image_data)[0],
         level="image",
     )
 
@@ -84,6 +94,7 @@ def plot_aperture(figure, aperture, wcs, plotting_kwargs=None):
         "angle": theta_rad,
         "fill_color": "#cab2d6",
         "fill_alpha": 0.1,
+        "line_width": 4,
     }
 
     plot_dict = {**plot_dict, **plotting_kwargs}
@@ -121,22 +132,22 @@ def plot_cutout_image(
 ):
 
     title = cutout.filter if cutout is not None else "No cutout selected"
-    fig = figure(
-        title=f"{title}",
-        x_axis_label="",
-        y_axis_label="",
-        plot_width=700,
-        plot_height=700,
-    )
-
-    fig.axis.visible = False
-    fig.xgrid.visible = False
-    fig.ygrid.visible = False
 
     if cutout is not None:
         with fits.open(cutout.fits.name) as fits_file:
             image_data = fits_file[0].data
             wcs = WCS(fits_file[0].header)
+
+        fig = figure(
+            title=f"{title}",
+            x_axis_label="",
+            y_axis_label="",
+            plot_width=700,
+            plot_height=int(np.shape(image_data)[0] / np.shape(image_data)[1] * 700),
+        )
+        fig.axis.visible = False
+        fig.xgrid.visible = False
+        fig.ygrid.visible = False
 
         transient_kwargs = {
             "legend_label": f"{transient.name}",
@@ -185,28 +196,53 @@ def plot_cutout_image(
     else:
         image_data = np.zeros((500, 500))
 
+        fig = figure(
+            title=f"{title}",
+            x_axis_label="",
+            y_axis_label="",
+            plot_width=700,
+            plot_height=700,
+        )
+        fig.axis.visible = False
+        fig.xgrid.visible = False
+        fig.ygrid.visible = False
+
     plot_image(image_data, fig)
     script, div = components(fig)
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 
 
-def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
+def plot_sed(transient=None, sed_results_file=None, type=""):
     """
     Plot SED from aperture photometry.
     """
 
-    if aperture_photometry.exists():
+    try:
+        obs = build_obs(transient, type, use_mag_offset=False)
+    except ValueError:
+        obs = {"filters": [], "maggies": [], "maggies_unc": []}
+    except AssertionError:
+        obs = {"filters": [], "maggies": [], "maggies_unc": []}
 
-        flux = [measurement.flux for measurement in aperture_photometry]
-        flux_error = [measurement.flux_error for measurement in aperture_photometry]
-        wavelength = [
-            measurement.filter.wavelength_eff_angstrom
-            for measurement in aperture_photometry
-        ]
-    else:
-        flux, flux_error, wavelength = [], [], []
+    def maggies_to_asinh(x):
+        """asinh magnitudes"""
+        a = 2.50 * np.log10(np.e)
+        mu = 35.0
+        return -a * math.asinh((x / 2.0) * np.exp(mu / a)) + mu
 
-    flux_error = [0.0 if error is None else error for error in flux_error]
+    def asinh_to_maggies(x):
+        mu = 35.0
+        a = 2.50 * np.log10(np.e)
+        return np.array([2 * math.sinh((mu - x1) / a) * np.exp(-mu / a) for x1 in x])
+
+    flux, flux_error, wavelength, filters, mag, mag_error = [], [], [], [], [], []
+    for fl, f, fe in zip(obs["filters"], obs["maggies"], obs["maggies_unc"]):
+        wavelength += [fl.wave_effective]
+        flux += [maggies_to_mJy(f)]
+        flux_error += [maggies_to_mJy(fe)]
+        filters += [fl.name]
+        mag += [-2.5 * np.log10(f)]
+        mag_error += [1.086 * fe / f]
 
     fig = figure(
         title="",
@@ -218,16 +254,98 @@ def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
         x_axis_label="Wavelength [Angstrom]",
         y_axis_label="Flux",
     )
+    if len(flux):
+        fig.y_range = Range1d(-0.05 * np.max(flux), 1.5 * np.max(flux))
+        fig.x_range = Range1d(np.min(wavelength) * 0.5, np.max(wavelength) * 1.5)
 
-    fig = plot_errorbar(fig, wavelength, flux, yerr=flux_error)
+    source = ColumnDataSource(
+        data=dict(
+            x=wavelength,
+            y=flux,
+            flux_error=flux_error,
+            filters=filters,
+            mag=mag,
+            mag_error=mag_error,
+        )
+    )
 
-    if sed_results_file is not None:
-        print(sed_results_file)
-        result, obs, model = reader.results_from(sed_results_file, dangerous=False)
+    fig, p = plot_errorbar(
+        fig,
+        wavelength,
+        flux,
+        yerr=flux_error,
+        point_kwargs={"size": 10, "legend_label": "data"},
+        error_kwargs={"width": 2},
+        source=source,
+    )
 
-        best = result["bestfit"]
-        a = result["obs"]["redshift"] + 1
-        fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
+    # mouse-over for data
+    TOOLTIPS = [
+        ("flux (mJy)", "$y"),
+        ("flux error (mJy)", "@flux_error"),
+        ("wavelength", "$x"),
+        ("band", "@filters"),
+        ("mag (AB)", "@mag"),
+        ("mag error (AB)", "@mag_error"),
+    ]
+    hover = HoverTool(renderers=[p], tooltips=TOOLTIPS, toggleable=False)
+    fig.add_tools(hover)
+
+    # second check on SED file
+    # long-term shouldn't be necessary, just a result of debugging
+    if sed_results_file is not None and os.path.exists(
+        sed_results_file.replace(".h5", "_modeldata.npz")
+    ):
+        result, obs, _ = reader.results_from(sed_results_file, dangerous=False)
+        model_data = np.load(
+            sed_results_file.replace(".h5", "_modeldata.npz"), allow_pickle=True
+        )
+
+        # best = result["bestfit"]
+        if transient.best_redshift < 0.015:
+            a = result["obs"]["redshift"] - 0.015 + 1
+            mag_off = (
+                cosmo.distmod(result["obs"]["redshift"]).value
+                - cosmo.distmod(result["obs"]["redshift"] - 0.015).value
+            )
+            print(f"mag off: {mag_off}")
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec"]) * 10 ** (0.4 * mag_off),
+                legend_label="average model",
+            )
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec_16"]) * 10 ** (0.4 * mag_off),
+                line_dash="dashed",
+                legend_label="68% CI",
+            )
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec_84"]) * 10 ** (0.4 * mag_off),
+                line_dash="dashed",
+            )
+        else:
+            mag_off = 0
+            a = result["obs"]["redshift"] + 1
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec"]),
+                legend_label="average model",
+            )
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec_16"]),
+                line_dash="dashed",
+                legend_label="68% CI",
+            )
+            fig.line(
+                a * model_data["rest_wavelength"],
+                maggies_to_mJy(model_data["spec_84"]),
+                line_dash="dashed",
+            )
+
+        #  pre-SBI++ version: fig.line(a * best["restframe_wavelengths"], maggies_to_mJy(best["spectrum"]))
         if obs["filters"] is not None:
             try:
                 pwave = [
@@ -236,27 +354,41 @@ def plot_sed(aperture_photometry=None, sed_results_file=None, type=""):
                 ]
             except:
                 pwave = [f.wave_effective for f in obs["filters"]]
-            fig.circle(pwave, maggies_to_mJy(best["photometry"]))
 
-    # xaxis = LinearAxis()
-    # figure.add_layout(xaxis, 'below')
+            if transient.best_redshift < 0.015:
+                fig.circle(
+                    pwave,
+                    maggies_to_mJy(model_data["phot"]) * 10 ** (0.4 * mag_off),
+                    size=10,
+                )
+            else:
+                fig.circle(pwave, maggies_to_mJy(model_data["phot"]), size=10)
 
-    # yaxis = LinearAxis()
-    # fig.add_layout(yaxis, 'left')
-
-    # fig.add_layout(Grid(dimension=0, ticker=xaxis.ticker))
-    # fig.add_layout(Grid(dimension=1, ticker=yaxis.ticker))
+    fig.legend.location = "top_left"
     script, div = components(fig)
     return {f"bokeh_sed_{type}_script": script, f"bokeh_sed_{type}_div": div}
 
 
 def plot_errorbar(
-    figure, x, y, xerr=None, yerr=None, color="red", point_kwargs={}, error_kwargs={}
+    figure,
+    x,
+    y,
+    xerr=None,
+    yerr=None,
+    color="red",
+    point_kwargs={},
+    error_kwargs={},
+    source=None,
 ):
     """
     Plot data points with error bars on a bokeh plot
     """
-    figure.circle(x, y, color=color, **point_kwargs)
+
+    # to do the mouse-over
+    if source is not None:
+        p = figure.circle("x", "y", color=color, source=source, **point_kwargs)
+    else:
+        p = figure.circle(x, y, color=color, source=source, **point_kwargs)
 
     if xerr:
         x_err_x = []
@@ -273,7 +405,7 @@ def plot_errorbar(
             y_err_x.append((px, px))
             y_err_y.append((py - err, py + err))
         figure.multi_line(y_err_x, y_err_y, color=color, **error_kwargs)
-    return figure
+    return figure, p
 
 
 def plot_pie_chart(data_dict):
@@ -306,13 +438,6 @@ def plot_pie_chart(data_dict):
         legend_field="country",
         source=data,
     )
-
-    # data["value"] = data['value'].astype(str)
-    # data["value"] = data["value"].str.pad(35, side="left")
-    # source = ColumnDataSource(data)
-    # labels = LabelSet(x=0, y=1, text='value',
-    #                  angle=cumsum('angle', include_zero=True), source=source, render_mode='canvas')
-    # p.add_layout(labels)
 
     p.axis.axis_label = None
     p.axis.visible = False

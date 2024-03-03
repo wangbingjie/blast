@@ -14,7 +14,7 @@ class BuildTNSHeaderTest(TestCase):
     def test_marker(self):
         marker = self.header["User-Agent"]
         true_marker = (
-            f'tns_marker{{"tns_id": {self.tns_bot_id},'
+            f'tns_marker{{"tns_id": "{self.tns_bot_id}",'
             f'"type": "bot", "name": "{self.tns_bot_name}"}}'
         )
         self.assertEqual(marker, true_marker)
@@ -33,7 +33,7 @@ class BuildTNSHeaderTest(TestCase):
 class BuildTNSUrlTest(TestCase):
     def test_search_mode(self):
         url = build_tns_url("test", mode="search")
-        self.assertEqual(url, "test/Search")
+        self.assertEqual(url, "test/search")
 
     def test_get_mode(self):
         url = build_tns_url("test", mode="get")
@@ -56,7 +56,8 @@ class ConvertTNSToBLASTTest(TestCase):
         tns_transient["decdeg"] = 13.0
         tns_transient["name_prefix"] = "SN"
         tns_transient["discoverydate"] = "2022-02-04 07:29:02.112+00:00"
-        tns_transient["type"] = "SN 1a"
+        tns_transient["object_type"] = {"name": "SN 1a"}
+        tns_transient["redshift"] = 0.0
 
         blast_transient = tns_to_blast_transient(tns_transient)
 
@@ -68,4 +69,6 @@ class ConvertTNSToBLASTTest(TestCase):
         self.assertEqual(
             tns_transient["discoverydate"], blast_transient.public_timestamp
         )
-        self.assertEqual(tns_transient["type"], blast_transient.spectroscopic_class)
+        self.assertEqual(
+            tns_transient["object_type"]["name"], blast_transient.spectroscopic_class
+        )

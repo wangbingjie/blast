@@ -23,6 +23,17 @@
         <div class="container">
             <br>
             <h6>Local parameter details</h6>
+	    {% if local_sed_results %}
+	    <a href="{{ local_sed_results.percentiles_file.url }}" download  class="btn btn-dark float-right">Download</a>
+	    <div>
+	    <button style="margin-bottom:5px;" type="button" class="report" onclick="window.open('{% url 'download_chains' transient.name 'local' %}','_self')">
+              <span>Download Chains</span>
+            </button>
+	    <button style="margin-bottom:5px;" type="button" class="report" onclick="window.open('{% url 'download_percentiles' transient.name 'local' %}','_self')">
+              <span>Download Percentiles</span>
+            </button>
+	    </div>
+	    {% endif %}
             <br>
             <table class="table table-striped">
             <thead>
@@ -34,13 +45,15 @@
             </tr>
             </thead>
             <tbody>
-            {% for item in local_sed_results %}
+              {% for item in local_sed_results %}
+	      {% if item.2 %}
             <tr>
                 <td>{{item.0}}</td>
                 <td>{{item.1|floatformat:3}}</td>
                 <td>{{item.2|floatformat:3}}</td>
                 <td>{{item.3|floatformat:3}}</td>
             </tr>
+	    {% endif %}
             {% endfor %}
             </tbody>
         </table>
@@ -51,7 +64,20 @@
         <div class="container">
             <br>
             <h6>Global parameter details</h6>
+	    {% if global_sed_results %}
+	    <div>
+	    <button style="margin-bottom:5px;" type="button" class="report" onclick="window.open('{% url 'download_chains' transient.name 'global' %}','_self')">
+              <span>Download Chains</span>
+            </button>
+	    <button style="margin-bottom:5px;" type="button" class="report" onclick="window.open('{% url 'download_percentiles' transient.name 'global' %}','_self')">
+              <span>Download Percentiles</span>
+            </button>
+
+	    </div>
+	    {% endif %}
             <br>
+
+
             <table class="table table-striped">
             <thead>
             <tr>
@@ -62,13 +88,15 @@
             </tr>
             </thead>
             <tbody>
-            {% for item in global_sed_results %}
+              {% for item in global_sed_results %}
+	      {% if item.2 %}
             <tr>
                 <td>{{item.0}}</td>
                 <td>{{item.1|floatformat:3}}</td>
                 <td>{{item.2|floatformat:3}}</td>
                 <td>{{item.3|floatformat:3}}</td>
             </tr>
+	    {% endif %}
             {% endfor %}
             </tbody>
         </table>

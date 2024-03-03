@@ -3,6 +3,7 @@ from abc import abstractmethod
 from abc import abstractproperty
 from time import process_time
 
+from billiard.exceptions import SoftTimeLimitExceeded
 from django.utils import timezone
 
 from .models import Status
@@ -186,13 +187,14 @@ class TransientTaskRunner(TaskRunner):
         register = self.find_register_items_meeting_prerequisites()
         return self._select_highest_priority(register) if register.exists() else None
 
-    def run_process(self):
+    def run_process(self, task_register_item=None):
         """
         Runs task runner process.
         """
         # self.task = Task.objects.get(name__exact=self.task_name)
 
-        task_register_item = self.select_register_item()
+        if task_register_item is None:
+            task_register_item = self.select_register_item()
         processing_status = Status.objects.get(message__exact="processing")
 
         if task_register_item is not None:
@@ -202,6 +204,9 @@ class TransientTaskRunner(TaskRunner):
             start_time = process_time()
             try:
                 status_message = self._run_process(transient)
+            except SoftTimeLimitExceeded:
+                status_message = "time limit exceeded"
+                raise
             except:
                 status_message = self._failed_status_message()
                 raise
@@ -304,5 +309,11 @@ def initialise_all_tasks_status(transient):
     not_processed = Status.objects.get(message__exact="not processed")
 
     for task in tasks:
-        task_status = TaskRegister(task=task, transient=transient)
-        update_status(task_status, not_processed)
+        task_status = TaskRegister.objects.filter(task=task, transient=transient)
+        if not len(task_status):
+            task_status = TaskRegister(task=task, transient=transient)
+            ### if the task already exists, let's not change it
+            ### because bad things seem to happen....
+            update_status(task_status, not_processed)
+        else:
+            task_status = task_status[0]

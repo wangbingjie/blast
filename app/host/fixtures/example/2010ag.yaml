@@ -13,7 +13,7 @@
     ra_deg: 255.97346
     dec_deg: 31.50172
     tasks_initialized: True
-    spectroscopic_class: SN 1a
+    spectroscopic_class: SN Ia
     host: [UGC 10679]
 - model: host.TaskRegister
   fields:

@@ -12,6 +12,7 @@
     wavelength_min_angstrom: 14787.38
     wavelength_max_angstrom: 18231.02
     vega_zero_point_jansky: 1024.00
+    ab_offset: 1.3676
     magnitude_zero_point_keyword: MAGZP
     image_pixel_units: 'counts'
     kcorrect_name: 'twomass_H'
@@ -29,6 +30,7 @@
     wavelength_min_angstrom: 10806.47
     wavelength_max_angstrom: 14067.97
     vega_zero_point_jansky: 1594.00
+    ab_offset: 0.8949
     magnitude_zero_point_keyword: MAGZP
     image_pixel_units: 'counts'
     kcorrect_name: 'twomass_J'
@@ -46,6 +48,7 @@
     wavelength_min_angstrom: 19543.69
     wavelength_max_angstrom: 23552.40
     vega_zero_point_jansky: 666.80
+    ab_offset: 1.8378
     magnitude_zero_point_keyword: MAGZP
     image_pixel_units: 'counts'
     kcorrect_name: 'twomass_Ks'
@@ -63,6 +66,7 @@
     wavelength_min_angstrom: 27540.97
     wavelength_max_angstrom: 38723.88
     vega_zero_point_jansky: 309.54
+    ab_offset: 2.699
     magnitude_zero_point: 20.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'wise_w1'
@@ -80,6 +84,7 @@
     wavelength_min_angstrom: 39633.26
     wavelength_max_angstrom: 53413.60
     vega_zero_point_jansky: 171.79
+    ab_offset: 3.339
     magnitude_zero_point: 19.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'wise_w2'
@@ -97,6 +102,7 @@
     wavelength_min_angstrom: 74430.44
     wavelength_max_angstrom: 172613.43
     vega_zero_point_jansky: 31.67
+    ab_offset: 5.174
     magnitude_zero_point: 18.0
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'wise_w3'
@@ -114,6 +120,7 @@
     wavelength_min_angstrom: 195200.83
     wavelength_max_angstrom: 279107.24
     vega_zero_point_jansky: 8.36
+    ab_offset: 6.620
     magnitude_zero_point: 13.0
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'wise_w4'
@@ -131,6 +138,7 @@
     wavelength_min_angstrom: 1692.52
     wavelength_max_angstrom: 3006.67
     vega_zero_point_jansky: 788.55
+    ab_offset: 0
     magnitude_zero_point: 20.08
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'galex_NUV'
@@ -148,6 +156,7 @@
     wavelength_min_angstrom: 1340.32
     wavelength_max_angstrom: 1806.43
     vega_zero_point_jansky: 520.73
+    ab_offset: 0
     magnitude_zero_point: 18.82
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'galex_FUV'
@@ -165,6 +174,7 @@
     wavelength_min_angstrom: 3943.40
     wavelength_max_angstrom: 5593.27
     vega_zero_point_jansky: 3893.00
+    ab_offset: 0
     magnitude_zero_point: 25.0
     image_pixel_units: 'counts'
     kcorrect_name: 'none'
@@ -182,6 +192,7 @@
     wavelength_min_angstrom: 5386.23
     wavelength_max_angstrom: 7035.65
     vega_zero_point_jansky: 3135.50
+    ab_offset: 0
     magnitude_zero_point: 25.0
     image_pixel_units: 'counts'
     kcorrect_name: 'none'
@@ -199,6 +210,7 @@
     wavelength_min_angstrom: 6778.45
     wavelength_max_angstrom: 8304.37
     vega_zero_point_jansky: 2577.03
+    ab_offset: 0
     magnitude_zero_point: 25.0
     image_pixel_units: 'counts'
     kcorrect_name: 'none'
@@ -216,6 +228,7 @@
     wavelength_min_angstrom: 8028.00
     wavelength_max_angstrom: 9346.00
     vega_zero_point_jansky: 2273.05
+    ab_offset: 0
     magnitude_zero_point: 25.0
     image_pixel_units: 'counts'
     kcorrect_name: 'none'
@@ -233,6 +246,7 @@
     wavelength_min_angstrom: 9100.50
     wavelength_max_angstrom: 10838.50
     vega_zero_point_jansky: 2203.66
+    ab_offset: 0
     magnitude_zero_point: 25.0
     image_pixel_units: 'counts'
     kcorrect_name: 'none'
@@ -246,10 +260,11 @@
     image_fwhm_arcsec: 1.26
     vosa_id: SLOAN/SDSS.i
     image_download_method: custom
-    wavelength_eff_angstrom: 4671.78
-    wavelength_min_angstrom: 3782.54
-    wavelength_max_angstrom: 5549.26
+    wavelength_eff_angstrom: 7470.60
+    wavelength_min_angstrom: 6430.00
+    wavelength_max_angstrom: 8630.00
     vega_zero_point_jansky: 3971.19
+    ab_offset: 0
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'sdss_i0'
@@ -267,6 +282,7 @@
     wavelength_min_angstrom: 5415.34
     wavelength_max_angstrom: 6989.14
     vega_zero_point_jansky: 3142.02
+    ab_offset: 0
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'sdss_r0'
@@ -284,6 +300,7 @@
     wavelength_min_angstrom: 3048.28
     wavelength_max_angstrom: 4028.23
     vega_zero_point_jansky: 1628.72
+    ab_offset: 0
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'sdss_u0'
@@ -301,6 +318,7 @@
     wavelength_min_angstrom: 7960.44
     wavelength_max_angstrom: 10833.25
     vega_zero_point_jansky: 2227.03
+    ab_offset: 0
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'sdss_z0'
@@ -318,6 +336,7 @@
     wavelength_min_angstrom: 3797.64
     wavelength_max_angstrom: 5553.04
     vega_zero_point_jansky: 4023.57
+    ab_offset: 0
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'sdss_g0'
@@ -335,6 +354,7 @@
     wavelength_min_angstrom: 3925.42
     wavelength_max_angstrom: 5529.96
     vega_zero_point_jansky: 3905.01
+    ab_offset: 0
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'decam_g'
@@ -352,6 +372,7 @@
     wavelength_min_angstrom: 5519.97
     wavelength_max_angstrom: 7233.72
     vega_zero_point_jansky: 3027.32
+    ab_offset: 0
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'decam_r'
@@ -369,6 +390,7 @@
     wavelength_min_angstrom: 6948.18
     wavelength_max_angstrom: 8645.68
     vega_zero_point_jansky: 2467.82
+    ab_offset: 0
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'decam_i'
@@ -386,6 +408,7 @@
     wavelength_min_angstrom: 8341.20
     wavelength_max_angstrom: 10074.26
     vega_zero_point_jansky: 2247.33
+    ab_offset: 0
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'decam_z'
@@ -403,6 +426,7 @@
     wavelength_min_angstrom: 9364.77
     wavelength_max_angstrom: 10685.78
     vega_zero_point_jansky: 2146.18
+    ab_offset: 0
     magnitude_zero_point: 22.5
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'decam_Y'

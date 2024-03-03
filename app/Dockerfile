@@ -1,16 +1,18 @@
-FROM python:3.8
+FROM python:3.11
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update
-RUN apt-get install ffmpeg libsm6 libxext6 gfortran libhealpix-cxx-dev -y
+RUN apt-get install ffmpeg libsm6 libxext6 gfortran libhealpix-cxx-dev libhdf5-serial-dev netcdf-bin libnetcdf-dev -y
 
 COPY ./requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt
+RUN pip install -r /requirements.txt --no-cache-dir
 
 COPY ./debug/debug_ipython.py /root/.ipython/profile_default/startup/
 
 RUN mkdir /app
-RUN mkdir /cutout_cdn
+RUN mkdir /data
+RUN mkdir /data/cutout_cdn
+RUN mkdir /data/sed_output
 RUN mkdir /ghost_output
 RUN mkdir /fsps
 

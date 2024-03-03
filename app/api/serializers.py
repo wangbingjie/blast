@@ -12,66 +12,73 @@ class CutoutField(serializers.RelatedField):
 class TransientSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Transient
-        fields = [
-            "name",
-            "ra_deg",
-            "dec_deg",
-            "public_timestamp",
-            "redshift",
-            "milkyway_dust_reddening",
-            "spectroscopic_class",
+        depth = 1
+        exclude = [
+            "tns_id",
+            "tns_prefix",
+            "tasks_initialized",
             "photometric_class",
             "processing_status",
         ]
 
 
-class HostSerializer(serializers.ModelSerializer):
+class HostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Host
+        depth = 1
         fields = ["name", "ra_deg", "dec_deg", "redshift", "milkyway_dust_reddening"]
 
 
 class ApertureSerializer(serializers.ModelSerializer):
-    cutout = CutoutField(read_only=True)
-
     class Meta:
         model = models.Aperture
-        fields = [
-            "ra_deg",
-            "dec_deg",
-            "orientation_deg",
-            "semi_major_axis_arcsec",
-            "semi_minor_axis_arcsec",
-            "cutout",
-        ]
+        depth = 1
+        fields = "__all__"
 
 
 class AperturePhotometrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.AperturePhotometry
-        fields = ["flux", "flux_error", "magnitude", "magnitude_error", "is_validated"]
+        depth = 1
+        fields = "__all__"
 
 
 class SEDFittingResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.SEDFittingResult
+        depth = 1
+        exclude = ["log_tau_16", "log_tau_50", "log_tau_84", "posterior"]
+
+
+class CutoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Cutout
+        depth = 1
+        exclude = ["fits"]
+
+
+class FilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Filter
+        depth = 1
         fields = [
-            "log_mass_16",
-            "log_mass_50",
-            "log_mass_84",
-            "log_sfr_16",
-            "log_sfr_50",
-            "log_sfr_84",
-            "log_ssfr_16",
-            "log_ssfr_50",
-            "log_sfr_84",
-            "log_ssfr_16",
-            "log_ssfr_50",
-            "log_ssfr_84",
-            "log_age_16",
-            "log_age_50",
-            "log_age_84",
-            "log_tau_16",
-            "log_tau_50",
-            "log_tau_84",
+            "name",
+            "pixel_size_arcsec",
+            "image_fwhm_arcsec",
+            "wavelength_eff_angstrom",
+            "ab_offset",
         ]
+
+
+class TaskRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.TaskRegister
+        depth = 1
+        fields = "__all__"
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Task
+        depth = 1
+        fields = ["name"]
