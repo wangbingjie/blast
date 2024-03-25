@@ -97,7 +97,7 @@
       name: 2010h_PanSTARRS_g
       filter: [PanSTARRS_g]
       transient: [2010h]
-      fits: ../data/cutout_cdn/2010h/PanSTARRS/PanSTARRS_g.fits
+      fits: /data/cutout_cdn/2010h/PanSTARRS/PanSTARRS_g.fits
 - model: host.Aperture
   fields:
       name: 2010h_PanSTARRS_g_global
