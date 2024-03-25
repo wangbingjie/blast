@@ -12,3 +12,8 @@ if not os.path.exists(
     f"{media_root}/../dustmaps/sfd/SFD_dust_4096_ngp.fits"
 ) or not os.path.exists(f"{media_root}/../dustmaps/sfd/SFD_dust_4096_sgp.fits"):
     dustmaps.sfd.fetch()
+
+with open(f"{os.environ['HOME']}/.dustmapsrc",'w') as fout:
+    print(f"""{{
+  "data_dir": "{media_root}/../dustmaps/"
+}}""",file=fout)
