@@ -16,7 +16,7 @@ class TestHostMatch(TestCase):
         "../fixtures/initial/setup_status.yaml",
         "../fixtures/initial/setup_tasks.yaml",
         "../fixtures/initial/setup_acknowledgements.yaml",
-        "../fixtures/test/test_2010h.yaml",
+        "../fixtures/test/test_2010H.yaml",
     ]
 
     def test_aperture_construction(self):

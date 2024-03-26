@@ -69,7 +69,7 @@ class SEDFittingFullTest(TestCase):
         "../fixtures/initial/setup_status.yaml",
         "../fixtures/initial/setup_tasks.yaml",
         "../fixtures/initial/setup_acknowledgements.yaml",
-        "../Fixtures/test/test_2010h.yaml",
+        "../Fixtures/test/test_2010H.yaml",
     ]
 
     # def test_prospector_global(self):
