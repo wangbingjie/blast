@@ -12,12 +12,30 @@ if [[ ! -f "/root/.dustmapsrc" && -f "/tmp/.dustmapsrc" ]]; then
 fi
 
 INIT_CHECK_FILE=/app/static/.initialized
-if [[ ! -f "${INIT_CHECK_FILE}" ]]; then
-  echo "\"${INIT_CHECK_FILE}\" not found. Running initialization script..."
-  python init.py
-  touch "${INIT_CHECK_FILE}"
-else
+# The INIT_STARTED_FILE is necessary when multiple parallel containers
+# are launched for example in Kubernetes when there are multiple replicas.
+INIT_STARTED_FILE=/app/static/.initializing
+if [[ -f "${INIT_CHECK_FILE}" ]]
+then
   echo "Application already initialized (\"${INIT_CHECK_FILE}\" exists)."
+elif [[ -f "${INIT_STARTED_FILE}" ]]
+then
+  echo "Application is currently being initialized (\"${INIT_STARTED_FILE}\" exists)."
+  sleep 10
+  exit 1
+else
+  echo "\"${INIT_CHECK_FILE}\" not found. Running initialization script..."
+  touch "${INIT_STARTED_FILE}"
+
+  # Download and install all required data files
+  if [[ "${INITIALIZE_DATA}" == "true" ]]; then
+    bash entrypoints/initialize_all_data.sh
+  fi
+
+  python init.py
+
+  touch "${INIT_CHECK_FILE}"
+  rm -f "${INIT_STARTED_FILE}"
 fi
 
 echo "Starting server..."
