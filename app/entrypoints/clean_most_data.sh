@@ -7,6 +7,6 @@ rm -r data/tns_staging/*
 rm -r app/static/*
 rm -r app/rabbitmq_data/*
 
-mv data/sed_output/2010h/ data/
+mv data/sed_output/2010H/ data/
 rm -r data/sed_output/*
-mv data/2010h data/sed_output/
+mv data/2010H data/sed_output/
