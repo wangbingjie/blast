@@ -47,8 +47,8 @@ periodic_tasks = [
     LogTransientProgress(),
 ]
 
-task_time_limit = int(os.environ.get('TASK_TIME_LIMIT', "3800"))
-task_soft_time_limit = int(os.environ.get('TASK_SOFT_TIME_LIMIT', "3600"))
+task_time_limit = int(os.environ.get("TASK_TIME_LIMIT", "3800"))
+task_soft_time_limit = int(os.environ.get("TASK_SOFT_TIME_LIMIT", "3600"))
 for task in periodic_tasks:
     func_name = task.task_name.replace(" ", "_").lower()
     exec(
