@@ -15,14 +15,14 @@ Downloading Blast data for individual tables via python
 The url endpoint to grab the data for a particular transient is
 :code:`/api/transient/?name=transient_name&format=json`.
 Here is an example python snippet to load data as a python dictionary for the transient
-2010h
+2010H
 
 .. code:: python
 
     from urllib.request import urlopen
     import json
 
-    response = urlopen('<base_blast_url>/api/transient/?name=2010h&format=json')
+    response = urlopen('<base_blast_url>/api/transient/?name=2010H&format=json')
     data = json.loads(response.read())
 
 Here data is a python dictionary that contains the blast science payload data m
@@ -107,7 +107,7 @@ Aperture filtering options
 * :code:`transient=` - select apertures associated with a given transient name
 
 Example:
-:code:`<blast_base_url>/api/aperture/?transient=2010h`
+:code:`<blast_base_url>/api/aperture/?transient=2010H`
 
 
 AperturePhotometry fields
@@ -170,7 +170,7 @@ SED filtering options
 
 Example:
 
-* :code:`<blast_base_url>/api/sedfittingresult/?transient=2010h`
+* :code:`<blast_base_url>/api/sedfittingresult/?transient=2010H`
 * :code:`<blast_base_url>/api/sedfittingresult/?aperture_type=local`
 
 Cutout fields
@@ -189,7 +189,7 @@ Cutout filtering options
 * :code:`filter` - select cutout images in a given photometric filter
 
 Example:
-:code:`<blast_base_url>/api/cutout/?transient=2010h`
+:code:`<blast_base_url>/api/cutout/?transient=2010H`
 
 Task fields
 +++++++++++

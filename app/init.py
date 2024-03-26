@@ -64,7 +64,7 @@ def main():
         ["__main__.py", "loaddata", "/app/host/fixtures/example/2010ai.yaml"]
     )
     execute_from_command_line(
-        ["__main__.py", "loaddata", "/app/host/fixtures/example/2010h.yaml"]
+        ["__main__.py", "loaddata", "/app/host/fixtures/example/2010H.yaml"]
     )
     execute_from_command_line(
         ["__main__.py", "loaddata", "/app/host/fixtures/example/snapshot.yaml"]
