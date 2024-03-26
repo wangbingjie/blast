@@ -7,7 +7,7 @@ cd /tmp
 # TODO: These are not comprehensive data integrity checks; 
 # we are only spot-checking the data directories.
 
-if [[ -f" /fsps/README.md" ]]
+if [[ -f "/fsps/README.md" ]]
 then
     echo "fsps files already downloaded"
 else
