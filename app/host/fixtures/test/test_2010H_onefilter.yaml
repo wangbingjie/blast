@@ -6,7 +6,7 @@
     dec_deg: 1.0359861
 - model: host.Transient
   fields:
-    name: 2010h
+    name: 2010H
     tns_id: 3
     public_timestamp: 2010-01-16 00:00:00.000+00:00
     tns_prefix: SN
@@ -17,92 +17,92 @@
     tasks_initialized: True
 - model: host.TaskRegister
   fields:
-    transient: [2010h]
+    transient: [2010H]
     task: [Transient MWEBV]
     status: [not processed]
     last_modified: 1999-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 45.0
 - model: host.TaskRegister
   fields:
-    transient: [2010h]
+    transient: [2010H]
     task: [Host match]
     status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 1.0
 - model: host.TaskRegister
   fields:
-    transient: [2010h]
+    transient: [2010H]
     task: [Host MWEBV]
     status: [not processed]
     last_modified: 1998-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 35.0
 - model: host.TaskRegister
   fields:
-    transient: [2010h]
+    transient: [2010H]
     task: [Cutout download]
     status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 10.0
 - model: host.TaskRegister
   fields:
-    transient: [2010h]
+    transient: [2010H]
     task: [Host information]
     status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 2.0
 - model: host.TaskRegister
   fields:
-    transient: [2010h]
+    transient: [2010H]
     task: [Global aperture photometry]
     status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 11.2323
 - model: host.TaskRegister
   fields:
-    transient: [2010h]
+    transient: [2010H]
     task: [Global aperture construction]
     status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 11.2323
 - model: host.TaskRegister
   fields:
-    transient: [2010h]
+    transient: [2010H]
     task: [Local aperture photometry]
     status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 0.03
 - model: host.TaskRegister
   fields:
-    transient: [2010h]
+    transient: [2010H]
     task: [Global host SED inference]
     status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 0.004
 - model: host.TaskRegister
   fields:
-    transient: [2010h]
+    transient: [2010H]
     task: [Local host SED inference]
     status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 100.0
 - model: host.TaskRegister
   fields:
-    transient: [2010h]
+    transient: [2010H]
     task: [Transient information]
     status: [processed]
     last_modified: 2000-01-23 01:23:45.678+00:00
     last_processing_time_seconds: 50.0
 - model: host.Cutout
   fields:
-      name: 2010h_PanSTARRS_g
+      name: 2010H_PanSTARRS_g
       filter: [PanSTARRS_g]
-      transient: [2010h]
-      fits: /data/cutout_cdn/2010h/PanSTARRS/PanSTARRS_g.fits
+      transient: [2010H]
+      fits: ../data/cutout_cdn/2010H/PanSTARRS/PanSTARRS_g.fits
 - model: host.Aperture
   fields:
-      name: 2010h_PanSTARRS_g_global
-      cutout: [2010h_PanSTARRS_g]
-      transient: [2010h]
+      name: 2010H_PanSTARRS_g_global
+      cutout: [2010H_PanSTARRS_g]
+      transient: [2010H]
       orientation_deg: 227.80
       ra_deg: 121.6004583
       dec_deg: 1.0359861
@@ -111,9 +111,9 @@
       type: global
 - model: host.Aperture
   fields:
-      name: 2010h_local
-      cutout: [2010h_PanSTARRS_g]
-      transient: [2010h]
+      name: 2010H_local
+      cutout: [2010H_PanSTARRS_g]
+      transient: [2010H]
       orientation_deg: 0.0
       ra_deg: 121.6015
       dec_deg: 1.03586
@@ -122,27 +122,27 @@
       type: local
 - model: host.AperturePhotometry
   fields:
-      aperture: [2010h_local]
+      aperture: [2010H_local]
       filter: [PanSTARRS_g]
-      transient: [2010h]
+      transient: [2010H]
       flux: 66.48
       flux_error: 0.3
       magnitude: 0.0
       magnitude_error: 0.0
 - model: host.AperturePhotometry
   fields:
-      aperture: [2010h_PanSTARRS_g_global]
+      aperture: [2010H_PanSTARRS_g_global]
       filter: [PanSTARRS_g]
-      transient: [2010h]
+      transient: [2010H]
       flux: 11486.21
       flux_error: 6.74
       magnitude: 0.0
       magnitude_error: 0.0
 - model: host.SEDFittingResult
   fields:
-      transient: [2010h]
-      aperture: [2010h_PanSTARRS_g_global]
-      posterior: /sed_output/2010h/2010h_global.h5
+      transient: [2010H]
+      aperture: [2010H_PanSTARRS_g_global]
+      posterior: /sed_output/2010H/2010H_global.h5
       log_mass_16: 11.11623006468808
       log_mass_50: 11.119444597406906
       log_mass_84: 11.122195767038848
@@ -160,9 +160,9 @@
       log_tau_84: 0.1261118048050916
 - model: host.SEDFittingResult
   fields:
-      transient: [2010h]
-      aperture: [2010h_local]
-      posterior: /sed_output/2010h/2010h_local.h5
+      transient: [2010H]
+      aperture: [2010H_local]
+      posterior: /sed_output/2010H/2010H_local.h5
       log_mass_16: 8.849994109986605
       log_mass_50: 8.894097969541852
       log_mass_84: 8.96004598530449
