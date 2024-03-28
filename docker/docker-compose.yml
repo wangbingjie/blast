@@ -1,6 +1,7 @@
-version: '3.8'
 volumes:
   blast-db: {}
+  blast-data: {}
+  django-static: {}
 
 services:
   app:

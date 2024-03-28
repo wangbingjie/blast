@@ -38,12 +38,12 @@ else
   set -e
   git clone https://github.com/astrophpeter/blast.git /tmp/blast
   cd /tmp/blast
-  rsync -va data/cutout_cdn/2010ag /data/cutout_cdn/
-  rsync -va data/cutout_cdn/2010ai /data/cutout_cdn/
-  rsync -va data/cutout_cdn/2010H  /data/cutout_cdn/
-  rsync -va data/sed_output/2010H  /data/sed_output/
-  rsync -va data/sbipp             /
-  rsync -va data/transmission      /
+  rsync -va data/cutout_cdn/2010ag/ /data/cutout_cdn/2010ag/
+  rsync -va data/cutout_cdn/2010ai/ /data/cutout_cdn/2010ai/
+  rsync -va data/cutout_cdn/2010H/  /data/cutout_cdn/2010H/
+  rsync -va data/sed_output/2010H/  /data/sed_output/2010H/
+  rsync -va data/sbipp/             /sbipp/
+  rsync -va data/transmission/      /transmission/
   set +e
   rm -rf /tmp/blast
 fi
