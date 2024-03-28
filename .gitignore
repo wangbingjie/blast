@@ -167,3 +167,4 @@ batch/*
 !batch/docker-entrypoint.batch.sh
 
 validation/validation_data/jones+18_panstarrs_g_cutouts/
+app/sbi-logs/
