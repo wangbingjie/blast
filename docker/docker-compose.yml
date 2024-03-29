@@ -1,4 +1,7 @@
-version: '3.8'
+volumes:
+  blast-db: {}
+  blast-data: {}
+  django-static: {}
 
 services:
   app:
@@ -48,7 +51,7 @@ services:
       file: docker-compose.blast_base.yml
       service: database_base
     volumes:
-      - ../data/database/:/var/lib/mysql/
+      - blast-db:/var/lib/mysql/
     profiles: ["full_prod", "slim_prod", "full_dev", "slim_dev", "batch"]
     env_file:
       - ../env/.env.dev

@@ -30,12 +30,12 @@ documentation (which you are reading right now). If you are making a
 documentation addition of change only, you will only edit code is this
 directory.
 
-docker
+Docker
 ------
 
-The :code:`docker/` directory contains the docker compose files used to start
+The :code:`docker/` directory contains the Docker Compose files used to start
 all the services blast uses (e.g., database, web app, web server). It contains
-docker compose files for running and testing the blast.
+Docker Compose files for running and testing the blast.
 
 env
 ---
@@ -64,7 +64,7 @@ app
 ---
 
 The :code:`app/` directory contains all the blast django app source code.
-:code:`app/Dockerfile` tells docker how to build the blast container.
+:code:`app/Dockerfile` tells Docker how to build the blast container.
 :code:`app/requirements.txt` contains all the blast package dependencies. We
 provide a more detailed breakdown below of the sub directories below.
 
@@ -73,7 +73,7 @@ entrypoints
 
 The :code:`app/entrypoints` directory contains the entrypoint scripts used to
 start the blast application and related services. These scripts are used by the
-docker compose files. This directory also contains utility scripts to clean data
+Docker Compose files. This directory also contains utility scripts to clean data
 directories when restarting blast.
 
 app

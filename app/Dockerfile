@@ -19,11 +19,6 @@ RUN pip install -r /requirements.txt --no-cache-dir
 COPY ./debug/debug_ipython.py /root/.ipython/profile_default/startup/
 
 RUN mkdir /app
-RUN mkdir /data
-RUN mkdir /data/cutout_cdn
-RUN mkdir /data/sed_output
-RUN mkdir /ghost_output
-RUN mkdir /fsps
 
 COPY . /app
 WORKDIR /app
