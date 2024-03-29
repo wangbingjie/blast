@@ -67,7 +67,7 @@ usually sufficient for front end web development, you can run:
     bash run/blast.run.sh slim_dev
 
 Then go to `http://0.0.0.0:8000/ <http://0.0.0.0:8000/>`_  in your web browser,
-after all the containers have started, and blast should be running.  
+after all the containers have started, and blast should be running.
 
 Running blast in these two modes means you can edit most code and you will see
 the resulting live changes in the web interface.
