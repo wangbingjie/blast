@@ -5,16 +5,16 @@ If you want to develop on blast, for most things, you will have to run blast
 locally to see the effect of your code changes. This pages walks you through
 how to install blast and get it running on your machine.
 
-Install the Docker desktop app
+Install the Docker Desktop app
 -------------------------------
 
 The recommended option for installing and running blast locally is to
-use docker. It is so strongly recommended in fact, that I'm not going to write
+use Docker. It is so strongly recommended in fact, that I'm not going to write
 documentation on how to install and run blast any other way. The first step is to
-install the docker desktop application, which can be found
+install the Docker Desktop application, which can be found
 `here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux. Make
 sure you have Docker Compose version 1.28.0 or later.  We recommend allocating
-at least 32 GB of memory in the docker settings.
+at least 32 GB of memory in the Docker settings.
 
 Clone the blast repository
 --------------------------
@@ -52,7 +52,7 @@ First pull the latest version of the blast image
 
     docker pull ghcr.io/astrophpeter/blast:latest
 
-Once in the top level blast directory, start the docker containers. This command
+Once in the top level blast directory, start the Docker containers. This command
 brings up the full blast stack,
 
 .. code:: none
@@ -83,7 +83,7 @@ where :code:`$PROFILE` is the active Docker Compose profile; for example, :code:
 .. warning::
 
     When you stop the blast container make sure all services are stopped. You can see which
-    services are running in the docker desktop app and stop services manually there.
+    services are running in the Docker Desktop app and stop services manually there.
 
 Persistent data volumes
 -----------------------
