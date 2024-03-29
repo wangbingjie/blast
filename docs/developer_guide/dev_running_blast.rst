@@ -19,7 +19,7 @@ at least 32 GB of memory in the docker settings.
 Clone the blast repository
 --------------------------
 
-Clone the bast repository.
+Clone the blast repository.
 
 .. code:: none
 
