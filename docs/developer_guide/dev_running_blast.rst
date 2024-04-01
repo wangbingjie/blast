@@ -12,7 +12,7 @@ The recommended option for installing and running Blast locally is to
 use Docker. It is so strongly recommended in fact, that I'm not going to write
 documentation on how to install and run Blast any other way. The first step is to
 install the Docker Desktop application, which can be found
-`here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux. Make
+`here <https://docs.docker.com/get-docker/>`_ for Mac, Windows, and Linux. Make
 sure you have Docker Compose version 1.28.0 or later.  We recommend allocating
 at least 32 GB of memory in the Docker settings.
 

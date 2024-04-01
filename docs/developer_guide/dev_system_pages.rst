@@ -28,11 +28,11 @@ Once logged in, you should see a page like this:
 Flower
 ------
 
-The flower dashboard (see the docs `here <https://flower.readthedocs.io/en/latest/>`_)
+The Flower dashboard (see the docs `here <https://flower.readthedocs.io/en/latest/>`_)
 allows you to monitor the backend computation tasks being run in Blast. This allows
 you to see which tasks are being run and which tasks are failing.
 
-Once Blast is running locally to see the flower dashboard go to `<0.0.0.0:8888>`_.
+Once Blast is running locally to see the Flower dashboard go to `<0.0.0.0:8888>`_.
 
 .. image::../_static/flower_dashboard.png
 

@@ -63,7 +63,7 @@ your code, they are shown here:
 .. image:: ../_static/ci_checks.png
 
 The Continuous integration test checks if any of the code you changed failed
-any of the Blast app tests. The read the docs checks test if any of the code
+any of the Blast app tests. The checks from Read the Docs test if any of the code
 you added broke the documentation build. Finally, the pre-commit test checks if
 the code you added is correctly formatted. If it is not, pre-commit will
 automatically fix things for you and push the changes. All the checks have passed
@@ -85,7 +85,7 @@ repository.
 
     git branch -d <your branch name>
 
-9. Then delete the branch from Github.
+9. Then delete the branch from GitHub.
 
 .. code:: none
 
