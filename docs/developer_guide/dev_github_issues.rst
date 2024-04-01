@@ -1,9 +1,9 @@
 What to work on?
 ================
 
-So you've read the blast developer guide, now you want to know what exactly to
+So you've read the Blast developer guide, now you want to know what exactly to
 work on. The best place to start is the
-`issues <https://github.com/astrophpeter/blast/issues>`_ tab on the blast github
+`issues <https://github.com/astrophpeter/blast/issues>`_ tab on the Blast GitHub
 page. Here you will find a list of develop tasks that need to be worked on for
 blast. They are tagged by level of difficulty:
 
@@ -19,11 +19,11 @@ Intermediate issues
 -------------------
 
 These issues are tagged with :code:`Difficulty: intermediate`. These issues are
-slightly longer tasks which require editing python code with blast. You may have
+slightly longer tasks which require editing Python code with Blast. You may have
 to write tests to get work on these issues through code review. The issue will
 often have some direction on how to complete the feature request, but you will
 have to figure out specific implementation details. These issues are great for
-developers who have some experience with python and / or have completed
+developers who have some experience with Python and / or have completed
 a few entry level issues.
 
 Advanced issues
@@ -32,29 +32,29 @@ Advanced issues
 These issues are tagged with :code:`Difficulty: advanced`. These issues are
 open-ended tasks which often require knowledge of all aspects of the application,
 or involve project level structural changes. These issues are great for
-developers who are confident with python and django and have completed
+developers who are confident with Python and Django and have completed
 many intermediate level issues.
 
 Documentation
 -------------
 
 Any issues tagged with :code:`Documentation` only requires editing
-documentation, you don't even need to run the blast app locally to work on these.
+documentation, you don't even need to run the Blast app locally to work on these.
 See the :doc:`Documentation <dev_documentation>` developer guide docs to get started.
 
 Slim stack
 ----------
 
-An issues tagged with :code:`Slim stack` only requires the blast web app and
+An issues tagged with :code:`Slim stack` only requires the Blast web app and
 database, so you can work on these issues by running :code:`bash run/blast.run.sh slim`
-See :doc:`Running blast <dev_running_blast>` documentation for more details.
+See :doc:`Running Blast <dev_running_blast>` documentation for more details.
 
 Full stack
 ----------
 
-An issue tagged with :code:`Full stack` requires all the blast services to
+An issue tagged with :code:`Full stack` requires all the Blast services to
 be worked on which means you will need to run :code:`bash run/blast.run.sh full`
-to work on them. See :doc:`Running blast <dev_running_blast>` documentation
+to work on them. See :doc:`Running Blast <dev_running_blast>` documentation
 for more details.
 
 

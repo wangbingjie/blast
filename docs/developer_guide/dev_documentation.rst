@@ -1,12 +1,12 @@
 Documentation
 =============
 
-A great place to start for a new developer on blast is to write or edit
+A great place to start for a new developer on Blast is to write or edit
 documentation (pages like the one you are reading right now!). The process for
 editing or adding documentation relatively straight forward and does not require
-you to run the main blast app. All you need is a text editor and git installed.
+you to run the main Blast app. All you need is a text editor and Git installed.
 
-The blast documentation is written in `sphinx <https://www.sphinx-doc.org/en/master/#user-guides>`_
+The Blast documentation is written in `Sphinx <https://www.sphinx-doc.org/en/master/#user-guides>`_
 and is built and hosted automatically using `read the docs <https://readthedocs.org/>`_.
 
 All the documentation code and text is contained within :code:`docs/`. Once you
