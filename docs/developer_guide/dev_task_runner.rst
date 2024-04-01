@@ -133,7 +133,7 @@ integer. If you do not implement this method, it will default to 60 seconds.
 
     @property
     def task_frequency_seconds(self):
-        return 60.0
+        return 60
 
 
 Run on start up
@@ -178,7 +178,7 @@ Putting this all together, the example :code:`TransientTaskRunner` class would b
 
         @property
         def task_frequency_seconds(self):
-            return 60.0
+            return 60
 
         @property
         def task_initially_enabled(self):
@@ -208,7 +208,7 @@ would look like:
 
         @property
         def task_frequency_seconds(self):
-            return 60.0
+            return 60
 
         @property
         def task_initially_enabled(self):
