@@ -5,7 +5,7 @@ So you've read the Blast developer guide, now you want to know what exactly to
 work on. The best place to start is the
 `issues <https://github.com/astrophpeter/blast/issues>`_ tab on the Blast GitHub
 page. Here you will find a list of develop tasks that need to be worked on for
-blast. They are tagged by level of difficulty:
+Blast. They are tagged by level of difficulty:
 
 Entry level issues
 ------------------

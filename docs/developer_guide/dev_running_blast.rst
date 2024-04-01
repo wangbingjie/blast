@@ -1,7 +1,7 @@
 Running Blast locally
 =====================
 
-If you want to develop on blast, for most things, you will have to run blast
+If you want to develop on Blast, for most things, you will have to run Blast
 locally to see the effect of your code changes. This pages walks you through
 how to install Blast and get it running on your machine.
 

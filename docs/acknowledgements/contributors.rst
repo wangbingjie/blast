@@ -4,7 +4,7 @@ Blast is based upon work supported by the National Aeronautics and Space Adminis
 
 Blast is developed as an open source software project on
 `Github <https://github.com/astrophpeter/blast>`_. The following people have
-contributed to blast's development.
+contributed to Blast's development.
 
 * Peter McGill
 * David Jones

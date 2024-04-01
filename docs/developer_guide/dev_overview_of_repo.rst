@@ -7,7 +7,7 @@ designed to help new developers navigate the code.
 run
 ---
 
-The :code:`run/` directory contains the scripts to start or test the blast
+The :code:`run/` directory contains the scripts to start or test the Blast
 application either locally or on GitHub actions.
 
 nginx
@@ -40,8 +40,8 @@ Docker Compose files for running and testing Blast.
 env
 ---
 
-The :code:`env/` directory contains all the .env files which have all the blast
-setting which we don't want to make visible in source control (e.g., database
+The :code:`env/` directory contains all the .env files which have all the Blast
+settings which we don't want to make visible in source control (e.g., database
 login details).
 
 data
@@ -90,7 +90,7 @@ fixtures
 ^^^^^^^^
 
 The :code:`app/host/fixtures/` directory contains all the data that is loaded into
-blast upon start up.
+Blast upon start up.
 
 templates
 ^^^^^^^^^

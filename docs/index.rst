@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to blast's documentation!
+Welcome to Blast's documentation!
 =================================
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest

@@ -3,7 +3,7 @@ Task Runners
 
 This page walks you through how to write a :code:`TaskRunner`, which is base class that
 performs a computational task in Blast. There are two types of :code:`TaskRunner`: (1) a
-:code:`TransientTaskRunner`, which performs a computation on a transient in the blast
+:code:`TransientTaskRunner`, which performs a computation on a transient in the Blast
 database (e.g., matching a host galaxy), and (2) a :code:`SystemTaskRunner` which
 performs a system level task not related to a specific transient (e.g, ingest a
 batch of transients from TNS or clean data directories).
@@ -68,7 +68,7 @@ a string which is the name of the task. Let's say we are implementing a
 
     You need to add your new task and its name into
     :code:`app/host/fixtures/initial/setup_tasks.yaml` making sure the return of
-    task_name matches the name field in the fixture. This will ensure blast
+    task_name matches the name field in the fixture. This will ensure Blast
     registers your task on start up.
 
 
@@ -87,7 +87,7 @@ to have status "processed", it would look like this.
     def _prerequisites():
         return {'Host match': 'not processed', 'Cutout download': 'processed'}
 
-This ensures that your :code:`TaskRunner` will only run on transients in the blast
+This ensures that your :code:`TaskRunner` will only run on transients in the Blast
 database meeting the prerequisites.
 
 .. note::
@@ -194,7 +194,7 @@ System Task
 -----------
 
 The :code:`SystemTaskRunner` is somewhat simpler to implement as there is no chaining
-of prerequisite tasks, and the results do not need to be displayed in the blast
+of prerequisite tasks, and the results do not need to be displayed in the Blast
 web interface. New system task runners should be implemented in
 the :code:`app/host/system_tasks.py` module. A full :code:`SystemTaskRunner`
 would look like:

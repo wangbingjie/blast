@@ -29,7 +29,7 @@ Starting from scratch, the typical development workflow would be the following.
     git checkout -b <your first name>-<one or two word description of what you are doing>
 
 For example, if you were called Joe and wanted to contribute to documentation on
-blast your branch might be called joe-docs.
+Blast your branch might be called joe-docs.
 
 3. Set the remote of your new branch to GitHub.
 

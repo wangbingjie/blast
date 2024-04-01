@@ -2,7 +2,7 @@ Blast system pages
 ==================
 
 In addition to the public html pages Blast serves it maybe useful in the
-development cycle to access some of blast's system / administrator pages.
+development cycle to access some of Blast's system / administrator pages.
 
 Django admin dashboard
 ----------------------

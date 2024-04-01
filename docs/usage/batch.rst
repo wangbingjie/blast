@@ -27,7 +27,7 @@ Output results file
 -------------------
 
 You must also create an empty results csv file. This is where the results of
-blast will be written to as the batch of transients is processed.
+Blast will be written to as the batch of transients is processed.
 
 Environment setup
 -----------------
@@ -49,7 +49,7 @@ Running in batch mode
 ---------------------
 
 With the environment variables set, you can run Blast in batch mode from the base
-blast directory,
+Blast directory,
 
 .. code:: None
 
@@ -58,4 +58,4 @@ blast directory,
 This will spin up a local version of Blast that will take your batch of transients
 as input and process them. Results will be periodically written to your results
 file. When all transients have been processed or are blocked the containers will
-all exit. The format of the results file is specified by the :doc:`blast API <web_api>`.
+all exit. The format of the results file is specified by the :doc:`Blast API <web_api>`.

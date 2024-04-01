@@ -2,7 +2,7 @@ Software
 ========
 
 Blast is largely glue between already established software projects. It could not
-exist without them. If you use blast, you must acknowledge and cite all
+exist without them. If you use Blast, you must acknowledge and cite all
 of the following projects which Blast uses.
 
 If you see your software being used in Blast and we have not cited you properly,
