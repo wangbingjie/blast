@@ -23,7 +23,7 @@ django.setup()
 
 # -- Project information -----------------------------------------------------
 
-project = "blast"
+project = "Blast"
 copyright = "2021, Peter McGill, David Jones"
 author = "Peter McGill, David Jones"
 

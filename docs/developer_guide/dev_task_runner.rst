@@ -1,20 +1,20 @@
 Task Runners
 ============
 
-This page walks you through how to write a blast TaskRunner. A TaskRunner
-performs a computational task in blast. There are two types of TaskRunner
-in blast. The first is the TransientTaskRunner, which performs a computation on
-a transient in the blast database (e.g., matching a host galaxy), and a
-SystemTaskRunner which performs a system level task not related to a specific
-transient (e.g, ingest a batch of transients from TNS or clean data directories).
+This page walks you through how to write a :code:`TaskRunner`, which is base class that
+performs a computational task in Blast. There are two types of :code:`TaskRunner`: (1) a
+:code:`TransientTaskRunner`, which performs a computation on a transient in the Blast
+database (e.g., matching a host galaxy), and (2) a :code:`SystemTaskRunner` which
+performs a system level task not related to a specific transient (e.g, ingest a
+batch of transients from TNS or clean data directories).
 
-Writing your own TaskRunner in blast should be straight forward if you inherit
-from TransientTaskRunner or SystemTaskRunner. These classes handle of the
-house keeping associated with running blast task, allowing you to just write the
+Writing your own :code:`TaskRunner` in Blast should be straightforward if you inherit
+from :code:`TransientTaskRunner` or :code:`SystemTaskRunner`. These classes handle the
+house keeping associated with running Blast task, allowing you to just write the
 task code.
 
-This pages explains how to write your own TransientTaskRunner and
-SystemTaskRunner.
+This pages explains how to write your own :code:`TransientTaskRunner` and
+:code:`SystemTaskRunner`.
 
 Transient Task
 --------------
@@ -27,7 +27,7 @@ implement a :code:`TransientTaskRunner`.
 Process method
 ^^^^^^^^^^^^^^
 
-The _run_process method is where your task's code should go. This method
+The :code:`_run_process` method is where your task's code should go. This method
 should contain all the necessary computations and saves to the database for your
 task to be completed. It takes a Transient object as an argument and must return
 a status message which indicates the status of the task after computation. As an
@@ -52,11 +52,11 @@ then returns the processed status message.
 Task name
 ^^^^^^^^^
 
-The TaskRunner needs to specify which task it operates on. This is done through
-implementing the task_name property. This methods takes no arguments and returns
+The :code:`TaskRunner` needs to specify which task it operates on. This is done through
+implementing the :code:`task_name` property. This methods takes no arguments and returns
 a string which is the name of the task. Let's say we are implementing a
-TransientTaskRunner that matches a transient to a host galaxy, this
-TransientTaskRunner will alter the status of the Host match Task,
+:code:`TransientTaskRunner` that matches a transient to a host galaxy, this
+:code:`TransientTaskRunner` will alter the status of the "Host match" Task,
 
 .. code:: python
 
@@ -68,15 +68,15 @@ TransientTaskRunner will alter the status of the Host match Task,
 
     You need to add your new task and its name into
     :code:`app/host/fixtures/initial/setup_tasks.yaml` making sure the return of
-    task_name matches the name field in the fixture. This will ensure blast
+    task_name matches the name field in the fixture. This will ensure Blast
     registers your task on start up.
 
 
 Prerequisites
 ^^^^^^^^^^^^^
 
-The TaskRunner needs to also specify which tasks need to be completed before it
-should be run. This is done through implementing the _prerequisites method. This
+The :code:`TaskRunner` needs to also specify which tasks need to be completed before it
+should be run. This is done through implementing the :code:`_prerequisites` method. This
 function tasks no arguments and should return a dictionary with the name and
 status of prerequisite tasks. For example, if before running your task you need
 the Host match task to have status "not processed" and the Cutout download task
@@ -87,7 +87,7 @@ to have status "processed", it would look like this.
     def _prerequisites():
         return {'Host match': 'not processed', 'Cutout download': 'processed'}
 
-This ensures that your TaskRunner will only run on transients in the blast
+This ensures that your :code:`TaskRunner` will only run on transients in the Blast
 database meeting the prerequisites.
 
 .. note::
@@ -125,7 +125,7 @@ If you do not implement this method it will default to a "failed" status.
 Task Frequency
 ^^^^^^^^^^^^^^
 
-You can specify the frequency at which as task should be run blast by implementing
+You can specify the frequency at which as task should be run Blast by implementing
 the :code:`task_frequency_seconds` property. This function must return a positive
 integer. If you do not implement this method, it will default to 60 seconds.
 
@@ -133,13 +133,13 @@ integer. If you do not implement this method, it will default to 60 seconds.
 
     @property
     def task_frequency_seconds(self):
-        return 60.0
+        return 60
 
 
 Run on start up
 ^^^^^^^^^^^^^^^
 
-You can specify whether your task runs periodically on start up of blast or needs
+You can specify whether your task runs periodically on start up of Blast or needs
 to be explicitly trigger from the djano admin by implementing
 the :code:`task_initially_enabled` property. If you do not implement this method
 it will default to true, meaning that the task will launch automatically on
@@ -163,7 +163,7 @@ Putting this all together, the example :code:`TransientTaskRunner` class would b
     from .base_tasks import TransientTaskRunner
 
     class ExampleTaskRunner(TransientTaskRunner):
-        """An Example TaskRunner"""
+        """An Example :code:`TaskRunner`"""
 
         def _run_process(transient):
             print('processing')
@@ -178,7 +178,7 @@ Putting this all together, the example :code:`TransientTaskRunner` class would b
 
         @property
         def task_frequency_seconds(self):
-            return 60.0
+            return 60
 
         @property
         def task_initially_enabled(self):
@@ -194,7 +194,7 @@ System Task
 -----------
 
 The :code:`SystemTaskRunner` is somewhat simpler to implement as there is no chaining
-of prerequisite tasks, and the results do not need to be displayed in the blast
+of prerequisite tasks, and the results do not need to be displayed in the Blast
 web interface. New system task runners should be implemented in
 the :code:`app/host/system_tasks.py` module. A full :code:`SystemTaskRunner`
 would look like:
@@ -208,7 +208,7 @@ would look like:
 
         @property
         def task_frequency_seconds(self):
-            return 60.0
+            return 60
 
         @property
         def task_initially_enabled(self):
@@ -222,14 +222,14 @@ would look like:
 Registering your task
 ---------------------
 
-For blast to actually run your task you have to register it within the app. For
+For Blast to actually run your task you have to register it within the app. For
 both a :code:`SystemTaskRunner` and a :code:`TransientTaskRunner` you have to
-add an instance of your Taskrunner to the :code:`periodic_tasks`
+add an instance of your :code:`Taskrunner` to the :code:`periodic_tasks`
 list in :code:`app/host/task.py`.
 
-To check that your task has been registered and is being run in blast go to
+To check that your task has been registered and is being run in Blast go to
 `<http://0.0.0.0:8000/admin/>`_ login and then go to `<http://0.0.0.0:8000/admin/django_celery_beat/periodictask/>`_
 and you should see your task and its schedule.
 
-You can check if your task is running without error by going to the flower
+You can check if your task is running without error by going to the Flower
 dashboard at `<http://0.0.0.0:8888>`_.

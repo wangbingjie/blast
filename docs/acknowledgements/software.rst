@@ -2,11 +2,11 @@ Software
 ========
 
 Blast is largely glue between already established software projects. It could not
-exist without them. If you use blast, you must acknowledge and cite all
-of the following projects which blast uses.
+exist without them. If you use Blast, you must acknowledge and cite all
+of the following projects which Blast uses.
 
-If you see your software being used in blast and we have not cited you properly,
-please raise an `issue on github <https://github.com/astrophpeter/blast/issues>`_.
+If you see your software being used in Blast and we have not cited you properly,
+please raise an `issue on GitHub <https://github.com/astrophpeter/blast/issues>`_.
 
 .. list-table::
    :widths: 22 25 25

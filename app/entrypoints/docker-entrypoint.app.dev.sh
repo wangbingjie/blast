@@ -24,7 +24,7 @@ else
     bash entrypoints/initialize_all_data.sh
   fi
 
-  python init.py
+  python entrypoints/init.py
 
   touch "${INIT_CHECK_FILE}"
 fi

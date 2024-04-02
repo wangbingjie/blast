@@ -4,17 +4,17 @@ Web API
 =======
 
 Blast also provides an application programming interface, which you can use
-to fetch blast data programmatically.  The API allows queries on individual database tables (below),
+to fetch Blast data programmatically.  The API allows queries on individual database tables (below),
 as well as an API endpoint for getting all data for a given transient (:ref:`api_all`).
 
 .. _api_individual:
 
-Downloading Blast data for individual tables via python
+Downloading Blast data for individual tables via Python
 -------------------------------------------------------
 
 The url endpoint to grab the data for a particular transient is
 :code:`/api/transient/?name=transient_name&format=json`.
-Here is an example python snippet to load data as a python dictionary for the transient
+Here is an example Python snippet to load data as a Python dictionary for the transient
 2010H
 
 .. code:: python
@@ -25,13 +25,13 @@ Here is an example python snippet to load data as a python dictionary for the tr
     response = urlopen('<base_blast_url>/api/transient/?name=2010H&format=json')
     data = json.loads(response.read())
 
-Here data is a python dictionary that contains the blast science payload data m
+Here data is a Python dictionary that contains the Blast science payload data m
 model. We describe this model below.
 
 Blast API data model
 --------------------
 
-The data model for different tables within blast are described below.  Foreign key-linked fields
+The data model for different tables within Blast are described below.  Foreign key-linked fields
 are also displayed to simplify API calls; for example, the attributes of the associated Host
 are returned in addition to the Transient fields when a given transient is queried.
 
@@ -45,12 +45,12 @@ API link: :code:`/api/transient/`
 * :code:`dec_deg` - transient declination in decimal degrees e.g., 60.123424
 * :code:`redshift` - transient redshift e.g., 0.01
 * :code:`milkyway_dust_reddening` - transient E(B-V) e.g, 0.2
-* :code:`processing_status` - blast processing status of the transient.
-    "processed" - transient has been complement processed by blast and all data
-    should be present in the science payload. "processing" - blast is still
+* :code:`processing_status` - Blast processing status of the transient.
+    "processed" - transient has been complement processed by Blast and all data
+    should be present in the science payload. "processing" - Blast is still
     processing this transient and some parts of the science payload may not
     be populated at the current time. "blocked" - this transient has not been
-    successfully fully processed by blast and some parts of the science payload
+    successfully fully processed by Blast and some parts of the science payload
     will not be populated.
 * :code:`spectroscopic_class` - spectroscopic classification, if any
 * :code:`host` - foreign key link to the :code:`Host` object, described below.
@@ -220,11 +220,11 @@ Example:
 
 .. _api_all:
 
-Downloading *all* blast data for a given transient
+Downloading *all* Blast data for a given transient
 --------------------------------------------------
 
 The url endpoint to grab the data for a particular transient is
-:code:`/api/transient/get/<transient_name>`.  Here is an example python snippet to load data as a python dictionary for the transient 2018gv.
+:code:`/api/transient/get/<transient_name>`.  Here is an example Python snippet to load data as a Python dictionary for the transient 2018gv.
 
 .. code:: python
 
@@ -234,7 +234,7 @@ The url endpoint to grab the data for a particular transient is
     response = urlopen('<base_blast_url>/api/transient/get/2018gv?format=json')
     data = json.loads(response.read())
 
-Here data is a python dictionary that contains the blast science payload data
+Here data is a Python dictionary that contains the Blast science payload data
 model. We describe this model below; for clarity, field names are slightly different
 than in the base data model above.
 
@@ -253,12 +253,12 @@ Transient fields
 * :code:`transient_dec_deg` - transient declination in decimal degrees e.g., 60.123424
 * :code:`transient_redshift` - transient redshift e.g., 0.01
 * :code:`transient_milkyway_dust_reddening` - transient E(B-V) e.g, 0.2
-* :code:`transient_processing_status` - blast processing status of the transient.
-    "processed" - transient has been complement processed by blast and all data
-    should be present in the science payload. "processing" - blast is still
+* :code:`transient_processing_status` - Blast processing status of the transient.
+    "processed" - transient has been complement processed by Blast and all data
+    should be present in the science payload. "processing" - Blast is still
     processing this transient and some parts of the science payload may not
     be populated at the current time. "blocked" - this transient has not been
-    successfully fully processed by blast and some parts of the science payload
+    successfully fully processed by Blast and some parts of the science payload
     will not be populated.
 
 Host fields
@@ -287,7 +287,7 @@ Photometry fields
 +++++++++++++++++
 
 <aperture_type> can either be "local" or "global". <filter> can be any of the
-filters blast downloads cutouts for e.g., 2MASS_H, 2MASS_J, SDSS_g ... . If the
+filters Blast downloads cutouts for e.g., 2MASS_H, 2MASS_J, SDSS_g ... . If the
 data for a particular filter and transient does not exist the values will be None.
 
 * :code:`<aperture_type>_aperture_<filter>_flux` - Aperture photometry flux in mJy
