@@ -2,6 +2,11 @@
 
 cd "$(dirname "$(readlink -f "$0")")"/..
 
+# When bind mounting the app/ folder, for example
+# in profiles slim_dev and full_dev, containers can
+# fail if the file permissions are not globally readable.
+chmod -R a+rX app/ 2>/dev/null
+
 case "$1" in
   test) DOCKER_ARGS="--exit-code-from app_test" ;;
     ci) DOCKER_ARGS="--exit-code-from app_ci"   ;;
