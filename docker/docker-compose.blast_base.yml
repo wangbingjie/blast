@@ -10,7 +10,6 @@ services:
     volumes:
       - ../app:/app
       - ./dustmapsrc:/tmp/.dustmapsrc:ro
-      - ./initialized:/tmp/initialized
       - blast-data:/mnt/data
       - django-static:/app/static
       #- ../blast-data.b64b805c44cec50d1d0503e7d10349881ace7456.tar.gz:/tmp/blast-data.b64b805c44cec50d1d0503e7d10349881ace7456.tar.gz
@@ -53,6 +52,5 @@ services:
     volumes:
       - ../app:/app
       - ./dustmapsrc:/tmp/.dustmapsrc:ro
-      - ./initialized:/tmp/initialized
       - blast-data:/mnt/data
       - django-static:/app/static

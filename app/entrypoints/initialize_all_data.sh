@@ -1,24 +1,50 @@
 #!/bin/env bash
 
 set -o pipefail
+set -e
+
+# Create data folders on persistent volume and symlink to expected paths
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+cd "${SCRIPT_DIR}"
+
+bash initialize_data_dirs.sh
 
 cd /tmp
 
-# TODO: These are not comprehensive data integrity checks; 
-# we are only spot-checking the data directories.
-
 if [[ "${USE_DATA_ARCHIVE}" == "true" ]]; then
+  ##
+  ## Install data files from compiled archive
+  ##
 
+  # TODO: These are not comprehensive data integrity checks; 
+  # we are only spot-checking the data directories.
   if [[ "${FORCE_DATA_DOWNLOAD}" != "true" && \
         -f "/fsps/README.md" && \
         -f "/sbipp_phot/sbi_phot_local.h5" && \
-        -f "data/transmission/2MASS_H.txt" ]]
+        -f "/transmission/2MASS_H.txt" ]]
   then
       echo "Required data files already downloaded."
   else
-    set -x
-    curl -LJO "https://js2.jetstream-cloud.org:8001/swift/v1/blast-astro-data/${DATA_ARCHIVE}"
-    tar -xzf "${DATA_ARCHIVE}"
+    if [[ "${USE_LOCAL_ARCHIVE_FILE}" == "true" ]]; then
+        echo "Installing data from archive file \"${DATA_ARCHIVE_FILE}\"..."
+      if [[ ! -f "${DATA_ARCHIVE_FILE}" ]]; then
+        echo "Data archive file \"${DATA_ARCHIVE_FILE}\" not found. Aborting."
+        exit 1
+      fi
+    else
+      if [[ -f "${DATA_ARCHIVE_FILE}" ]]; then
+        echo "Data archive file already downloaded."
+      else
+        echo "Downloading data archive file from \"${DATA_ARCHIVE_FILE_URL}\"..."
+        curl -LJO "${DATA_ARCHIVE_FILE_URL}"
+        echo "Download complete."
+      fi
+    fi
+
+    # Extract and install the data files
+    echo "Extracting data archive..."
+    tar -xzf "${DATA_ARCHIVE_FILE}"
+    echo "Data extracted. Installing data files..."
     rsync -va data/cutout_cdn/2010ag/ /data/cutout_cdn/2010ag/
     rsync -va data/cutout_cdn/2010ai/ /data/cutout_cdn/2010ai/
     rsync -va data/cutout_cdn/2010H/  /data/cutout_cdn/2010H/
@@ -27,11 +53,20 @@ if [[ "${USE_DATA_ARCHIVE}" == "true" ]]; then
     rsync -va data/transmission/      /transmission/
     rsync -va data/fsps/              /fsps/
     rsync -va data/sbipp_phot/        /sbipp_phot/
-    rm -f "${DATA_ARCHIVE}"
-    set +x
+    echo "Data installed."
+
+    # Clean up temporary files
+    if [[ "${USE_LOCAL_ARCHIVE_FILE}" != "true" ]]; then
+      rm -f "${DATA_ARCHIVE_FILE}"
+    fi
+    rm -rf data
   fi
 
 else
+
+  ##
+  ## Install data files from original sources
+  ##
 
   if [[ -f "/fsps/README.md" ]]
   then
@@ -75,5 +110,8 @@ else
   fi
 
 fi
+
+cd "${SCRIPT_DIR}"/..
+python init_data.py
 
 echo "Data initialization complete."

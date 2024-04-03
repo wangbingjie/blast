@@ -154,10 +154,12 @@ services:
     extends:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
-    command: bash entrypoints/docker-entrypoint.app.dev.sh
+    command: bash entrypoints/docker-entrypoint.app.sh
     ports:
       - 8000:${WEB_APP_PORT}
     profiles: ["full_dev", "slim_dev", "batch"]
+    environment:
+      - "DEV_MODE=1"
     env_file:
       - path: ../env/.env.default
         required: true
