@@ -13,7 +13,10 @@ services:
       - 8000:${WEB_APP_PORT}
     profiles: ["full_prod", "slim_prod"]
     env_file:
-      - ../env/.env.dev
+      - path: ../env/.env.default
+        required: true
+      - path: ../env/.env.dev
+        required: false
     networks:
       default:
         aliases:
@@ -25,7 +28,10 @@ services:
     command: bash entrypoints/docker-entrypoint.celery.sh
     profiles: ["full_prod", "full_dev", "batch"]
     env_file:
-      - ../env/.env.dev
+      - path: ../env/.env.default
+        required: true
+      - path: ../env/.env.dev
+        required: false
   celery_beat:
     extends:
       file: docker-compose.blast_base.yml
@@ -33,7 +39,10 @@ services:
     command: bash entrypoints/docker-entrypoint.celery_beat.sh
     profiles: ["full_prod", "full_dev", "batch"]
     env_file:
-      - ../env/.env.dev
+      - path: ../env/.env.default
+        required: true
+      - path: ../env/.env.dev
+        required: false
   rabbitmq:
     restart: always
     image: rabbitmq:3.10.6-management-alpine
@@ -44,7 +53,10 @@ services:
       - ../data/rabbitmq_data:/data
       - ../data/rabbitmq_data/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     env_file:
-      - ../env/.env.dev
+      - path: ../env/.env.default
+        required: true
+      - path: ../env/.env.dev
+        required: false
     profiles: ["full_prod", "full_dev", "batch"]
   database:
     extends:
@@ -54,7 +66,10 @@ services:
       - blast-db:/var/lib/mysql/
     profiles: ["full_prod", "slim_prod", "full_dev", "slim_dev", "batch"]
     env_file:
-      - ../env/.env.dev
+      - path: ../env/.env.default
+        required: true
+      - path: ../env/.env.dev
+        required: false
   nginx:
     extends:
       file: docker-compose.blast_base.yml
@@ -82,7 +97,10 @@ services:
     volumes:
       - ../app/entrypoints:/data/entrypoints
     env_file:
-      - ../env/.env.dev
+      - path: ../env/.env.default
+        required: true
+      - path: ../env/.env.dev
+        required: false
     profiles: ["full_prod", "full_dev", "batch"]
   app_test:
     extends:
@@ -96,7 +114,10 @@ services:
         aliases:
           - app
     env_file:
-      - ../env/.env.dev
+      - path: ../env/.env.default
+        required: true
+      - path: ../env/.env.dev
+        required: false
     profiles: ["test"]
   app_ci:
     extends:
@@ -110,7 +131,10 @@ services:
         aliases:
           - ${WEB_APP_HOST}
     env_file:
-      - ../env/.env.ci
+      - path: ../env/.env.default
+        required: true
+      - path: ../env/.env.ci
+        required: false
     profiles: ["ci"]
   database_test:
     extends:
@@ -135,7 +159,10 @@ services:
       - 8000:${WEB_APP_PORT}
     profiles: ["full_dev", "slim_dev", "batch"]
     env_file:
-      - ../env/.env.dev
+      - path: ../env/.env.default
+        required: true
+      - path: ../env/.env.dev
+        required: false
     networks:
       default:
         aliases:
@@ -160,4 +187,7 @@ services:
     command: bash docker-entrypoint.batch.sh
     network_mode: "host"
     env_file:
-      - ../env/.env.dev
+      - path: ../env/.env.default
+        required: true
+      - path: ../env/.env.dev
+        required: false
