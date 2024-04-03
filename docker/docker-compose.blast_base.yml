@@ -4,6 +4,7 @@ volumes:
 
 services:
   blast_base:
+    image: blast:dev
     build:
       context: ../app/
     volumes:
