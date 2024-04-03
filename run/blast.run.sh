@@ -8,10 +8,14 @@ cd "$(dirname "$(readlink -f "$0")")"/..
 chmod -R a+rX app/ 2>/dev/null
 
 case "$1" in
-  test) DOCKER_ARGS="--exit-code-from app_test" ;;
-    ci) DOCKER_ARGS="--exit-code-from app_ci"   ;;
-     *) DOCKER_ARGS="--abort-on-container-exit" ;;
+      test) DOCKER_ARGS="--exit-code-from app_test" ;;
+        ci) DOCKER_ARGS="--exit-code-from app_ci"   ;;
+  slim_dev) DOCKER_ARGS="--abort-on-container-exit" ;;
+         *) DOCKER_ARGS="" ;;
 esac
+
+# Clear any initialization check files
+docker run --rm -it -v blast_blast-data:/mnt/data blast:dev rm -f /mnt/data/.initializing_db /mnt/data/.initializing_data
 
 EXTRA_ENV=""
 if [[ -f "env/.env.dev" ]]; then
