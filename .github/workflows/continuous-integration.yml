@@ -17,8 +17,6 @@ jobs:
       - uses: actions/checkout@v3
       - name: docker compose up
         run: |
-          # Ensure .env.dev exists for valid Docker Compose config
-          cp env/.env.dev.example env/.env.dev
           bash run/blast.run.sh ci
       - uses: codecov/codecov-action@v3
         with:
