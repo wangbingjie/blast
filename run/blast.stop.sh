@@ -1,19 +1,29 @@
 #!/bin/env bash
+set -e
 
 cd "$(dirname "$(readlink -f "$0")")"/..
 
-PURGE=$2
+PURGE_OPTION=$2
 
 DOCKER_ARGS=""
-if [[ "${PURGE}" == "--purge" ]]; then
-  DOCKER_ARGS="--remove-orphans --volumes"
-  echo "Purging Docker data volumes..."
-  set -x
-  # rm -f docker/initialized/.initialized
-  # rm -f /mnt/data/.initializing_data
-  # rm -f /mnt/data/.initializing_db
-  set +x
-fi
+case "${PURGE_OPTION}" in
+  "--purge-all")
+    DOCKER_ARGS="--volumes"
+    echo "Purging all data volumes..."
+  ;;
+  "--purge-db")
+    set -x
+    docker volume rm blast_blast-db blast_django-static
+    set +x
+    echo "Purging Django database and static file volumes..."
+  ;;
+  "--purge-data")
+    set -x
+    docker volume rm blast_blast-data
+    set +x
+    echo "Purging astro data volume..."
+  ;;
+esac
 
 EXTRA_ENV=""
 if [[ -f "env/.env.dev" ]]; then
