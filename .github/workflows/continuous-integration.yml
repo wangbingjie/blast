@@ -17,7 +17,14 @@ jobs:
       - uses: actions/checkout@v4
       - name: docker compose up
         run: |
-          bash run/blast.run.sh ci
+          docker compose \
+            --profile ci \
+            --project-name blast \
+            -f docker/docker-compose.yml \
+            --env-file env/.env.default \
+            --env-file env/.env.ci \
+            up --build --exit-code-from app_ci
+
       - uses: codecov/codecov-action@v4
         with:
           directory: app/

@@ -21,9 +21,8 @@ case "${PURGE_OPTION}" in
   ;;
 esac
 
-EXTRA_ENV=""
-if [[ -f "env/.env.dev" ]]; then
-  EXTRA_ENV="--env-file env/.env.dev"
+if [[ ! -f "env/.env.dev" ]]; then
+  touch env/.env.dev
 fi
 
 set -x
@@ -31,7 +30,7 @@ docker compose \
   --profile $1 \
   --project-name blast \
   -f docker/docker-compose.yml \
-  --env-file env/.env.default ${EXTRA_ENV} \
+  --env-file env/.env.default --env-file env/.env.dev \
   down ${DOCKER_ARGS}
 
 docker volume rm ${VOLUMES}

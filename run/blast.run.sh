@@ -7,19 +7,28 @@ cd "$(dirname "$(readlink -f "$0")")"/..
 # fail if the file permissions are not globally readable.
 chmod -R a+rX app/ 2>/dev/null
 
+ENV_FILE="env/.env.dev"
 case "$1" in
-      test) DOCKER_ARGS="--exit-code-from app_test" ;;
-        ci) DOCKER_ARGS="--exit-code-from app_ci"   ;;
-  slim_dev) DOCKER_ARGS="--abort-on-container-exit" ;;
-         *) DOCKER_ARGS="" ;;
+  test)
+    DOCKER_ARGS="--exit-code-from app_test"
+    ;;
+  ci)
+    DOCKER_ARGS="--exit-code-from app_ci"
+    ENV_FILE="env/.env.ci"
+    ;;
+  slim_dev)
+    DOCKER_ARGS="--abort-on-container-exit"
+    ;;
+  *)
+    DOCKER_ARGS=""
+    ;;
 esac
 
 # Clear any initialization check files
 docker run --rm -it -v blast_blast-data:/mnt/data blast:dev rm -f /mnt/data/.initializing_db /mnt/data/.initializing_data
 
-EXTRA_ENV=""
-if [[ -f "env/.env.dev" ]]; then
-  EXTRA_ENV="--env-file env/.env.dev"
+if [[ ! -f "env/.env.dev" ]]; then
+  touch env/.env.dev
 fi
 
 set -x
@@ -27,5 +36,5 @@ docker compose \
   --profile $1 \
   --project-name blast \
   -f docker/docker-compose.yml \
-  --env-file env/.env.default ${EXTRA_ENV} \
+  --env-file env/.env.default --env-file "${ENV_FILE}" \
   up --build ${DOCKER_ARGS}
