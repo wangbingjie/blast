@@ -17,6 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: docker compose up
         run: |
+          touch env/.env.dev &&
           docker compose \
             --profile ci \
             --project-name blast \
