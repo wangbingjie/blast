@@ -35,25 +35,43 @@ def main():
     # Load data from Django fixture files
     # TODO: Properly handle duplicate entry errors for fixtures that have already been installed.
     try:
-        print('''Loading fixture "/app/host/fixtures/initial/setup_survey_data.yaml"...''')
+        print(
+            """Loading fixture "/app/host/fixtures/initial/setup_survey_data.yaml"..."""
+        )
         execute_from_command_line(
-            ["__main__.py", "loaddata", "/app/host/fixtures/initial/setup_survey_data.yaml"]
+            [
+                "__main__.py",
+                "loaddata",
+                "/app/host/fixtures/initial/setup_survey_data.yaml",
+            ]
         )
     except:
-        print('''Ignoring loaddata error for "/app/host/fixtures/initial/setup_survey_data.yaml".''')
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/initial/setup_survey_data.yaml"."""
+        )
         pass
 
     try:
-        print('''Loading fixture "/app/host/fixtures/initial/setup_filter_data.yaml"...''')
+        print(
+            """Loading fixture "/app/host/fixtures/initial/setup_filter_data.yaml"..."""
+        )
         execute_from_command_line(
-            ["__main__.py", "loaddata", "/app/host/fixtures/initial/setup_filter_data.yaml"]
+            [
+                "__main__.py",
+                "loaddata",
+                "/app/host/fixtures/initial/setup_filter_data.yaml",
+            ]
         )
     except:
-        print('''Ignoring loaddata error for "/app/host/fixtures/initial/setup_filter_data.yaml".''')
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/initial/setup_filter_data.yaml"."""
+        )
         pass
 
     try:
-        print('''Loading fixture "/app/host/fixtures/initial/setup_catalog_data.yaml"...''')
+        print(
+            """Loading fixture "/app/host/fixtures/initial/setup_catalog_data.yaml"..."""
+        )
         execute_from_command_line(
             [
                 "__main__.py",
@@ -62,29 +80,37 @@ def main():
             ]
         )
     except:
-        print('''Ignoring loaddata error for "/app/host/fixtures/initial/setup_catalog_data.yaml".''')
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/initial/setup_catalog_data.yaml"."""
+        )
         pass
 
     try:
-        print('''Loading fixture "/app/host/fixtures/initial/setup_tasks.yaml"...''')
+        print("""Loading fixture "/app/host/fixtures/initial/setup_tasks.yaml"...""")
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/initial/setup_tasks.yaml"]
         )
     except:
-        print('''Ignoring loaddata error for "/app/host/fixtures/initial/setup_tasks.yaml".''')
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/initial/setup_tasks.yaml"."""
+        )
         pass
 
     try:
-        print('''Loading fixture "/app/host/fixtures/initial/setup_status.yaml"...''')
+        print("""Loading fixture "/app/host/fixtures/initial/setup_status.yaml"...""")
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/initial/setup_status.yaml"]
         )
     except:
-        print('''Ignoring loaddata error for "/app/host/fixtures/initial/setup_status.yaml".''')
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/initial/setup_status.yaml"."""
+        )
         pass
 
     try:
-        print('''Loading fixture "/app/host/fixtures/initial/setup_acknowledgements.yaml"...''')
+        print(
+            """Loading fixture "/app/host/fixtures/initial/setup_acknowledgements.yaml"..."""
+        )
         execute_from_command_line(
             [
                 "__main__.py",
@@ -93,44 +119,55 @@ def main():
             ]
         )
     except:
-        print('''Ignoring loaddata error for "/app/host/fixtures/initial/setup_acknowledgements.yaml".''')
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/initial/setup_acknowledgements.yaml"."""
+        )
         pass
 
     try:
-        print('''Loading fixture "/app/host/fixtures/example/2010ag.yaml"...''')
+        print("""Loading fixture "/app/host/fixtures/example/2010ag.yaml"...""")
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/example/2010ag.yaml"]
         )
     except:
-        print('''Ignoring loaddata error for "/app/host/fixtures/example/2010ag.yaml".''')
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/example/2010ag.yaml"."""
+        )
         pass
 
     try:
-        print('''Loading fixture "/app/host/fixtures/example/2010ai.yaml"...''')
+        print("""Loading fixture "/app/host/fixtures/example/2010ai.yaml"...""")
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/example/2010ai.yaml"]
         )
     except:
-        print('''Ignoring loaddata error for "/app/host/fixtures/example/2010ai.yaml".''')
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/example/2010ai.yaml"."""
+        )
         pass
 
     try:
-        print('''Loading fixture "/app/host/fixtures/example/2010H.yaml"...''')
+        print("""Loading fixture "/app/host/fixtures/example/2010H.yaml"...""")
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/example/2010H.yaml"]
         )
     except:
-        print('''Ignoring loaddata error for "/app/host/fixtures/example/2010H.yaml".''')
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/example/2010H.yaml"."""
+        )
         pass
 
     try:
-        print('''Loading fixture "/app/host/fixtures/example/snapshot.yaml"...''')
+        print("""Loading fixture "/app/host/fixtures/example/snapshot.yaml"...""")
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/example/snapshot.yaml"]
         )
     except:
-        print('''Ignoring loaddata error for "/app/host/fixtures/example/snapshot.yaml".''')
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/example/snapshot.yaml"."""
+        )
         pass
+
 
 if __name__ == "__main__":
     main()
