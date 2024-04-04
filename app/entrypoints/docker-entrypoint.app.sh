@@ -47,6 +47,15 @@ else
   echo "Django database initialization complete."
 fi
 
+# If test mode, run tests and exit
+if [[ $TEST_MODE == 1 ]]; then
+  set -e
+  coverage run manage.py test host.tests api.tests users.tests -v 2
+  coverage report -i --omit=host/tests/*,host/migrations/*,app/*,host/urls.py,host/admin.py,host/apps.py,host/__init__.py,manage.py
+  coverage xml -i
+  exit 0
+fi
+
 # Start server
 if [[ $DEV_MODE == 1 ]]; then
   python manage.py runserver 0.0.0.0:${WEB_APP_PORT}

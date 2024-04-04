@@ -94,13 +94,15 @@ services:
     extends:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
-    command: bash entrypoints/docker-entrypoint.app.test.sh
+    command: bash entrypoints/docker-entrypoint.app.sh
     ports:
       - "8000:${WEB_APP_PORT}"
     networks:
       default:
         aliases:
           - app
+    environment:
+      - "TEST_MODE=1"
     env_file:
       - ../env/.env.default
       - ../env/.env.dev
@@ -109,13 +111,15 @@ services:
     extends:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
-    command: bash entrypoints/docker-entrypoint.app.test.sh
+    command: bash entrypoints/docker-entrypoint.app.sh
     ports:
       - 8000:${WEB_APP_PORT}
     networks:
       default:
         aliases:
           - ${WEB_APP_HOST}
+    environment:
+      - "TEST_MODE=1"
     env_file:
       - ../env/.env.default
       - ../env/.env.ci
