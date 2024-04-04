@@ -3,7 +3,7 @@ New dependencies
 
 Blast and all it's associated services are run in `Docker <https://www.docker.com/>`_
 containers. This allows the application to be portable. You may be working on
-some code that requires you to add a new python package. To add this
+some code that requires you to add a new Python package. To add this
 dependency, you have to do two things.
 
 1. Add the package and version to the :code:`app/requirements.txt`. This allows Docker
@@ -16,9 +16,9 @@ build and install your package.
 .. note::
 
     Setting :code:`BLAST_IMAGE=blast_latest` in your :code:`env/env.dev` means
-    the latest `blast Docker image <https://github.com/astrophpeter/blast/pkgs/container/blast>`_
-    is downloaded and used when running blast locally. This is faster than building
+    the latest `Blast Docker image <https://github.com/astrophpeter/blast/pkgs/container/blast>`_
+    is downloaded and used when running Blast locally. This is faster than building
     the image from scratch everytime. :code:`BLAST_IMAGE=blast_base` forces the
     image to be built from scratch which is required when you have added a new
     dependency. Eventually, when a new dependency is accepted into main it
-    will become part of the blast latest image.
+    will become part of the Blast latest image.

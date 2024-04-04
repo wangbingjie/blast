@@ -1,9 +1,9 @@
-.. blast documentation master file, created by
+.. Blast documentation master file, created by
    sphinx-quickstart on Thu Dec 23 12:02:23 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to blast's documentation!
+Welcome to Blast's documentation!
 =================================
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
@@ -12,7 +12,7 @@ Welcome to blast's documentation!
 .. image:: https://codecov.io/gh/astrophpeter/blast/branch/main/graph/badge.svg?token=Y9JPAF8HVD
 .. image:: https://www.codefactor.io/repository/github/astrophpeter/blast/badge
 
-Blast is developed on `github <https://github.com/astrophpeter/blast>`_.
+Blast is developed on `GitHub <https://github.com/astrophpeter/blast>`_.
 
 Blast is a public web application built to find a transient's host
 galaxy, identify the available archival data, and measure the resulting
