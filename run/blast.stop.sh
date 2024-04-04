@@ -12,15 +12,11 @@ case "${PURGE_OPTION}" in
     echo "Purging all data volumes..."
   ;;
   "--purge-db")
-    set -x
-    docker volume rm blast_blast-db blast_django-static
-    set +x
+    VOLUMES="blast_blast-db blast_django-static"
     echo "Purging Django database and static file volumes..."
   ;;
   "--purge-data")
-    set -x
-    docker volume rm blast_blast-data
-    set +x
+    VOLUMES="blast_blast-data"
     echo "Purging astro data volume..."
   ;;
 esac
@@ -37,3 +33,5 @@ docker compose \
   -f docker/docker-compose.yml \
   --env-file env/.env.default ${EXTRA_ENV} \
   down ${DOCKER_ARGS}
+
+docker volume rm ${VOLUMES}
