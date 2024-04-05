@@ -14,4 +14,4 @@ fi
 
 bash entrypoints/initialize_data_dirs.sh
 
-celery -A app worker -l ERROR --max-memory-per-child 12000
+celery -A app worker -l ERROR --max-memory-per-child ${CELERY_MAX_MEMORY_PER_CHILD:-12000}
