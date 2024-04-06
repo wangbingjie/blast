@@ -14,12 +14,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: docker compose up
         run: |
-          # Ensure .env.dev exists for valid Docker Compose config
-          cp env/.env.dev.example env/.env.dev
-          bash run/blast.run.sh ci
-      - uses: codecov/codecov-action@v3
+          touch env/.env.dev &&
+          docker compose \
+            --profile ci \
+            --project-name blast \
+            -f docker/docker-compose.yml \
+            --env-file env/.env.default \
+            --env-file env/.env.ci \
+            up --build --exit-code-from app_ci
+
+      - uses: codecov/codecov-action@v4
         with:
           directory: app/

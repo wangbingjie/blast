@@ -13,6 +13,7 @@ services:
       - 8000:${WEB_APP_PORT}
     profiles: ["full_prod", "slim_prod"]
     env_file:
+      - ../env/.env.default
       - ../env/.env.dev
     networks:
       default:
@@ -25,6 +26,7 @@ services:
     command: bash entrypoints/docker-entrypoint.celery.sh
     profiles: ["full_prod", "full_dev", "batch"]
     env_file:
+      - ../env/.env.default
       - ../env/.env.dev
   celery_beat:
     extends:
@@ -33,6 +35,7 @@ services:
     command: bash entrypoints/docker-entrypoint.celery_beat.sh
     profiles: ["full_prod", "full_dev", "batch"]
     env_file:
+      - ../env/.env.default
       - ../env/.env.dev
   rabbitmq:
     restart: always
@@ -44,6 +47,7 @@ services:
       - ../data/rabbitmq_data:/data
       - ../data/rabbitmq_data/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     env_file:
+      - ../env/.env.default
       - ../env/.env.dev
     profiles: ["full_prod", "full_dev", "batch"]
   database:
@@ -54,6 +58,7 @@ services:
       - blast-db:/var/lib/mysql/
     profiles: ["full_prod", "slim_prod", "full_dev", "slim_dev", "batch"]
     env_file:
+      - ../env/.env.default
       - ../env/.env.dev
   nginx:
     extends:
@@ -82,34 +87,41 @@ services:
     volumes:
       - ../app/entrypoints:/data/entrypoints
     env_file:
+      - ../env/.env.default
       - ../env/.env.dev
     profiles: ["full_prod", "full_dev", "batch"]
   app_test:
     extends:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
-    command: bash entrypoints/docker-entrypoint.app.test.sh
+    command: bash entrypoints/docker-entrypoint.app.sh
     ports:
       - "8000:${WEB_APP_PORT}"
     networks:
       default:
         aliases:
           - app
+    environment:
+      - "TEST_MODE=1"
     env_file:
+      - ../env/.env.default
       - ../env/.env.dev
     profiles: ["test"]
   app_ci:
     extends:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
-    command: bash entrypoints/docker-entrypoint.app.test.sh
+    command: bash entrypoints/docker-entrypoint.app.sh
     ports:
       - 8000:${WEB_APP_PORT}
     networks:
       default:
         aliases:
           - ${WEB_APP_HOST}
+    environment:
+      - "TEST_MODE=1"
     env_file:
+      - ../env/.env.default
       - ../env/.env.ci
     profiles: ["ci"]
   database_test:
@@ -130,11 +142,14 @@ services:
     extends:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
-    command: bash entrypoints/docker-entrypoint.app.dev.sh
+    command: bash entrypoints/docker-entrypoint.app.sh
     ports:
       - 8000:${WEB_APP_PORT}
     profiles: ["full_dev", "slim_dev", "batch"]
+    environment:
+      - "DEV_MODE=1"
     env_file:
+      - ../env/.env.default
       - ../env/.env.dev
     networks:
       default:
@@ -160,4 +175,5 @@ services:
     command: bash docker-entrypoint.batch.sh
     network_mode: "host"
     env_file:
+      - ../env/.env.default
       - ../env/.env.dev
