@@ -1,9 +1,10 @@
 {% extends "host/card_template.html"%}
 
+
 <!-- title -->
 {% block title %}
 
-<h5>Host SED inference</h5>
+<h4>Host SED inference</h4>
 <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
     <li class="nav-item" role="presentation">
         <button class="nav-link active" id="global-params-tab" data-bs-toggle="tab" data-bs-target="#global-params" type="button" role="tab" aria-controls="global-params" aria-selected="false">Global</button>
@@ -19,10 +20,10 @@
 {% block body %}
 
 <div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade" id="local-params" role="tabpanel" aria-labelledby="local-params-tab">
+    <div class="tab-pane" id="local-params" role="tabpanel" aria-labelledby="local-params-tab">
         <div class="container">
             <br>
-            <h6>Local parameter details</h6>
+            <h4>Local parameter details</h4>
 	    {% if local_sed_results %}
 	    <a href="{{ local_sed_results.percentiles_file.url }}" download  class="btn btn-dark float-right">Download</a>
 	    <div>
@@ -35,7 +36,7 @@
 	    </div>
 	    {% endif %}
             <br>
-            <table class="table table-striped">
+            <table class="table-condensed table-striped">
             <thead>
             <tr>
                 <th scope="col">Parameter</th>
@@ -59,11 +60,11 @@
         </table>
         </div>
     </div>
-    <div class="tab-pane fade show active" id="global-params" role="tabpanel" aria-labelledby="global-params-tab">
+    <div class="tab-pane active" id="global-params" role="tabpanel" aria-labelledby="global-params-tab">
 
         <div class="container">
             <br>
-            <h6>Global parameter details</h6>
+            <h4>Global parameter details</h4>
 	    {% if global_sed_results %}
 	    <div>
 	    <button style="margin-bottom:5px;" type="button" class="report" onclick="window.open('{% url 'download_chains' transient.name 'global' %}','_self')">
@@ -78,7 +79,7 @@
             <br>
 
 
-            <table class="table table-striped">
+            <table class="table-condensed table-striped">
             <thead>
             <tr>
                 <th scope="col">Parameter</th>

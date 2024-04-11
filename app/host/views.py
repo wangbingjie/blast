@@ -12,27 +12,27 @@ from django.urls import reverse_lazy
 from django_tables2 import RequestConfig
 from revproxy.views import ProxyView
 
-from .forms import ImageGetForm
-from .forms import TransientSearchForm
-from .forms import TransientUploadForm
-from .host_utils import select_aperture
-from .host_utils import select_cutout_aperture
-from .models import Acknowledgement
-from .models import Aperture
-from .models import AperturePhotometry
-from .models import Cutout
-from .models import Filter
-from .models import SEDFittingResult
-from .models import Status
-from .models import TaskRegister
-from .models import TaskRegisterSnapshot
-from .models import Transient
-from .plotting_utils import plot_cutout_image
-from .plotting_utils import plot_pie_chart
-from .plotting_utils import plot_sed
-from .plotting_utils import plot_timeseries
-from .tables import TransientTable
-from .transient_name_server import get_transients_from_tns_by_name
+from host.forms import ImageGetForm
+from host.forms import TransientSearchForm
+from host.forms import TransientUploadForm
+from host.host_utils import select_aperture
+from host.host_utils import select_cutout_aperture
+from host.models import Acknowledgement
+from host.models import Aperture
+from host.models import AperturePhotometry
+from host.models import Cutout
+from host.models import Filter
+from host.models import SEDFittingResult
+from host.models import Status
+from host.models import TaskRegister
+from host.models import TaskRegisterSnapshot
+from host.models import Transient
+from host.plotting_utils import plot_cutout_image
+from host.plotting_utils import plot_pie_chart
+from host.plotting_utils import plot_sed
+from host.plotting_utils import plot_timeseries
+from host.tables import TransientTable
+from host.transient_name_server import get_transients_from_tns_by_name
 
 
 class TransientFilter(django_filters.FilterSet):
@@ -110,8 +110,7 @@ class TransientFilter(django_filters.FilterSet):
 
 def transient_list(request):
 
-    transients = Transient.objects.all().order_by("-public_timestamp")
-
+    transients = Transient.objects.order_by("-public_timestamp")
     transientfilter = TransientFilter(request.GET, queryset=transients)
 
     table = TransientTable(transientfilter.qs)

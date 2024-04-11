@@ -27,6 +27,9 @@ from pyvo.dal import sia
 from .models import Cutout
 from .models import Filter
 
+DOWNLOAD_SLEEP_TIME = int(os.environ.get('DOWNLOAD_SLEEP_TIME', '300'))
+DOWNLOAD_MAX_TRIES = int(os.environ.get('DOWNLOAD_MAX_TRIES', '3'))
+
 # from host import SkyServer
 
 
@@ -98,31 +101,49 @@ def download_and_save_cutouts(
         path_to_fits = save_dir + f"{filter.name}.fits"
         file_exists = os.path.exists(path_to_fits)
 
+        cutout_name = f"{transient.name}_{filter.name}"
+        cutout_object = Cutout.objects.filter(
+            name=cutout_name, filter=filter, transient=transient
+        )
+
+        if not cutout_object.exists():
+            cutout_object = Cutout(
+                name=cutout_name, filter=filter, transient=transient
+            )
+        else:
+            cutout_object = cutout_object[0]
+
+
         fits = None
-        if not file_exists or not overwrite == "False":
-            fits = cutout(transient.sky_coord, filter, fov=fov)
+        if (not file_exists and cutout_object.message != 'No image found') \
+           or not overwrite == "False":
+            fits,status,err = cutout(transient.sky_coord, filter, fov=fov)
             if fits:
                 save_dir = f"{media_root}/{transient.name}/{filter.survey.name}/"
                 os.makedirs(save_dir, exist_ok=True)
                 path_to_fits = save_dir + f"{filter.name}.fits"
                 fits.writeto(path_to_fits, overwrite=True)
 
-        if file_exists or fits:
-            cutout_name = f"{transient.name}_{filter.name}"
-            cutout_object = Cutout.objects.filter(
-                name=cutout_name, filter=filter, transient=transient
-            )
 
-            if not cutout_object.exists():
-                cutout_object = Cutout(
-                    name=cutout_name, filter=filter, transient=transient
-                )
+            # if there is data, save path to the file
+            # otherwise record that we searched and couldn't find anything
+            if file_exists or fits:
+                cutout_object.fits.name = path_to_fits
+                cutout_object.save()
+        
+            elif status == 1:
+                cutout_object.message = "Download error"
+                cutout_object.save()
+            
             else:
-                cutout_object = cutout_object[0]
+                cutout_object.message = "No image found"
+                cutout_object.save()
 
-            cutout_object.fits.name = path_to_fits
-            cutout_object.save()
+    return "processed"
 
+
+
+        
 
 def panstarrs_image_filename(position, image_size=None, filter=None):
     """Query panstarrs service to get a list of image names
@@ -258,6 +279,7 @@ def galex_cutout(position, image_size=None, filter=None):
             .replace("-gsp.fits.gz", "-int.fits.gz")
             .replace("-rr.fits.gz", "-int.fits.gz")
             .replace("-cnt.fits.gz", "-int.fits.gz")
+            .replace("-fcat.ds9reg", "-int.fits.gz")
             .replace("-xd-mcat.fits.gz", f"-{filter[0].lower()}d-int.fits.gz"),
             cache=None,
         )
@@ -556,16 +578,34 @@ def cutout(transient, survey, fov=Quantity(0.1, unit="deg")):
     astropy.utils.data.clear_download_cache()
     num_pixels = int(fov.to(u.arcsec).value / survey.pixel_size_arcsec)
 
-    if survey.image_download_method == "hips":
-        try:
-            fits = hips_cutout(transient, survey, image_size=num_pixels)
-        except Exception as e:
-            print(f"Conection timed out, could not download {survey.name} data")
-            fits = None
-    else:
-        survey_name, filter = survey.name.split("_")
-        fits = download_function_dict[survey_name](
-            transient, filter=filter, image_size=num_pixels
-        )
-
-    return fits
+    status = 1; n_iter = 0
+    while status == 1 and n_iter < DOWNLOAD_MAX_TRIES:
+        if survey.image_download_method == "hips":
+            try:
+                fits = hips_cutout(transient, survey, image_size=num_pixels)
+                status = 0
+                err = e
+            except Exception as e:
+                print(f"Conection timed out, could not download {survey.name} data")
+                fits = None
+                status = 1
+                err = e
+        else:
+            survey_name, filter = survey.name.split("_")
+            try:
+                fits = download_function_dict[survey_name](
+                    transient, filter=filter, image_size=num_pixels
+                )
+                status = 0
+                err = None
+            except Exception as e:
+                print(f"Could not download {survey.name} data")
+                print(f"exception: {e}")
+                fits = None
+                status = 1
+                err = e
+        n_iter += 1
+        if status == 1:
+            time.sleep(DOWNLOAD_SLEEP_TIME)
+            
+    return fits,status,err
