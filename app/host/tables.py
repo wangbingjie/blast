@@ -1,5 +1,6 @@
 import django_tables2 as tables
-from django.db.models.functions import Greatest, Coalesce
+from django.db.models.functions import Coalesce
+from django.db.models.functions import Greatest
 
 from .models import Transient
 
@@ -13,9 +14,9 @@ class TransientTable(tables.Table):
         order_by="name",
     )
 
-    #prefix = tables.Column(
+    # prefix = tables.Column(
     #    accessor="tns_prefix", verbose_name="Prefix", orderable=True, order_by="prefix"
-    #)
+    # )
 
     disc_date = tables.Column(
         accessor="public_timestamp",
@@ -33,15 +34,20 @@ class TransientTable(tables.Table):
     )
 
     spec_type = tables.Column(
-        accessor="spectroscopic_class", verbose_name="Spec. Class", orderable=True, order_by="spectroscopic_class"
+        accessor="spectroscopic_class",
+        verbose_name="Spec. Class",
+        orderable=True,
+        order_by="spectroscopic_class",
     )
 
-    best_spec_redshift = tables.TemplateColumn('{{ record.best_spec_redshift|floatformat:3 }}',
-                                               accessor="best_spec_redshift",verbose_name="Redshift",
-                                               orderable=True, order_by='host__redshift'
+    best_spec_redshift = tables.TemplateColumn(
+        "{{ record.best_spec_redshift|floatformat:3 }}",
+        accessor="best_spec_redshift",
+        verbose_name="Redshift",
+        orderable=True,
+        order_by="host__redshift",
     )
 
-    
     progress = tables.TemplateColumn(
         """          {% if record.progress == 0 %}
               Waiting
@@ -85,7 +91,7 @@ class TransientTable(tables.Table):
     def order_best_spec_redshift(self, queryset, is_descending):
 
         queryset = queryset.annotate(
-            best_spec_redshift=Coalesce('redshift', 'host__redshift'),
-        ).order_by(('-' if is_descending else '') + 'best_spec_redshift')
-        
+            best_spec_redshift=Coalesce("redshift", "host__redshift"),
+        ).order_by(("-" if is_descending else "") + "best_spec_redshift")
+
         return (queryset, True)
