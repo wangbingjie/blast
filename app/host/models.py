@@ -151,7 +151,6 @@ class Transient(SkyObject):
             z = None
         return z
 
-
     def best_spec_redshift(self):
         """get the best redshift for a transient"""
         if self.host is not None and self.host.redshift is not None:
@@ -400,9 +399,9 @@ class Cutout(models.Model):
     )
     fits = models.FileField(upload_to=fits_file_path, null=True, blank=True)
     message = models.CharField(max_length=50, null=True, blank=True)
-    
+
     # used if some downloads fail
-    #warning = models.BooleanField(default=False)
+    # warning = models.BooleanField(default=False)
     objects = CutoutManager()
 
 

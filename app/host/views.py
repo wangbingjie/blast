@@ -10,8 +10,6 @@ from django.shortcuts import render
 from django.urls import re_path
 from django.urls import reverse_lazy
 from django_tables2 import RequestConfig
-from revproxy.views import ProxyView
-
 from host.forms import ImageGetForm
 from host.forms import TransientSearchForm
 from host.forms import TransientUploadForm
@@ -33,6 +31,7 @@ from host.plotting_utils import plot_sed
 from host.plotting_utils import plot_timeseries
 from host.tables import TransientTable
 from host.transient_name_server import get_transients_from_tns_by_name
+from revproxy.views import ProxyView
 
 
 class TransientFilter(django_filters.FilterSet):

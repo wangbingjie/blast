@@ -71,11 +71,11 @@ class Ghost(TransientTaskRunner):
                 ### let's try twice just in case
                 transient.host = host
                 transient.save()
-                
+
                 transient_check = Transient.objects.get(name=transient.name)
                 if transient_check.host is None:
-                    raise RuntimeError('problem saving transient to the database!')
-            
+                    raise RuntimeError("problem saving transient to the database!")
+
             status_message = "processed"
         else:
             status_message = "no ghost match"
@@ -200,7 +200,7 @@ class ImageDownload(TransientTaskRunner):
         Download cutout images
         """
         message = download_and_save_cutouts(transient)
-        
+
         return message
 
 
@@ -233,7 +233,7 @@ class GlobalApertureConstruction(TransientTaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=''))
+        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
 
         choice = 0
         aperture = None
@@ -312,7 +312,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
 
         self._overwrite_or_create_object(Aperture, query, data)
         aperture = Aperture.objects.get(**query)
-        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=''))
+        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
@@ -375,7 +375,7 @@ class GlobalAperturePhotometry(TransientTaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=''))
+        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
         choice = 0
         aperture = None
         for choice in range(9):
@@ -522,7 +522,7 @@ class ValidateLocalPhotometry(TransientTaskRunner):
             return "processed"
         else:
             return "no validated photometry"
-        
+
 
 class ValidateGlobalPhotometry(TransientTaskRunner):
     """
@@ -558,7 +558,7 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
         Run the global photometry validation
         """
 
-        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=''))
+        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
         cutout_for_aperture = select_cutout_aperture(cutouts)[0]
         aperture_primary = Aperture.objects.get(
             cutout__name=cutout_for_aperture.name, type="global"

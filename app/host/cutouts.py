@@ -27,8 +27,8 @@ from pyvo.dal import sia
 from .models import Cutout
 from .models import Filter
 
-DOWNLOAD_SLEEP_TIME = int(os.environ.get('DOWNLOAD_SLEEP_TIME', '300'))
-DOWNLOAD_MAX_TRIES = int(os.environ.get('DOWNLOAD_MAX_TRIES', '3'))
+DOWNLOAD_SLEEP_TIME = int(os.environ.get("DOWNLOAD_SLEEP_TIME", "300"))
+DOWNLOAD_MAX_TRIES = int(os.environ.get("DOWNLOAD_MAX_TRIES", "3"))
 
 # from host import SkyServer
 
@@ -107,43 +107,37 @@ def download_and_save_cutouts(
         )
 
         if not cutout_object.exists():
-            cutout_object = Cutout(
-                name=cutout_name, filter=filter, transient=transient
-            )
+            cutout_object = Cutout(name=cutout_name, filter=filter, transient=transient)
         else:
             cutout_object = cutout_object[0]
 
-
         fits = None
-        if (not file_exists and cutout_object.message != 'No image found') \
-           or not overwrite == "False":
-            fits,status,err = cutout(transient.sky_coord, filter, fov=fov)
+        if (
+            not file_exists and cutout_object.message != "No image found"
+        ) or not overwrite == "False":
+            fits, status, err = cutout(transient.sky_coord, filter, fov=fov)
             if fits:
                 save_dir = f"{media_root}/{transient.name}/{filter.survey.name}/"
                 os.makedirs(save_dir, exist_ok=True)
                 path_to_fits = save_dir + f"{filter.name}.fits"
                 fits.writeto(path_to_fits, overwrite=True)
 
-
             # if there is data, save path to the file
             # otherwise record that we searched and couldn't find anything
             if file_exists or fits:
                 cutout_object.fits.name = path_to_fits
                 cutout_object.save()
-        
+
             elif status == 1:
                 cutout_object.message = "Download error"
                 cutout_object.save()
-            
+
             else:
                 cutout_object.message = "No image found"
                 cutout_object.save()
 
     return "processed"
 
-
-
-        
 
 def panstarrs_image_filename(position, image_size=None, filter=None):
     """Query panstarrs service to get a list of image names
@@ -578,7 +572,8 @@ def cutout(transient, survey, fov=Quantity(0.1, unit="deg")):
     astropy.utils.data.clear_download_cache()
     num_pixels = int(fov.to(u.arcsec).value / survey.pixel_size_arcsec)
 
-    status = 1; n_iter = 0
+    status = 1
+    n_iter = 0
     while status == 1 and n_iter < DOWNLOAD_MAX_TRIES:
         if survey.image_download_method == "hips":
             try:
@@ -607,5 +602,5 @@ def cutout(transient, survey, fov=Quantity(0.1, unit="deg")):
         n_iter += 1
         if status == 1:
             time.sleep(DOWNLOAD_SLEEP_TIME)
-            
-    return fits,status,err
+
+    return fits, status, err
