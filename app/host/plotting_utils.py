@@ -364,6 +364,7 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
             else:
                 fig.circle(pwave, maggies_to_mJy(model_data["phot"]), size=10)
 
+    fig.width = 600
     fig.legend.location = "top_left"
     script, div = components(fig)
     return {f"bokeh_sed_{type}_script": script, f"bokeh_sed_{type}_div": div}

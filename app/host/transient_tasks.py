@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 from astropy.io import fits
+from django.db.models import Q
 
 from .base_tasks import TransientTaskRunner
 from .cutouts import download_and_save_cutouts
@@ -19,6 +20,7 @@ from .models import Aperture
 from .models import AperturePhotometry
 from .models import Cutout
 from .models import SEDFittingResult
+from .models import Transient
 from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
@@ -61,6 +63,19 @@ class Ghost(TransientTaskRunner):
             host.save()
             transient.host = host
             transient.save()
+
+            ### having a weird error here
+            ### possible issues communicating with the database
+            transient_check = Transient.objects.get(name=transient.name)
+            if transient_check.host is None:
+                ### let's try twice just in case
+                transient.host = host
+                transient.save()
+
+                transient_check = Transient.objects.get(name=transient.name)
+                if transient_check.host is None:
+                    raise RuntimeError("problem saving transient to the database!")
+
             status_message = "processed"
         else:
             status_message = "no ghost match"
@@ -184,8 +199,9 @@ class ImageDownload(TransientTaskRunner):
         """
         Download cutout images
         """
-        download_and_save_cutouts(transient)
-        return "processed"
+        message = download_and_save_cutouts(transient)
+
+        return message
 
 
 class GlobalApertureConstruction(TransientTaskRunner):
@@ -217,7 +233,7 @@ class GlobalApertureConstruction(TransientTaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        cutouts = Cutout.objects.filter(transient=transient)
+        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
 
         choice = 0
         aperture = None
@@ -296,7 +312,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
 
         self._overwrite_or_create_object(Aperture, query, data)
         aperture = Aperture.objects.get(**query)
-        cutouts = Cutout.objects.filter(transient=transient)
+        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
 
         for cutout in cutouts:
             image = fits.open(cutout.fits.name)
@@ -359,7 +375,7 @@ class GlobalAperturePhotometry(TransientTaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
-        cutouts = Cutout.objects.filter(transient=transient)
+        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
         choice = 0
         aperture = None
         for choice in range(9):
@@ -499,7 +515,13 @@ class ValidateLocalPhotometry(TransientTaskRunner):
             local_aperture_phot.is_validated = is_validated
             local_aperture_phot.save()
 
-        return "processed"
+        validated_local_aperture_photometry = AperturePhotometry.objects.filter(
+            transient=transient, aperture__type="local", is_validated="true"
+        )
+        if len(validated_local_aperture_photometry):
+            return "processed"
+        else:
+            return "no validated photometry"
 
 
 class ValidateGlobalPhotometry(TransientTaskRunner):
@@ -536,7 +558,7 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
         Run the global photometry validation
         """
 
-        cutouts = Cutout.objects.filter(transient=transient)
+        cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
         cutout_for_aperture = select_cutout_aperture(cutouts)[0]
         aperture_primary = Aperture.objects.get(
             cutout__name=cutout_for_aperture.name, type="global"
