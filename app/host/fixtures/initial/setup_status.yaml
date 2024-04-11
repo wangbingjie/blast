@@ -66,5 +66,5 @@
 - model: host.Status
   pk: 14
   fields:
-    message: no validated photometry
+    message: no valid phot
     type: error

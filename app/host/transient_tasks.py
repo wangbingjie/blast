@@ -521,7 +521,7 @@ class ValidateLocalPhotometry(TransientTaskRunner):
         if len(validated_local_aperture_photometry):
             return "processed"
         else:
-            return "no validated photometry"
+            return "no valid phot"
 
 
 class ValidateGlobalPhotometry(TransientTaskRunner):
