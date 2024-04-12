@@ -46,6 +46,7 @@ def main():
             ]
         )
     except Exception as e:
+        print(str(e))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_survey_data.yaml"."""
         )
@@ -63,6 +64,7 @@ def main():
             ]
         )
     except Exception as e:
+        print(str(e))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_filter_data.yaml"."""
         )
@@ -80,6 +82,7 @@ def main():
             ]
         )
     except Exception as e:
+        print(str(e))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_catalog_data.yaml"."""
         )
@@ -91,6 +94,7 @@ def main():
             ["__main__.py", "loaddata", "/app/host/fixtures/initial/setup_tasks.yaml"]
         )
     except Exception as e:
+        print(str(e))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_tasks.yaml"."""
         )
@@ -102,6 +106,7 @@ def main():
             ["__main__.py", "loaddata", "/app/host/fixtures/initial/setup_status.yaml"]
         )
     except Exception as e:
+        print(str(e))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_status.yaml"."""
         )
@@ -119,6 +124,7 @@ def main():
             ]
         )
     except Exception as e:
+        print(str(e))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_acknowledgements.yaml"."""
         )
@@ -130,6 +136,7 @@ def main():
             ["__main__.py", "loaddata", "/app/host/fixtures/example/2010ag.yaml"]
         )
     except Exception as e:
+        print(str(e))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/example/2010ag.yaml"."""
         )
@@ -141,6 +148,7 @@ def main():
             ["__main__.py", "loaddata", "/app/host/fixtures/example/2010ai.yaml"]
         )
     except Exception as e:
+        print(str(e))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/example/2010ai.yaml"."""
         )
@@ -152,6 +160,7 @@ def main():
             ["__main__.py", "loaddata", "/app/host/fixtures/example/2010H.yaml"]
         )
     except Exception as e:
+        print(str(e))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/example/2010H.yaml"."""
         )
@@ -163,6 +172,7 @@ def main():
             ["__main__.py", "loaddata", "/app/host/fixtures/example/snapshot.yaml"]
         )
     except Exception as e:
+        print(str(e))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/example/snapshot.yaml"."""
         )
