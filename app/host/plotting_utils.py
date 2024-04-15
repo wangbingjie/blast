@@ -409,6 +409,48 @@ def plot_errorbar(
     return figure, p
 
 
+def plot_bar_chart(data_dict):
+
+    x_label = ""
+    y_label = "Transients"
+    transient_numbers = list(data_dict.values())
+
+    # bokeh 2.4.x bug where transients has to be string for LabelSet to work
+    vals = pd.DataFrame(
+        {
+            "processing": list(data_dict.keys()),
+            "transients": np.array(transient_numbers).astype(str).tolist(),
+            "index": range(len(data_dict.values())),
+        }
+    )
+    source = ColumnDataSource(vals)
+
+    graph = figure(
+        x_axis_label=x_label,
+        y_axis_label=y_label,
+        x_range=vals["processing"],
+        y_range=Range1d(start=0, end=max(transient_numbers) * 1.1),
+    )
+
+    labels = LabelSet(
+        x="index",
+        y="transients",
+        text="transients",
+        source=source,
+        level="glyph",
+        y_offset=5,
+        x_offset=64,
+        text_align="center",
+    )
+
+    graph.vbar(source=source, x="processing", top="transients", bottom=0, width=0.7)
+    graph.add_layout(labels)
+
+    # displaying the model
+    script, div = components(graph)
+    return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
+
+
 def plot_pie_chart(data_dict):
     data = (
         pd.Series(data_dict)

@@ -3,5 +3,12 @@
 {% block title %} <h4>Database Snapshot </h4>{%endblock%}
 
 <!-- body -->
-{% block body %}<b>Total transients ingested:{{total}}</b>
-{{ bokeh_cutout_div | safe }}{% endblock %}
+{% block body %}
+<center>
+  <b>Transients processed: {{processed}}</b>
+  <br>
+  <b>Transients in progress: {{in_progress}}</b>
+</center>
+
+{{ bokeh_cutout_div | safe }}
+{% endblock %}
