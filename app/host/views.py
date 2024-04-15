@@ -25,23 +25,24 @@ from host.models import Status
 from host.models import TaskRegister
 from host.models import TaskRegisterSnapshot
 from host.models import Transient
+from host.plotting_utils import plot_bar_chart
 from host.plotting_utils import plot_cutout_image
 from host.plotting_utils import plot_pie_chart
-from host.plotting_utils import plot_bar_chart
 from host.plotting_utils import plot_sed
 from host.plotting_utils import plot_timeseries
 from host.tables import TransientTable
 from host.transient_name_server import get_transients_from_tns_by_name
 from revproxy.views import ProxyView
 
-def filter_transient_categories(qs,value):
+
+def filter_transient_categories(qs, value):
 
     if value == "Transients with Basic Information":
         qs = qs.filter(
             pk__in=TaskRegister.objects.filter(
                 task__name="Transient information", status__message="processed"
             ).values("transient")
-        )        
+        )
     elif value == "Transients with Matched Hosts":
         qs = qs.filter(
             pk__in=TaskRegister.objects.filter(
@@ -89,6 +90,7 @@ def filter_transient_categories(qs,value):
 
     return qs
 
+
 class TransientFilter(django_filters.FilterSet):
 
     hostmatch = django_filters.ChoiceFilter(
@@ -115,7 +117,7 @@ class TransientFilter(django_filters.FilterSet):
     def filter_transients(self, qs, name, value):
 
         qs = filter_transient_categories(qs, value)
-        
+
         return qs
 
 
@@ -421,16 +423,25 @@ def home(request):
 
     analytics_results = {}
 
-    for aggregate,qs_value in zip(
-            ["Basic Information","Host Identification","Host Photometry","Host SED Fitting"],
-            ["Transients with Basic Information","Transients with Matched Hosts",
-             "Transients with Photometry","Transients with SED Fitting"]
-            ):
+    for aggregate, qs_value in zip(
+        [
+            "Basic Information",
+            "Host Identification",
+            "Host Photometry",
+            "Host SED Fitting",
+        ],
+        [
+            "Transients with Basic Information",
+            "Transients with Matched Hosts",
+            "Transients with Photometry",
+            "Transients with SED Fitting",
+        ],
+    ):
 
         analytics_results[aggregate] = len(
-            filter_transient_categories(Transient.objects.all(),qs_value)
+            filter_transient_categories(Transient.objects.all(), qs_value)
         )
-        
+
     #    transients = TaskRegisterSnapshot.objects.filter(
     #        aggregate_type__exact=aggregate
     #    )
@@ -444,23 +455,28 @@ def home(request):
 
     #    analytics_results[f"{aggregate}".replace("_", " ")] = transients_current
 
-    #total = analytics_results["total"]
-    #del analytics_results["total"]
+    # total = analytics_results["total"]
+    # del analytics_results["total"]
 
-    processed = len(Transient.objects.filter(
-        Q(processing_status='blocked') | Q(processing_status='completed'))
+    processed = len(
+        Transient.objects.filter(
+            Q(processing_status="blocked") | Q(processing_status="completed")
+        )
     )
-    in_progress = len(
-        Transient.objects.filter(processing_status='processing')
-    )
+    in_progress = len(Transient.objects.filter(processing_status="processing"))
 
-    #bokeh_processing_context = plot_pie_chart(analytics_results)
+    # bokeh_processing_context = plot_pie_chart(analytics_results)
     bokeh_processing_context = plot_bar_chart(analytics_results)
-    
+
     return render(
-        request, "index.html",
-        {"processed": processed, "in_progress": in_progress,**bokeh_processing_context
-    })
+        request,
+        "index.html",
+        {
+            "processed": processed,
+            "in_progress": in_progress,
+            **bokeh_processing_context,
+        },
+    )
 
 
 # @user_passes_test(lambda u: u.is_staff and u.is_superuser)
