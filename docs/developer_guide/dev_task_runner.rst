@@ -140,7 +140,7 @@ Run on start up
 ^^^^^^^^^^^^^^^
 
 You can specify whether your task runs periodically on start up of Blast or needs
-to be explicitly trigger from the djano admin by implementing
+to be explicitly triggered from the Django admin by implementing
 the :code:`task_initially_enabled` property. If you do not implement this method
 it will default to true, meaning that the task will launch automatically on
 startup.
