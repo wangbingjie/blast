@@ -1,5 +1,7 @@
 {% extends 'host/base.html' %}
 
+{% load bootstrap3 %}
+
 {% block title %} Transients {% endblock %}
 
 {% block body %}
@@ -8,8 +10,6 @@
 
 {% load render_table from django_tables2 %}
 
-{% load bootstrap3 %}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
 <div class="p-5 text-left bg-light">
   <h1 class="mb-3">Transients</h1>
   <h4 class="mb-3">Search Blast's database of transients</h4>

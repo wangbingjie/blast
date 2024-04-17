@@ -63,3 +63,8 @@
   fields:
     message: redshift too high
     type: error
+- model: host.Status
+  pk: 14
+  fields:
+    message: no valid phot
+    type: error

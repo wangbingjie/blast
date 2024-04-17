@@ -17,10 +17,11 @@
 <a href="{% url 'reprocess_transient' transient.name %}" role="button" class="btn btn-warning" class='reprocess'>Reprocess</button></a>
 {% endif %}
 <div class="container">
-</div>
+    </div>
 
-    <div class="row">
-        <div class="col-lg-5">
+        <div class="row">
+            <div class="col-lg-5">
+
                 {% include "host/information_card.html" %}
 
                 {% include "host/processing_status_card.html" %}
@@ -29,14 +30,15 @@
 
                 {% include "host/photometry_card.html" %}
 
-        </div>
+            </div>
 
-        <div class="col-lg-7">
-            {% include "host/cutout_card.html" %}
+            <div class="col-lg-7">
+                {% include "host/cutout_card.html" %}
 
-            {% include "host/sed_card.html" %}
+                {% include "host/sed_card.html" %}
 
-            {% include "host/sed_inference_card.html" %}
+                {% include "host/sed_inference_card.html" %}
+            </div>
         </div>
     </div>
 </div>

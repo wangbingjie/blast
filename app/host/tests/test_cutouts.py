@@ -29,7 +29,7 @@ class CutoutDownloadTest(TestCase):
             position = SkyCoord(
                 ra=self.transient_ra, dec=self.transient_dec, unit="deg"
             )
-            cutout_data = cutout(position, filter)
+            cutout_data = cutout(position, filter)[0]
 
             if cutout_data:
                 save_dir = f"{self.transient_name}/{filter.name}/"

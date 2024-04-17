@@ -10,29 +10,85 @@ from django.shortcuts import render
 from django.urls import re_path
 from django.urls import reverse_lazy
 from django_tables2 import RequestConfig
+from host.forms import ImageGetForm
+from host.forms import TransientSearchForm
+from host.forms import TransientUploadForm
+from host.host_utils import select_aperture
+from host.host_utils import select_cutout_aperture
+from host.models import Acknowledgement
+from host.models import Aperture
+from host.models import AperturePhotometry
+from host.models import Cutout
+from host.models import Filter
+from host.models import SEDFittingResult
+from host.models import Status
+from host.models import TaskRegister
+from host.models import TaskRegisterSnapshot
+from host.models import Transient
+from host.plotting_utils import plot_bar_chart
+from host.plotting_utils import plot_cutout_image
+from host.plotting_utils import plot_pie_chart
+from host.plotting_utils import plot_sed
+from host.plotting_utils import plot_timeseries
+from host.tables import TransientTable
+from host.transient_name_server import get_transients_from_tns_by_name
 from revproxy.views import ProxyView
 
-from .forms import ImageGetForm
-from .forms import TransientSearchForm
-from .forms import TransientUploadForm
-from .host_utils import select_aperture
-from .host_utils import select_cutout_aperture
-from .models import Acknowledgement
-from .models import Aperture
-from .models import AperturePhotometry
-from .models import Cutout
-from .models import Filter
-from .models import SEDFittingResult
-from .models import Status
-from .models import TaskRegister
-from .models import TaskRegisterSnapshot
-from .models import Transient
-from .plotting_utils import plot_cutout_image
-from .plotting_utils import plot_pie_chart
-from .plotting_utils import plot_sed
-from .plotting_utils import plot_timeseries
-from .tables import TransientTable
-from .transient_name_server import get_transients_from_tns_by_name
+
+def filter_transient_categories(qs, value):
+
+    if value == "Transients with Basic Information":
+        qs = qs.filter(
+            pk__in=TaskRegister.objects.filter(
+                task__name="Transient information", status__message="processed"
+            ).values("transient")
+        )
+    elif value == "Transients with Matched Hosts":
+        qs = qs.filter(
+            pk__in=TaskRegister.objects.filter(
+                task__name="Host match", status__message="processed"
+            ).values("transient")
+        )
+    elif value == "Transients with Photometry":
+        qs = qs.filter(
+            Q(
+                pk__in=TaskRegister.objects.filter(
+                    task__name="Local aperture photometry",
+                    status__message="processed",
+                ).values("transient")
+            )
+            | Q(
+                pk__in=TaskRegister.objects.filter(
+                    task__name="Global aperture photometry",
+                    status__message="processed",
+                ).values("transient")
+            )
+        )
+    elif value == "Transients with SED Fitting":
+        qs = qs.filter(
+            Q(
+                pk__in=TaskRegister.objects.filter(
+                    task__name="Local host SED inference",
+                    status__message="processed",
+                ).values("transient")
+            )
+            | Q(
+                pk__in=TaskRegister.objects.filter(
+                    task__name="Global host SED inference",
+                    status__message="processed",
+                ).values("transient")
+            )
+        )
+    elif value == "Finished Transients":
+        qs = qs.filter(
+            ~Q(
+                pk__in=TaskRegister.objects.filter(
+                    ~Q(status__message="processed")
+                ).values("transient")
+            )
+        )
+
+    return qs
 
 
 class TransientFilter(django_filters.FilterSet):
@@ -60,58 +116,14 @@ class TransientFilter(django_filters.FilterSet):
 
     def filter_transients(self, qs, name, value):
 
-        if value == "Transients with Matched Hosts":
-            qs = qs.filter(
-                pk__in=TaskRegister.objects.filter(
-                    task__name="Host match", status__message="processed"
-                ).values("transient")
-            )
-        elif value == "Transients with Photometry":
-            qs = qs.filter(
-                Q(
-                    pk__in=TaskRegister.objects.filter(
-                        task__name="Local aperture photometry",
-                        status__message="processed",
-                    ).values("transient")
-                )
-                | Q(
-                    pk__in=TaskRegister.objects.filter(
-                        task__name="Global aperture photometry",
-                        status__message="processed",
-                    ).values("transient")
-                )
-            )
-        elif value == "Transients with SED Fitting":
-            qs = qs.filter(
-                Q(
-                    pk__in=TaskRegister.objects.filter(
-                        task__name="Local host SED inference",
-                        status__message="processed",
-                    ).values("transient")
-                )
-                | Q(
-                    pk__in=TaskRegister.objects.filter(
-                        task__name="Global host SED inference",
-                        status__message="processed",
-                    ).values("transient")
-                )
-            )
-        elif value == "Finished Transients":
-            qs = qs.filter(
-                ~Q(
-                    pk__in=TaskRegister.objects.filter(
-                        ~Q(status__message="processed")
-                    ).values("transient")
-                )
-            )
+        qs = filter_transient_categories(qs, value)
 
         return qs
 
 
 def transient_list(request):
 
-    transients = Transient.objects.all().order_by("-public_timestamp")
-
+    transients = Transient.objects.order_by("-public_timestamp")
     transientfilter = TransientFilter(request.GET, queryset=transients)
 
     table = TransientTable(transientfilter.qs)
@@ -198,9 +210,9 @@ def analytics(request):
         else:
             transients_current = None
 
-        analytics_results[
-            f"{aggregate}_transients_current".replace(" ", "_")
-        ] = transients_current
+        analytics_results[f"{aggregate}_transients_current".replace(" ", "_")] = (
+            transients_current
+        )
         bokeh_processing_context = plot_timeseries()
 
     return render(
@@ -267,7 +279,7 @@ def results(request, slug):
     else:
         global_sed_file = None
 
-    all_cutouts = Cutout.objects.filter(transient__name__exact=slug)
+    all_cutouts = Cutout.objects.filter(transient__name__exact=slug).filter(~Q(fits=""))
     filters = [cutout.filter.name for cutout in all_cutouts]
     all_filters = Filter.objects.all()
 
@@ -411,26 +423,60 @@ def home(request):
 
     analytics_results = {}
 
-    for aggregate in ["total", "not completed", "completed", "waiting"]:
+    for aggregate, qs_value in zip(
+        [
+            "Basic Information",
+            "Host Identification",
+            "Host Photometry",
+            "Host SED Fitting",
+        ],
+        [
+            "Transients with Basic Information",
+            "Transients with Matched Hosts",
+            "Transients with Photometry",
+            "Transients with SED Fitting",
+        ],
+    ):
 
-        transients = TaskRegisterSnapshot.objects.filter(
-            aggregate_type__exact=aggregate
+        analytics_results[aggregate] = len(
+            filter_transient_categories(Transient.objects.all(), qs_value)
         )
 
-        transients_ordered = transients.order_by("-time")
+    #    transients = TaskRegisterSnapshot.objects.filter(
+    #        aggregate_type__exact=aggregate
+    #    )
 
-        if transients_ordered.exists():
-            transients_current = transients_ordered[0].number_of_transients
-        else:
-            transients_current = None
+    #    transients_ordered = transients.order_by("-time")
 
-        analytics_results[f"{aggregate}".replace("_", " ")] = transients_current
+    #    if transients_ordered.exists():
+    #        transients_current = transients_ordered[0].number_of_transients
+    #    else:
+    #        transients_current = None
 
-    total = analytics_results["total"]
-    del analytics_results["total"]
-    bokeh_processing_context = plot_pie_chart(analytics_results)
+    #    analytics_results[f"{aggregate}".replace("_", " ")] = transients_current
 
-    return render(request, "index.html", {"total": total, **bokeh_processing_context})
+    # total = analytics_results["total"]
+    # del analytics_results["total"]
+
+    processed = len(
+        Transient.objects.filter(
+            Q(processing_status="blocked") | Q(processing_status="completed")
+        )
+    )
+    in_progress = len(Transient.objects.filter(processing_status="processing"))
+
+    # bokeh_processing_context = plot_pie_chart(analytics_results)
+    bokeh_processing_context = plot_bar_chart(analytics_results)
+
+    return render(
+        request,
+        "index.html",
+        {
+            "processed": processed,
+            "in_progress": in_progress,
+            **bokeh_processing_context,
+        },
+    )
 
 
 # @user_passes_test(lambda u: u.is_staff and u.is_superuser)

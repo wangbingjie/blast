@@ -364,6 +364,7 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
             else:
                 fig.circle(pwave, maggies_to_mJy(model_data["phot"]), size=10)
 
+    fig.width = 600
     fig.legend.location = "top_left"
     script, div = components(fig)
     return {f"bokeh_sed_{type}_script": script, f"bokeh_sed_{type}_div": div}
@@ -406,6 +407,48 @@ def plot_errorbar(
             y_err_y.append((py - err, py + err))
         figure.multi_line(y_err_x, y_err_y, color=color, **error_kwargs)
     return figure, p
+
+
+def plot_bar_chart(data_dict):
+
+    x_label = ""
+    y_label = "Transients"
+    transient_numbers = list(data_dict.values())
+
+    # bokeh 2.4.x bug where transients has to be string for LabelSet to work
+    vals = pd.DataFrame(
+        {
+            "processing": list(data_dict.keys()),
+            "transients": np.array(transient_numbers).astype(str).tolist(),
+            "index": range(len(data_dict.values())),
+        }
+    )
+    source = ColumnDataSource(vals)
+
+    graph = figure(
+        x_axis_label=x_label,
+        y_axis_label=y_label,
+        x_range=vals["processing"],
+        y_range=Range1d(start=0, end=max(transient_numbers) * 1.1),
+    )
+
+    labels = LabelSet(
+        x="index",
+        y="transients",
+        text="transients",
+        source=source,
+        level="glyph",
+        y_offset=5,
+        x_offset=64,
+        text_align="center",
+    )
+
+    graph.vbar(source=source, x="processing", top="transients", bottom=0, width=0.7)
+    graph.add_layout(labels)
+
+    # displaying the model
+    script, div = components(graph)
+    return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 
 
 def plot_pie_chart(data_dict):
