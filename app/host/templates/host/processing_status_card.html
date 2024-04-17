@@ -1,7 +1,7 @@
 {% extends "host/card_template.html" %}
 
 <!-- title -->
-{% block title %} <h5>Processing Status</h5> {% endblock %}
+{% block title %} <h4>Processing Status</h4> {% endblock %}
 
 <!-- body -->
 {% block body %}
@@ -12,12 +12,17 @@
             <th scope="col">Task Name</th>
             <th scope="col">Status</th>
             <th scope="col">Time taken (s)</th>
+	    <th scope="col">Warning Flag</th>
         </tr>
     </thead>
     <tbody>
         {% for item in transient.taskregister_set.all %}
         <tr>
+	  {% if item.user_warning %}
+            <td><b style="color:red">{{item.task.name}}</b></td>
+	  {% else %}
             <td>{{item.task.name}}</td>
+	  {% endif %}
             <td> <span class="badge {{item.status.badge}}">{{item.status.message}}</span></td>
             <td>
                 {% if item.last_processing_time_seconds == 'None' %}
@@ -26,6 +31,17 @@
                     {{item.last_processing_time_seconds}}
                 {% endif %}
             </td>
+	    <td>
+                {% if item.user_warning %}
+                  <button style="margin-bottom:5px;" type="button" class="report" onclick="window.open('{% url 'resolve_issue' item.pk %}','_self')">
+                    <span>Resolve</span>
+                  </button>
+		{% else %}
+                  <button style="margin-bottom:5px;" type="button" class="report" onclick="window.open('{% url 'report_issue' item.pk %}','_self')">
+                    <span>Report</span>
+                  </button>
+                {% endif %}
+	    </td>
         </tr>
        {% endfor %}
     </tbody>

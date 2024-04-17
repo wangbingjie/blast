@@ -4,16 +4,24 @@
 {% block script %} {{ bokeh_cutout_script | safe }} {{ bokeh_sed_local_script | safe }} {{ bokeh_sed_global_script | safe }}  {% endblock %}
 
 {% load crispy_forms_tags %}
-
 {% block body %}
 
 <div class="p-5 text-left bg-light">
-  <h1 class="mb-3">{{transient.name}} </h1>
-    <a href="/api/transient/get/{{transient.name}}" role="button" class="btn btn-success">Download data <i class="bi bi-box-arrow-in-down"></i></button></a> <div class="container">
-</div>
+  {% if warning %}
+      <h1 class="mb-3">{{transient.name}} <b style="color:red">(warnings)</b></h1>
+  {% else %}
+      <h1 class="mb-3">{{transient.name}} </h1>
+  {% endif %}
+      <a href="/api/transient/get/{{transient.name}}" role="button" class="btn btn-success">Download data <i class="bi bi-box-arrow-in-down"></i></button></a>
+{% if is_auth %}
+<a href="{% url 'reprocess_transient' transient.name %}" role="button" class="btn btn-warning" class='reprocess'>Reprocess</button></a>
+{% endif %}
+<div class="container">
+    </div>
 
-    <div class="row">
-        <div class="col-lg-5">
+        <div class="row">
+            <div class="col-lg-5">
+
                 {% include "host/information_card.html" %}
 
                 {% include "host/processing_status_card.html" %}
@@ -22,14 +30,15 @@
 
                 {% include "host/photometry_card.html" %}
 
-        </div>
+            </div>
 
-        <div class="col-lg-7">
-            {% include "host/cutout_card.html" %}
+            <div class="col-lg-7">
+                {% include "host/cutout_card.html" %}
 
-            {% include "host/sed_card.html" %}
+                {% include "host/sed_card.html" %}
 
-            {% include "host/sed_inference_card.html" %}
+                {% include "host/sed_inference_card.html" %}
+            </div>
         </div>
     </div>
 </div>

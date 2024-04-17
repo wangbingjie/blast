@@ -1,25 +1,35 @@
 {% extends "host/card_template.html" %}
 
 <!-- card title -->
-{% block title %} <h5>Information</h5>{% endblock %}
+{% block title %} <h4>Information</h4>{% endblock %}
 
 <!-- card body  -->
 {% block body %}
 
-<h5>Transient</h5>
+<h4>Transient</h4>
 Name: <a class="link"
     href="https://www.wis-tns.org/object/{{transient.name}}/">{{transient.tns_prefix}}{{transient.name}}</a><br>
 Right ascension: {{transient.ra}}<br>
 Declination: {{transient.dec}}<br>
 Discovery Date: {{transient.public_timestamp}}<br>
 Classification: {{transient.spectroscopic_class}}<br>
-MW E(B-V): {{transient.milkyway_dust_reddening}}<br>
+{% if transient.redshift %}
+Redshift: {{transient.redshift|floatformat:6}}<br>
+{% else %}
+Redshift: None<br>
+{% endif %}
+MW E(B-V): {{transient.milkyway_dust_reddening|floatformat:3}}<br>
 <br>
 
-<h5>Host</h5>
+<h4>Host</h4>
 Name: {{transient.host.name}}<br>
 Right ascension: {{transient.host.ra}}<br>
 Declination: {{transient.host.dec}}<br>
-Redshift: {{transient.host.redshift}}<br>
+{% if transient.host.redshift %}
+Redshift: {{transient.host.redshift|floatformat:6}}<br>
+{% else %}
+Redshift: None<br>
+{% endif %}
+Photometric Redshift: {{transient.host.photometric_redshift|floatformat:3}}<br>
 
 {% endblock %}

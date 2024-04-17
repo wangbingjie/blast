@@ -1,6 +1,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import os
+
 from celery import shared_task
 
 from .system_tasks import DeleteGHOSTFiles
@@ -24,6 +26,7 @@ from .transient_tasks import ValidateGlobalPhotometry
 from .transient_tasks import ValidateLocalPhotometry
 
 periodic_tasks = [
+    TNSDataIngestion(),
     MWEBV_Transient(),
     Ghost(),
     MWEBV_Host(),
@@ -37,7 +40,6 @@ periodic_tasks = [
     HostInformation(),
     GlobalHostSEDFitting(),
     LocalHostSEDFitting(),
-    TNSDataIngestion(),
     InitializeTransientTasks(),
     IngestMissedTNSTransients(),
     DeleteGHOSTFiles(),
@@ -45,6 +47,17 @@ periodic_tasks = [
     LogTransientProgress(),
 ]
 
+task_time_limit = int(os.environ.get("TASK_TIME_LIMIT", "3800"))
+task_soft_time_limit = int(os.environ.get("TASK_SOFT_TIME_LIMIT", "3600"))
 for task in periodic_tasks:
     func_name = task.task_name.replace(" ", "_").lower()
-    exec(f"@shared_task\ndef {func_name}(): {type(task).__name__}().run_process()")
+    exec(
+        f"""
+@shared_task(time_limit={task_time_limit},soft_time_limit={task_soft_time_limit})
+def {func_name}():
+
+    {type(task).__name__}().run_process()
+
+    return
+"""
+    )

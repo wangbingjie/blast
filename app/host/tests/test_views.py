@@ -24,9 +24,9 @@ class SEDPlotTest(TestCase):
         "../fixtures/initial/setup_status.yaml",
         "../fixtures/initial/setup_tasks.yaml",
         "../fixtures/initial/setup_acknowledgements.yaml",
-        "../fixtures/test/test_2010h.yaml",
+        "../fixtures/test/test_2010H.yaml",
     ]
 
     def test_tansient_page(self):
-        response = self.client.get("/transients/2010h/")
+        response = self.client.get("/transients/2010H/")
         self.assertEqual(response.status_code, 200)

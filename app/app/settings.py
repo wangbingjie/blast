@@ -19,11 +19,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-emj*+kbyrdii%75%z_3@$wizbabb3vgwmyrn)0gsjgtui6ssha"
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "django-insecure-tn6@rg(#694!6p^c!^0ekz5d)jyxk(dxtx-z9m2%$h&w$p0#+)"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() == "true"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -39,11 +40,15 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "host",
     "crispy_forms",
+    "django_tables2",
+    "bootstrap3",
     "django_celery_beat",
     "revproxy",
     "rest_framework",
     "api",
     "users",
+    "django_cron",
+    "django_filters",
 ]
 
 MIDDLEWARE = [
@@ -134,11 +139,14 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/cutouts/"
 # os.path.join(os.path.dirname(BASE_DIR), '../cutout_cdn')
 
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../cutout_cdn")
-SED_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../sed_output")
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data")
+CUTOUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data/cutout_cdn")
+SED_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data/sed_output")
 GHOST_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../ghost_output")
 TNS_STAGING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../tns_staging")
 TRANSMISSION_CURVES_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../transmission")
+SBIPP_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../sbipp")
+SBIPP_PHOT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../sbipp_phot")
 
 CUTOUT_OVERWRITE = os.environ.get("CUTOUT_OVERWRITE", "False")
 
@@ -163,7 +171,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         f'rest_framework.permissions.{os.environ.get("API_AUTHENTICATION")}',
-    ]
+    ],
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
 

@@ -1,14 +1,165 @@
 import itertools
 
+import django_filters
 from astropy.coordinates import SkyCoord
+from django_filters.rest_framework import DjangoFilterBackend
+from host.models import *
 from host.models import Transient
+from rest_framework import generics
 from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import datamodel
+from . import serializers
 from .components import data_model_components
+
+
+### Filter Sets ###
+class TransientFilter(django_filters.FilterSet):
+
+    redshift_lte = django_filters.NumberFilter(field_name="redshift", lookup_expr="lte")
+    redshift_gte = django_filters.NumberFilter(field_name="redshift", lookup_expr="gte")
+
+    class Meta:
+        model = Transient
+        fields = ("name",)
+
+
+### Filter Sets ###
+class HostFilter(django_filters.FilterSet):
+
+    redshift_lte = django_filters.NumberFilter(field_name="redshift", lookup_expr="lte")
+    redshift_gte = django_filters.NumberFilter(field_name="redshift", lookup_expr="gte")
+    photometric_redshift_lte = django_filters.NumberFilter(
+        field_name="photometric_redshift", lookup_expr="lte"
+    )
+    photometric_redshift_gte = django_filters.NumberFilter(
+        field_name="photometric_redshift", lookup_expr="gte"
+    )
+
+    class Meta:
+        model = Host
+        fields = ("name",)
+
+
+class ApertureFilter(django_filters.FilterSet):
+    transient = django_filters.Filter(field_name="transient__name")
+
+    class Meta:
+        model = Aperture
+        fields = ()
+
+
+class TaskRegisterFilter(django_filters.FilterSet):
+
+    transient = django_filters.Filter(field_name="transient__name")
+    status = django_filters.Filter(field_name="status__message")
+    task = django_filters.Filter(field_name="task__name")
+
+    class Meta:
+        model = TaskRegister
+        fields = ()
+
+
+class FilterFilter(django_filters.FilterSet):
+    class Meta:
+        model = Filter
+        fields = ("name",)
+
+
+class CutoutFilter(django_filters.FilterSet):
+
+    filter = django_filters.Filter(field_name="filter__name")
+    transient = django_filters.Filter(field_name="transient__name")
+
+    class Meta:
+        model = Cutout
+        fields = ("name",)
+
+
+class AperturePhotometryFilter(django_filters.FilterSet):
+
+    filter = django_filters.Filter(field_name="filter__name")
+    transient = django_filters.Filter(field_name="transient__name")
+
+    class Meta:
+        model = AperturePhotometry
+        fields = ()
+
+
+class SEDFittingResultFilter(django_filters.FilterSet):
+
+    transient = django_filters.Filter(field_name="transient__name")
+    aperture_type = django_filters.Filter(field_name="aperture__type")
+
+    class Meta:
+        model = SEDFittingResult
+        fields = ()
+
+
+### ViewSets ###
+class TransientViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Transient.objects.all()
+    serializer_class = serializers.TransientSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TransientFilter
+
+
+class ApertureViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Aperture.objects.all()
+    serializer_class = serializers.ApertureSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = ApertureFilter
+
+
+class CutoutViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Cutout.objects.all()
+    serializer_class = serializers.CutoutSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = CutoutFilter
+
+
+class FilterViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Filter.objects.all()
+    serializer_class = serializers.FilterSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = FilterFilter
+
+
+class AperturePhotometryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = AperturePhotometry.objects.all()
+    serializer_class = serializers.AperturePhotometrySerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = AperturePhotometryFilter
+
+
+class SEDFittingResultViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = SEDFittingResult.objects.all()
+    serializer_class = serializers.SEDFittingResultSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = SEDFittingResultFilter
+
+
+class TaskRegisterViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = TaskRegister.objects.all()
+    serializer_class = serializers.TaskRegisterSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TaskRegisterFilter
+
+
+class TaskViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Task.objects.all()
+    serializer_class = serializers.TaskSerializer
+
+
+class HostViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Host.objects.all()
+    serializer_class = serializers.HostSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = HostFilter
 
 
 def transient_exists(transient_name: str) -> bool:

@@ -2,10 +2,13 @@
 This modules contains the django code used to create tables in the database
 backend.
 """
+import os
+
 import pandas as pd
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 from django_celery_beat.models import PeriodicTask
 from photutils.aperture import SkyEllipticalAperture
@@ -115,6 +118,7 @@ class Transient(SkyObject):
     photometric_class = models.CharField(max_length=20, null=True, blank=True)
     milkyway_dust_reddening = models.FloatField(null=True, blank=True)
     processing_status = models.CharField(max_length=20, default="processing")
+    added_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
 
     @property
     def progress(self):
@@ -129,12 +133,38 @@ class Transient(SkyObject):
     @property
     def best_redshift(self):
         """get the best redshift for a transient"""
-        if self.host.redshift is not None:
-            z = self.host.redshift
+        if self.host is not None and self.host.redshift is not None:
+            if (
+                self.redshift is not None
+                and abs(self.host.redshift - self.redshift) < 0.02
+            ):
+                z = self.host.redshift
+            elif self.redshift is None:
+                z = self.host.redshift
+            else:
+                z = self.redshift
         elif self.redshift is not None:
             z = self.redshift
-        elif self.host.photometric_redshift is not None:
+        elif self.host is not None and self.host.photometric_redshift is not None:
             z = self.host.photometric_redshift
+        else:
+            z = None
+        return z
+
+    def best_spec_redshift(self):
+        """get the best redshift for a transient"""
+        if self.host is not None and self.host.redshift is not None:
+            if (
+                self.redshift is not None
+                and abs(self.host.redshift - self.redshift) < 0.02
+            ):
+                z = self.host.redshift
+            elif self.redshift is None:
+                z = self.host.redshift
+            else:
+                z = self.redshift
+        elif self.redshift is not None:
+            z = self.redshift
         else:
             z = None
         return z
@@ -197,6 +227,7 @@ class TaskRegister(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     transient = models.ForeignKey(Transient, on_delete=models.CASCADE)
+    user_warning = models.BooleanField(default=False)
     last_modified = models.DateTimeField(blank=True, null=True)
     last_processing_time_seconds = models.FloatField(blank=True, null=True)
 
@@ -248,6 +279,8 @@ class Filter(models.Model):
     wavelength_max_angstrom = models.FloatField()
     vega_zero_point_jansky = models.FloatField()
     magnitude_zero_point = models.FloatField(null=True, blank=True)
+    ab_offset = models.FloatField(null=True, blank=True)
+    magnitude_zero_point_keyword = models.CharField(null=True, blank=True, max_length=8)
     image_pixel_units = models.CharField(max_length=50, null=True, blank=True)
 
     objects = FilterManager()
@@ -262,17 +295,38 @@ class Filter(models.Model):
         curve_name = f"{settings.TRANSMISSION_CURVES_ROOT}/{self.name}.txt"
 
         try:
-            transmission_curve = pd.read_csv(
-                curve_name, delim_whitespace=True, header=None
+            transmission_curve = pd.read_csv(curve_name, sep="\s+", header=None)
+        except Exception as e:
+            raise ValueError(
+                f"{self.name}: Problem loading filter transmission curve from {curve_name}"
             )
-        except:
-            raise ValueError(f"{self.name}: Problem loading filter transmission curve")
 
         wavelength = transmission_curve[0].to_numpy()
         transmission = transmission_curve[1].to_numpy()
         return observate.Filter(
             kname=self.name, nick=self.name, data=(wavelength, transmission)
         )
+
+    def correlation_model(self):
+        """
+        Returns the model for correlated errors of the filter, if it exists
+        """
+        corr_model_name = (
+            f"{settings.TRANSMISSION_CURVES_ROOT}/{self.name}_corrmodel.txt"
+        )
+        if not os.path.exists(corr_model_name):
+            return None, None
+
+        try:
+            corr_model = pd.read_csv(corr_model_name, sep="\s+", header=None)
+        except:
+            raise ValueError(
+                f"{self.name}: Problem loading filter transmission curve from {curve_name}"
+            )
+
+        app_radius = corr_model[0].to_numpy()
+        error_adjust = corr_model[1].to_numpy() ** (1 / 2.0)
+        return app_radius, error_adjust
 
 
 class Catalog(models.Model):
@@ -312,6 +366,27 @@ def hdf5_file_path(instance):
     return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}.h5"
 
 
+def npz_chains_file_path(instance):
+    """
+    Constructs a file path for a npz file
+    """
+    return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}_chain.npz"
+
+
+def npz_percentiles_file_path(instance):
+    """
+    Constructs a file path for a npz file
+    """
+    return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}_perc.npz"
+
+
+def npz_model_file_path(instance):
+    """
+    Constructs a file path for a npz file
+    """
+    return f"{instance.transient.name}/{instance.transient.name}_{instance.aperture.type}_modeldata.npz"
+
+
 class Cutout(models.Model):
     """
     Model to represent a cutout image of a host galaxy
@@ -323,6 +398,10 @@ class Cutout(models.Model):
         Transient, on_delete=models.CASCADE, null=True, blank=True
     )
     fits = models.FileField(upload_to=fits_file_path, null=True, blank=True)
+    message = models.CharField(max_length=50, null=True, blank=True)
+
+    # used if some downloads fail
+    # warning = models.BooleanField(default=False)
     objects = CutoutManager()
 
 
@@ -382,7 +461,7 @@ class AperturePhotometry(models.Model):
     flux_error = models.FloatField(blank=True, null=True)
     magnitude = models.FloatField(blank=True, null=True)
     magnitude_error = models.FloatField(blank=True, null=True)
-    is_validated = models.BooleanField(blank=True, null=True)
+    is_validated = models.CharField(blank=True, null=True, max_length=40)
 
     @property
     def flux_rounded(self):
@@ -407,6 +486,10 @@ class SEDFittingResult(models.Model):
     log_mass_50 = models.FloatField(null=True, blank=True)
     log_mass_84 = models.FloatField(null=True, blank=True)
 
+    # from Prospector, we need to save the ratio of
+    # surviving stellar mass to the formed mass
+    mass_surviving_ratio = models.FloatField(null=True, blank=True)
+
     log_sfr_16 = models.FloatField(null=True, blank=True)
     log_sfr_50 = models.FloatField(null=True, blank=True)
     log_sfr_84 = models.FloatField(null=True, blank=True)
@@ -424,6 +507,14 @@ class SEDFittingResult(models.Model):
     log_tau_16 = models.FloatField(null=True, blank=True)
     log_tau_50 = models.FloatField(null=True, blank=True)
     log_tau_84 = models.FloatField(null=True, blank=True)
+
+    chains_file = models.FileField(
+        upload_to=npz_chains_file_path, null=True, blank=True
+    )
+    percentiles_file = models.FileField(
+        upload_to=npz_percentiles_file_path, null=True, blank=True
+    )
+    model_file = models.FileField(upload_to=npz_model_file_path, null=True, blank=True)
 
 
 class TaskRegisterSnapshot(models.Model):

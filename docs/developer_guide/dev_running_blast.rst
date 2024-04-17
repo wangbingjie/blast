@@ -1,24 +1,25 @@
-Running blast locally
+Running Blast locally
 =====================
 
-If you want to develop on blast, for most things, you will have to run blast
+If you want to develop on Blast, for most things, you will have to run Blast
 locally to see the effect of your code changes. This pages walks you through
-how to install blast and get it running on your machine.
+how to install Blast and get it running on your machine.
 
-Install the Docker desktop app
+Install the Docker Desktop app
 -------------------------------
 
-The recommended option for installing and running blast locally is to
-use docker. It is so strongly recommended in fact, that I'm not going to write
-documentation on how to install and run blast any other way. The first step is to
-install the docker desktop application, which can be found
-`here <https://docs.docker.com/get-docker/>`_ for mac, windows, and linux. Make
-sure you have Docker Compose version 1.28.0 or later.
+The recommended option for installing and running Blast locally is to
+use Docker. It is so strongly recommended in fact, that I'm not going to write
+documentation on how to install and run Blast any other way. The first step is to
+install the Docker Desktop application, which can be found
+`here <https://docs.docker.com/get-docker/>`_ for Mac, Windows, and Linux. Make
+sure you have Docker Compose version 1.28.0 or later.  We recommend allocating
+at least 32 GB of memory in the Docker settings.
 
-Clone the blast repository
+Clone the Blast repository
 --------------------------
 
-Clone the bast repository.
+Clone the Blast repository.
 
 .. code:: none
 
@@ -28,71 +29,78 @@ Setup environment file
 ----------------------
 
 Blast needs some environment variables to run. All of
-these should be located in the :code:`env/.env.dev` file. This file is not in
-source control, you need to create and populate this file yourself.
-It should follow the same format as the :code:`env/.env.dev.example` file. If you
-do not need to ingest real transient data from TNS the example :code:`.env.file`
-file should be sufficient with the TNS variables left blank. While in the
-:code:`env/` directory run:
+these are defined with their default values in the :code:`env/.env.default` file. If you want to override any of the default values or add additional environment variables, define these in a file named :code:`env/.env.dev` following the same format as :code:`env/.env.default`.
 
-.. code:: none
+If you need to ingest real transient data from the Transient Name Server (TNS), you will need to populate the TNS variables with TNS API bot credentials (see `<https://www.wis-tns.org/bots>`_).
 
-    cp .env.dev.example .env.dev
-
-If you do need to ingest real TNS for development you will need the details of
-a TNS api bot (see `<https://www.wis-tns.org/bots>`_).
-
-Run the blast app
+Run the Blast app
 -----------------
 
-First pull the latest version of the blast image
+You are encouraged to use the helper scripts to start (:code:`run/blast.run.sh`)
+and stop (:code:`run/blast.stop.sh`) the application. These scripts use a
+combination of :code:`docker compose` and :code:`docker` commands to properly
+manage the container lifecycles.
 
-.. code:: none
-
-    docker pull ghcr.io/astrophpeter/blast:latest
-
-Once in the top level blast directory, start the docker containers. This command
-brings up the full blast stack,
+To launch the full Blast stack, invoke the :code:`run/blast.run.sh` script with
+the :code:`full_dev` Docker Compose profile:
 
 .. code:: none
 
     bash run/blast.run.sh full_dev
 
-If you are only interested in running the web server and database, which is
-usually sufficient for front end web development, you can run:
+Alternatively, if you are only interested in running the web server and database, which is
+usually sufficient for front end web development, you can use the :code:`slim_dev` Docker Compose
+profile:
 
 .. code:: none
 
     bash run/blast.run.sh slim_dev
 
-Then go to `http://0.0.0.0:8000/ <http://0.0.0.0:8000/>`_  in your web browser,
-after all the containers have started, and blast should be running.
+Then go to `http://0.0.0.0:8000/ <http://0.0.0.0:8000/>`_  in your web browser
+after all the containers have started, and Blast should be running.
 
-Running blast in these two modes means you can edit most code and you will see
+Running Blast in these two modes means you can edit most code and you will see
 the resulting live changes in the web interface.
 
-.. warning::
-    Stating the web app via the :code:`run/blast.run.sh` script deletes
-    your local copy of the database in :code:`data/database/` and the app runs
-    with an empty database.
-
-To stop blast from running, open a new terminal window and run and from the root
-blast directory run,
+To terminate Blast and remove the containers, open a new terminal window and run:
 
 .. code:: none
 
-    docker compose --project-name blast --env-file env/.env.dev down
+    bash run/blast.stop.sh $PROFILE
 
+where :code:`$PROFILE` is the active Docker Compose profile as described above
+(for example, :code:`slim_dev`).
 
 .. warning::
 
-    When you stop the blast container make sure all services are stopped. You can see which
-    services are running in the docker desktop app and stop services manually there.
+    When you stop the Blast container make sure all services are stopped. You can see which
+    services are running in the Docker Desktop app and stop services manually there.
 
-Testing the blast app
+Persistent data volumes
+-----------------------
+
+There are three Docker volumes created for persistent data storage: (1) :code:`blast-data`, (2) :code:`blast-db`, and (3) :code:`django-static`. When you run Blast for the first time, these are created automatically by Docker, and then the initialization script populates each volume.
+
+The :code:`blast-db` volume stores the Django SQL database, and it is provisioned by standard Django migration commands. The :code:`django-static` volume stores the Django static files, which are generated by standard Django commands as well.
+
+The :code:`blast-data` volume stores astronomical data. During initialization, all required data files are downloaded and installed. If the :code:`USE_DATA_ARCHIVE` environment variable is set to :code:`true` (default), then an archive file containing all the required data is downloaded from our object store. If :code:`USE_DATA_ARCHIVE` is set to :code:`false`, then data files are downloaded from their original sources.
+
+To restart the application with a clean Django database, add the :code:`--purge-db` option to the stopping command as shown below. Alternative options include :code:`--purge-data` (delete only astro data) and :code:`--purge-all` (delete only ALL astro data and Django database). These options are mutually exclusive, and only one can be used.
+
+.. code:: bash
+
+    # Stop and remove services and internal networks
+    bash run/blast.stop.sh $PROFILE --purge-db
+
+The initialization process is idempotent, meaning that it is safe to repeatedly restart the services with or without existing application data.
+
+The initialization process generates temporary files on the astro data volume (:code:`/mnt/data/.initializing_db` and :code:`/mnt/data/.initializing_data`) to support the scenario where multiple replicas of service containers are running concurrently. These files are automatically removed by the :code:`run/blast.start.sh` script.
+
+
+Testing the Blast app
 ---------------------
 
-To run tests with the blast app, while the full_dev or slim_dev containers are
+To run tests with the Blast app, while the :code:`full_dev` or :code:`slim_dev` containers are
 up, in a separate terminal run
 
 .. code:: none
@@ -100,7 +108,7 @@ up, in a separate terminal run
     bash run/blast.test.up.sh
 
 This allows you to run the tests without stopping the containers. If you would
-like to run the tests from scratch, (when the blast app is not up) run,
+like to run the tests from scratch, (when the Blast app is not up) run,
 
 .. code:: none
 
