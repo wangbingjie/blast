@@ -31,7 +31,7 @@ Downloading data
 
 For all metadata associated with each transient, the :code:`Download Data` button near the top of the page links to the Django REST API, and can be accessed programmatically.  See the :ref:`api` for additional information on each column as well as how to execute queries on individual database tables via the API.
 
-To download files with 1) parameter estimation chains, 2) parameter confidence intervals, and 3) best-fit models and uncertainties, the page includes "Download Chains", "Download Percentiles", and "Download Best-Fit Model" links.  These files are in :code:`.npz` format and can be read with :code:`np.load`.  Parameters correspond to the Prospector-alpha model, with details given `here <https://arxiv.org/abs/1609.09073>`_.  To do these downloads programatically, see :ref:`sedfittingresult`.
+To download files with 1) parameter estimation chains, 2) parameter confidence intervals, and 3) best-fit models and uncertainties, the page includes "Download Chains", "Download Percentiles", and "Download Best-Fit Model" links.  These files are in :code:`.npz` format and can be read with :code:`np.load`.  Parameters correspond to the Prospector-alpha model, with details given `here <https://arxiv.org/abs/1609.09073>`_.  To do these downloads programmatically, see :ref:`sedfittingresult`.
 
 Authorized Users
 ----------------

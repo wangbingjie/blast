@@ -17,12 +17,12 @@ have made changes to the documentation you can preview those changes by running,
     bash run/blast.run.sh docs
 
 Then open :code:`blast/docs/build/index.html` in your web browser to see the
-changes. Everytime you make changes to the documentation code you have to re-run
+changes. Every time you make changes to the documentation code you have to re-run
 the above command.
 
 As well as viewing changes locally, once you have added or made changes using
 the :doc:`developer workflow <dev_workflow>`
-and have a draft pull request open, everytime you push changes a preview of
+and have a draft pull request open, every time you push changes a preview of
 the documentation is available. You can view this preview by clicking here in the
 pull request:
 

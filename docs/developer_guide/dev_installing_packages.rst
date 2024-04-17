@@ -18,7 +18,7 @@ build and install your package.
     Setting :code:`BLAST_IMAGE=blast_latest` in your :code:`env/env.dev` means
     the latest `Blast Docker image <https://github.com/astrophpeter/blast/pkgs/container/blast>`_
     is downloaded and used when running Blast locally. This is faster than building
-    the image from scratch everytime. :code:`BLAST_IMAGE=blast_base` forces the
+    the image from scratch every time. :code:`BLAST_IMAGE=blast_base` forces the
     image to be built from scratch which is required when you have added a new
     dependency. Eventually, when a new dependency is accepted into main it
     will become part of the Blast latest image.

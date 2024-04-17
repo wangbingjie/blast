@@ -6,6 +6,7 @@ cd "$(dirname "$(readlink -f "$0")")"/..
 PURGE_OPTION=$2
 
 DOCKER_ARGS=""
+VOLUMES=""
 case "${PURGE_OPTION}" in
   "--purge-all")
     DOCKER_ARGS="--volumes"
@@ -32,5 +33,8 @@ docker compose \
   -f docker/docker-compose.yml \
   --env-file env/.env.default --env-file env/.env.dev \
   down ${DOCKER_ARGS}
+set +x
 
-docker volume rm ${VOLUMES}
+if [[ "${VOLUMES}x" != "x" ]]; then
+  docker volume rm ${VOLUMES}
+fi

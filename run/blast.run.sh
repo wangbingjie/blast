@@ -5,9 +5,17 @@ cd "$(dirname "$(readlink -f "$0")")"/..
 # When bind mounting the app/ folder, for example
 # in profiles slim_dev and full_dev, containers can
 # fail if the file permissions are not globally readable.
-chmod -R a+rX app/ 2>/dev/null
+# chmod -R a+rX app/ 2>/dev/null
+
+# Clear any initialization check files
+docker run --rm -it -v blast_blast-data:/mnt/data blast:dev rm -f /mnt/data/.initializing_db /mnt/data/.initializing_data
+
+if [[ ! -f "env/.env.dev" ]]; then
+  touch env/.env.dev
+fi
 
 ENV_FILE="env/.env.dev"
+DOCKER_ARGS=""
 case "$1" in
   test)
     DOCKER_ARGS="--exit-code-from app_test"
@@ -23,13 +31,6 @@ case "$1" in
     DOCKER_ARGS=""
     ;;
 esac
-
-# Clear any initialization check files
-docker run --rm -it -v blast_blast-data:/mnt/data blast:dev rm -f /mnt/data/.initializing_db /mnt/data/.initializing_data
-
-if [[ ! -f "env/.env.dev" ]]; then
-  touch env/.env.dev
-fi
 
 set -x
 docker compose \
