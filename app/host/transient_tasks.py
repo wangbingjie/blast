@@ -589,9 +589,9 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
             # go ahead and compute things, then warn the user
             # otherwise, nearby galaxies are gonna be a huge pain
             is_contam_list += [is_contam]
-        # issue warning and proceed if max 1 un-contaminated photometry point
+        # issue warning and proceed if max 2 un-contaminated photometry points
         issue_warning = (
-            True if len(np.where(~np.array(is_contam_list))[0]) <= 1 else False
+            True if len(np.where(~np.array(is_contam_list))[0]) <= 2 else False
         )
 
         for global_aperture_phot, is_contam in zip(

@@ -279,7 +279,7 @@ def results(request, slug):
     else:
         global_sed_file = None
 
-    all_cutouts = Cutout.objects.filter(transient__name__exact=slug)
+    all_cutouts = Cutout.objects.filter(transient__name__exact=slug).filter(~Q(fits=""))
     filters = [cutout.filter.name for cutout in all_cutouts]
     all_filters = Filter.objects.all()
 
