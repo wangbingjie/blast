@@ -121,7 +121,8 @@ class TransientFilter(django_filters.FilterSet):
 
         return qs
 
-@silk_profile(name='List transients')
+
+@silk_profile(name="List transients")
 def transient_list(request):
 
     transients = Transient.objects.order_by("-public_timestamp")
