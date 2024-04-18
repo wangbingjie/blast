@@ -1,0 +1,1 @@
+django-silk # Django Silk profiler (https://github.com/jazzband/django-silk)
