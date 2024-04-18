@@ -68,3 +68,8 @@
   fields:
     message: no valid phot
     type: error
+- model: host.Status
+  pk: 15
+  fields:
+    message: no	host
+    type: error
