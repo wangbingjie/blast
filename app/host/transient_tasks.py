@@ -683,6 +683,11 @@ class HostInformation(TransientTaskRunner):
             status_message = "no host redshift"
 
         host.save()
+
+        # shouldn't be necessary but seeing weird behavior on prod
+        transient.host = host
+        transient.save()
+
         return status_message
 
 
