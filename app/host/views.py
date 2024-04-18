@@ -33,6 +33,7 @@ from host.plotting_utils import plot_timeseries
 from host.tables import TransientTable
 from host.transient_name_server import get_transients_from_tns_by_name
 from revproxy.views import ProxyView
+from silk.profiling.profiler import silk_profile
 
 
 def filter_transient_categories(qs, value):
@@ -120,7 +121,7 @@ class TransientFilter(django_filters.FilterSet):
 
         return qs
 
-
+@silk_profile(name='List transients')
 def transient_list(request):
 
     transients = Transient.objects.order_by("-public_timestamp")

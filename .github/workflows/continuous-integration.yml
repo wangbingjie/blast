@@ -14,7 +14,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: ./app
+          file: ./app/Dockerfile
+          tags: blast:dev
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: docker compose up
         run: |
           touch env/.env.dev &&
@@ -24,7 +41,7 @@ jobs:
             -f docker/docker-compose.yml \
             --env-file env/.env.default \
             --env-file env/.env.ci \
-            up --build --exit-code-from app_ci
+            up --exit-code-from app_ci
 
       - uses: codecov/codecov-action@v4
         with:

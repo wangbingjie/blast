@@ -75,3 +75,5 @@ api_url_patterns = [
 ]
 
 urlpatterns += api_url_patterns
+
+urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]

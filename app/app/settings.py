@@ -25,6 +25,10 @@ SECRET_KEY = os.environ.get(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() == "true"
+try:
+    SILKY_PYTHON_PROFILER = os.environ['SILKY_PYTHON_PROFILER'].lower() == "true"
+except:
+    SILKY_PYTHON_PROFILER = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -49,6 +53,7 @@ INSTALLED_APPS = [
     "users",
     "django_cron",
     "django_filters",
+    'silk', # Django Silk profiler (https://github.com/jazzband/django-silk)
 ]
 
 MIDDLEWARE = [
@@ -59,6 +64,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'silk.middleware.SilkyMiddleware', # Django Silk profiler (https://github.com/jazzband/django-silk)
 ]
 
 ROOT_URLCONF = "app.urls"

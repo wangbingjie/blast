@@ -22,3 +22,6 @@ RUN mkdir /app
 
 COPY . /app
 WORKDIR /app
+
+COPY ./requirements.dev.txt /requirements.dev.txt
+RUN pip install -r /requirements.dev.txt --no-cache-dir
