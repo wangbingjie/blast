@@ -48,7 +48,6 @@ class TransientTable(tables.Table):
         order_by="host__redshift",
     )
 
-
     progress = tables.TemplateColumn(
         """          {% if record.progress == 0 %}
               Waiting
