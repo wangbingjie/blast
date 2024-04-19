@@ -120,9 +120,9 @@ class Transient(SkyObject):
     processing_status = models.CharField(max_length=20, default="processing")
     added_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     progress = models.IntegerField(default=0)
-    
-    #@property
-    #def progress(self):
+
+    # @property
+    # def progress(self):
     #    tasks = TaskRegister.objects.filter(transient__name__exact=self.name)
     #    total_tasks = len(tasks)
     #    completed_tasks = len(
