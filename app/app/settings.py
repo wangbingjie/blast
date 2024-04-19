@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
-import sys
+# import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,10 +25,7 @@ SECRET_KEY = os.environ.get(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() == "true"
-try:
-    SILKY_PYTHON_PROFILER = os.environ["SILKY_PYTHON_PROFILER"].lower() == "true"
-except:
-    SILKY_PYTHON_PROFILER = False
+SILKY_PYTHON_PROFILER = os.environ.get("SILKY_PYTHON_PROFILER", 'false').lower() == "true"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -173,7 +170,6 @@ CELERY_BROKER_URL = (
 CELERYD_REDIRECT_STDOUTS_LEVEL = "INFO"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
-######API########
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         f'rest_framework.permissions.{os.environ.get("API_AUTHENTICATION")}',
