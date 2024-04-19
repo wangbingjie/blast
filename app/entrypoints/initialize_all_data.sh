@@ -21,6 +21,7 @@ if [[ "${USE_DATA_ARCHIVE}" == "true" ]]; then
   if [[ "${FORCE_DATA_DOWNLOAD}" != "true" && \
         -f "/fsps/README.md" && \
         -f "/sbipp_phot/sbi_phot_local.h5" && \
+        -f "/dustmaps/sfd/SFD_dust_4096_ngp.fits" && \
         -f "/transmission/2MASS_H.txt" ]]
   then
       echo "Required data files already downloaded."
@@ -53,6 +54,7 @@ if [[ "${USE_DATA_ARCHIVE}" == "true" ]]; then
     rsync -va data/transmission/      /transmission/
     rsync -va data/fsps/              /fsps/
     rsync -va data/sbipp_phot/        /sbipp_phot/
+    rsync -va data/dustmaps/          /dustmaps/
     echo "Data installed."
 
     # Clean up temporary files
