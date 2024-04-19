@@ -3,9 +3,9 @@
 """SED-fitting implementation with SBI++"""
 import os
 import signal
-import sys
+# import sys
 import time
-import warnings
+# import warnings
 
 from host.models import SEDFittingResult
 from host.prospector import build_model
@@ -15,23 +15,22 @@ from host.prospector import build_obs
 # if an error is threw, then uncomment this line
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 import numpy as np
-from numpy.random import normal, uniform
+# from numpy.random import normal, uniform
 from scipy.interpolate import interp1d
 
 # torch
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
+# import torch.nn as nn
+# import torch.nn.functional as F
 from sbi import utils as Ut
 from sbi import inference as Inference
-from host.prospector import build_obs
 from host.models import Transient, Filter
 from django.db.models import Q
 from host.SBI.train_sbi import maggies_to_asinh
 
 # plot
-import corner
-import matplotlib.pyplot as plt
+# import corner
+# import matplotlib.pyplot as plt
 import matplotlib_inline.backend_inline
 
 matplotlib_inline.backend_inline.set_matplotlib_formats("retina")
@@ -204,5 +203,5 @@ def main():
                     ).log_mass_50,
                     file=fout,
                 )
-            except Exception as e:
-                print(transient_name, np.mean(chain[:, 1]), mfrac, None, file=fout)
+            except Exception as err:
+                print(transient_name, np.mean(chain[:, 1]), mfrac, None, file=fout, err)
