@@ -79,13 +79,12 @@ services:
           - nginx
     profiles: ["slim_prod"]
   flower:
-    build:
-      context: ../flower/
+    extends:
+      file: docker-compose.blast_base.yml
+      service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.flower.sh
     ports:
       - "8888:${FLOWER_PORT}"
-    volumes:
-      - ../app/entrypoints:/data/entrypoints
     env_file:
       - ../env/.env.default
       - ../env/.env.dev
