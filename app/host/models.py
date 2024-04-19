@@ -121,7 +121,6 @@ class Transient(SkyObject):
     added_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     progress = models.IntegerField(default=0)
 
-
     @property
     def best_redshift(self):
         """get the best redshift for a transient"""
