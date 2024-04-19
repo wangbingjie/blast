@@ -55,6 +55,7 @@ if [[ "${USE_DATA_ARCHIVE}" == "true" ]]; then
     rsync -va data/fsps/              /fsps/
     rsync -va data/sbipp_phot/        /sbipp_phot/
     rsync -va data/dustmaps/          /dustmaps/
+    rsync -va data/ghost_data/        /data/ghost_data/
     echo "Data installed."
 
     # Clean up temporary files

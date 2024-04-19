@@ -5,6 +5,7 @@ cd /mnt/data
 
 mkdir -p cutout_cdn
 mkdir -p sed_output
+mkdir -p ghost_data
 mkdir -p ghost_output
 mkdir -p tns_staging
 mkdir -p transmission
@@ -22,6 +23,9 @@ if [[ ! -L "/data/cutout_cdn" ]]; then
 fi
 if [[ ! -L "/data/sed_output" ]]; then
     ln -s /mnt/data/sed_output   /data/sed_output
+fi
+if [[ ! -L "/data/ghost_data" ]]; then
+    ln -s /mnt/data/ghost_data   /data/ghost_data
 fi
 if [[ ! -L "/ghost_output" ]]; then
     ln -s /mnt/data/ghost_output /ghost_output
