@@ -9,6 +9,9 @@ cd "${SCRIPT_DIR}"
 
 bash initialize_data_dirs.sh
 
+# TODO: As the data archive file gets larger, this may exceed
+# local disk space. If we assume bulk storage is mounted at 
+# /mnt/data, it may be better to use /mnt/data/tmp.
 cd /tmp
 
 if [[ "${USE_DATA_ARCHIVE}" == "true" ]]; then
