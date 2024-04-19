@@ -1,29 +1,23 @@
 import os
-import signal
-import sys
-import time
-import warnings
 
 from django.conf import settings
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 import numpy as np
 import math
-from numpy.random import normal, uniform
 from scipy.interpolate import interp1d
 
 # torch
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 from sbi import utils as Ut
 from sbi import inference as Inference
-from host.models import Transient, Filter
+from host.models import Filter
 from django.db.models import Q
 
 # all the functions implementing SBI++ are contained in `sbi_pp.py`
 from host.SBI import sbi_pp
 import h5py
+import pickle
 
 if torch.cuda.is_available():
     device = "cuda"
@@ -79,49 +73,85 @@ ir_filters = [
     "2MASS_K",
 ]
 
+
 # training set
-### --- GLOBAL --- ###
-for _fit_type in ["global", "local"]:
-    data = h5py.File(sbi_params[f"train_fname_{_fit_type}"], "r")
-    x_train = np.array(data["theta"])  # physical parameters
-    y_train = np.array(data["phot"])  # fluxes & uncertainties
+def run_training_set():
+    for _fit_type in ["global", "local"]:
+        data = h5py.File(sbi_params[f"train_fname_{_fit_type}"], "r")
+        x_train = np.array(data["theta"])  # physical parameters
+        y_train = np.array(data["phot"])  # fluxes & uncertainties
 
-    # we will only need the lower & upper limits to be passed to sbi as "priors"
-    # here we simply read in the bounds from the training set
-    prior_low = sbi_pp.prior_from_train("ll", x_train=x_train)
-    prior_high = sbi_pp.prior_from_train("ul", x_train=x_train)
-    lower_bounds = torch.tensor(prior_low).to(device)
-    upper_bounds = torch.tensor(prior_high).to(device)
-    prior = Ut.BoxUniform(low=lower_bounds, high=upper_bounds, device=device)
+        # we will only need the lower & upper limits to be passed to sbi as "priors"
+        # here we simply read in the bounds from the training set
+        prior_low = sbi_pp.prior_from_train("ll", x_train=x_train)
+        prior_high = sbi_pp.prior_from_train("ul", x_train=x_train)
+        lower_bounds = torch.tensor(prior_low).to(device)
+        upper_bounds = torch.tensor(prior_high).to(device)
+        prior = Ut.BoxUniform(low=lower_bounds, high=upper_bounds, device=device)
 
-    # density estimater
-    anpe = Inference.SNPE(
-        prior=prior,
-        density_estimator=Ut.posterior_nn(
-            "maf",
-            hidden_features=sbi_params["nhidden"],
-            num_transforms=sbi_params["nblocks"],
-        ),
-        device=device,
-    )
-    x_tensor = torch.as_tensor(x_train.astype(np.float32)).to(device)
-    y_tensor = torch.as_tensor(y_train.astype(np.float32)).to(device)
-    anpe.append_simulations(x_tensor, y_tensor)
-    p_x_y_estimator = anpe._build_neural_net(x_tensor, y_tensor)
-    p_x_y_estimator.load_state_dict(
-        torch.load(
-            sbi_params[f"anpe_fname_{_fit_type}"], map_location=torch.device(device)
+        # density estimater
+        anpe = Inference.SNPE(
+            prior=prior,
+            density_estimator=Ut.posterior_nn(
+                "maf",
+                hidden_features=sbi_params["nhidden"],
+                num_transforms=sbi_params["nblocks"],
+            ),
+            device=device,
         )
-    )
-    anpe._x_shape = Ut.x_shape_from_simulation(y_tensor)
-    if _fit_type == "global":
-        hatp_x_y_global = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
-        y_train_global = y_train[:]
-        x_train_global = x_train[:]
-    elif _fit_type == "local":
-        hatp_x_y_local = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
-        y_train_local = y_train[:]
-        x_train_local = x_train[:]
+        x_tensor = torch.as_tensor(x_train.astype(np.float32)).to(device)
+        y_tensor = torch.as_tensor(y_train.astype(np.float32)).to(device)
+        anpe.append_simulations(x_tensor, y_tensor)
+        p_x_y_estimator = anpe._build_neural_net(x_tensor, y_tensor)
+        p_x_y_estimator.load_state_dict(
+            torch.load(
+                sbi_params[f"anpe_fname_{_fit_type}"], map_location=torch.device(device)
+            )
+        )
+        anpe._x_shape = Ut.x_shape_from_simulation(y_tensor)
+        if _fit_type == "global":
+            hatp_x_y_global = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
+            y_train_global = y_train[:]
+            x_train_global = x_train[:]
+        elif _fit_type == "local":
+            hatp_x_y_local = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
+            y_train_local = y_train[:]
+            x_train_local = x_train[:]
+
+    print('''Storing training sets as data files...''')
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_global.pkl"), "wb") as handle:
+        pickle.dump(hatp_x_y_global, handle)
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "y_train_global.pkl"), "wb") as handle:
+        pickle.dump(y_train_global, handle)
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "x_train_global.pkl"), "wb") as handle:
+        pickle.dump(x_train_global, handle)
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_local.pkl"), "wb") as handle:
+        pickle.dump(hatp_x_y_local, handle)
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "y_train_local.pkl"), "wb") as handle:
+        pickle.dump(y_train_local, handle)
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "x_train_local.pkl"), "wb") as handle:
+        pickle.dump(x_train_local, handle)
+
+
+try:
+    print('''Loading training sets from data files...''')
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_global.pkl"), "rb") as handle:
+        hatp_x_y_global = pickle.load(handle)
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "y_train_global.pkl"), "rb") as handle:
+        y_train_global = pickle.load(handle)
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "x_train_global.pkl"), "rb") as handle:
+        x_train_global = pickle.load(handle)
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_local.pkl"), "rb") as handle:
+        hatp_x_y_local = pickle.load(handle)
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "y_train_local.pkl"), "rb") as handle:
+        y_train_local = pickle.load(handle)
+    with open(os.path.join(settings.SBI_TRAINING_ROOT, "x_train_local.pkl"), "rb") as handle:
+        x_train_local = pickle.load(handle)
+    print('''Training sets loaded.''')
+except Exception as err:
+    print(f'''Error loading training sets: {err}. Regenerating...''')
+    run_training_set()
+    print('''Training sets generated.''')
 
 
 def maggies_to_asinh(x):

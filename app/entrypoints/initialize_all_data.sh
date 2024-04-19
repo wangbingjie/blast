@@ -56,6 +56,7 @@ if [[ "${USE_DATA_ARCHIVE}" == "true" ]]; then
     rsync -va data/sbipp_phot/        /sbipp_phot/
     rsync -va data/dustmaps/          /dustmaps/
     rsync -va data/ghost_data/        /data/ghost_data/
+    rsync -va data/sbi_training_sets/ /data/sbi_training_sets/
     echo "Data installed."
 
     # Clean up temporary files

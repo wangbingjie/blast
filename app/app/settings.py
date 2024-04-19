@@ -145,6 +145,7 @@ MEDIA_URL = "/cutouts/"
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data")
 CUTOUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data/cutout_cdn")
 SED_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data/sed_output")
+SBI_TRAINING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data/sbi_training_sets")
 GHOST_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../ghost_output")
 GHOST_DUST_PATH = os.path.join(os.path.dirname(BASE_DIR), "../data/ghost_data/dust_model")
 GHOST_PHOTOZ_PATH = os.path.join(os.path.dirname(BASE_DIR), "../data/ghost_data/photoz_model/MLP_lupton.hdf5")

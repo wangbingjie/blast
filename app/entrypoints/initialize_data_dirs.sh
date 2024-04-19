@@ -13,6 +13,7 @@ mkdir -p dustmaps
 mkdir -p fsps
 mkdir -p sbipp
 mkdir -p sbipp_phot
+mkdir -p sbi_training_sets
 
 mkdir -p /data/
 
@@ -47,4 +48,7 @@ if [[ ! -L "/sbipp" ]]; then
 fi
 if [[ ! -L "/sbipp_phot" ]]; then
     ln -s /mnt/data/sbipp_phot   /sbipp_phot
+fi
+if [[ ! -L "/data/sbi_training_sets" ]]; then
+    ln -s /mnt/data/sbi_training_sets   /data/sbi_training_sets
 fi
