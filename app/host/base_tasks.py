@@ -14,7 +14,7 @@ from .models import Transient
 """This module contains the base classes for TaskRunner in blast."""
 
 
-def progress(transient_name):
+def get_progress(transient_name):
     tasks = TaskRegister.objects.filter(transient__name__exact=transient_name)
     total_tasks = len(tasks)
     completed_tasks = len(
@@ -227,7 +227,7 @@ class TransientTaskRunner(TaskRunner):
                 processing_time = round(end_time - start_time, 2)
                 task_register_item.last_processing_time_seconds = processing_time
                 task_register_item.save()
-                transient.progress = progress(transient.name)
+                transient.progress = get_progress(transient.name)
                 transient.save()
 
     @abstractmethod
