@@ -1,5 +1,4 @@
 # users/urls.py
-from django.conf.urls import include
-from django.conf.urls import url
+from django.urls import include, re_path
 
-urlpatterns = [url(r"^accounts/", include("django.contrib.auth.urls"))]
+urlpatterns = [re_path(r"^accounts/", include("django.contrib.auth.urls"))]
