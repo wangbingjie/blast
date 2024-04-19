@@ -12,7 +12,6 @@ from astropy.cosmology import WMAP9 as cosmo
 from django.conf import settings
 from django.db.models import Q
 from host import postprocess_prosp as pp
-from host.SBI.run_sbi_blast import fit_sbi_pp
 from prospect.fitting import fit_model as fit_model_prospect
 from prospect.fitting import lnprobfn
 from prospect.io import write_results as writer
@@ -737,6 +736,9 @@ def fit_model(
     """Fit the model"""
 
     if sbipp:
+        # The "run_sbi_blast" module import is very slow, so only do it when
+        # actually necessary when a task requires it.
+        from host.SBI.run_sbi_blast import fit_sbi_pp
         output, errflag = fit_sbi_pp(observations, fit_type=fit_type)
     else:
         output = fit_model_prospect(
