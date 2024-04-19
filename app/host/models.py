@@ -10,7 +10,7 @@ from astropy.coordinates import SkyCoord
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django_celery_beat.models import PeriodicTask
+# from django_celery_beat.models import PeriodicTask
 from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
 
@@ -287,9 +287,9 @@ class Filter(models.Model):
 
         try:
             transmission_curve = pd.read_csv(curve_name, sep="\s+", header=None)
-        except Exception as e:
+        except Exception as err:
             raise ValueError(
-                f"{self.name}: Problem loading filter transmission curve from {curve_name}"
+                f"{self.name}: Problem loading filter transmission curve from {curve_name}: {err}"
             )
 
         wavelength = transmission_curve[0].to_numpy()
@@ -310,9 +310,9 @@ class Filter(models.Model):
 
         try:
             corr_model = pd.read_csv(corr_model_name, sep="\s+", header=None)
-        except:
+        except Exception as err:
             raise ValueError(
-                f"{self.name}: Problem loading filter transmission curve from {curve_name}"
+                f"{self.name}: Problem loading filter correlation model from {corr_model_name}: {err}"
             )
 
         app_radius = corr_model[0].to_numpy()
