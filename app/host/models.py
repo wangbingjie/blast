@@ -121,15 +121,6 @@ class Transient(SkyObject):
     added_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     progress = models.IntegerField(default=0)
 
-    # @property
-    # def progress(self):
-    #    tasks = TaskRegister.objects.filter(transient__name__exact=self.name)
-    #    total_tasks = len(tasks)
-    #    completed_tasks = len(
-    #        [task for task in tasks if task.status.message == "processed"]
-    #    )
-    #    progress = 100 * (completed_tasks / total_tasks) if total_tasks > 0 else 0
-    #    return int(round(progress, 0))
 
     @property
     def best_redshift(self):
