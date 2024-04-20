@@ -27,8 +27,14 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() == "true"
 SILKY_PYTHON_PROFILER = os.environ.get("SILKY_PYTHON_PROFILER", 'false').lower() == "true"
 
-ALLOWED_HOSTS = ["*"]
 
+HOSTNAMES = os.environ.get('DJANGO_HOSTNAMES', 'localhost').split(',')
+ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_WHITELIST = ["*"]
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://localhost:8000']
+for hostname in HOSTNAMES:
+    CSRF_TRUSTED_ORIGINS.append(f'''https://{hostname}''')
+CSRF_COOKIE_SECURE = True
 
 # Application definition
 
