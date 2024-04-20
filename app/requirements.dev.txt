@@ -22,3 +22,6 @@ sbi
 astro-datalab
 scikit-learn
 flower
+gunicorn
+scikit-image
+fsps

@@ -22,3 +22,6 @@ sbi==0.22.0
 astro-datalab==2.22.1
 scikit-learn==1.2.2
 flower==2.0.1
+gunicorn==22.0.0
+scikit-image==0.23.1
+fsps==0.4.6
