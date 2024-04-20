@@ -4,7 +4,8 @@ Django
 django-silk
 django-crispy-forms
 django-tables2
-django-bootstrap3
+django-bootstrap4
+crispy-bootstrap4
 django-celery-beat
 django-revproxy
 djangorestframework
