@@ -229,6 +229,7 @@ class TransientTaskRunner(TaskRunner):
                 task_register_item.save()
                 transient.progress = get_progress(transient.name)
                 transient.save()
+            return transient.name
 
     @abstractmethod
     def _run_process(self, transient):
