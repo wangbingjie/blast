@@ -71,5 +71,5 @@
 - model: host.Status
   pk: 15
   fields:
-    message: no	host
+    message: no host
     type: error
