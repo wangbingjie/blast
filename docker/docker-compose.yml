@@ -54,8 +54,6 @@ services:
     extends:
       file: docker-compose.blast_base.yml
       service: database_base
-    volumes:
-      - blast-db:/var/lib/mysql/
     profiles: ["full_prod", "slim_prod", "full_dev", "slim_dev", "batch"]
     env_file:
       - ../env/.env.default
@@ -127,8 +125,6 @@ services:
     extends:
       file: docker-compose.blast_base.yml
       service: database_base
-    volumes:
-      - ../data/test_database/:/var/lib/mysql/
     networks:
       default:
         aliases:
