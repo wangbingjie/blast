@@ -5,10 +5,14 @@ on:
     branches: [main]
     paths-ignore:
       - 'docs/**'
+    tags:
+      - ci-test-*
   push:
     branches: [main]
     paths-ignore:
       - 'docs/**'
+    tags:
+      - ci-test-*
 
 jobs:
   build:
