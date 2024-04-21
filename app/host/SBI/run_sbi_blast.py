@@ -110,48 +110,76 @@ def run_training_set():
         )
         anpe._x_shape = Ut.x_shape_from_simulation(y_tensor)
         if _fit_type == "global":
-            hatp_x_y_global = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
+            hatp_x_y_global = anpe.build_posterior(
+                p_x_y_estimator, sample_with="rejection"
+            )
             y_train_global = y_train[:]
             x_train_global = x_train[:]
         elif _fit_type == "local":
-            hatp_x_y_local = anpe.build_posterior(p_x_y_estimator, sample_with="rejection")
+            hatp_x_y_local = anpe.build_posterior(
+                p_x_y_estimator, sample_with="rejection"
+            )
             y_train_local = y_train[:]
             x_train_local = x_train[:]
 
-    print('''Storing training sets as data files...''')
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_global.pkl"), "wb") as handle:
+    print("""Storing training sets as data files...""")
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_global.pkl"), "wb"
+    ) as handle:
         pickle.dump(hatp_x_y_global, handle)
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "y_train_global.pkl"), "wb") as handle:
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "y_train_global.pkl"), "wb"
+    ) as handle:
         pickle.dump(y_train_global, handle)
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "x_train_global.pkl"), "wb") as handle:
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "x_train_global.pkl"), "wb"
+    ) as handle:
         pickle.dump(x_train_global, handle)
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_local.pkl"), "wb") as handle:
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_local.pkl"), "wb"
+    ) as handle:
         pickle.dump(hatp_x_y_local, handle)
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "y_train_local.pkl"), "wb") as handle:
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "y_train_local.pkl"), "wb"
+    ) as handle:
         pickle.dump(y_train_local, handle)
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "x_train_local.pkl"), "wb") as handle:
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "x_train_local.pkl"), "wb"
+    ) as handle:
         pickle.dump(x_train_local, handle)
 
 
 try:
-    print('''Loading training sets from data files...''')
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_global.pkl"), "rb") as handle:
+    print("""Loading training sets from data files...""")
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_global.pkl"), "rb"
+    ) as handle:
         hatp_x_y_global = pickle.load(handle)
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "y_train_global.pkl"), "rb") as handle:
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "y_train_global.pkl"), "rb"
+    ) as handle:
         y_train_global = pickle.load(handle)
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "x_train_global.pkl"), "rb") as handle:
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "x_train_global.pkl"), "rb"
+    ) as handle:
         x_train_global = pickle.load(handle)
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_local.pkl"), "rb") as handle:
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "hatp_x_y_local.pkl"), "rb"
+    ) as handle:
         hatp_x_y_local = pickle.load(handle)
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "y_train_local.pkl"), "rb") as handle:
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "y_train_local.pkl"), "rb"
+    ) as handle:
         y_train_local = pickle.load(handle)
-    with open(os.path.join(settings.SBI_TRAINING_ROOT, "x_train_local.pkl"), "rb") as handle:
+    with open(
+        os.path.join(settings.SBI_TRAINING_ROOT, "x_train_local.pkl"), "rb"
+    ) as handle:
         x_train_local = pickle.load(handle)
-    print('''Training sets loaded.''')
+    print("""Training sets loaded.""")
 except Exception as err:
-    print(f'''Error loading training sets: {err}. Regenerating...''')
+    print(f"""Error loading training sets: {err}. Regenerating...""")
     run_training_set()
-    print('''Training sets generated.''')
+    print("""Training sets generated.""")
 
 
 def maggies_to_asinh(x):

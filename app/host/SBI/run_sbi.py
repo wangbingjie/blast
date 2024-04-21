@@ -3,13 +3,13 @@
 """SED-fitting implementation with SBI++"""
 import os
 import signal
-# import sys
 import time
-# import warnings
 
 from host.models import SEDFittingResult
 from host.prospector import build_model
 from host.prospector import build_obs
+# import sys
+# import warnings
 
 # recommend running the full script without the line below first
 # if an error is threw, then uncomment this line

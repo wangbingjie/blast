@@ -739,6 +739,7 @@ def fit_model(
         # The "run_sbi_blast" module import is very slow, so only do it when
         # actually necessary when a task requires it.
         from host.SBI.run_sbi_blast import fit_sbi_pp
+
         output, errflag = fit_sbi_pp(observations, fit_type=fit_type)
     else:
         output = fit_model_prospect(

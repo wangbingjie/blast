@@ -10,7 +10,6 @@ from astropy.coordinates import SkyCoord
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-# from django_celery_beat.models import PeriodicTask
 from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
 
@@ -23,6 +22,7 @@ from .managers import StatusManager
 from .managers import SurveyManager
 from .managers import TaskManager
 from .managers import TransientManager
+# from django_celery_beat.models import PeriodicTask
 
 
 class SkyObject(models.Model):

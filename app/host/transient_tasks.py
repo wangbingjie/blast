@@ -234,10 +234,10 @@ class GlobalApertureConstruction(TransientTaskRunner):
         """Code goes here"""
 
         if not transient.host:
-            print(f'''No host associated with "{transient.name}".''')
+            print(f"""No host associated with "{transient.name}".""")
             return "failed"
         if not transient.host.sky_coord:
-            print(f'''No sky_coord associated with "{transient.name}" host.''')
+            print(f"""No sky_coord associated with "{transient.name}" host.""")
             return "failed"
         cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
         choice = 0

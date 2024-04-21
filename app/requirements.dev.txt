@@ -16,7 +16,7 @@ dustmaps
 astro-sedpy
 extinction
 astro-prospector @ git+https://github.com/bd-j/prospector.git@2fa085d
-bokeh==2.4.0 
+bokeh==2.4.0
 dynesty
 torch
 sbi
