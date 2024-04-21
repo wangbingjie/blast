@@ -26,3 +26,4 @@ flower==2.0.1
 gunicorn==22.0.0
 scikit-image==0.23.1
 fsps==0.4.6
+coverage==7.4.4
