@@ -233,13 +233,17 @@ class GlobalApertureConstruction(TransientTaskRunner):
     def _run_process(self, transient):
         """Code goes here"""
 
+        if not transient.host:
+            print(f'''No host associated with "{transient.name}".''')
+            return "failed"
+        if not transient.host.sky_coord:
+            print(f'''No sky_coord associated with "{transient.name}" host.''')
+            return "failed"
         cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
-
         choice = 0
         aperture = None
         while aperture is None and choice <= 8:
             aperture_cutout = select_cutout_aperture(cutouts, choice=choice)
-
             image = fits.open(aperture_cutout[0].fits.name)
             aperture = construct_aperture(image, transient.host.sky_coord)
             choice += 1
