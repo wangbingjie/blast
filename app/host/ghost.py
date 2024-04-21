@@ -48,9 +48,13 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
 
     # sometimes photo-zs randomly fail
     try:
-        host_data = calc_photoz(host_data, dust_path=settings.GHOST_DUST_PATH, model_path=settings.GHOST_PHOTOZ_PATH)
+        host_data = calc_photoz(
+            host_data,
+            dust_path=settings.GHOST_DUST_PATH,
+            model_path=settings.GHOST_PHOTOZ_PATH,
+        )
     except Exception as err:
-        print(f'''Error running calc_photoz(): {err}''')
+        print(f"""Error running calc_photoz(): {err}""")
 
     # clean up after GHOST...
     # dir_list = glob.glob('transients_*/*/*')
