@@ -49,6 +49,7 @@ jobs:
         run: |
           docker pull localhost:5000/blast:dev
           docker tag localhost:5000/blast:dev blast:dev
+          touch env/.env.dev
           docker compose \
             --profile ci \
             --project-name blast \
