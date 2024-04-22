@@ -21,7 +21,7 @@ from .transient_name_server import update_blast_transient
 
 
 class TNSDataIngestion(SystemTaskRunner):
-    def run_process(self, interval_minutes=200):
+    def run_process(self, interval_minutes=800):
         print("TNS STARTED")
         now = timezone.now()
         time_delta = datetime.timedelta(minutes=interval_minutes)
@@ -33,6 +33,7 @@ class TNSDataIngestion(SystemTaskRunner):
         saved_transients = Transient.objects.all()
         count = 0
         for transient in recent_transients:
+            print(transient.name)
             try:
                 saved_transient = saved_transients.get(name__exact=transient.name)
 
@@ -47,9 +48,13 @@ class TNSDataIngestion(SystemTaskRunner):
                 ### update info
                 new_transient_dict = transient.__dict__
                 if "host_id" in new_transient_dict.keys():
-                    del new_transient_dict["host_id"]
+                    if saved_transient.host_id is not None:
+                        new_transient_dict["host_id"] = saved_transient.host_id
+                    else:
+                        del new_transient_dict["host_id"]
                 del new_transient_dict["_state"]
                 del new_transient_dict["id"]
+
                 saved_transients.filter(name__exact=transient.name).update(
                     **new_transient_dict
                 )
