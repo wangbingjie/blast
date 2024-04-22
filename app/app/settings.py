@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
-import sys
 from pathlib import Path
+
+# import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,9 +26,18 @@ SECRET_KEY = os.environ.get(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() == "true"
+SILKY_PYTHON_PROFILER = (
+    os.environ.get("SILKY_PYTHON_PROFILER", "false").lower() == "true"
+)
 
+
+HOSTNAMES = os.environ.get("DJANGO_HOSTNAMES", "localhost").split(",")
 ALLOWED_HOSTS = ["*"]
-
+CORS_ORIGIN_WHITELIST = ["*"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost", "http://localhost:8000"]
+for hostname in HOSTNAMES:
+    CSRF_TRUSTED_ORIGINS.append(f"""https://{hostname}""")
+CSRF_COOKIE_SECURE = True
 
 # Application definition
 
@@ -41,7 +51,8 @@ INSTALLED_APPS = [
     "host",
     "crispy_forms",
     "django_tables2",
-    "bootstrap3",
+    "bootstrap4",
+    "crispy_bootstrap4",
     "django_celery_beat",
     "revproxy",
     "rest_framework",
@@ -49,6 +60,7 @@ INSTALLED_APPS = [
     "users",
     "django_cron",
     "django_filters",
+    "silk",  # Django Silk profiler (https://github.com/jazzband/django-silk)
 ]
 
 MIDDLEWARE = [
@@ -59,6 +71,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "silk.middleware.SilkyMiddleware",  # Django Silk profiler (https://github.com/jazzband/django-silk)
 ]
 
 ROOT_URLCONF = "app.urls"
@@ -142,7 +155,14 @@ MEDIA_URL = "/cutouts/"
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data")
 CUTOUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data/cutout_cdn")
 SED_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data/sed_output")
+SBI_TRAINING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data/sbi_training_sets")
 GHOST_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../ghost_output")
+GHOST_DUST_PATH = os.path.join(
+    os.path.dirname(BASE_DIR), "../data/ghost_data/dust_model"
+)
+GHOST_PHOTOZ_PATH = os.path.join(
+    os.path.dirname(BASE_DIR), "../data/ghost_data/photoz_model/MLP_lupton.hdf5"
+)
 TNS_STAGING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../tns_staging")
 TRANSMISSION_CURVES_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../transmission")
 SBIPP_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../sbipp")
@@ -167,7 +187,6 @@ CELERY_BROKER_URL = (
 CELERYD_REDIRECT_STDOUTS_LEVEL = "INFO"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
-######API########
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         f'rest_framework.permissions.{os.environ.get("API_AUTHENTICATION")}',

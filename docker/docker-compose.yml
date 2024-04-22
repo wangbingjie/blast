@@ -54,8 +54,6 @@ services:
     extends:
       file: docker-compose.blast_base.yml
       service: database_base
-    volumes:
-      - blast-db:/var/lib/mysql/
     profiles: ["full_prod", "slim_prod", "full_dev", "slim_dev", "batch"]
     env_file:
       - ../env/.env.default
@@ -79,13 +77,12 @@ services:
           - nginx
     profiles: ["slim_prod"]
   flower:
-    build:
-      context: ../flower/
+    extends:
+      file: docker-compose.blast_base.yml
+      service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.flower.sh
     ports:
       - "8888:${FLOWER_PORT}"
-    volumes:
-      - ../app/entrypoints:/data/entrypoints
     env_file:
       - ../env/.env.default
       - ../env/.env.dev
@@ -122,14 +119,12 @@ services:
       - "TEST_MODE=1"
     env_file:
       - ../env/.env.default
-      - ../env/.env.ci
+      - ../env/.env.dev
     profiles: ["ci"]
   database_test:
     extends:
       file: docker-compose.blast_base.yml
       service: database_base
-    volumes:
-      - ../data/test_database/:/var/lib/mysql/
     networks:
       default:
         aliases:

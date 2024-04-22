@@ -10,7 +10,6 @@ from astropy.coordinates import SkyCoord
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django_celery_beat.models import PeriodicTask
 from photutils.aperture import SkyEllipticalAperture
 from sedpy import observate
 
@@ -23,6 +22,8 @@ from .managers import StatusManager
 from .managers import SurveyManager
 from .managers import TaskManager
 from .managers import TransientManager
+
+# from django_celery_beat.models import PeriodicTask
 
 
 class SkyObject(models.Model):
@@ -119,16 +120,7 @@ class Transient(SkyObject):
     milkyway_dust_reddening = models.FloatField(null=True, blank=True)
     processing_status = models.CharField(max_length=20, default="processing")
     added_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
-
-    @property
-    def progress(self):
-        tasks = TaskRegister.objects.filter(transient__name__exact=self.name)
-        total_tasks = len(tasks)
-        completed_tasks = len(
-            [task for task in tasks if task.status.message == "processed"]
-        )
-        progress = 100 * (completed_tasks / total_tasks) if total_tasks > 0 else 0
-        return int(round(progress, 0))
+    progress = models.IntegerField(default=0)
 
     @property
     def best_redshift(self):
@@ -296,9 +288,9 @@ class Filter(models.Model):
 
         try:
             transmission_curve = pd.read_csv(curve_name, sep="\s+", header=None)
-        except Exception as e:
+        except Exception as err:
             raise ValueError(
-                f"{self.name}: Problem loading filter transmission curve from {curve_name}"
+                f"{self.name}: Problem loading filter transmission curve from {curve_name}: {err}"
             )
 
         wavelength = transmission_curve[0].to_numpy()
@@ -319,9 +311,9 @@ class Filter(models.Model):
 
         try:
             corr_model = pd.read_csv(corr_model_name, sep="\s+", header=None)
-        except:
+        except Exception as err:
             raise ValueError(
-                f"{self.name}: Problem loading filter transmission curve from {curve_name}"
+                f"{self.name}: Problem loading filter correlation model from {corr_model_name}: {err}"
             )
 
         app_radius = corr_model[0].to_numpy()

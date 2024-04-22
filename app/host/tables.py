@@ -62,7 +62,7 @@ class TransientTable(tables.Table):
           {% endif %}
 """,
         verbose_name="Progress",
-        orderable=False,
+        orderable=True,
         order_by="progress",
     )
 

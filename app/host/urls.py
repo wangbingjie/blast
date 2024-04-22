@@ -75,3 +75,6 @@ api_url_patterns = [
 ]
 
 urlpatterns += api_url_patterns
+
+if os.environ.get("SILKY_PYTHON_PROFILER", "false").lower() == "true":
+    urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
