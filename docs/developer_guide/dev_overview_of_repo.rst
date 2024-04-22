@@ -16,12 +16,6 @@ nginx
 The :code:`run/` directory contains the nginx config file which controls how the
 application is served.
 
-kubernetes
-----------
-
-The :code:`kubernetes/` directory contains files needed to run Blast and its related
-services on a kubernetes clusters.
-
 docs
 ----
 
