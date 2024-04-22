@@ -21,7 +21,7 @@ from .transient_name_server import update_blast_transient
 
 
 class TNSDataIngestion(SystemTaskRunner):
-    def run_process(self, interval_minutes=800):
+    def run_process(self, interval_minutes=200):
         print("TNS STARTED")
         now = timezone.now()
         time_delta = datetime.timedelta(minutes=interval_minutes)
