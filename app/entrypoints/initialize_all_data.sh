@@ -64,7 +64,10 @@ if [[ "${USE_DATA_ARCHIVE}" == "true" ]]; then
 
     # Clean up temporary files
     if [[ "${USE_LOCAL_ARCHIVE_FILE}" != "true" ]]; then
+      # Ignore error upon deletion to support cases where the file is mounted read-only
+      set +e
       rm -f "${DATA_ARCHIVE_FILE}"
+      set -e
     fi
     rm -rf data
   fi
