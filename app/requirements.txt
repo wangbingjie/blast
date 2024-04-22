@@ -1,4 +1,4 @@
-astro_ghost @ git+https://github.com/manning-ncsa/astro_ghost@15368465a083bb76e153b6d74397339d94db45ea
+astro_ghost @ git+https://github.com/manning-ncsa/astro_ghost@9f68b1a343bd645ce0760b4db384fd67e1d2dd25
 celery==5.4.0
 Django==5.0.4
 django-silk==5.1.0
