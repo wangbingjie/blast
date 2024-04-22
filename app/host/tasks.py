@@ -53,11 +53,14 @@ for task in periodic_tasks:
     func_name = task.task_name.replace(" ", "_").lower()
     exec(
         f"""
-@shared_task(time_limit={task_time_limit},soft_time_limit={task_soft_time_limit})
+@shared_task(
+    time_limit={task_time_limit},
+    soft_time_limit={task_soft_time_limit},
+)
 def {func_name}():
 
-    {type(task).__name__}().run_process()
+    transient_name = {type(task).__name__}().run_process()
 
-    return
+    return transient_name
 """
     )

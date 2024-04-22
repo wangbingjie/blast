@@ -12,9 +12,7 @@ services:
     ports:
       - 8000:${WEB_APP_PORT}
     profiles: ["full_prod", "slim_prod"]
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
+    env_file: ../env/.env.default
     networks:
       default:
         aliases:
@@ -25,18 +23,14 @@ services:
       service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.celery.sh
     profiles: ["full_prod", "full_dev", "batch"]
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
+    env_file: ../env/.env.default
   celery_beat:
     extends:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.celery_beat.sh
     profiles: ["full_prod", "full_dev", "batch"]
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
+    env_file: ../env/.env.default
   rabbitmq:
     restart: always
     image: rabbitmq:3.10.6-management-alpine
@@ -46,20 +40,14 @@ services:
     volumes:
       - ../data/rabbitmq_data:/data
       - ../data/rabbitmq_data/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
+    env_file: ../env/.env.default
     profiles: ["full_prod", "full_dev", "batch"]
   database:
     extends:
       file: docker-compose.blast_base.yml
       service: database_base
-    volumes:
-      - blast-db:/var/lib/mysql/
     profiles: ["full_prod", "slim_prod", "full_dev", "slim_dev", "batch"]
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
+    env_file: ../env/.env.default
   nginx:
     extends:
       file: docker-compose.blast_base.yml
@@ -79,16 +67,13 @@ services:
           - nginx
     profiles: ["slim_prod"]
   flower:
-    build:
-      context: ../flower/
+    extends:
+      file: docker-compose.blast_base.yml
+      service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.flower.sh
     ports:
       - "8888:${FLOWER_PORT}"
-    volumes:
-      - ../app/entrypoints:/data/entrypoints
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
+    env_file: ../env/.env.default
     profiles: ["full_prod", "full_dev", "batch"]
   app_test:
     extends:
@@ -103,9 +88,7 @@ services:
           - app
     environment:
       - "TEST_MODE=1"
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
+    env_file: ../env/.env.default
     profiles: ["test"]
   app_ci:
     extends:
@@ -120,16 +103,12 @@ services:
           - ${WEB_APP_HOST}
     environment:
       - "TEST_MODE=1"
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.ci
+    env_file: ../env/.env.default
     profiles: ["ci"]
   database_test:
     extends:
       file: docker-compose.blast_base.yml
       service: database_base
-    volumes:
-      - ../data/test_database/:/var/lib/mysql/
     networks:
       default:
         aliases:
@@ -148,9 +127,7 @@ services:
     profiles: ["full_dev", "slim_dev", "batch"]
     environment:
       - "DEV_MODE=1"
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
+    env_file: ../env/.env.default
     networks:
       default:
         aliases:
@@ -174,6 +151,4 @@ services:
     profiles: ["batch"]
     command: bash docker-entrypoint.batch.sh
     network_mode: "host"
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
+    env_file: ../env/.env.default

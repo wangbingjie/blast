@@ -1,16 +1,63 @@
 {% extends 'host/base.html' %}
 
 {% block body %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
 
-<div class="h-100 d-flex align-items-center justify-content-center">
+    font-family: Arial, Helvetica, sans-serif;
+}
 
-<h2>Login</h2>
+form {
+    background-color: rgb(248,249,250);
+    padding-top: 2rem;
+    padding-bottom: 10rem;
+    border: 3px solid rgb(248,249,250);
+    width: 500px; /* Set the width of the form */
+    margin: 0 auto; /* Center the form horizontally */
+}
 
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+input[type=submit] {
+  background-color: #0852f4;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+span.psw {
+  float: right;
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+}
+</style>
+
+
+<body>
 <form method="post">
     {% csrf_token %}
     {{ form }}
-    <input type="submit" value="Login">
+    <input type="submit" value="Login"></input>
 </form>
-</div>
-
+</body>
 {% endblock %}

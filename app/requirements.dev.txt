@@ -1,1 +1,39 @@
-django-silk # Django Silk profiler (https://github.com/jazzband/django-silk)
+astro_ghost @ git+https://github.com/manning-ncsa/astro_ghost@dev
+celery
+Django
+django-silk
+django-crispy-forms
+django-tables2
+django-bootstrap4
+crispy-bootstrap4
+django-celery-beat
+django-revproxy
+djangorestframework
+django-cron
+django-filter
+mysqlclient
+dustmaps
+astro-sedpy
+extinction
+astro-prospector @ git+https://github.com/bd-j/prospector.git@2fa085d
+bokeh==2.4.0
+dynesty
+torch
+sbi
+astro-datalab
+scikit-learn
+flower
+gunicorn
+scikit-image
+fsps
+coverage
+Sphinx
+sphinx-copybutton
+sphinx-rtd-theme
+sphinxcontrib-applehelp
+sphinxcontrib-devhelp
+sphinxcontrib-htmlhelp
+sphinxcontrib-jsmath
+sphinxcontrib-qthelp
+sphinxcontrib-serializinghtml
+furo
