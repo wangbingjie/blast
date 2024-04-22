@@ -6,13 +6,13 @@ from django.db import models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('host', '0020_transient_progress'),
+        ("host", "0020_transient_progress"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='transient',
-            name='progress',
+            model_name="transient",
+            name="progress",
             field=models.IntegerField(default=0),
         ),
     ]
