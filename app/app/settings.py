@@ -152,7 +152,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/cutouts/"
 # os.path.join(os.path.dirname(BASE_DIR), '../cutout_cdn')
 
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data")
 CUTOUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data/cutout_cdn")
 SED_OUTPUT_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data/sed_output")
 SBI_TRAINING_ROOT = os.path.join(os.path.dirname(BASE_DIR), "../data/sbi_training_sets")

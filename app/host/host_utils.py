@@ -296,7 +296,7 @@ def do_aperture_photometry(image, sky_aperture, filter):
     }
 
 
-def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
+def get_dust_maps(position):
     """Gets milkyway reddening value"""
 
     ebv = SFDQuery()(position)

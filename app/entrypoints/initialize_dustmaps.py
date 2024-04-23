@@ -3,10 +3,9 @@ from dustmaps.config import config
 from django.conf import settings
 import os
 
-media_root = settings.MEDIA_ROOT
 config.reset()
 
-config["data_dir"] = f"{media_root}/../dustmaps"
+config["data_dir"] = settings.DUSTMAPS_DATA_ROOT
 
 # Download data if is missing
 for data_file in [
