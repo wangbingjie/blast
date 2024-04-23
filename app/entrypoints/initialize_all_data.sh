@@ -121,7 +121,10 @@ else
 
 fi
 
-cd "${SCRIPT_DIR}"/..
-python init_data.py
+# Skip redundant installation of dustmap data and config file, where "init_data.py"
+# executes "app/entrypoints/initialize_dustmaps.py", which downloads SFD files
+# if they are missing and initializes a ".dustmapsrc" file.
+# cd "${SCRIPT_DIR}"/..
+# python init_data.py
 
 echo "Data initialization complete."
