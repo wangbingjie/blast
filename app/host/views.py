@@ -304,7 +304,9 @@ def results(request, slug):
         choice = 0
         try:
             while cutout is None and choice <= 8:
-                cutout = select_cutout_aperture(cutouts, choice=choice).filter(~Q(fits=""))
+                cutout = select_cutout_aperture(cutouts, choice=choice).filter(
+                    ~Q(fits="")
+                )
             if not len(cutout):
                 cutout = None
             else:

@@ -2,10 +2,10 @@ import datetime
 import glob
 import shutil
 
+from dateutil import parser
 from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
-from dateutil import parser
 
 from .base_tasks import initialise_all_tasks_status
 from .base_tasks import SystemTaskRunner
@@ -39,7 +39,9 @@ class TNSDataIngestion(SystemTaskRunner):
             print(transient.name)
             try:
                 saved_transient = saved_transients.get(name__exact=transient.name)
-                if saved_transient.public_timestamp.replace(tzinfo=None) - parser.parse(transient.public_timestamp) == datetime.timedelta(0):
+                if saved_transient.public_timestamp.replace(tzinfo=None) - parser.parse(
+                    transient.public_timestamp
+                ) == datetime.timedelta(0):
                     continue
 
                 # if there was *not* a redshift before and there *is* one now
@@ -58,8 +60,15 @@ class TNSDataIngestion(SystemTaskRunner):
                     else:
                         del new_transient_dict["host_id"]
 
-                keys_to_del = ["_state","id","progress","tasks_initialized","photometric_class",
-                               "milkyway_dust_reddening","processing_status"]
+                keys_to_del = [
+                    "_state",
+                    "id",
+                    "progress",
+                    "tasks_initialized",
+                    "photometric_class",
+                    "milkyway_dust_reddening",
+                    "processing_status",
+                ]
                 for k in keys_to_del:
                     del new_transient_dict[k]
                 saved_transients.filter(name__exact=transient.name).update(
