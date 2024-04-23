@@ -48,11 +48,16 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
 
     # photo-z only implemented for dec > -30
     if transient_position.dec.deg > -30:
-        host_data = calc_photoz(
-            host_data,
-            dust_path=settings.GHOST_DUST_PATH,
-            model_path=settings.GHOST_PHOTOZ_PATH,
-        )
+        # still getting random photo-z bugs
+        # but this shouldn't be a show-stopper
+        try:
+            host_data = calc_photoz(
+                host_data,
+                dust_path=settings.GHOST_DUST_PATH,
+                model_path=settings.GHOST_PHOTOZ_PATH,
+            )
+        except ValueError:
+            print('warning : photo-z step failed')
 
     # clean up after GHOST...
     # dir_list = glob.glob('transients_*/*/*')

@@ -15,6 +15,7 @@ from .models import Transient
 from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
+from .transient_name_server import get_transients_from_tns_by_name
 from .transient_name_server import tns_staging_blast_transient
 from .transient_name_server import tns_staging_file_date_name
 from .transient_name_server import update_blast_transient
@@ -29,6 +30,11 @@ class TNSDataIngestion(SystemTaskRunner):
         recent_transients = get_transients_from_tns(
             now - time_delta, tns_credentials=tns_credentials
         )
+        ### for debugging ###
+        #recent_transients = get_transients_from_tns_by_name(
+        #    ['2024hbe'], tns_credentials=tns_credentials
+        #)
+
         print("TNS DONE")
         saved_transients = Transient.objects.all()
         count = 0
@@ -52,9 +58,11 @@ class TNSDataIngestion(SystemTaskRunner):
                         new_transient_dict["host_id"] = saved_transient.host_id
                     else:
                         del new_transient_dict["host_id"]
-                del new_transient_dict["_state"]
-                del new_transient_dict["id"]
 
+                keys_to_del = ["_state","id","progress","tasks_initialized","photometric_class",
+                               "milkyway_dust_reddening","processing_status"]
+                for k in keys_to_del:
+                    del new_transient_dict[k]
                 saved_transients.filter(name__exact=transient.name).update(
                     **new_transient_dict
                 )
