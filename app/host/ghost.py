@@ -57,7 +57,7 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
                 model_path=settings.GHOST_PHOTOZ_PATH,
             )
         except ValueError:
-            print('warning : photo-z step failed')
+            print("warning : photo-z step failed")
 
     # clean up after GHOST...
     # dir_list = glob.glob('transients_*/*/*')
