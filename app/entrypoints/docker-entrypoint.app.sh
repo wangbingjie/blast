@@ -8,11 +8,17 @@ if [[ ! -f "/root/.dustmapsrc" && -f "/tmp/.dustmapsrc" ]]; then
   cp /tmp/.dustmapsrc /root/.dustmapsrc
 fi
 
-INIT_STARTED_DB=/mnt/data/.initializing_db
-INIT_STARTED_DATA=/mnt/data/.initializing_data
+INIT_STARTED_DATA="${DATA_ROOT_DIR}/.initializing_data"
+INIT_STARTED_DB="${DATA_ROOT_DIR}/.initializing_db"
+
+if [[ "${FORCE_INITIALIZATION}" == "true" ]]; then
+  rm -f "${INIT_STARTED_DATA}"
+  rm -f "${INIT_STARTED_DB}"
+fi
 
 ## Initialize astro data
 ##
+
 if [[ -f "${INIT_STARTED_DATA}" ]]
 then
   echo "Astro data is currently being initialized (\"${INIT_STARTED_DATA}\" exists)."
