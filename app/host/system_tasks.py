@@ -5,6 +5,7 @@ import shutil
 from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
+from dateutil import parser
 
 from .base_tasks import initialise_all_tasks_status
 from .base_tasks import SystemTaskRunner
@@ -30,10 +31,6 @@ class TNSDataIngestion(SystemTaskRunner):
         recent_transients = get_transients_from_tns(
             now - time_delta, tns_credentials=tns_credentials
         )
-        ### for debugging ###
-        #recent_transients = get_transients_from_tns_by_name(
-        #    ['2024hbe'], tns_credentials=tns_credentials
-        #)
 
         print("TNS DONE")
         saved_transients = Transient.objects.all()
@@ -42,6 +39,8 @@ class TNSDataIngestion(SystemTaskRunner):
             print(transient.name)
             try:
                 saved_transient = saved_transients.get(name__exact=transient.name)
+                if saved_transient.public_timestamp.replace(tzinfo=None) - parser.parse(transient.public_timestamp) == datetime.timedelta(0):
+                    continue
 
                 # if there was *not* a redshift before and there *is* one now
                 # then it would be safest to reprocess everything
