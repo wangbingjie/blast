@@ -56,7 +56,7 @@ def run_ghost(transient, output_dir=settings.GHOST_OUTPUT_ROOT):
                 dust_path=settings.GHOST_DUST_PATH,
                 model_path=settings.GHOST_PHOTOZ_PATH,
             )
-        except ValueError:
+        except Exception as e:
             print('warning : photo-z step failed')
 
     # clean up after GHOST...
