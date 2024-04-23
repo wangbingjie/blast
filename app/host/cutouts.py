@@ -108,19 +108,24 @@ def download_and_save_cutouts(
 
         if not cutout_object.exists():
             cutout_object = Cutout(name=cutout_name, filter=filter, transient=transient)
+            cutout_exists = False
         else:
             cutout_object = cutout_object[0]
+            cutout_exists = True
 
         fits = None
         if (
-            not file_exists and cutout_object.message != "No image found"
+            (not file_exists or not cutout_exists)
+            and cutout_object.message != "No image found"
         ) or not overwrite == "False":
-            fits, status, err = cutout(transient.sky_coord, filter, fov=fov)
-            if fits:
-                save_dir = f"{media_root}/{transient.name}/{filter.survey.name}/"
-                os.makedirs(save_dir, exist_ok=True)
-                path_to_fits = save_dir + f"{filter.name}.fits"
-                fits.writeto(path_to_fits, overwrite=True)
+            if not file_exists and cutout_object.message != "No image found":
+                fits, status, err = cutout(transient.sky_coord, filter, fov=fov)
+
+                if fits:
+                    save_dir = f"{media_root}/{transient.name}/{filter.survey.name}/"
+                    os.makedirs(save_dir, exist_ok=True)
+                    path_to_fits = save_dir + f"{filter.name}.fits"
+                    fits.writeto(path_to_fits, overwrite=True)
 
             # if there is data, save path to the file
             # otherwise record that we searched and couldn't find anything

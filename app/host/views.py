@@ -298,13 +298,15 @@ def results(request, slug):
     else:
         form = ImageGetForm(filter_choices=filters)
 
-        cutouts = Cutout.objects.filter(transient__name__exact=slug)
+        cutouts = Cutout.objects.filter(transient__name__exact=slug).filter(~Q(fits=""))
         ## choose a cutout, if possible
         cutout = None
         choice = 0
         try:
             while cutout is None and choice <= 8:
-                cutout = select_cutout_aperture(cutouts, choice=choice)
+                cutout = select_cutout_aperture(cutouts, choice=choice).filter(
+                    ~Q(fits="")
+                )
             if not len(cutout):
                 cutout = None
             else:
