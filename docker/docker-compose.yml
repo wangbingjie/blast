@@ -8,7 +8,6 @@ services:
     extends:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
-    command: bash entrypoints/docker-entrypoint.app.sh
     ports:
       - 8000:${WEB_APP_PORT}
     profiles: ["full_prod", "slim_prod"]
@@ -91,26 +90,8 @@ services:
     extends:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
-    command: bash entrypoints/docker-entrypoint.app.sh
     ports:
       - "8000:${WEB_APP_PORT}"
-    networks:
-      default:
-        aliases:
-          - app
-    environment:
-      - "TEST_MODE=1"
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
-    profiles: ["test"]
-  app_ci:
-    extends:
-      file: docker-compose.blast_base.yml
-      service: ${BLAST_IMAGE}
-    command: bash entrypoints/docker-entrypoint.app.sh
-    ports:
-      - 8000:${WEB_APP_PORT}
     networks:
       default:
         aliases:
@@ -120,7 +101,7 @@ services:
     env_file:
       - ../env/.env.default
       - ../env/.env.dev
-    profiles: ["ci"]
+    profiles: ["test"]
   database_test:
     extends:
       file: docker-compose.blast_base.yml
@@ -132,7 +113,34 @@ services:
     environment:
       - "MYSQL_ROOT_PASSWORD=password"
       - "MYSQL_DATABASE=blast_db"
-    profiles: ["test", "ci"]
+    profiles: ["test"]
+  app_ci:
+    extends:
+      file: docker-compose.blast_base.yml
+      service: ${BLAST_IMAGE}
+    command: bash entrypoints/docker-entrypoint.app.sh
+    networks:
+      default:
+        aliases:
+          - ${WEB_APP_HOST}
+    environment:
+      - "TEST_MODE=1"
+    env_file:
+      - ../env/.env.default
+      - ../env/.env.ci
+    profiles: ["ci"]
+  database_ci:
+    extends:
+      file: docker-compose.blast_base.yml
+      service: database_ci
+    networks:
+      default:
+        aliases:
+          - ${DATABASE_HOST}
+    env_file:
+      - ../env/.env.default
+      - ../env/.env.ci
+    profiles: ["ci"]
   app_dev:
     extends:
       file: docker-compose.blast_base.yml
