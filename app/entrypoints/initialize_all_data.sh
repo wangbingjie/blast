@@ -9,119 +9,77 @@ cd "${SCRIPT_DIR}"
 
 bash initialize_data_dirs.sh
 
-# TODO: As the data archive file gets larger, this may exceed
-# local disk space. If we assume bulk storage is mounted at 
-# /mnt/data, it may be better to use /mnt/data/tmp.
 cd /tmp
 
-if [[ "${USE_DATA_ARCHIVE}" == "true" ]]; then
-  ##
-  ## Install data files from compiled archive
-  ##
-
-  # TODO: These are not comprehensive data integrity checks; 
-  # we are only spot-checking the data directories.
-  if [[ "${FORCE_DATA_DOWNLOAD}" != "true" && \
-        -f "/fsps/README.md" && \
-        -f "/sbipp_phot/sbi_phot_local.h5" && \
-        -f "/dustmaps/sfd/SFD_dust_4096_ngp.fits" && \
-        -f "/transmission/2MASS_H.txt" ]]
-  then
-      echo "Required data files already downloaded."
-  else
-    if [[ "${USE_LOCAL_ARCHIVE_FILE}" == "true" ]]; then
-        echo "Installing data from archive file \"${DATA_ARCHIVE_FILE}\"..."
-      if [[ ! -f "${DATA_ARCHIVE_FILE}" ]]; then
-        echo "Data archive file \"${DATA_ARCHIVE_FILE}\" not found. Aborting."
-        exit 1
-      fi
-    else
-      if [[ -f "${DATA_ARCHIVE_FILE}" ]]; then
-        echo "Data archive file already downloaded."
-      else
-        echo "Downloading data archive file from \"${DATA_ARCHIVE_FILE_URL}\"..."
-        curl -LJO "${DATA_ARCHIVE_FILE_URL}"
-        echo "Download complete."
-      fi
-    fi
-
-    # Extract and install the data files
-    echo "Extracting data archive..."
-    tar -xzf "${DATA_ARCHIVE_FILE}"
-    echo "Data extracted. Installing data files..."
-    rsync -va data/cutout_cdn/2010ag/ /data/cutout_cdn/2010ag/
-    rsync -va data/cutout_cdn/2010ai/ /data/cutout_cdn/2010ai/
-    rsync -va data/cutout_cdn/2010H/  /data/cutout_cdn/2010H/
-    rsync -va data/sed_output/2010H/  /data/sed_output/2010H/
-    rsync -va data/sbipp/             /sbipp/
-    rsync -va data/transmission/      /transmission/
-    rsync -va data/fsps/              /fsps/
-    rsync -va data/sbipp_phot/        /sbipp_phot/
-    rsync -va data/dustmaps/          /dustmaps/
-    rsync -va data/ghost_data/        /data/ghost_data/
-    rsync -va data/sbi_training_sets/ /data/sbi_training_sets/
-    echo "Data installed."
-
-    # Clean up temporary files
-    if [[ "${USE_LOCAL_ARCHIVE_FILE}" != "true" ]]; then
-      # Ignore error upon deletion to support cases where the file is mounted read-only
-      set +e
-      rm -f "${DATA_ARCHIVE_FILE}"
-      set -e
-    fi
-    rm -rf data
+extract_data_archive_file() {
+  local file_path=$1
+  local extract_dir=$2
+  local original_dir=$(pwd)
+  echo "INFO: Installing data from archive file \"${file_path}\"..."
+  if [[ ! -f "${file_path}" ]]; then
+    echo "ERROR: Data archive file \"${file_path}\" not found. Aborting."
+    return 1
   fi
+  echo "Extracting data archive..."
+  # Data archive file has top-level directory "data"
+  cd "${extract_dir}"
+  tar --strip-components=1 -xzf "${DATA_ARCHIVE_FILE}"
+  cd "${original_dir}"
+}
 
-else
-
-  ##
-  ## Install data files from original sources
-  ##
-
-  if [[ -f "/fsps/README.md" ]]
+verify_data_integrity() {
+  # Verify data file integrity.
+  local data_root_dir=$1
+  local original_dir=$(pwd)
+  cd "${data_root_dir}"
+  set +e
+  md5sum --check --status "${SCRIPT_DIR}/blast-data.md5sums"
+  DATA_INTEGRITY_VALID=$?
+  set -e
+  cd "${original_dir}"
+  if [[ "${DATA_INTEGRITY_VALID}" == "0" ]]
   then
-      echo "fsps files already downloaded"
+    echo "INFO: Required data files pass integrity check."
+    return 0
   else
-    echo "downloading fsps files"
-    set -e
-    git clone https://github.com/cconroy20/fsps.git /fsps
-    set +e
-    rm -rf /fsps/.git
+    echo "ERROR: Required data files failed integrity check."
+    return 1
   fi
+}
 
-  if [[ -f "/sbipp_phot/sbi_phot_local.h5" ]]
+download_data_archive() {
+  local data_root_dir=$1
+  echo "INFO: Downloading data from archive..."
+  mc alias set blast https://js2.jetstream-cloud.org:8001 anonymous
+  # The trailing slashes are important!
+  mc mirror --overwrite --json blast/blast-astro-data/v1/data/ "$(readlink -f "${data_root_dir}")/"
+}
+
+# Verify data file integrity and attempt to (re)install required files if necessary
+if ! verify_data_integrity "${DATA_ROOT_DIR}"
+then
+  # Download and install data from archive
+  if [[ "${USE_LOCAL_ARCHIVE_FILE}" == "true" ]]
   then
-      echo "SBI/files already downloaded"
+    # Extract data from local archive file
+    extract_data_archive_file "${DATA_ARCHIVE_FILE}" "${DATA_ROOT_DIR}"
   else
-    echo "downloading SBI files"
-    set -e
-    curl -LJO https://zenodo.org/records/10703208/files/sbi_phot_global.h5
-    curl -LJO https://zenodo.org/records/10703208/files/sbi_phot_local.h5
-    mv sbi_phot_global.h5 /sbipp_phot/
-    mv sbi_phot_local.h5 /sbipp_phot/
-    set +e
+    # Download data from remote archive
+    download_data_archive "${DATA_ROOT_DIR}"
   fi
-
-  if [[ -f "data/transmission/2MASS_H.txt" ]]
+  # Verify data file integrity
+  if ! verify_data_integrity "${DATA_ROOT_DIR}"
   then
-      echo "Remaining data already downloaded"
-  else
-    set -e
-    git clone https://github.com/astrophpeter/blast.git /tmp/blast
-    cd /tmp/blast
-    rsync -va data/cutout_cdn/2010ag/ /data/cutout_cdn/2010ag/
-    rsync -va data/cutout_cdn/2010ai/ /data/cutout_cdn/2010ai/
-    rsync -va data/cutout_cdn/2010H/  /data/cutout_cdn/2010H/
-    rsync -va data/sed_output/2010H/  /data/sed_output/2010H/
-    rsync -va data/sbipp/             /sbipp/
-    rsync -va data/transmission/      /transmission/
-    set +e
-    rm -rf /tmp/blast
+    echo "ERROR: Downloaded/extracted data files failed integrity check. Aborting."
+    exit 1
   fi
-
+  echo "Data installed."
 fi
 
-cd "${SCRIPT_DIR}"/..
-python init_data.py
+# Skip redundant installation of dustmap data and config file, where "init_data.py"
+# executes "app/entrypoints/initialize_dustmaps.py", which downloads SFD files
+# if they are missing and initializes a ".dustmapsrc" file.
+# cd "${SCRIPT_DIR}"/..
+# python init_data.py
 
 echo "Data initialization complete."

@@ -77,3 +77,4 @@ Acknowledgements
 
    acknowledgements/software
    acknowledgements/contributors
+   acknowledgements/data_sources

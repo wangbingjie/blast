@@ -1,23 +1,16 @@
-import glob
 import math
-import os
 import time
 import warnings
 from collections import namedtuple
 from xml.parsers.expat import ExpatError
 
 import astropy.units as u
-import extinction
 import numpy as np
 import yaml
-from astropy.convolution import Gaussian2DKernel
 from astropy.coordinates import SkyCoord
 from astropy.cosmology import FlatLambdaCDM
 from astropy.io import fits
-from astropy.stats import gaussian_fwhm_to_sigma
-from astropy.units import Quantity
 from astropy.wcs import WCS
-from astroquery.hips2fits import hips2fits
 from astroquery.ipac.ned import Ned
 from astroquery.sdss import SDSS
 
@@ -26,19 +19,22 @@ cosmo = FlatLambdaCDM(H0=70, Om0=0.315)
 from django.conf import settings
 from django.db.models import Q
 from dustmaps.sfd import SFDQuery
+
+# Use correct dustmap data directory
+from dustmaps.config import config
+
+config.reset()
+config["data_dir"] = settings.DUSTMAPS_DATA_ROOT
 from photutils.aperture import aperture_photometry
 from photutils.aperture import EllipticalAperture
 from photutils.background import Background2D
-from photutils.segmentation import deblend_sources
 from photutils.segmentation import detect_sources
-from photutils.segmentation import detect_threshold
 from photutils.segmentation import SourceCatalog
 from photutils.utils import calc_total_error
 from photutils.background import LocalBackground
 from photutils.background import MeanBackground, SExtractorBackground
 from astropy.stats import SigmaClip
 
-from .photometric_calibration import ab_mag_to_mJy
 from .photometric_calibration import flux_to_mag
 from .photometric_calibration import flux_to_mJy_flux
 from .photometric_calibration import fluxerr_to_magerr
@@ -110,9 +106,9 @@ def build_source_catalog(image, background, threshhold_sigma=3.0, npixels=10):
     )
     if segmentation is None:
         return None
-    deblended_segmentation = deblend_sources(
-        background_subtracted_data, segmentation, npixels=npixels
-    )
+    # deblended_segmentation = deblend_sources(
+    #     background_subtracted_data, segmentation, npixels=npixels
+    # )
     print(segmentation)
     return SourceCatalog(background_subtracted_data, segmentation)
 
@@ -222,7 +218,7 @@ def do_aperture_photometry(image, sky_aperture, filter):
     background_subtracted_data = image_data - background.background
 
     # I think we need a local background subtraction for WISE
-    ### the others haven't given major problems
+    # the others haven't given major problems
     if "WISE" in filter.name:
         aper_pix = sky_aperture.to_pixel(wcs)
         lbg = LocalBackground(aper_pix.a, aper_pix.a * 2)
@@ -289,7 +285,7 @@ def do_aperture_photometry(image, sky_aperture, filter):
     if flux != flux or flux_error != flux_error:
         flux, flux_error = None, None
 
-    wave_eff = filter.transmission_curve().wave_effective
+    # wave_eff = filter.transmission_curve().wave_effective
     return {
         "flux": flux,
         "flux_error": flux_error,
@@ -298,7 +294,7 @@ def do_aperture_photometry(image, sky_aperture, filter):
     }
 
 
-def get_dust_maps(position, media_root=settings.MEDIA_ROOT):
+def get_dust_maps(position):
     """Gets milkyway reddening value"""
 
     ebv = SFDQuery()(position)
@@ -366,7 +362,7 @@ def check_global_contamination(global_aperture_phot, aperture_primary):
             .to_mask()
             .to_image(np.shape(image[0].data))
         )
-        obj_ids = catalog._segment_img.data[np.where(mask_image == True)]
+        obj_ids = catalog._segment_img.data[np.where(mask_image == True)]  # noqa: E712
         source_obj = source_data._labels
 
         # let's look for contaminants
@@ -394,8 +390,8 @@ def select_cutout_aperture(cutouts, choice=0):
         "2MASS_H",
     ]
 
-    #### choice = 0
-    ### edited to allow initial offset
+    # choice = 0
+    # edited to allow initial offset
     filter_choice = filter_names[choice]
 
     while not cutouts.filter(filter__name=filter_choice).filter(~Q(fits="")).exists():
@@ -500,8 +496,8 @@ def construct_aperture(image, position):
     wcs = WCS(image[0].header)
     background = estimate_background(image)
 
-    ### found an edge case where deblending isn't working how I'd like it to
-    ### so if it's not finding the host, play with the default threshold
+    # found an edge case where deblending isn't working how I'd like it to
+    # so if it's not finding the host, play with the default threshold
     def get_source_data(threshhold_sigma):
         catalog = build_source_catalog(
             image, background, threshhold_sigma=threshhold_sigma
@@ -541,7 +537,7 @@ def query_ned(position):
         try:
             result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
             too_many_requests = False
-        except ExpatError as e:
+        except ExpatError:
             too_many_requests = True
             print("too many requests!  going to sleep 60s...")
             time.sleep(60)
@@ -549,7 +545,7 @@ def query_ned(position):
     if too_many_requests:
         raise RuntimeError("too many requests to NED")
 
-    result_table = result_table[result_table["Redshift"].mask == False]
+    result_table = result_table[result_table["Redshift"].mask == False]  # noqa: E712
 
     redshift = result_table["Redshift"].value
 
@@ -591,7 +587,7 @@ def construct_all_apertures(position, image_dict):
         try:
             aperture = construct_aperture(image, position)
             apertures[name] = aperture
-        except:
+        except Exception:
             print(f"Could not fit aperture to {name} imaging data")
 
     return apertures
@@ -619,7 +615,7 @@ def pick_largest_aperture(position, image_dict):
         try:
             aperture = construct_aperture(image, position)
             apertures[name] = aperture
-        except:
+        except Exception:
             print(f"Could not fit aperture to {name} imaging data")
 
     aperture_areas = {}
