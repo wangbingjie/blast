@@ -151,18 +151,26 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = "/cutouts/"
 
-DUSTMAPS_DATA_ROOT       = os.environ.get('DUSTMAPS_DATA_ROOT', '/data/dustmaps') # noqa
-CUTOUT_ROOT              = os.environ.get('CUTOUT_ROOT',        '/data/cutout_cdn') # noqa
-SED_OUTPUT_ROOT          = os.environ.get('SED_OUTPUT_ROOT',    '/data/sed_output') # noqa
-SBI_TRAINING_ROOT        = os.environ.get('SBI_TRAINING_ROOT',  '/data/sbi_training_sets') # noqa
-GHOST_OUTPUT_ROOT        = os.environ.get('GHOST_OUTPUT_ROOT',  '/data/ghost_output') # noqa
-GHOST_DATA_ROOT          = os.environ.get('GHOST_DATA_ROOT',    '/data/ghost_data') # noqa
-GHOST_DUST_PATH          = os.environ.get('GHOST_DUST_PATH',    os.path.join(GHOST_DATA_ROOT, 'dust_model')) # noqa
-GHOST_PHOTOZ_PATH        = os.environ.get('GHOST_PHOTOZ_PATH',  os.path.join(GHOST_DATA_ROOT, 'photoz_model/MLP_lupton.hdf5')) # noqa
-TNS_STAGING_ROOT         = os.environ.get('TNS_STAGING_ROOT',   '/data/tns_staging') # noqa
-SBIPP_ROOT               = os.environ.get('SBIPP_ROOT',         '/data/sbipp') # noqa
-SBIPP_PHOT_ROOT          = os.environ.get('SBIPP_PHOT_ROOT',    '/data/sbipp_phot') # noqa
-TRANSMISSION_CURVES_ROOT = os.environ.get('TRANSMISSION_CURVES_ROOT', '/data/transmission') # noqa
+DUSTMAPS_DATA_ROOT = os.environ.get("DUSTMAPS_DATA_ROOT", "/data/dustmaps")  # noqa
+CUTOUT_ROOT = os.environ.get("CUTOUT_ROOT", "/data/cutout_cdn")  # noqa
+SED_OUTPUT_ROOT = os.environ.get("SED_OUTPUT_ROOT", "/data/sed_output")  # noqa
+SBI_TRAINING_ROOT = os.environ.get(
+    "SBI_TRAINING_ROOT", "/data/sbi_training_sets"
+)  # noqa
+GHOST_OUTPUT_ROOT = os.environ.get("GHOST_OUTPUT_ROOT", "/data/ghost_output")  # noqa
+GHOST_DATA_ROOT = os.environ.get("GHOST_DATA_ROOT", "/data/ghost_data")  # noqa
+GHOST_DUST_PATH = os.environ.get(
+    "GHOST_DUST_PATH", os.path.join(GHOST_DATA_ROOT, "dust_model")
+)  # noqa
+GHOST_PHOTOZ_PATH = os.environ.get(
+    "GHOST_PHOTOZ_PATH", os.path.join(GHOST_DATA_ROOT, "photoz_model/MLP_lupton.hdf5")
+)  # noqa
+TNS_STAGING_ROOT = os.environ.get("TNS_STAGING_ROOT", "/data/tns_staging")  # noqa
+SBIPP_ROOT = os.environ.get("SBIPP_ROOT", "/data/sbipp")  # noqa
+SBIPP_PHOT_ROOT = os.environ.get("SBIPP_PHOT_ROOT", "/data/sbipp_phot")  # noqa
+TRANSMISSION_CURVES_ROOT = os.environ.get(
+    "TRANSMISSION_CURVES_ROOT", "/data/transmission"
+)  # noqa
 
 CUTOUT_OVERWRITE = os.environ.get("CUTOUT_OVERWRITE", "False")
 
