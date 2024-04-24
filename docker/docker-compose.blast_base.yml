@@ -17,7 +17,9 @@ services:
       - ../env/.env.default
       - ../env/.env.dev
   blast_ci:
-    image: blast:dev
+    image: blast:ci
+    build:
+      context: ../app/
     volumes:
       - ./dustmapsrc:/tmp/.dustmapsrc:ro
       - blast-data:/mnt/data
