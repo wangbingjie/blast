@@ -38,7 +38,8 @@ class Ghost(TransientTaskRunner):
         """
         Only prerequisite is that the host match task is not processed.
         """
-        return {"Host match": "not processed"}
+        return {"Host match": "not processed",
+                "Cutout download": "processed"}
 
     @property
     def task_name(self):
