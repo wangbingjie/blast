@@ -3,6 +3,16 @@ volumes:
   django-static: {}
 
 services:
+  blast_latest:
+    image: hub.ncsa.illinois.edu/blast/blast:latest
+    command: bash entrypoints/docker-entrypoint.app.sh
+    env_file:
+      - ../env/.env.default
+      - ../env/.env.dev
+    volumes:
+      - ./dustmapsrc:/tmp/.dustmapsrc:ro
+      - blast-data:/mnt/data
+      - django-static:/app/static
   blast_base:
     image: blast:dev
     build:
@@ -49,13 +59,3 @@ services:
     env_file:
       - ../env/.env.default
       - ../env/.env.dev
-  blast_latest:
-    image: ghcr.io/astrophpeter/blast:latest
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
-    volumes:
-      - ../app:/app
-      - ./dustmapsrc:/tmp/.dustmapsrc:ro
-      - blast-data:/mnt/data
-      - django-static:/app/static
