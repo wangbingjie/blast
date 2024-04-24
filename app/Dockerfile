@@ -1,3 +1,8 @@
+FROM python:3.11 as mc
+
+RUN curl https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc && \
+    chmod +x /usr/local/bin/mc
+
 FROM python:3.11
 ENV PYTHONUNBUFFERED 1
 
@@ -22,3 +27,5 @@ RUN mkdir /app
 
 COPY . /app
 WORKDIR /app
+
+COPY --from=mc /usr/local/bin/mc /usr/local/bin/mc

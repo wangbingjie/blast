@@ -1,54 +1,68 @@
 #!/bin/bash
 set -e
 
-cd /mnt/data
+# Ensure data root directory is configured
+if [[ "${DATA_ROOT_DIR}x" == "x" ]]; then
+  echo "ERROR: DATA_ROOT_DIR environment variable must not be empty. Aborting."
+  exit 1
+fi
 
-mkdir -p cutout_cdn
-mkdir -p sed_output
-mkdir -p ghost_data
-mkdir -p ghost_output
-mkdir -p tns_staging
-mkdir -p transmission
-mkdir -p dustmaps
-mkdir -p fsps
-mkdir -p sbipp
-mkdir -p sbipp_phot
-mkdir -p sbi_training_sets
-
-mkdir -p /data/
+cd "${DATA_ROOT_DIR}"
 
 # The creation of symlinks should error if there is a non-symlink
 # file or folder where the symlink should be.
-if [[ ! -L "/data/cutout_cdn" ]]; then
-    ln -s /mnt/data/cutout_cdn   /data/cutout_cdn
+if [[ ! -L "${CUTOUT_ROOT}" ]]; then
+  mkdir -p "${DATA_ROOT_DIR}"/cutout_cdn
+  mkdir -p "$(dirname "${CUTOUT_ROOT}")"
+  ln -s "${DATA_ROOT_DIR}/cutout_cdn" "${CUTOUT_ROOT}"
 fi
-if [[ ! -L "/data/sed_output" ]]; then
-    ln -s /mnt/data/sed_output   /data/sed_output
+if [[ ! -L "${SED_OUTPUT_ROOT}" ]]; then
+  mkdir -p "${DATA_ROOT_DIR}"/sed_output
+  mkdir -p "$(dirname "${SED_OUTPUT_ROOT}")"
+  ln -s "${DATA_ROOT_DIR}/sed_output" "${SED_OUTPUT_ROOT}"
 fi
-if [[ ! -L "/data/ghost_data" ]]; then
-    ln -s /mnt/data/ghost_data   /data/ghost_data
+if [[ ! -L "${GHOST_DATA_ROOT}" ]]; then
+  mkdir -p "${DATA_ROOT_DIR}"/ghost_data
+  mkdir -p "$(dirname "${GHOST_DATA_ROOT}")"
+  ln -s "${DATA_ROOT_DIR}/ghost_data" "${GHOST_DATA_ROOT}"
 fi
-if [[ ! -L "/ghost_output" ]]; then
-    ln -s /mnt/data/ghost_output /ghost_output
+if [[ ! -L "${GHOST_OUTPUT_ROOT}" ]]; then
+  mkdir -p "${DATA_ROOT_DIR}"/ghost_output
+  mkdir -p "$(dirname "${GHOST_OUTPUT_ROOT}")"
+  ln -s "${DATA_ROOT_DIR}/ghost_output" "${GHOST_OUTPUT_ROOT}"
 fi
-if [[ ! -L "/tns_staging" ]]; then
-    ln -s /mnt/data/tns_staging  /tns_staging
+if [[ ! -L "${TNS_STAGING_ROOT}" ]]; then
+  mkdir -p "${DATA_ROOT_DIR}"/tns_staging
+  mkdir -p "$(dirname "${TNS_STAGING_ROOT}")"
+  ln -s "${DATA_ROOT_DIR}/tns_staging" "${TNS_STAGING_ROOT}"
 fi
-if [[ ! -L "/transmission" ]]; then
-    ln -s /mnt/data/transmission /transmission
+if [[ ! -L "${TRANSMISSION_CURVES_ROOT}" ]]; then
+  mkdir -p "${DATA_ROOT_DIR}"/transmission
+  mkdir -p "$(dirname "${TRANSMISSION_CURVES_ROOT}")"
+  ln -s "${DATA_ROOT_DIR}/transmission" "${TRANSMISSION_CURVES_ROOT}"
 fi
-if [[ ! -L "/dustmaps" ]]; then
-    ln -s /mnt/data/dustmaps     /dustmaps
+if [[ ! -L "${DUSTMAPS_DATA_ROOT}" ]]; then
+  mkdir -p "${DATA_ROOT_DIR}"/dustmaps
+  mkdir -p "$(dirname "${DUSTMAPS_DATA_ROOT}")"
+  ln -s "${DATA_ROOT_DIR}/dustmaps" "${DUSTMAPS_DATA_ROOT}"
 fi
-if [[ ! -L "/fsps" ]]; then
-    ln -s /mnt/data/fsps         /fsps
+if [[ ! -L "${SPS_HOME}" ]]; then
+  mkdir -p "${DATA_ROOT_DIR}"/fsps
+  mkdir -p "$(dirname "${SPS_HOME}")"
+  ln -s "${DATA_ROOT_DIR}/fsps" "${SPS_HOME}"
 fi
-if [[ ! -L "/sbipp" ]]; then
-    ln -s /mnt/data/sbipp        /sbipp
+if [[ ! -L "${SBIPP_ROOT}" ]]; then
+  mkdir -p "${DATA_ROOT_DIR}"/sbipp
+  mkdir -p "$(dirname "${SBIPP_ROOT}")"
+  ln -s "${DATA_ROOT_DIR}/sbipp" "${SBIPP_ROOT}"
 fi
-if [[ ! -L "/sbipp_phot" ]]; then
-    ln -s /mnt/data/sbipp_phot   /sbipp_phot
+if [[ ! -L "${SBIPP_PHOT_ROOT}" ]]; then
+  mkdir -p "${DATA_ROOT_DIR}"/sbipp_phot
+  mkdir -p "$(dirname "${SBIPP_PHOT_ROOT}")"
+  ln -s "${DATA_ROOT_DIR}/sbipp_phot" "${SBIPP_PHOT_ROOT}"
 fi
-if [[ ! -L "/data/sbi_training_sets" ]]; then
-    ln -s /mnt/data/sbi_training_sets   /data/sbi_training_sets
+if [[ ! -L "${SBI_TRAINING_ROOT}" ]]; then
+  mkdir -p "${DATA_ROOT_DIR}"/sbi_training_sets
+  mkdir -p "$(dirname "${SBI_TRAINING_ROOT}")"
+  ln -s "${DATA_ROOT_DIR}/sbi_training_sets" "${SBI_TRAINING_ROOT}"
 fi
