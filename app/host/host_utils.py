@@ -4,6 +4,7 @@ import os
 import time
 import warnings
 from collections import namedtuple
+from xml.parsers.expat import ExpatError
 
 import astropy.units as u
 import extinction
@@ -23,6 +24,7 @@ from astroquery.sdss import SDSS
 cosmo = FlatLambdaCDM(H0=70, Om0=0.315)
 
 from django.conf import settings
+from django.db.models import Q
 from dustmaps.sfd import SFDQuery
 from photutils.aperture import aperture_photometry
 from photutils.aperture import EllipticalAperture
@@ -396,7 +398,7 @@ def select_cutout_aperture(cutouts, choice=0):
     ### edited to allow initial offset
     filter_choice = filter_names[choice]
 
-    while not cutouts.filter(filter__name=filter_choice).exists():
+    while not cutouts.filter(filter__name=filter_choice).filter(~Q(fits="")).exists():
         choice += 1
         filter_choice = filter_names[choice]
 
@@ -533,7 +535,20 @@ def construct_aperture(image, position):
 def query_ned(position):
     """Get a Galaxy's redshift from ned if it is available."""
 
-    result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
+    too_many_requests_count = 0
+    too_many_requests = True
+    while too_many_requests and too_many_requests_count < 5:
+        try:
+            result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
+            too_many_requests = False
+        except ExpatError as e:
+            too_many_requests = True
+            print("too many requests!  going to sleep 60s...")
+            time.sleep(60)
+        too_many_requests_count += 1
+    if too_many_requests:
+        raise RuntimeError("too many requests to NED")
+
     result_table = result_table[result_table["Redshift"].mask == False]
 
     redshift = result_table["Redshift"].value
