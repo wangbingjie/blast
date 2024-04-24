@@ -73,20 +73,6 @@ then
     echo "ERROR: Downloaded/extracted data files failed integrity check. Aborting."
     exit 1
   fi
-  # # Install data in target locations
-  # echo "Data extracted. Installing data files..."
-  # rsync -va "${DATA_ROOT_DIR}"/cutout_cdn/2010ag/ "${CUTOUT_ROOT}"/2010ag/
-  # rsync -va "${DATA_ROOT_DIR}"/cutout_cdn/2010ai/ "${CUTOUT_ROOT}"/2010ai/
-  # rsync -va "${DATA_ROOT_DIR}"/cutout_cdn/2010H/  "${CUTOUT_ROOT}"/2010H/
-  # rsync -va "${DATA_ROOT_DIR}"/sed_output/2010H/  "${SED_OUTPUT_ROOT}"/2010H/
-  # rsync -va "${DATA_ROOT_DIR}"/sbipp/             "${SBIPP_ROOT}"/
-  # rsync -va "${DATA_ROOT_DIR}"/transmission/      "${TRANSMISSION_CURVES_ROOT}"/
-  # rsync -va "${DATA_ROOT_DIR}"/fsps/              "${SPS_HOME}"/
-  # rsync -va "${DATA_ROOT_DIR}"/tns_staging/       "${TNS_STAGING_ROOT}"/
-  # rsync -va "${DATA_ROOT_DIR}"/sbipp_phot/        "${SBIPP_PHOT_ROOT}"/
-  # rsync -va "${DATA_ROOT_DIR}"/dustmaps/          "${DUSTMAPS_DATA_ROOT}"/
-  # rsync -va "${DATA_ROOT_DIR}"/ghost_data/        "${GHOST_DATA_ROOT}"/
-  # rsync -va "${DATA_ROOT_DIR}"/sbi_training_sets/ "${SBI_TRAINING_ROOT}"/
   echo "Data installed."
 fi
 
