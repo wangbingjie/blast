@@ -350,13 +350,13 @@ class TestAllRegisteredTaskRunners(TestCase):
             transient_type = task_runner.task_type == "transient"
             system_type = task_runner.task_type == "system"
             self.assertTrue(system_type or transient_type)
-            self.assertTrue(type(task_runner.task_type) == str)
+            self.assertTrue(isinstance(task_runner.task_type, str))
 
     def test_transient_task_prerequisites(self):
         for task_runner in periodic_tasks:
             if task_runner.task_type == "transient":
                 prereq = task_runner.prerequisites
-                self.assertTrue(type(prereq) == dict)
+                self.assertTrue(isinstance(prereq, dict))
 
                 for name, status in prereq.items():
                     db_status = Status.objects.get(message__exact=status)
@@ -373,7 +373,7 @@ class TestAllRegisteredTaskRunners(TestCase):
     def test_transient_task_name(self):
         for task_runner in periodic_tasks:
             if task_runner.task_type == "transient":
-                self.assertTrue(type(task_runner.task_name) == str)
+                self.assertTrue(isinstance(task_runner.task_name, str))
                 db_task = Task.objects.get(name__exact=task_runner.task_name)
                 self.assertTrue(db_task.name == task_runner.task_name)
 
@@ -381,6 +381,6 @@ class TestAllRegisteredTaskRunners(TestCase):
         for task_runner in periodic_tasks:
             if task_runner.task_type == "transient":
                 failed_message = task_runner._failed_status_message()
-                self.assertTrue(type(failed_message) == str)
+                self.assertTrue(isinstance(failed_message, str))
                 db_status = Status.objects.get(message__exact=failed_message)
                 self.assertTrue(db_status.message == failed_message)

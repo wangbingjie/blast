@@ -65,11 +65,11 @@ class Ghost(TransientTaskRunner):
             transient.host = host
             transient.save()
 
-            ### having a weird error here
-            ### possible issues communicating with the database
+            # having a weird error here
+            # possible issues communicating with the database
             transient_check = Transient.objects.get(name=transient.name)
             if transient_check.host is None:
-                ### let's try twice just in case
+                # let's try twice just in case
                 transient.host = host
                 transient.save()
 
@@ -115,7 +115,7 @@ class MWEBV_Transient(TransientTaskRunner):
 
         try:
             mwebv = get_dust_maps(transient.sky_coord)
-        except Exception as e:
+        except Exception:
             mwebv = None
 
         if mwebv is not None:
@@ -159,7 +159,7 @@ class MWEBV_Host(TransientTaskRunner):
         if transient.host is not None:
             try:
                 mwebv = get_dust_maps(transient.host.sky_coord)
-            except Exception as e:
+            except Exception:
                 mwebv = None
 
             if mwebv is not None:
@@ -346,7 +346,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
                     data["magnitude_error"] = photometry["magnitude_error"]
 
                 self._overwrite_or_create_object(AperturePhotometry, query, data)
-            except Exception as e:
+            except Exception:
                 raise
         return "processed"
 
@@ -457,7 +457,7 @@ class GlobalAperturePhotometry(TransientTaskRunner):
                     data["magnitude_error"] = photometry["magnitude_error"]
 
                 self._overwrite_or_create_object(AperturePhotometry, query, data)
-            except Exception as e:
+            except Exception:
                 raise
 
         return "processed"
@@ -578,7 +578,7 @@ class ValidateGlobalPhotometry(TransientTaskRunner):
 
         is_contam_list = []
         # issue_warning = True
-        no_contam_count = 0
+        # no_contam_count = 0
         for global_aperture_phot in global_aperture_photometry:
             # check if there are contaminating objects in the
             # cutout image used for aperture construction at
@@ -662,10 +662,10 @@ class HostInformation(TransientTaskRunner):
             return "no host"
 
         galaxy_ned_data = query_ned(host.sky_coord)
-        ### too many SDSS errors
+        # too many SDSS errors
         try:
             galaxy_sdss_data = query_sdss(host.sky_coord)
-        except Exception as e:
+        except Exception:
             galaxy_sdss_data = None
 
         status_message = "processed"
@@ -710,7 +710,7 @@ class HostSEDFitting(TransientTaskRunner):
         }
 
         if transient.best_redshift is None or transient.best_redshift > 0.2:
-            ### training sample doesn't work here
+            # training sample doesn't work here
             return "redshift too high"
 
         aperture = Aperture.objects.filter(**query)
