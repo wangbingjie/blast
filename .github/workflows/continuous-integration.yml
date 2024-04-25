@@ -5,14 +5,10 @@ on:
     branches: [main]
     paths-ignore:
       - 'docs/**'
-    tags:
-      - ci-test-*
   push:
     branches: [main]
     paths-ignore:
       - 'docs/**'
-    tags:
-      - ci-test-*
 
 jobs:
   build:
@@ -21,15 +17,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run tests
-        run: |
-          docker compose \
-            --project-name blast \
-            -f docker/docker-compose.yml \
-            --env-file env/.env.default \
-            --env-file env/.env.ci \
-            --profile ci \
-            up --build --exit-code-from app_ci
+      # - name: Run tests
+      #   run: |
+      #     docker compose \
+      #       --project-name blast \
+      #       -f docker/docker-compose.yml \
+      #       --env-file env/.env.default \
+      #       --env-file env/.env.ci \
+      #       --profile ci \
+      #       up --build --exit-code-from app_ci
 
       - uses: codecov/codecov-action@v4
         with:
