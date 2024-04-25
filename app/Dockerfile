@@ -1,4 +1,4 @@
-FROM hub.ncsa.illinois.edu/blast/deps:latest as deps
+FROM hub.ncsa.illinois.edu/blast/deps@sha256:0fe60eb8fee7c93664ee67e2b82fab048311f2bdf574011a402ca656f9e1408d as deps
 
 FROM python:3.11
 ENV PYTHONUNBUFFERED 1
