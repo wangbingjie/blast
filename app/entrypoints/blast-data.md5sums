@@ -355,12 +355,6 @@ e85a71766591cd6ca9ccf645425f0f26  fsps/ISOCHRONES/BaSTI/isoc_z0.0020.dat
 ff88aec10ed2a3ef28e9a62a8313d653  fsps/ISOCHRONES/BaSTI/isoc_z0.0100.dat
 2f854c7ccb31e27177053d4f42fe7a43  fsps/ISOCHRONES/BaSTI/isoc_z0.0200.dat
 e1cbb779c76bedbe0747c4e7b386ffa0  fsps/LICENSE
-3967b82a048c48e52467c0934a4cc9ad  sbi_training_sets/y_train_global.pkl
-ed48fe39dfe9c1b212f7998eca6e9688  sbi_training_sets/x_train_local.pkl
-1991a2faa8f9f64f1e47c2b8848f99c0  sbi_training_sets/y_train_local.pkl
-abe43b190eaf588fdc740b52f779e813  sbi_training_sets/hatp_x_y_local.pkl
-eb49b0607f062ed105f25bb1a778c6b9  sbi_training_sets/x_train_global.pkl
-cf3f07f1d7ba424ef02da7716f0729bc  sbi_training_sets/hatp_x_y_global.pkl
 60f7c43d51bccaff82961de3e9f9e789  dustmaps/sfd/SFD_dust_4096_sgp.fits
 6f3a89528bba7d1b7bd55838da86b639  dustmaps/sfd/SFD_dust_4096_ngp.fits
 2574cbe9e1d2d6af3080b0e1240fa63c  sed_output/2010H/2010H_global.h5

@@ -1,7 +1,4 @@
-FROM python:3.11 as mc
-
-RUN curl https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc && \
-    chmod +x /usr/local/bin/mc
+FROM hub.ncsa.illinois.edu/blast/deps@sha256:0fe60eb8fee7c93664ee67e2b82fab048311f2bdf574011a402ca656f9e1408d as deps
 
 FROM python:3.11
 ENV PYTHONUNBUFFERED 1
@@ -15,17 +12,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive && apt-get install -y --no-
     libhdf5-serial-dev \
     netcdf-bin \
     libnetcdf-dev \
-    rsync \
     && rm -rf /var/lib/apt/list/*
-
-COPY ./requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt --no-cache-dir
 
 COPY ./debug/debug_ipython.py /root/.ipython/profile_default/startup/
 
-RUN mkdir /app
+COPY --from=deps /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
+COPY --from=deps /usr/local/bin/ /usr/local/bin/
 
+RUN mkdir /app
 COPY . /app
 WORKDIR /app
-
-COPY --from=mc /usr/local/bin/mc /usr/local/bin/mc

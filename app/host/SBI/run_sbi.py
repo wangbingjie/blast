@@ -8,6 +8,7 @@ import time
 from host.models import SEDFittingResult
 from host.prospector import build_model
 from host.prospector import build_obs
+
 # import sys
 # import warnings
 
@@ -15,11 +16,13 @@ from host.prospector import build_obs
 # if an error is threw, then uncomment this line
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 import numpy as np
+
 # from numpy.random import normal, uniform
 from scipy.interpolate import interp1d
 
 # torch
 import torch
+
 # import torch.nn as nn
 # import torch.nn.functional as F
 from sbi import utils as Ut
@@ -169,10 +172,10 @@ def main():
 
         obs = {}
         obs["bands"] = filternames
-        obs["mags"] = mags  ##np.array([maggies_to_asinh(p) for p in pobs['maggies']])
-        obs["mags_unc"] = mags_unc  ##2.5/np.log(10)*pobs['maggies_unc']/pobs['maggies']
+        obs["mags"] = mags  # np.array([maggies_to_asinh(p) for p in pobs['maggies']])
+        obs["mags_unc"] = mags_unc  # 2.5/np.log(10)*pobs['maggies_unc']/pobs['maggies']
         obs["redshift"] = pobs["redshift"]
-        ###obs["mags"][np.where(filternames == 'WISE_W3')[0][0]] = np.nan
+        # obs["mags"][np.where(filternames == 'WISE_W3')[0][0]] = np.nan
         # Run SBI++
         # signal.alarm(0)
         # signal.alarm(600)
@@ -204,4 +207,4 @@ def main():
                     file=fout,
                 )
             except Exception as err:
-                print(transient_name, np.mean(chain[:, 1]), mfrac, None, file=fout, err)
+                print(transient_name, np.mean(chain[:, 1]), mfrac, None, err, file=fout)
