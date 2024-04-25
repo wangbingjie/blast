@@ -169,10 +169,10 @@ def main():
 
         obs = {}
         obs["bands"] = filternames
-        obs["mags"] = mags  ##np.array([maggies_to_asinh(p) for p in pobs['maggies']])
-        obs["mags_unc"] = mags_unc  ##2.5/np.log(10)*pobs['maggies_unc']/pobs['maggies']
+        obs["mags"] = mags  # np.array([maggies_to_asinh(p) for p in pobs['maggies']])
+        obs["mags_unc"] = mags_unc  # 2.5/np.log(10)*pobs['maggies_unc']/pobs['maggies']
         obs["redshift"] = pobs["redshift"]
-        ###obs["mags"][np.where(filternames == 'WISE_W3')[0][0]] = np.nan
+        # obs["mags"][np.where(filternames == 'WISE_W3')[0][0]] = np.nan
         # Run SBI++
         # signal.alarm(0)
         # signal.alarm(600)
@@ -204,4 +204,4 @@ def main():
                     file=fout,
                 )
             except Exception as err:
-                print(transient_name, np.mean(chain[:, 1]), mfrac, None, file=fout, err)
+                print(transient_name, np.mean(chain[:, 1]), mfrac, None, err, file=fout)
