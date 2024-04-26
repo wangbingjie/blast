@@ -22,7 +22,7 @@ class TransientTable(tables.Table):
         accessor="public_timestamp",
         verbose_name="Discovery Date",
         orderable=True,
-        order_by="ra_deg",
+        order_by="public_timestamp",
     )
 
     ra_string = tables.Column(
