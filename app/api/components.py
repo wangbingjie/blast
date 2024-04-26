@@ -3,7 +3,6 @@ This module contains definitions of the science payload components. Functions
 that turn blast database scheme into a flat science payload to be served through
 the API.
 """
-
 from typing import List
 
 from host import models

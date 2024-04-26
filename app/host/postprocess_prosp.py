@@ -11,7 +11,6 @@ To use this script on SBI posteriors, replace that block that reads in a Prospec
 
 If you train the SBI on the stellar mass, instead the total mass formed (the default from prospector), then there is no need to run the block that does this transformation in run_all().
 """
-
 import os
 import random
 import sys
