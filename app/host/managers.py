@@ -1,6 +1,7 @@
 """
 Defines the natural keys for model objects to be de-serialized with.
 """
+
 from django.db import models
 
 

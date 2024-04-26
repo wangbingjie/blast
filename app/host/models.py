@@ -2,6 +2,7 @@
 This modules contains the django code used to create tables in the database
 backend.
 """
+
 import os
 
 import pandas as pd

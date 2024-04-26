@@ -2,6 +2,7 @@
 This module contains helper functions to serialize blast data into a flat
 science payload to be delivered by the blast web API.
 """
+
 import itertools
 from dataclasses import dataclass
 from typing import List
