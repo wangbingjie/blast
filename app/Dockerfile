@@ -19,6 +19,8 @@ COPY ./debug/debug_ipython.py /root/.ipython/profile_default/startup/
 COPY --from=deps /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 COPY --from=deps /usr/local/bin/ /usr/local/bin/
 
+RUN pip install --no-cache-dir watchdog
+
 RUN mkdir /app
 COPY . /app
 WORKDIR /app

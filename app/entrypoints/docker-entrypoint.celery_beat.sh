@@ -14,4 +14,9 @@ fi
 
 bash entrypoints/initialize_data_dirs.sh
 
-celery -A app beat -l INFO
+if [[ $DEV_MODE == 1 ]]; then
+  watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- \
+  celery -A app beat -l DEBUG
+else
+  celery -A app beat -l INFO
+fi

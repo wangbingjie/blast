@@ -14,4 +14,9 @@ fi
 
 bash entrypoints/initialize_data_dirs.sh
 
-celery -A app worker -l ERROR --max-memory-per-child ${CELERY_MAX_MEMORY_PER_CHILD:-12000}
+if [[ $DEV_MODE == 1 ]]; then
+  watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- \
+  celery -A app worker -l DEBUG --max-memory-per-child ${CELERY_MAX_MEMORY_PER_CHILD:-12000}
+else
+  celery -A app worker -l ERROR --max-memory-per-child ${CELERY_MAX_MEMORY_PER_CHILD:-12000}
+fi
