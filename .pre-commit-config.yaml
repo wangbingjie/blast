@@ -1,4 +1,8 @@
 exclude: '(^data/|^app/entrypoints/)'
+# See https://pre-commit.ci/ for more config options
+ci:
+    # autoupdate_schedule: 'quarterly'
+    autoupdate_branch: 'pre-commit'
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.6.0
