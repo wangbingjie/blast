@@ -27,6 +27,6 @@ jobs:
       #       --profile ci \
       #       up --build --exit-code-from app_ci
 
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v3
         with:
           directory: app/
