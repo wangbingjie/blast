@@ -8,7 +8,6 @@ from ..transient_tasks import Ghost
 
 
 class TestHostMatch(TestCase):
-
     fixtures = [
         "../fixtures/initial/setup_survey_data.yaml",
         "../fixtures/initial/setup_filter_data.yaml",

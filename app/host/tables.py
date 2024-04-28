@@ -6,7 +6,6 @@ from .models import Transient
 
 
 class TransientTable(tables.Table):
-
     name = tables.TemplateColumn(
         "<a href=\"{% url 'results' record.name %}\">{{ record.name }}</a>",
         verbose_name="Name",
@@ -89,7 +88,6 @@ class TransientTable(tables.Table):
         }
 
     def order_best_spec_redshift(self, queryset, is_descending):
-
         queryset = queryset.annotate(
             best_spec_redshift=Coalesce("redshift", "host__redshift"),
         ).order_by(("-" if is_descending else "") + "best_spec_redshift")

@@ -77,7 +77,6 @@ def build_obs(**extras):  ##transient, aperture_type):
     """
     filters = []
     for filter in all_filters:
-
         filters.append(filter.transmission_curve())
 
     obs_data = dict(
@@ -1079,7 +1078,6 @@ def sbi_missing_and_noisy(obs, run_params, sbi_params):
     cnt_timeout = 0
     timeout_flag = False
     while cnt < run_params["nmc"]:
-
         samp_y_guess = np.copy(observed)
 
         # first, fill in the missing bands

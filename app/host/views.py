@@ -37,7 +37,6 @@ from silk.profiling.profiler import silk_profile
 
 
 def filter_transient_categories(qs, value):
-
     if value == "Transients with Basic Information":
         qs = qs.filter(
             pk__in=TaskRegister.objects.filter(
@@ -93,7 +92,6 @@ def filter_transient_categories(qs, value):
 
 
 class TransientFilter(django_filters.FilterSet):
-
     hostmatch = django_filters.ChoiceFilter(
         choices=[
             ("All Transients", "All Transients"),
@@ -116,7 +114,6 @@ class TransientFilter(django_filters.FilterSet):
         fields = ["hostmatch", "ex"]
 
     def filter_transients(self, qs, name, value):
-
         qs = filter_transient_categories(qs, value)
 
         return qs
@@ -124,7 +121,6 @@ class TransientFilter(django_filters.FilterSet):
 
 @silk_profile(name="List transients")
 def transient_list(request):
-
     transients = Transient.objects.order_by("-public_timestamp")
     transientfilter = TransientFilter(request.GET, queryset=transients)
 
@@ -137,7 +133,6 @@ def transient_list(request):
 
 @login_required
 def transient_uploads(request):
-
     errors = []
     uploaded_transient_names = []
 
@@ -197,11 +192,9 @@ def transient_uploads(request):
 
 
 def analytics(request):
-
     analytics_results = {}
 
     for aggregate in ["total", "not completed", "completed", "waiting"]:
-
         transients = TaskRegisterSnapshot.objects.filter(
             aggregate_type__exact=aggregate
         )
@@ -212,9 +205,9 @@ def analytics(request):
         else:
             transients_current = None
 
-        analytics_results[f"{aggregate}_transients_current".replace(" ", "_")] = (
-            transients_current
-        )
+        analytics_results[
+            f"{aggregate}_transients_current".replace(" ", "_")
+        ] = transients_current
         bokeh_processing_context = plot_timeseries()
 
     return render(
@@ -370,7 +363,6 @@ def results(request, slug):
 
 
 def reprocess_transient(request, slug):
-
     tasks = TaskRegister.objects.filter(transient__name=slug)
     for t in tasks:
         t.status = Status.objects.get(message="not processed")
@@ -380,7 +372,6 @@ def reprocess_transient(request, slug):
 
 
 def download_chains(request, slug, aperture_type):
-
     sed_result = get_object_or_404(
         SEDFittingResult, transient__name=slug, aperture__type=aperture_type
     )
@@ -393,7 +384,6 @@ def download_chains(request, slug, aperture_type):
 
 
 def download_modelfit(request, slug, aperture_type):
-
     sed_result = get_object_or_404(
         SEDFittingResult, transient__name=slug, aperture__type=aperture_type
     )
@@ -406,7 +396,6 @@ def download_modelfit(request, slug, aperture_type):
 
 
 def download_percentiles(request, slug, aperture_type):
-
     sed_result = get_object_or_404(
         SEDFittingResult, transient__name=slug, aperture__type=aperture_type
     )
@@ -424,7 +413,6 @@ def acknowledgements(request):
 
 
 def home(request):
-
     analytics_results = {}
 
     for aggregate, qs_value in zip(
@@ -441,7 +429,6 @@ def home(request):
             "Transients with SED Fitting",
         ],
     ):
-
         analytics_results[aggregate] = len(
             filter_transient_categories(Transient.objects.all(), qs_value)
         )
