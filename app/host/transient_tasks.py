@@ -25,6 +25,8 @@ from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
 from .prospector import prospector_result_to_blast
+import os
+from celery import shared_task
 
 """This module contains all of the TransientTaskRunners in blast."""
 
@@ -867,3 +869,40 @@ class GlobalHostSEDFitting(HostSEDFitting):
         )
 
         return status_message
+
+
+task_time_limit = int(os.environ.get("TASK_TIME_LIMIT", "3800"))
+task_soft_time_limit = int(os.environ.get("TASK_SOFT_TIME_LIMIT", "3600"))
+
+
+# # @shared_task(time_limit={task_time_limit}, soft_time_limit={task_soft_time_limit},)
+# def cutout_download():
+#     return True
+#     # ImageDownload(transient_name=kwargs['transient_name']).run_process()
+
+
+# @shared_task(time_limit={task_time_limit}, soft_time_limit={task_soft_time_limit},)
+# def host_match(*args, **kwargs):
+#     Ghost(transient_name=kwargs['transient_name']).run_process()
+
+
+@shared_task()
+def first(transient_name):
+    return transient_name
+
+@shared_task()
+def second(transient_name):
+    return transient_name
+
+def launch_workflow(transient_name):
+    from celery import chain
+    print(f'''launch_transient_workflow: {transient_name}''')
+    # cutout_download_sig = cutout_download.s(transient_name)
+    # host_match_sig = host_match.s(transient_name)
+    # workflow = chain(cutout_download_sig, host_match_sig)()
+    workflow = chain(
+        first.s(transient_name),
+        second.s(),
+    )()
+    workflow.get()
+

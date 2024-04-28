@@ -20,7 +20,9 @@ from .transient_name_server import get_transients_from_tns_by_name
 from .transient_name_server import tns_staging_blast_transient
 from .transient_name_server import tns_staging_file_date_name
 from .transient_name_server import update_blast_transient
-
+from celery import chain
+# from .transient_tasks import cutout_download
+# from .transient_tasks import host_match
 
 class TNSDataIngestion(SystemTaskRunner):
     def run_process(self, interval_minutes=200):
@@ -95,18 +97,34 @@ class TNSDataIngestion(SystemTaskRunner):
 
 
 class InitializeTransientTasks(SystemTaskRunner):
+    def launch_transient_workflow(self, transient_name):
+        print(f'''launch_transient_workflow: {transient_name}''')
+        # cutout_download_sig = cutout_download.s(transient_name)
+        # host_match_sig = host_match.s(transient_name)
+        # workflow = chain(cutout_download_sig, host_match_sig)()
+        workflow = chain(
+            cutout_download.s(transient_name),
+            host_match.s(transient_name),
+        )()
+
+        print(workflow.get())
+
     def run_process(self):
         """
         Initializes all task in the database to not processed for new transients.
         """
 
-        uninitialized_transients = Transient.objects.filter(
-            tasks_initialized__exact="False"
-        )
+        # uninitialized_transients = Transient.objects.filter(
+        #     tasks_initialized__exact="False"
+        # )
+        uninitialized_transients = Transient.objects.all()
         for transient in uninitialized_transients:
             initialise_all_tasks_status(transient)
             transient.tasks_initialized = "True"
             transient.save()
+        print(f'''uninitialized_transients: {[tr.name for tr in uninitialized_transients]}''')
+        for transient in uninitialized_transients:
+            self.launch_transient_workflow(transient_name=transient.name)
 
     @property
     def task_name(self):

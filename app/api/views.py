@@ -195,6 +195,16 @@ def ra_dec_valid(ra: str, dec: str) -> bool:
     return valid
 
 
+@api_view(["PUT"])
+def launch_workflow(request, transient_name):
+    # transient_name = request.data['transient_name']
+    print(f'''Launching workflow for "{transient_name}..."''')
+    from host.transient_tasks import first, second
+    sig = first.s(transient_name)
+    result = sig()
+    return Response({'message': f'''You launched a workflow for transient "{transient_name}": {sig}, {result}.'''}, status=status.HTTP_200_OK)
+
+
 @api_view(["GET"])
 def get_transient_science_payload(request, transient_name):
     if not transient_exists(transient_name):

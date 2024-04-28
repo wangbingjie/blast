@@ -131,12 +131,14 @@ class TransientTaskRunner(TaskRunner):
             runner to process.
     """
 
-    def __init__(self):
+    def __init__(self, transient_name=None):
         """
         Initialized method which sets up the task runner.
         """
 
         self.prerequisites = self._prerequisites()
+        assert transient_name
+        self.transient_name = transient_name
 
     def find_register_items_meeting_prerequisites(self):
         """
@@ -153,9 +155,14 @@ class TransientTaskRunner(TaskRunner):
             task_prereq = Task.objects.get(name__exact=task_name)
             status = Status.objects.get(message__exact=status_message)
 
-            current_transients = current_transients & Transient.objects.filter(
-                taskregister__task=task_prereq, taskregister__status=status
-            )
+            if self.transient_name:
+                current_transients = current_transients & Transient.objects.filter(
+                    taskregister__task=task_prereq, taskregister__status=status, transient__name=self.transient_name
+                )
+            else:
+                current_transients = current_transients & Transient.objects.filter(
+                    taskregister__task=task_prereq, taskregister__status=status
+                )
 
         return task_register.filter(transient__in=list(current_transients), task=task)
 
@@ -208,6 +215,7 @@ class TransientTaskRunner(TaskRunner):
         processing_status = Status.objects.get(message__exact="processing")
 
         if task_register_item is not None:
+            print(f'''task_register_item: {task_register_item}''')
             self._update_status(task_register_item, processing_status)
             transient = task_register_item.transient
 
@@ -217,7 +225,7 @@ class TransientTaskRunner(TaskRunner):
             except SoftTimeLimitExceeded:
                 status_message = "time limit exceeded"
                 raise
-            except:
+            except Exception:
                 status_message = self._failed_status_message()
                 raise
             finally:

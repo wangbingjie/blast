@@ -12,6 +12,10 @@ urlpatterns = [
     path(
         f"""{base_path}transient/get/<str:transient_name>""",
         views.get_transient_science_payload,
+    ),
+    path(
+        f"""{base_path}workflow/<str:transient_name>""",
+        views.launch_workflow,
     )
 ]
 
