@@ -29,6 +29,7 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() == "true"
 SILKY_PYTHON_PROFILER = (
     os.environ.get("SILKY_PYTHON_PROFILER", "false").lower() == "true"
 )
+SILKY_INTERCEPT_PERCENT = int(os.environ.get("SILKY_INTERCEPT_PERCENT", "0"))
 
 
 HOSTNAMES = os.environ.get("DJANGO_HOSTNAMES", "localhost").split(",")
