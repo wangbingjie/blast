@@ -21,7 +21,6 @@ class TestValidatePhotometry(TestCase):
     ]
 
     def test_validate_local_photometry(self):
-
         transient = Transient.objects.get(name="2010H")
         vlp_cls = ValidateLocalPhotometry()
 
@@ -41,7 +40,6 @@ class TestValidatePhotometry(TestCase):
         assert status_message == "processed"
 
     def test_validate_global_photometry(self):
-
         transient = Transient.objects.get(name="2010H")
         vgp_cls = ValidateGlobalPhotometry()
 

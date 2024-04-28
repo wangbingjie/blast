@@ -5,7 +5,6 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("host", "0017_alter_aperturephotometry_is_validated"),
     ]

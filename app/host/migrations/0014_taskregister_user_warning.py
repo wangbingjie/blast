@@ -4,7 +4,6 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("host", "0013_sedfittingresult_mass_surviving_ratio"),
     ]
