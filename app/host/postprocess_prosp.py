@@ -287,7 +287,6 @@ def run_all(
     obs=None,
     **extra
 ):
-
     # XXX read in prospector outputs
     if obs is None:
         res, obs, _ = reader.results_from(fname, dangerous=False)

@@ -397,11 +397,9 @@ class GlobalAperturePhotometry(TransientTaskRunner):
             # make new aperture
             # adjust semi-major/minor axes for size
             if f"{cutout.name}_global" != aperture.name:
-
                 if not len(
                     Aperture.objects.filter(cutout__name=f"{cutout.name}_global")
                 ):
-
                     semi_major_axis = (
                         aperture.semi_major_axis_arcsec
                         - aperture.cutout.filter.image_fwhm_arcsec  # / 2.354
@@ -511,7 +509,6 @@ class ValidateLocalPhotometry(TransientTaskRunner):
             return "phot valid failed"
 
         for local_aperture_phot in local_aperture_photometry:
-
             is_validated = check_local_radius(
                 redshift,
                 local_aperture_phot.filter.image_fwhm_arcsec,

@@ -44,7 +44,6 @@ from .models import Aperture
 
 
 def scale_image(image_data):
-
     transform = AsinhStretch() + PercentileInterval(99.5)
     scaled_data = transform(image_data)
 
@@ -52,7 +51,6 @@ def scale_image(image_data):
 
 
 def plot_image(image_data, figure):
-
     # sometimes low image mins mess up the plotting
     perc01 = np.nanpercentile(image_data, 1)
 
@@ -103,7 +101,6 @@ def plot_aperture(figure, aperture, wcs, plotting_kwargs=None):
 
 
 def plot_image_grid(image_dict, apertures=None):
-
     figures = []
     for survey, image in image_dict.items():
         fig = figure(
@@ -130,7 +127,6 @@ def plot_image_grid(image_dict, apertures=None):
 def plot_cutout_image(
     cutout=None, transient=None, global_aperture=None, local_aperture=None
 ):
-
     title = cutout.filter if cutout is not None else "No cutout selected"
 
     if cutout is not None:
@@ -410,7 +406,6 @@ def plot_errorbar(
 
 
 def plot_bar_chart(data_dict):
-
     x_label = ""
     y_label = "Transients"
     transient_numbers = list(data_dict.values())
@@ -490,7 +485,6 @@ def plot_pie_chart(data_dict):
 
 
 def plot_timeseries():
-
     fig = figure(
         title="",
         width=700,
