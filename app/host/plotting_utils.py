@@ -2,7 +2,6 @@ import math
 import os
 from math import pi
 
-import extinction
 import numpy as np
 import pandas as pd
 import prospect.io.read_results as reader
@@ -14,33 +13,35 @@ from astropy.visualization import PercentileInterval
 from astropy.wcs import WCS
 from bokeh.embed import components
 from bokeh.layouts import gridplot
-from bokeh.models import Circle
 from bokeh.models import ColumnDataSource
-from bokeh.models import Cross
-from bokeh.models import Ellipse
-from bokeh.models import Grid
 from bokeh.models import HoverTool
 from bokeh.models import LabelSet
-from bokeh.models import Legend
-from bokeh.models import LinearAxis
-from bokeh.models import LogColorMapper
-from bokeh.models import Plot
 from bokeh.models import Range1d
-from bokeh.models import Scatter
 from bokeh.palettes import Category20
 from bokeh.plotting import ColumnDataSource
 from bokeh.plotting import figure
-from bokeh.plotting import show
 from bokeh.transform import cumsum
-from host.catalog_photometry import filter_information
-from host.host_utils import survey_list
 from host.models import Filter
 from host.photometric_calibration import maggies_to_mJy
-from host.photometric_calibration import mJy_to_maggies
-from host.prospector import build_model
 from host.prospector import build_obs
 
-from .models import Aperture
+# import extinction
+# from bokeh.models import Circle
+# from bokeh.models import Cross
+# from bokeh.models import Ellipse
+# from bokeh.models import Grid
+# from bokeh.models import Legend
+# from bokeh.models import LinearAxis
+# from bokeh.models import LogColorMapper
+# from bokeh.models import Plot
+# from bokeh.models import Scatter
+# from bokeh.plotting import show
+# from host.catalog_photometry import filter_information
+# from host.host_utils import survey_list
+# from host.photometric_calibration import mJy_to_maggies
+# from host.prospector import build_model
+
+# from .models import Aperture
 
 
 def scale_image(image_data):
@@ -107,8 +108,9 @@ def plot_image_grid(image_dict, apertures=None):
             title=survey,
             x_axis_label="",
             y_axis_label="",
-            plot_width=1000,
-            plot_height=1000,
+            # plot_width=1000,
+            # plot_height=1000,
+            sizing_mode="scale_both",
         )
         fig = plot_image(fig, image)
         if apertures is not None:
@@ -138,8 +140,9 @@ def plot_cutout_image(
             title=f"{title}",
             x_axis_label="",
             y_axis_label="",
-            plot_width=700,
-            plot_height=int(np.shape(image_data)[0] / np.shape(image_data)[1] * 700),
+            # plot_width=500,
+            # plot_height=int(np.shape(image_data)[0] / np.shape(image_data)[1] * 700),
+            sizing_mode="scale_both",
         )
         fig.axis.visible = False
         fig.xgrid.visible = False
@@ -149,9 +152,10 @@ def plot_cutout_image(
             "legend_label": f"{transient.name}",
             "size": 30,
             "line_width": 2,
+            "marker": "cross",
         }
         plot_position(
-            transient, wcs, plotting_kwargs=transient_kwargs, plotting_func=fig.cross
+            transient, wcs, plotting_kwargs=transient_kwargs, plotting_func=fig.scatter
         )
 
         if transient.host is not None:
@@ -160,9 +164,13 @@ def plot_cutout_image(
                 "size": 25,
                 "line_width": 2,
                 "line_color": "red",
+                "marker": "x",
             }
             plot_position(
-                transient.host, wcs, plotting_kwargs=host_kwargs, plotting_func=fig.x
+                transient.host,
+                wcs,
+                plotting_kwargs=host_kwargs,
+                plotting_func=fig.scatter,
             )
         if global_aperture.exists():
             filter_name = global_aperture[0].cutout.filter.name
@@ -196,8 +204,9 @@ def plot_cutout_image(
             title=f"{title}",
             x_axis_label="",
             y_axis_label="",
-            plot_width=700,
-            plot_height=700,
+            # plot_width=700,
+            # plot_height=700,
+            sizing_mode="scale_both",
         )
         fig.axis.visible = False
         fig.xgrid.visible = False
@@ -242,8 +251,9 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
 
     fig = figure(
         title="",
-        width=700,
-        height=400,
+        # max_width=600,
+        sizing_mode="stretch_width",
+        max_height=400,
         min_border=0,
         #    toolbar_location=None,
         x_axis_type="log",
@@ -284,7 +294,7 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
         ("mag (AB)", "@mag"),
         ("mag error (AB)", "@mag_error"),
     ]
-    hover = HoverTool(renderers=[p], tooltips=TOOLTIPS, toggleable=False)
+    hover = HoverTool(renderers=[p], tooltips=TOOLTIPS, visible=False)
     fig.add_tools(hover)
 
     # second check on SED file
@@ -352,15 +362,14 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
                 pwave = [f.wave_effective for f in obs["filters"]]
 
             if transient.best_redshift < 0.015:
-                fig.circle(
+                fig.scatter(
                     pwave,
                     maggies_to_mJy(model_data["phot"]) * 10 ** (0.4 * mag_off),
                     size=10,
                 )
             else:
-                fig.circle(pwave, maggies_to_mJy(model_data["phot"]), size=10)
+                fig.scatter(pwave, maggies_to_mJy(model_data["phot"]), size=10)
 
-    fig.width = 600
     fig.legend.location = "top_left"
     script, div = components(fig)
     return {f"bokeh_sed_{type}_script": script, f"bokeh_sed_{type}_div": div}
@@ -383,9 +392,9 @@ def plot_errorbar(
 
     # to do the mouse-over
     if source is not None:
-        p = figure.circle("x", "y", color=color, source=source, **point_kwargs)
+        p = figure.scatter("x", "y", color=color, source=source, **point_kwargs)
     else:
-        p = figure.circle(x, y, color=color, source=source, **point_kwargs)
+        p = figure.scatter(x, y, color=color, source=source, **point_kwargs)
 
     if xerr:
         x_err_x = []
@@ -425,6 +434,7 @@ def plot_bar_chart(data_dict):
         y_axis_label=y_label,
         x_range=vals["processing"],
         y_range=Range1d(start=0, end=max(transient_numbers) * 1.1),
+        sizing_mode="scale_both",
     )
 
     labels = LabelSet(
