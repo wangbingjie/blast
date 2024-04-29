@@ -107,8 +107,9 @@ def plot_image_grid(image_dict, apertures=None):
             title=survey,
             x_axis_label="",
             y_axis_label="",
-            plot_width=1000,
-            plot_height=1000,
+            # plot_width=1000,
+            # plot_height=1000,
+            sizing_mode="scale_both",
         )
         fig = plot_image(fig, image)
         if apertures is not None:
@@ -138,8 +139,9 @@ def plot_cutout_image(
             title=f"{title}",
             x_axis_label="",
             y_axis_label="",
-            plot_width=700,
-            plot_height=int(np.shape(image_data)[0] / np.shape(image_data)[1] * 700),
+            # plot_width=500,
+            # plot_height=int(np.shape(image_data)[0] / np.shape(image_data)[1] * 700),
+            sizing_mode="scale_both",
         )
         fig.axis.visible = False
         fig.xgrid.visible = False
@@ -198,8 +200,9 @@ def plot_cutout_image(
             title=f"{title}",
             x_axis_label="",
             y_axis_label="",
-            plot_width=700,
-            plot_height=700,
+            # plot_width=700,
+            # plot_height=700,
+            sizing_mode="scale_both",
         )
         fig.axis.visible = False
         fig.xgrid.visible = False
@@ -244,8 +247,9 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
 
     fig = figure(
         title="",
-        width=700,
-        height=400,
+        # max_width=600,
+        sizing_mode="stretch_width",
+        max_height=400,
         min_border=0,
         #    toolbar_location=None,
         x_axis_type="log",
@@ -362,7 +366,6 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
             else:
                 fig.scatter(pwave, maggies_to_mJy(model_data["phot"]), size=10)
 
-    fig.width = 600
     fig.legend.location = "top_left"
     script, div = components(fig)
     return {f"bokeh_sed_{type}_script": script, f"bokeh_sed_{type}_div": div}

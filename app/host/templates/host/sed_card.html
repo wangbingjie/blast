@@ -21,7 +21,7 @@
 <div class="tab-content" id="myTabContent-sed">
     <div class="tab-pane" id="local-sed" role="tabpanel" aria-labelledby="local-sed-tab">
         <div>&nbsp;</div>
-        <div class="container">
+        <div class="">
 	  <button style="margin-bottom:5px;" type="button" class="report" onclick="window.open('{% url 'download_modelfit' transient.name 'local' %}','_self')">
             <span>Download Best-Fit Model</span>
             </button>
@@ -33,7 +33,7 @@
         {% if contam_warning %}
           <b style="color:red">Warning:</b> possible contaminating objects in the global aperture<br>
 	{% endif %}
-          <div class="container">
+          <div class="">
 	    <button style="margin-bottom:5px;" type="button" class="report" onclick="window.open('{% url 'download_modelfit' transient.name 'global' %}','_self')">
             <span>Download Best-Fit Model</span>
             </button>
