@@ -149,9 +149,10 @@ def plot_cutout_image(
             "legend_label": f"{transient.name}",
             "size": 30,
             "line_width": 2,
+            "marker": 'cross',
         }
         plot_position(
-            transient, wcs, plotting_kwargs=transient_kwargs, plotting_func=fig.cross
+            transient, wcs, plotting_kwargs=transient_kwargs, plotting_func=fig.scatter
         )
 
         if transient.host is not None:
@@ -160,9 +161,10 @@ def plot_cutout_image(
                 "size": 25,
                 "line_width": 2,
                 "line_color": "red",
+                "marker": 'x',
             }
             plot_position(
-                transient.host, wcs, plotting_kwargs=host_kwargs, plotting_func=fig.x
+                transient.host, wcs, plotting_kwargs=host_kwargs, plotting_func=fig.scatter
             )
         if global_aperture.exists():
             filter_name = global_aperture[0].cutout.filter.name
@@ -284,7 +286,7 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
         ("mag (AB)", "@mag"),
         ("mag error (AB)", "@mag_error"),
     ]
-    hover = HoverTool(renderers=[p], tooltips=TOOLTIPS, toggleable=False)
+    hover = HoverTool(renderers=[p], tooltips=TOOLTIPS, visible=False)
     fig.add_tools(hover)
 
     # second check on SED file
@@ -352,13 +354,13 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
                 pwave = [f.wave_effective for f in obs["filters"]]
 
             if transient.best_redshift < 0.015:
-                fig.circle(
+                fig.scatter(
                     pwave,
                     maggies_to_mJy(model_data["phot"]) * 10 ** (0.4 * mag_off),
                     size=10,
                 )
             else:
-                fig.circle(pwave, maggies_to_mJy(model_data["phot"]), size=10)
+                fig.scatter(pwave, maggies_to_mJy(model_data["phot"]), size=10)
 
     fig.width = 600
     fig.legend.location = "top_left"
@@ -383,9 +385,9 @@ def plot_errorbar(
 
     # to do the mouse-over
     if source is not None:
-        p = figure.circle("x", "y", color=color, source=source, **point_kwargs)
+        p = figure.scatter("x", "y", color=color, source=source, **point_kwargs)
     else:
-        p = figure.circle(x, y, color=color, source=source, **point_kwargs)
+        p = figure.scatter(x, y, color=color, source=source, **point_kwargs)
 
     if xerr:
         x_err_x = []
