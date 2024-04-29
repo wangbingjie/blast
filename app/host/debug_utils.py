@@ -24,7 +24,6 @@ def _overwrite_or_create_object(model, unique_object_query, object_data):
 
 
 def get_failed_tasks(transient_name=None):
-
     if transient_name is None:
         failed_task_register = TaskRegister.objects.filter(status__message="failed")
     else:
@@ -37,11 +36,9 @@ def get_failed_tasks(transient_name=None):
 
 
 def rerun_failed_task(task_register):
-
     task = task_register.task
     for ptask in tasks.periodic_tasks:
         if ptask.task_name == task.name:
-
             print(f"Running {task.name}")
             status = ptask._run_process(task_register.transient)
             print(f"Status: {status}")
@@ -52,7 +49,6 @@ def rerun_failed_task(task_register):
 
 
 def set_tasks_unprocessed(transient_name):
-
     transient = Transient.objects.get(name=transient_name)
     all_tasks = TaskRegister.objects.filter(transient=transient)
     for t in all_tasks:

@@ -3,8 +3,6 @@
 
 <head>
   <title>{% block title %}{% endblock %}</title>
-  <!-- Bokeh -->
-  <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-2.4.2.min.js" crossorigin="anonymous"></script>
   <!-- Boostrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
   integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -94,7 +92,7 @@
     </div>
   </nav>
 
-  <div class="container bg-light">
+  <div class="container-lg bg-light">
     {% block body %}
     {% endblock %}
   </div>
@@ -113,11 +111,13 @@
     </div>
   </footer>
 
+  <!-- Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
     crossorigin="anonymous"></script>
-  <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-2.4.2.min.js"
-    integrity="sha384-qAE24rLAti3FnBClHlngWsDQZs6St9M7tNWdrWQeAWrtAEQTwCaNu9EIE716mUUp"
+  <!-- Bokeh -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bokeh/3.4.1/bokeh.min.js"
+    integrity="sha512-iH5rrOjYD1wVVcGRP3MAYcLXOsuDrbf0zPLvAv/H5ehk97HJfbmk9mQ6FDFwDWXiaGdZ9cS7GskmMei2Wc7q0w=="
     crossorigin="anonymous"></script>
   {% block script %}{% endblock %}
 </body>

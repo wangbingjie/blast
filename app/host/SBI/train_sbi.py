@@ -67,7 +67,6 @@ def build_obs(**extras):  ##transient, aperture_type):
     """
     filters = []
     for filter in all_filters:
-
         filters.append(filter.transmission_curve())
 
     obs_data = dict(
@@ -373,7 +372,6 @@ def loc(mass):
 
 
 def draw_thetas(flat=False):
-
     if flat:
         zred = priors.FastUniform(a=0.0, b=0.2 + 1e-3).sample()
         logmass = priors.FastUniform(a=7.0, b=12.5).sample()
@@ -463,7 +461,6 @@ def draw_thetas(flat=False):
 
 
 class TrainSBI(CronJobBase):
-
     RUN_EVERY_MINS = 3
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
@@ -478,7 +475,6 @@ class TrainSBI(CronJobBase):
         )
 
     def do(self, do_phot=True, do_train=False):
-
         # parameters
         needed_size = 150000
         run_params = {"ichunk": 0, "needed_size": needed_size}

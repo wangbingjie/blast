@@ -9,8 +9,8 @@ config["data_dir"] = settings.DUSTMAPS_DATA_ROOT
 
 # Download data if is missing
 for data_file in [
-    f'''{config["data_dir"]}/sfd/SFD_dust_4096_ngp.fits''',
-    f'''{config["data_dir"]}/sfd/SFD_dust_4096_sgp.fits''',
+    f"""{config["data_dir"]}/sfd/SFD_dust_4096_ngp.fits""",
+    f"""{config["data_dir"]}/sfd/SFD_dust_4096_sgp.fits""",
 ]:
     if not os.path.exists(data_file):
         dustmaps.sfd.fetch()
@@ -19,5 +19,5 @@ for data_file in [
 # Create dustmap config file if it is missing
 dustmap_config = f"{os.environ['HOME']}/.dustmapsrc"
 if not os.path.exists(dustmap_config):
-    with open(dustmap_config, 'w') as fout:
-        print(f'''{{"data_dir": "{config["data_dir"]}"}}''', file=fout)
+    with open(dustmap_config, "w") as fout:
+        print(f"""{{"data_dir": "{config["data_dir"]}"}}""", file=fout)

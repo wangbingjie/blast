@@ -16,11 +16,9 @@
 {% if is_auth %}
 <a href="{% url 'reprocess_transient' transient.name %}" role="button" class="btn btn-warning" class='reprocess'>Reprocess</button></a>
 {% endif %}
-<div class="container">
-    </div>
-
+    <div class="container-lg">
         <div class="row">
-            <div class="col-lg-5">
+            <div class="col-md-5">
 
                 {% include "host/information_card.html" %}
 
@@ -32,7 +30,7 @@
 
             </div>
 
-            <div class="col-lg-7">
+            <div class="col-md-7">
                 {% include "host/cutout_card.html" %}
 
                 {% include "host/sed_card.html" %}

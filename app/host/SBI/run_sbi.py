@@ -77,7 +77,6 @@ all_filters = Filter.objects.filter(~Q(name="DES_i") & ~Q(name="DES_Y"))
 
 
 def main():
-
     # training set
     data = h5py.File(sbi_params["train_fname"], "r")
     x_train = np.array(data["theta"])  # physical parameters

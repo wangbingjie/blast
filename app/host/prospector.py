@@ -767,7 +767,6 @@ def prospector_result_to_blast(
     parametric_sfh=False,
     sbipp=False,
 ):
-
     # write the results
     hdf5_file_name = (
         f"{sed_output_root}/{transient.name}/{transient.name}_{aperture.type}.h5"
@@ -781,7 +780,6 @@ def prospector_result_to_blast(
         os.remove(hdf5_file)
 
     if sbipp:
-
         hf = h5py.File(hdf5_file_name, "w")
 
         sdat = hf.create_group("sampling")
