@@ -2,7 +2,7 @@ import math
 import os
 from math import pi
 
-import extinction
+# import extinction
 import numpy as np
 import pandas as pd
 import prospect.io.read_results as reader
@@ -14,33 +14,33 @@ from astropy.visualization import PercentileInterval
 from astropy.wcs import WCS
 from bokeh.embed import components
 from bokeh.layouts import gridplot
-from bokeh.models import Circle
+# from bokeh.models import Circle
 from bokeh.models import ColumnDataSource
-from bokeh.models import Cross
-from bokeh.models import Ellipse
-from bokeh.models import Grid
+# from bokeh.models import Cross
+# from bokeh.models import Ellipse
+# from bokeh.models import Grid
 from bokeh.models import HoverTool
 from bokeh.models import LabelSet
-from bokeh.models import Legend
-from bokeh.models import LinearAxis
-from bokeh.models import LogColorMapper
-from bokeh.models import Plot
+# from bokeh.models import Legend
+# from bokeh.models import LinearAxis
+# from bokeh.models import LogColorMapper
+# from bokeh.models import Plot
 from bokeh.models import Range1d
-from bokeh.models import Scatter
+# from bokeh.models import Scatter
 from bokeh.palettes import Category20
 from bokeh.plotting import ColumnDataSource
 from bokeh.plotting import figure
-from bokeh.plotting import show
+# from bokeh.plotting import show
 from bokeh.transform import cumsum
-from host.catalog_photometry import filter_information
-from host.host_utils import survey_list
+# from host.catalog_photometry import filter_information
+# from host.host_utils import survey_list
 from host.models import Filter
 from host.photometric_calibration import maggies_to_mJy
-from host.photometric_calibration import mJy_to_maggies
-from host.prospector import build_model
+# from host.photometric_calibration import mJy_to_maggies
+# from host.prospector import build_model
 from host.prospector import build_obs
 
-from .models import Aperture
+# from .models import Aperture
 
 
 def scale_image(image_data):
