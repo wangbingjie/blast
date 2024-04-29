@@ -24,6 +24,7 @@ from bokeh.transform import cumsum
 from host.models import Filter
 from host.photometric_calibration import maggies_to_mJy
 from host.prospector import build_obs
+
 # import extinction
 # from bokeh.models import Circle
 # from bokeh.models import Cross
