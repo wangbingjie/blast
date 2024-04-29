@@ -430,6 +430,7 @@ def plot_bar_chart(data_dict):
         y_axis_label=y_label,
         x_range=vals["processing"],
         y_range=Range1d(start=0, end=max(transient_numbers) * 1.1),
+        sizing_mode="scale_both",
     )
 
     labels = LabelSet(
