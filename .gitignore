@@ -155,7 +155,7 @@ data/cutout_cdn/2010ai/*
 !data/cutout_cdn/2010ai/*
 !data/sed_output/2010H/*
 
-static/
+# static/
 
 .DS_Store
 
