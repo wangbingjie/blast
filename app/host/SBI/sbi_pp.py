@@ -319,7 +319,6 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
                         x=torch.as_tensor(x.astype(np.float32)).to(device),
                         show_progress_bars=False,
                     )
-                    print(f'success for tmax = {tmax}!')
                 except TimeoutException:
                     signal.alarm(0)
                     do_continue = True
@@ -336,7 +335,6 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
 
             cnt += 1
             if run_params["verbose"]:
-                print("mc samples:", cnt)
                 if cnt % 10 == 0:
                     print("mc samples:", cnt)
 
