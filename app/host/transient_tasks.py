@@ -38,7 +38,11 @@ class Ghost(TransientTaskRunner):
         """
         Only prerequisite is that the host match task is not processed.
         """
-        return {"Host match": "not processed", "Cutout download": "processed"}
+        return {
+            "Host match": "not processed",
+            "Cutout download": "processed",
+            "Transient MWEBV": "processed",
+        }
 
     @property
     def task_name(self):
@@ -92,7 +96,10 @@ class MWEBV_Transient(TransientTaskRunner):
         """
         Only prerequisite is that the transient MWEBV task is not processed.
         """
-        return {"Transient MWEBV": "not processed"}
+        return {
+            "Transient MWEBV": "not processed",
+            "Transient information": "processed",
+        }
 
     @property
     def task_name(self):
@@ -612,7 +619,10 @@ class TransientInformation(TransientTaskRunner):
     """Task Runner to gather information about the Transient"""
 
     def _prerequisites(self):
-        return {"Transient information": "not processed"}
+        return {
+            "Transient information": "not processed",
+            "Cutout download": "processed",
+        }
 
     @property
     def task_name(self):

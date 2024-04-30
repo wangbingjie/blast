@@ -1,3 +1,5 @@
+import time
+
 import django_filters
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
@@ -36,29 +38,31 @@ from revproxy.views import ProxyView
 from silk.profiling.profiler import silk_profile
 
 
-def filter_transient_categories(qs, value):
+def filter_transient_categories(qs, value, task_register=None):
+    if task_register is None:
+        task_register = TaskRegister.objects.all()
     if value == "Transients with Basic Information":
         qs = qs.filter(
-            pk__in=TaskRegister.objects.filter(
+            pk__in=task_register.filter(
                 task__name="Transient information", status__message="processed"
             ).values("transient")
         )
     elif value == "Transients with Matched Hosts":
         qs = qs.filter(
-            pk__in=TaskRegister.objects.filter(
+            pk__in=task_register.filter(
                 task__name="Host match", status__message="processed"
             ).values("transient")
         )
     elif value == "Transients with Photometry":
         qs = qs.filter(
             Q(
-                pk__in=TaskRegister.objects.filter(
+                pk__in=task_register.filter(
                     task__name="Local aperture photometry",
                     status__message="processed",
                 ).values("transient")
             )
             | Q(
-                pk__in=TaskRegister.objects.filter(
+                pk__in=task_register.filter(
                     task__name="Global aperture photometry",
                     status__message="processed",
                 ).values("transient")
@@ -67,13 +71,13 @@ def filter_transient_categories(qs, value):
     elif value == "Transients with SED Fitting":
         qs = qs.filter(
             Q(
-                pk__in=TaskRegister.objects.filter(
+                pk__in=task_register.filter(
                     task__name="Local host SED inference",
                     status__message="processed",
                 ).values("transient")
             )
             | Q(
-                pk__in=TaskRegister.objects.filter(
+                pk__in=task_register.filter(
                     task__name="Global host SED inference",
                     status__message="processed",
                 ).values("transient")
@@ -82,9 +86,9 @@ def filter_transient_categories(qs, value):
     elif value == "Finished Transients":
         qs = qs.filter(
             ~Q(
-                pk__in=TaskRegister.objects.filter(
-                    ~Q(status__message="processed")
-                ).values("transient")
+                pk__in=task_register.filter(~Q(status__message="processed")).values(
+                    "transient"
+                )
             )
         )
 
@@ -231,7 +235,6 @@ def results(request, slug):
     global_aperture_photometry = AperturePhotometry.objects.filter(
         transient=transient, aperture__type__exact="global", flux__isnull=False
     ).filter(Q(is_validated="true") | Q(is_validated="contamination warning"))
-
     contam_warning = (
         True
         if len(global_aperture_photometry.filter(is_validated="contamination warning"))
@@ -265,6 +268,7 @@ def results(request, slug):
                     global_sed_obj[0].__dict__[f"log_{param}_84"],
                 ),
             )
+
     if local_sed_obj.exists():
         local_sed_file = local_sed_obj[0].posterior.name
     else:
@@ -282,7 +286,6 @@ def results(request, slug):
         filter_.name: ("yes" if filter_.name in filters else "no")
         for filter_ in all_filters
     }
-
     if request.method == "POST":
         form = ImageGetForm(request.POST, filter_choices=filters)
         if form.is_valid():
@@ -310,9 +313,10 @@ def results(request, slug):
     bokeh_context = plot_cutout_image(
         cutout=cutout,
         transient=transient,
-        global_aperture=global_aperture,
-        local_aperture=local_aperture,
+        global_aperture=global_aperture.prefetch_related(),
+        local_aperture=local_aperture.prefetch_related(),
     )
+
     bokeh_sed_local_context = plot_sed(
         transient=transient,
         type="local",
@@ -338,13 +342,12 @@ def results(request, slug):
     is_warning = False
     for u in transient.taskregister_set.all().values_list("user_warning", flat=True):
         is_warning |= u
-
     context = {
         **{
             "transient": transient,
             "form": form,
-            "local_aperture_photometry": local_aperture_photometry,
-            "global_aperture_photometry": global_aperture_photometry,
+            "local_aperture_photometry": local_aperture_photometry.prefetch_related(),
+            "global_aperture_photometry": global_aperture_photometry.prefetch_related(),
             "filter_status": filter_status,
             "local_aperture": local_aperture,
             "global_aperture": global_aperture,
@@ -358,7 +361,6 @@ def results(request, slug):
         **bokeh_sed_local_context,
         **bokeh_sed_global_context,
     }
-
     return render(request, "results.html", context)
 
 
@@ -415,6 +417,9 @@ def acknowledgements(request):
 def home(request):
     analytics_results = {}
 
+    task_register_qs = TaskRegister.objects.filter(
+        status__message="processed"
+    ).prefetch_related()
     for aggregate, qs_value in zip(
         [
             "Basic Information",
@@ -430,7 +435,9 @@ def home(request):
         ],
     ):
         analytics_results[aggregate] = len(
-            filter_transient_categories(Transient.objects.all(), qs_value)
+            filter_transient_categories(
+                Transient.objects.all(), qs_value, task_register=task_register_qs
+            )
         )
 
     #    transients = TaskRegisterSnapshot.objects.filter(
