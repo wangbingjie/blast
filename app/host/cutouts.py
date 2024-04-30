@@ -457,7 +457,6 @@ def TWOMASS_cutout(position, image_size=None, filter=None):
                 break
 
     if fits_image is not None:
-
         cutout = Cutout2D(fits_image[0].data, position, image_size, wcs=wcs)
         fits_image[0].data = cutout.data
         fits_image[0].header.update(cutout.wcs.to_header())

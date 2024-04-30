@@ -19,7 +19,6 @@ from .components import data_model_components
 
 ### Filter Sets ###
 class TransientFilter(django_filters.FilterSet):
-
     redshift_lte = django_filters.NumberFilter(field_name="redshift", lookup_expr="lte")
     redshift_gte = django_filters.NumberFilter(field_name="redshift", lookup_expr="gte")
 
@@ -30,7 +29,6 @@ class TransientFilter(django_filters.FilterSet):
 
 ### Filter Sets ###
 class HostFilter(django_filters.FilterSet):
-
     redshift_lte = django_filters.NumberFilter(field_name="redshift", lookup_expr="lte")
     redshift_gte = django_filters.NumberFilter(field_name="redshift", lookup_expr="gte")
     photometric_redshift_lte = django_filters.NumberFilter(
@@ -54,7 +52,6 @@ class ApertureFilter(django_filters.FilterSet):
 
 
 class TaskRegisterFilter(django_filters.FilterSet):
-
     transient = django_filters.Filter(field_name="transient__name")
     status = django_filters.Filter(field_name="status__message")
     task = django_filters.Filter(field_name="task__name")
@@ -71,7 +68,6 @@ class FilterFilter(django_filters.FilterSet):
 
 
 class CutoutFilter(django_filters.FilterSet):
-
     filter = django_filters.Filter(field_name="filter__name")
     transient = django_filters.Filter(field_name="transient__name")
 
@@ -81,7 +77,6 @@ class CutoutFilter(django_filters.FilterSet):
 
 
 class AperturePhotometryFilter(django_filters.FilterSet):
-
     filter = django_filters.Filter(field_name="filter__name")
     transient = django_filters.Filter(field_name="transient__name")
 
@@ -91,7 +86,6 @@ class AperturePhotometryFilter(django_filters.FilterSet):
 
 
 class SEDFittingResultFilter(django_filters.FilterSet):
-
     transient = django_filters.Filter(field_name="transient__name")
     aperture_type = django_filters.Filter(field_name="aperture__type")
 

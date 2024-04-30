@@ -35,6 +35,9 @@ from .models import Filter
 from .models import hdf5_file_path
 from .photometric_calibration import mJy_to_maggies  ##jansky_to_maggies
 
+all_filters = [filt for filt in Filter.objects.all().select_related()]
+trans_curves = [f.transmission_curve() for f in all_filters]
+
 
 # add redshift scaling to agebins, such that
 # t_max = t_univ
@@ -89,9 +92,14 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
 
     """
 
-    photometry = AperturePhotometry.objects.filter(
-        transient=transient, aperture__type__exact=aperture_type
-    ).filter(Q(is_validated="true") | Q(is_validated="contamination warning"))
+    photometry = (
+        AperturePhotometry.objects.filter(
+            transient=transient, aperture__type__exact=aperture_type
+        )
+        .filter(Q(is_validated="true") | Q(is_validated="contamination warning"))
+        .prefetch_related()
+    )
+    filter_names = photometry.values_list("filter__name", flat=True)
 
     if not photometry.exists():
         raise ValueError(f"No host photometry of type {aperture_type}")
@@ -108,13 +116,12 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
 
     filters, flux_maggies, flux_maggies_error = [], [], []
 
-    for filter in Filter.objects.all():
-        # if 'PanSTARRS' in filter.name or 'DES' in filter.name: continue
+    for filter, trans_curve in zip(all_filters, trans_curves):
         try:
-            datapoint = photometry.get(filter=filter)
-        except AperturePhotometry.DoesNotExist:
-            # sometimes data just don't exist, we can ignore
-            continue
+            if filter.name in filter_names:
+                datapoint = photometry.get(filter=filter)
+            else:
+                continue
         except AperturePhotometry.MultipleObjectsReturned:
             raise
 
@@ -136,7 +143,8 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
             raise ValueError(
                 f"aperture_type must be 'global' or 'local', currently set to {aperture_type}"
             )
-        wave_eff = filter.transmission_curve().wave_effective
+
+        wave_eff = trans_curve.wave_effective
         ext_corr = extinction.fitzpatrick99(np.array([wave_eff]), mwebv * 3.1, r_v=3.1)[
             0
         ]
@@ -158,7 +166,7 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
         if flux_mwcorr / fluxerr_mwcorr < 3:
             continue
 
-        filters.append(filter.transmission_curve())
+        filters.append(trans_curve)
         flux_maggies.append(mJy_to_maggies(flux_mwcorr * 10 ** (-0.4 * mag_offset)))
         flux_maggies_error.append(
             mJy_to_maggies(fluxerr_mwcorr * 10 ** (-0.4 * mag_offset))
@@ -716,17 +724,9 @@ def build_model(observations):
     Construct all model components
     """
 
-    # model_params = TemplateLibrary["parametric_sfh"]
-    # model_params.update(TemplateLibrary["nebular"])
-    # model_params["zred"]["init"] = observations["redshift"]
-    # model = SpecModel(model_params)
     model = build_model_nonparam(observations)
-
-    # new SPS model
-    # sps = CSPSpecBasis(zcontinuous=1)
     sps = FastStepBasis(zcontinuous=2, compute_vega_mags=False)
     noise_model = (None, None)
-
     return {"model": model, "sps": sps, "noise_model": noise_model}
 
 
@@ -767,7 +767,6 @@ def prospector_result_to_blast(
     parametric_sfh=False,
     sbipp=False,
 ):
-
     # write the results
     hdf5_file_name = (
         f"{sed_output_root}/{transient.name}/{transient.name}_{aperture.type}.h5"
@@ -781,7 +780,6 @@ def prospector_result_to_blast(
         os.remove(hdf5_file)
 
     if sbipp:
-
         hf = h5py.File(hdf5_file_name, "w")
 
         sdat = hf.create_group("sampling")

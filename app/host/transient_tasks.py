@@ -40,7 +40,11 @@ class Ghost(TransientTaskRunner):
         """
         Only prerequisite is that the host match task is not processed.
         """
-        return {"Host match": "not processed", "Cutout download": "processed"}
+        return {
+            "Host match": "not processed",
+            "Cutout download": "processed",
+            "Transient MWEBV": "processed",
+        }
 
     @property
     def task_name(self):
@@ -94,7 +98,10 @@ class MWEBV_Transient(TransientTaskRunner):
         """
         Only prerequisite is that the transient MWEBV task is not processed.
         """
-        return {"Transient MWEBV": "not processed"}
+        return {
+            "Transient MWEBV": "not processed",
+            "Transient information": "processed",
+        }
 
     @property
     def task_name(self):
@@ -399,11 +406,9 @@ class GlobalAperturePhotometry(TransientTaskRunner):
             # make new aperture
             # adjust semi-major/minor axes for size
             if f"{cutout.name}_global" != aperture.name:
-
                 if not len(
                     Aperture.objects.filter(cutout__name=f"{cutout.name}_global")
                 ):
-
                     semi_major_axis = (
                         aperture.semi_major_axis_arcsec
                         - aperture.cutout.filter.image_fwhm_arcsec  # / 2.354
@@ -513,7 +518,6 @@ class ValidateLocalPhotometry(TransientTaskRunner):
             return "phot valid failed"
 
         for local_aperture_phot in local_aperture_photometry:
-
             is_validated = check_local_radius(
                 redshift,
                 local_aperture_phot.filter.image_fwhm_arcsec,
@@ -617,7 +621,10 @@ class TransientInformation(TransientTaskRunner):
     """Task Runner to gather information about the Transient"""
 
     def _prerequisites(self):
-        return {"Transient information": "not processed"}
+        return {
+            "Transient information": "not processed",
+            "Cutout download": "processed",
+        }
 
     @property
     def task_name(self):

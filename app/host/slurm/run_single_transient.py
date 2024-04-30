@@ -65,18 +65,15 @@ tasks_sed_classes = [
 
 
 class run_single(CronJobBase):
-
     RUN_EVERY_MINS = 3
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = "host.slurm.run_single_transient.run_single"
 
     def do(self):
-
         self.run()
 
     def run(self):
-
         transients = Transient.objects.filter(name=transient_name)
         if not len(transients):
             transient = Transient.objects.create(
@@ -123,18 +120,15 @@ class run_single(CronJobBase):
 
 
 class run_single_sed(CronJobBase):
-
     RUN_EVERY_MINS = 3
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = "host.slurm.run_single_transient.run_single"
 
     def do(self):
-
         self.run()
 
     def run(self):
-
         transients = Transient.objects.filter(name=transient_name)
         if not len(transients):
             transient = Transient.objects.create(
