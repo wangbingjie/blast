@@ -1,6 +1,7 @@
 import math
 import os
 from math import pi
+import time
 
 import numpy as np
 import pandas as pd
@@ -53,12 +54,14 @@ def scale_image(image_data):
 
 def plot_image(image_data, figure):
     # sometimes low image mins mess up the plotting
+
     perc01 = np.nanpercentile(image_data, 1)
 
     image_data = np.nan_to_num(image_data, nan=perc01)
     image_data = image_data + abs(np.amin(image_data)) + 0.1
-
+    
     scaled_image = scale_image(image_data)
+
     figure.image(image=[scaled_image])
     figure.image(
         image=[scaled_image],
@@ -172,8 +175,8 @@ def plot_cutout_image(
                 plotting_kwargs=host_kwargs,
                 plotting_func=fig.scatter,
             )
+
         if global_aperture.exists():
-            filter_name = global_aperture[0].cutout.filter.name
             plot_aperture(
                 fig,
                 global_aperture[0].sky_aperture,
@@ -181,7 +184,7 @@ def plot_cutout_image(
                 plotting_kwargs={
                     "fill_alpha": 0.1,
                     "line_color": "green",
-                    "legend_label": f"Global Aperture ({filter_name})",
+                    "legend_label": f"Global Aperture ({title})",
                 },
             )
 
@@ -213,6 +216,7 @@ def plot_cutout_image(
         fig.ygrid.visible = False
 
     plot_image(image_data, fig)
+
     script, div = components(fig)
     return {"bokeh_cutout_script": script, "bokeh_cutout_div": div}
 
@@ -221,7 +225,7 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
     """
     Plot SED from aperture photometry.
     """
-
+    tstart = time.time()
     try:
         obs = build_obs(transient, type, use_mag_offset=False)
     except ValueError:
@@ -229,6 +233,7 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
     except AssertionError:
         obs = {"filters": [], "maggies": [], "maggies_unc": []}
 
+    
     def maggies_to_asinh(x):
         """asinh magnitudes"""
         a = 2.50 * np.log10(np.e)
@@ -260,6 +265,7 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
         x_axis_label="Wavelength [Angstrom]",
         y_axis_label="Flux",
     )
+
     if len(flux):
         fig.y_range = Range1d(-0.05 * np.max(flux), 1.5 * np.max(flux))
         fig.x_range = Range1d(np.min(wavelength) * 0.5, np.max(wavelength) * 1.5)
@@ -371,6 +377,7 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
                 fig.scatter(pwave, maggies_to_mJy(model_data["phot"]), size=10)
 
     fig.legend.location = "top_left"
+
     script, div = components(fig)
     return {f"bokeh_sed_{type}_script": script, f"bokeh_sed_{type}_div": div}
 
