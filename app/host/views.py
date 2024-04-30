@@ -1,3 +1,5 @@
+import time
+
 import django_filters
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
@@ -34,7 +36,7 @@ from host.tables import TransientTable
 from host.transient_name_server import get_transients_from_tns_by_name
 from revproxy.views import ProxyView
 from silk.profiling.profiler import silk_profile
-import time
+
 
 def filter_transient_categories(qs, value, task_register=None):
     if task_register is None:
@@ -84,9 +86,9 @@ def filter_transient_categories(qs, value, task_register=None):
     elif value == "Finished Transients":
         qs = qs.filter(
             ~Q(
-                pk__in=task_register.filter(
-                    ~Q(status__message="processed")
-                ).values("transient")
+                pk__in=task_register.filter(~Q(status__message="processed")).values(
+                    "transient"
+                )
             )
         )
 
@@ -218,7 +220,6 @@ def analytics(request):
 
 
 def results(request, slug):
-
     transients = Transient.objects.all()
     transient = transients.get(name__exact=slug)
 
@@ -416,8 +417,10 @@ def acknowledgements(request):
 def home(request):
     analytics_results = {}
 
-    task_register_qs = TaskRegister.objects.filter(status__message='processed').prefetch_related()
-    for aggregate, qs_value  in zip(
+    task_register_qs = TaskRegister.objects.filter(
+        status__message="processed"
+    ).prefetch_related()
+    for aggregate, qs_value in zip(
         [
             "Basic Information",
             "Host Identification",
@@ -432,7 +435,9 @@ def home(request):
         ],
     ):
         analytics_results[aggregate] = len(
-            filter_transient_categories(Transient.objects.all(), qs_value, task_register=task_register_qs)
+            filter_transient_categories(
+                Transient.objects.all(), qs_value, task_register=task_register_qs
+            )
         )
 
     #    transients = TaskRegisterSnapshot.objects.filter(

@@ -311,7 +311,6 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
             for tmax, npost in zip(
                 [1, run_params["tmax_per_iter"]], [1, run_params["nposterior"]]
             ):
-
                 signal.alarm(tmax)  # max time spent on one object in sec
                 try:
                     noiseless_theta = hatp_x_y.sample(
