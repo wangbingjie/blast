@@ -311,7 +311,6 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
             for tmax, npost in zip(
                 [1, run_params["tmax_per_iter"]], [1, run_params["nposterior"]]
             ):
-
                 signal.alarm(tmax)  # max time spent on one object in sec
                 try:
                     noiseless_theta = hatp_x_y.sample(
@@ -319,7 +318,7 @@ def sbi_missingband(obs, run_params, sbi_params, seconditer=False):
                         x=torch.as_tensor(x.astype(np.float32)).to(device),
                         show_progress_bars=False,
                     )
-                    print(f'success for tmax = {tmax}!')
+                    print(f"success for tmax = {tmax}!")
                 except TimeoutException:
                     signal.alarm(0)
                     do_continue = True

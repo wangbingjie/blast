@@ -38,6 +38,7 @@ from .photometric_calibration import mJy_to_maggies  ##jansky_to_maggies
 all_filters = [filt for filt in Filter.objects.all().select_related()]
 trans_curves = [f.transmission_curve() for f in all_filters]
 
+
 # add redshift scaling to agebins, such that
 # t_max = t_univ
 def zred_to_agebins(zred=None, **extras):
@@ -91,11 +92,15 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
 
     """
 
-    photometry = AperturePhotometry.objects.filter(
-        transient=transient, aperture__type__exact=aperture_type
-    ).filter(Q(is_validated="true") | Q(is_validated="contamination warning")).prefetch_related()
-    filter_names = photometry.values_list('filter__name',flat=True)
-    
+    photometry = (
+        AperturePhotometry.objects.filter(
+            transient=transient, aperture__type__exact=aperture_type
+        )
+        .filter(Q(is_validated="true") | Q(is_validated="contamination warning"))
+        .prefetch_related()
+    )
+    filter_names = photometry.values_list("filter__name", flat=True)
+
     if not photometry.exists():
         raise ValueError(f"No host photometry of type {aperture_type}")
 
@@ -111,7 +116,7 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
 
     filters, flux_maggies, flux_maggies_error = [], [], []
 
-    for filter,trans_curve in zip(all_filters,trans_curves):
+    for filter, trans_curve in zip(all_filters, trans_curves):
         try:
             if filter.name in filter_names:
                 datapoint = photometry.get(filter=filter)
@@ -167,7 +172,6 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
             mJy_to_maggies(fluxerr_mwcorr * 10 ** (-0.4 * mag_offset))
         )
 
-        
     obs_data = dict(
         wavelength=None,
         spectrum=None,
@@ -177,7 +181,6 @@ def build_obs(transient, aperture_type, use_mag_offset=True):
         maggies_unc=np.array(flux_maggies_error),
         filters=filters,
     )
-
 
     return fix_obs(obs_data)
 

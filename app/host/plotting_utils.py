@@ -1,7 +1,7 @@
 import math
 import os
-from math import pi
 import time
+from math import pi
 
 import numpy as np
 import pandas as pd
@@ -59,7 +59,7 @@ def plot_image(image_data, figure):
 
     image_data = np.nan_to_num(image_data, nan=perc01)
     image_data = image_data + abs(np.amin(image_data)) + 0.1
-    
+
     scaled_image = scale_image(image_data)
 
     figure.image(image=[scaled_image])
@@ -233,7 +233,6 @@ def plot_sed(transient=None, sed_results_file=None, type=""):
     except AssertionError:
         obs = {"filters": [], "maggies": [], "maggies_unc": []}
 
-    
     def maggies_to_asinh(x):
         """asinh magnitudes"""
         a = 2.50 * np.log10(np.e)
