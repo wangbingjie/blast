@@ -401,7 +401,7 @@ def select_cutout_aperture(cutouts, choice=0):
 
 
 def select_aperture(transient):
-    cutouts = Cutout.objects.filter(transient=transient)
+    cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
     if len(cutouts):
         cutout_for_aperture = select_cutout_aperture(cutouts)
     if len(cutouts) and len(cutout_for_aperture):
