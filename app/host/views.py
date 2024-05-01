@@ -175,7 +175,7 @@ def transient_uploads(request):
                         "tns_id": 0,
                         "tns_prefix": "",
                         "added_by": request.user,
-                        "processing_status": "processing"
+                        "processing_status": "processing",
                     }
                     ### check if exists
                     ### if not, add it

@@ -42,6 +42,7 @@ try:
 except ProgrammingError:
     pass
 
+
 # add redshift scaling to agebins, such that
 # t_max = t_univ
 def zred_to_agebins(zred=None, **extras):

@@ -4,8 +4,8 @@ from abc import abstractproperty
 from time import process_time
 
 from billiard.exceptions import SoftTimeLimitExceeded
-from django.utils import timezone
 from django.db.models import Q
+from django.utils import timezone
 
 from .models import Status
 from .models import Task
@@ -16,7 +16,6 @@ from .models import Transient
 
 
 def get_progress(transient_name):
-
     tasks = TaskRegister.objects.filter(transient__name__exact=transient_name)
     total_tasks = len(tasks)
     completed_tasks = len(
@@ -25,13 +24,15 @@ def get_progress(transient_name):
     progress = 100 * (completed_tasks / total_tasks) if total_tasks > 0 else 0
     return int(round(progress, 0))
 
+
 def get_processing_status(transient):
-    
     tasks = TaskRegister.objects.filter(
-        Q(transient__name__exact=transient.name) & ~Q(task__name="Log transient processing status")
+        Q(transient__name__exact=transient.name)
+        & ~Q(task__name="Log transient processing status")
     )
     processing_task_qs = TaskRegister.objects.filter(
-        transient__name__exact=transient.name, task__name="Log transient processing status"
+        transient__name__exact=transient.name,
+        task__name="Log transient processing status",
     )
 
     total_tasks = len(tasks)
