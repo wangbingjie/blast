@@ -5,6 +5,7 @@ from time import process_time
 
 from billiard.exceptions import SoftTimeLimitExceeded
 from django.utils import timezone
+from django.db.models import Q
 
 from .models import Status
 from .models import Task
@@ -15,6 +16,7 @@ from .models import Transient
 
 
 def get_progress(transient_name):
+
     tasks = TaskRegister.objects.filter(transient__name__exact=transient_name)
     total_tasks = len(tasks)
     completed_tasks = len(
@@ -22,6 +24,43 @@ def get_progress(transient_name):
     )
     progress = 100 * (completed_tasks / total_tasks) if total_tasks > 0 else 0
     return int(round(progress, 0))
+
+def get_processing_status(transient):
+    
+    tasks = TaskRegister.objects.filter(
+        Q(transient__name__exact=transient.name) & ~Q(task__name="Log transient processing status")
+    )
+    processing_task_qs = TaskRegister.objects.filter(
+        transient__name__exact=transient.name, task__name="Log transient processing status"
+    )
+
+    total_tasks = len(tasks)
+    completed_tasks = len(
+        [task for task in tasks if task.status.message == "processed"]
+    )
+    blocked = len([task for task in tasks if task.status.type == "error"])
+
+    progress = "processing"
+
+    if total_tasks == 0:
+        progress = "processing"
+    elif total_tasks == completed_tasks:
+        progress = "completed"
+    elif total_tasks < completed_tasks:
+        progress = "processing"
+    elif blocked > 0:
+        progress = "blocked"
+
+    # save task
+    if len(processing_task_qs) == 1:
+        processing_task = processing_task_qs[0]
+        processing_task.status = Status.objects.get(
+            message=progress if progress != "completed" else "processed"
+        )
+        processing_task.save()
+
+    # save transient progress
+    return progress
 
 
 class TaskRunner(ABC):
@@ -228,6 +267,7 @@ class TransientTaskRunner(TaskRunner):
                 task_register_item.last_processing_time_seconds = processing_time
                 task_register_item.save()
                 transient.progress = get_progress(transient.name)
+                transient.processing_status = get_processing_status(transient)
                 transient.save()
             return transient.name
 
