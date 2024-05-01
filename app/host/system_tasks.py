@@ -269,3 +269,7 @@ class LogTransientProgress(SystemTaskRunner):
     @property
     def task_name(self):
         return "Log transient processing status"
+
+    @property
+    def task_initially_enabled(self):
+        return False

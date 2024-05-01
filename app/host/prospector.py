@@ -11,6 +11,7 @@ import prospect.io.read_results as reader
 from astropy.cosmology import WMAP9 as cosmo
 from django.conf import settings
 from django.db.models import Q
+from django.db.utils import ProgrammingError
 from host import postprocess_prosp as pp
 from prospect.fitting import fit_model as fit_model_prospect
 from prospect.fitting import lnprobfn
@@ -35,8 +36,11 @@ from .models import Filter
 from .models import hdf5_file_path
 from .photometric_calibration import mJy_to_maggies  ##jansky_to_maggies
 
-all_filters = [filt for filt in Filter.objects.all().select_related()]
-trans_curves = [f.transmission_curve() for f in all_filters]
+try:
+    all_filters = [filt for filt in Filter.objects.all().select_related()]
+    trans_curves = [f.transmission_curve() for f in all_filters]
+except ProgrammingError:
+    pass
 
 
 # add redshift scaling to agebins, such that

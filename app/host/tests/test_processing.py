@@ -285,7 +285,11 @@ class GHOSTRunnerTest(TestCase):
     def test_prereqs(self):
         self.assertTrue(
             self.ghost_runner._prerequisites()
-            == {"Host match": "not processed", "Cutout download": "processed"}
+            == {
+                "Host match": "not processed",
+                "Cutout download": "processed",
+                "Transient MWEBV": "processed",
+            }
         )
 
     def test_failed_status(self):

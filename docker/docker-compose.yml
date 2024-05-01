@@ -9,7 +9,7 @@ services:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
     ports:
-      - 8000:${WEB_APP_PORT}
+      - 127.0.0.1:8000:${WEB_APP_PORT}
     profiles: ["full_prod", "slim_prod"]
     env_file:
       - ../env/.env.default
@@ -40,8 +40,8 @@ services:
     restart: always
     image: rabbitmq:3.10.6-management-alpine
     ports:
-      - 5672:${MESSAGE_BROKER_PORT}
-      - 15672:${MESSAGE_BROKER_MANAGEMENT_PORT}
+      - 127.0.0.1:5672:${MESSAGE_BROKER_PORT}
+      - 127.0.0.1:15672:${MESSAGE_BROKER_MANAGEMENT_PORT}
     volumes:
       - ../data/rabbitmq_data:/data
       - ../data/rabbitmq_data/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
@@ -81,7 +81,7 @@ services:
       service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.flower.sh
     ports:
-      - "8888:${FLOWER_PORT}"
+      - 127.0.0.1:8888:${FLOWER_PORT}
     env_file:
       - ../env/.env.default
       - ../env/.env.dev
@@ -91,7 +91,7 @@ services:
       file: docker-compose.blast_base.yml
       service: ${BLAST_IMAGE}
     ports:
-      - "8000:${WEB_APP_PORT}"
+      - 127.0.0.1:8000:${WEB_APP_PORT}
     networks:
       default:
         aliases:
@@ -147,7 +147,7 @@ services:
       service: ${BLAST_IMAGE}
     command: bash entrypoints/docker-entrypoint.app.sh
     ports:
-      - 8000:${WEB_APP_PORT}
+      - 127.0.0.1:8000:${WEB_APP_PORT}
     profiles: ["full_dev", "slim_dev", "batch"]
     environment:
       - "DEV_MODE=1"
