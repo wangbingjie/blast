@@ -137,7 +137,7 @@ class TransientTaskRunner(TaskRunner):
         """
 
         self.prerequisites = self._prerequisites()
-        assert transient_name
+        # assert transient_name
         self.transient_name = transient_name
 
     def find_register_items_meeting_prerequisites(self):

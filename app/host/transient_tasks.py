@@ -325,6 +325,7 @@ class LocalAperturePhotometry(TransientTaskRunner):
 
         self._overwrite_or_create_object(Aperture, query, data)
         aperture = Aperture.objects.get(**query)
+        print(aperture)
         cutouts = Cutout.objects.filter(transient=transient).filter(~Q(fits=""))
 
         for cutout in cutouts:

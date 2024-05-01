@@ -75,6 +75,15 @@ class BlastApi():
         )
         return self.display_response(response)
 
+    def launch_tasks(self):
+        response = requests.put(
+            # The URL trailing slash is required without setting APPEND_SLASH=False
+            f'''{self.conf['api_url_base']}/launchtasks''',
+            headers=self.json_headers,
+            # auth=self.basic_auth,
+        )
+        return self.display_response(response)
+
 if __name__ == "__main__":
     import sys
     import time
@@ -89,7 +98,8 @@ if __name__ == "__main__":
         'api_url_basepath': os.environ.get('CE_API_URL_BASEPATH', 'api'),
     })
 
-    transient_name = sys.argv[1]
+    # transient_name = sys.argv[1]
+    # api.launch_workflow(name=transient_name)
 
-    api.launch_workflow(name=transient_name)
+    api.launch_tasks()
     sys.exit()

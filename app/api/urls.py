@@ -16,6 +16,10 @@ urlpatterns = [
     path(
         f"""{base_path}workflow/<str:transient_name>""",
         views.launch_workflow,
+    ),
+    path(
+        f"""{base_path}launchtasks""",
+        views.launch_tasks,
     )
 ]
 

@@ -114,17 +114,17 @@ class InitializeTransientTasks(SystemTaskRunner):
         Initializes all task in the database to not processed for new transients.
         """
 
-        # uninitialized_transients = Transient.objects.filter(
-        #     tasks_initialized__exact="False"
-        # )
-        uninitialized_transients = Transient.objects.all()
+        uninitialized_transients = Transient.objects.filter(
+            tasks_initialized__exact="False"
+        )
+        # uninitialized_transients = Transient.objects.all()
         for transient in uninitialized_transients:
             initialise_all_tasks_status(transient)
             transient.tasks_initialized = "True"
             transient.save()
-        print(f'''uninitialized_transients: {[tr.name for tr in uninitialized_transients]}''')
-        for transient in uninitialized_transients:
-            self.launch_transient_workflow(transient_name=transient.name)
+        # print(f'''uninitialized_transients: {[tr.name for tr in uninitialized_transients]}''')
+        # for transient in uninitialized_transients:
+        #     self.launch_transient_workflow(transient_name=transient.name)
 
     @property
     def task_name(self):

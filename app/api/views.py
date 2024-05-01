@@ -199,6 +199,49 @@ def launch_workflow(request, transient_name):
     return Response({'message': f'''You launched a workflow for transient "{transient_name}": {sig}, {result}.'''}, status=status.HTTP_200_OK)
 
 
+from host.tasks import initialize_transient_task
+from host.tasks import snapshot_task_register
+from host.tasks import log_transient_processing_status
+from host.tasks import transient_mwebv
+from host.tasks import host_match
+from host.tasks import host_mwebv
+from host.tasks import cutout_download
+from host.tasks import transient_information
+from host.tasks import host_information
+from host.tasks import local_host_sed_inference
+from host.tasks import global_host_sed_inference
+from host.tasks import local_aperture_photometry
+from host.tasks import validate_local_photometry
+from host.tasks import global_aperture_construction
+from host.tasks import global_aperture_photometry
+from host.tasks import validate_global_photometry
+
+
+@api_view(["PUT"])
+def launch_tasks(request):
+    # transient_name = request.data['transient_name']
+    print('Launching tasks...')
+    # General tasks
+    initialize_transient_task.delay()
+    snapshot_task_register.delay()
+    log_transient_processing_status.delay()
+    # Transient workflow tasks
+    transient_information.delay()
+    transient_mwebv.delay()
+    cutout_download.delay()
+    host_match.delay()
+    host_mwebv.delay()
+    host_information.delay()
+    global_aperture_construction.delay()
+    global_aperture_photometry.delay()
+    validate_global_photometry.delay()
+    local_aperture_photometry.delay()
+    validate_local_photometry.delay()
+    local_host_sed_inference.delay()
+    global_host_sed_inference.delay()
+    return Response({'message': ''}, status=status.HTTP_200_OK)
+
+
 @api_view(["GET"])
 def get_transient_science_payload(request, transient_name):
     if not transient_exists(transient_name):
