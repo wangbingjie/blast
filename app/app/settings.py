@@ -151,6 +151,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 MEDIA_URL = "/cutouts/"
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "data")
 
 DUSTMAPS_DATA_ROOT = os.environ.get("DUSTMAPS_DATA_ROOT", "/data/dustmaps")  # noqa
 CUTOUT_ROOT = os.environ.get("CUTOUT_ROOT", "/data/cutout_cdn")  # noqa
