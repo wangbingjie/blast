@@ -98,8 +98,8 @@ if __name__ == "__main__":
         'api_url_basepath': os.environ.get('CE_API_URL_BASEPATH', 'api'),
     })
 
-    # transient_name = sys.argv[1]
-    # api.launch_workflow(name=transient_name)
+    transient_name = sys.argv[1]
+    api.launch_workflow(name=transient_name)
 
-    api.launch_tasks()
+    # api.launch_tasks()
     sys.exit()

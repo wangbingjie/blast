@@ -16,6 +16,8 @@ from . import datamodel
 from . import serializers
 from .components import data_model_components
 
+from host.workflow import transient_workflow
+from host.transient_name_server import get_transients_from_tns_by_name
 
 ### Filter Sets ###
 class TransientFilter(django_filters.FilterSet):
@@ -188,17 +190,6 @@ def ra_dec_valid(ra: str, dec: str) -> bool:
         valid = False
     return valid
 
-
-@api_view(["PUT"])
-def launch_workflow(request, transient_name):
-    # transient_name = request.data['transient_name']
-    print(f'''Launching workflow for "{transient_name}..."''')
-    from host.transient_tasks import first, second
-    sig = first.s(transient_name)
-    result = sig()
-    return Response({'message': f'''You launched a workflow for transient "{transient_name}": {sig}, {result}.'''}, status=status.HTTP_200_OK)
-
-
 from host.tasks import initialize_transient_task
 from host.tasks import snapshot_task_register
 from host.tasks import log_transient_processing_status
@@ -240,6 +231,24 @@ def launch_tasks(request):
     local_host_sed_inference.delay()
     global_host_sed_inference.delay()
     return Response({'message': ''}, status=status.HTTP_200_OK)
+
+
+@api_view(["PUT"])
+def launch_workflow(request, transient_name):
+    # saved_transients = Transient.objects.all()
+    # try:
+    #     saved_transients.get(name__exact=transient_name)
+    #     print(f'Transient already exists: "{transient_name}"...')
+    # except Transient.DoesNotExist:
+    #     print(f'Downloading transient info from TNS: "{transient_name}"...')
+    #     blast_transients = get_transients_from_tns_by_name([transient_name])
+    #     for transient in blast_transients:
+    #         transient.added_by = 'system'
+    #         transient.save()
+    #         print(f'New transient added from TNS: "{transient_name}"...')
+    print(f'Launching transient workflow for "{transient_name}"...')
+    result = transient_workflow.delay(transient_name)
+    return Response({'message': f'Launched workflow for "{transient_name}": {result.task_id}'}, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
