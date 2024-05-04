@@ -19,9 +19,13 @@ from .components import data_model_components
 from host.workflow import transient_workflow
 
 ### Filter Sets ###
+
+
 class TransientFilter(django_filters.FilterSet):
-    redshift_lte = django_filters.NumberFilter(field_name="redshift", lookup_expr="lte")
-    redshift_gte = django_filters.NumberFilter(field_name="redshift", lookup_expr="gte")
+    redshift_lte = django_filters.NumberFilter(
+        field_name="redshift", lookup_expr="lte")
+    redshift_gte = django_filters.NumberFilter(
+        field_name="redshift", lookup_expr="gte")
 
     class Meta:
         model = Transient
@@ -30,8 +34,10 @@ class TransientFilter(django_filters.FilterSet):
 
 ### Filter Sets ###
 class HostFilter(django_filters.FilterSet):
-    redshift_lte = django_filters.NumberFilter(field_name="redshift", lookup_expr="lte")
-    redshift_gte = django_filters.NumberFilter(field_name="redshift", lookup_expr="gte")
+    redshift_lte = django_filters.NumberFilter(
+        field_name="redshift", lookup_expr="lte")
+    redshift_gte = django_filters.NumberFilter(
+        field_name="redshift", lookup_expr="gte")
     photometric_redshift_lte = django_filters.NumberFilter(
         field_name="photometric_redshift", lookup_expr="lte"
     )
