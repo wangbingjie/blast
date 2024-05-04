@@ -31,6 +31,7 @@ from host.tables import TransientTable
 from host.tasks import import_transient_list
 from revproxy.views import ProxyView
 from silk.profiling.profiler import silk_profile
+from host.workflow import transient_workflow
 
 
 def filter_transient_categories(qs, value, task_register=None):
@@ -354,10 +355,12 @@ def results(request, slug):
 
 
 def reprocess_transient(request, slug):
-    tasks = TaskRegister.objects.filter(transient__name=slug)
+    transient_name = slug
+    tasks = TaskRegister.objects.filter(transient__name=transient_name)
     for t in tasks:
         t.status = Status.objects.get(message="not processed")
         t.save()
+    transient_workflow.delay(transient_name)
 
     return HttpResponseRedirect(reverse_lazy("results", kwargs={"slug": slug}))
 
