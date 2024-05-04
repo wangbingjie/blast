@@ -143,6 +143,7 @@ class IngestMissedTNSTransients(SystemTaskRunner):
             except Transient.DoesNotExist:
                 blast_transient = tns_staging_blast_transient(transient)
                 blast_transient.save()
+                transient_workflow.delay(transient.name)
 
     @property
     def task_name(self):
