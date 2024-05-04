@@ -2,7 +2,10 @@ import math
 
 import numpy as np
 from astropy.io import fits
+from celery import shared_task
 from django.db.models import Q
+from host.base_tasks import task_soft_time_limit
+from host.base_tasks import task_time_limit
 
 from .base_tasks import TransientTaskRunner
 from .cutouts import download_and_save_cutouts
@@ -25,8 +28,6 @@ from .prospector import build_model
 from .prospector import build_obs
 from .prospector import fit_model
 from .prospector import prospector_result_to_blast
-import os
-from celery import shared_task
 
 """This module contains all of the TransientTaskRunners in blast."""
 
@@ -878,39 +879,117 @@ class GlobalHostSEDFitting(HostSEDFitting):
 
         return status_message
 
-
-task_time_limit = int(os.environ.get("TASK_TIME_LIMIT", "3800"))
-task_soft_time_limit = int(os.environ.get("TASK_SOFT_TIME_LIMIT", "3600"))
+# Transient workflow tasks
 
 
-# # @shared_task(time_limit={task_time_limit}, soft_time_limit={task_soft_time_limit},)
-# def cutout_download():
-#     return True
-#     # ImageDownload(transient_name=kwargs['transient_name']).run_process()
+@shared_task(
+    name="Transient Information",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def transient_information(transient_name):
+    TransientInformation(transient_name).run_process()
 
 
-# @shared_task(time_limit={task_time_limit}, soft_time_limit={task_soft_time_limit},)
-# def host_match(*args, **kwargs):
-#     Ghost(transient_name=kwargs['transient_name']).run_process()
+@shared_task(
+    name="Host Match", time_limit=task_time_limit, soft_time_limit=task_soft_time_limit
+)
+def host_match(transient_name):
+    Ghost(transient_name).run_process()
 
 
-@shared_task()
-def first(transient_name):
-    return transient_name
+@shared_task(
+    name="Global Aperture Construction",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def global_aperture_construction(transient_name):
+    GlobalApertureConstruction(transient_name).run_process()
 
-@shared_task()
-def second(transient_name):
-    return transient_name
 
-def launch_workflow(transient_name):
-    from celery import chain
-    print(f'''launch_transient_workflow: {transient_name}''')
-    # cutout_download_sig = cutout_download.s(transient_name)
-    # host_match_sig = host_match.s(transient_name)
-    # workflow = chain(cutout_download_sig, host_match_sig)()
-    workflow = chain(
-        first.s(transient_name),
-        second.s(),
-    )()
-    workflow.get()
+@shared_task(
+    name="Global Aperture Photometry",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def global_aperture_photometry(transient_name):
+    GlobalAperturePhotometry(transient_name).run_process()
 
+
+@shared_task(
+    name="Global Host SED Fitting",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def global_host_sed_fitting(transient_name):
+    GlobalHostSEDFitting(transient_name).run_process()
+
+
+@shared_task(
+    name="Host Information",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def host_information(transient_name):
+    HostInformation(transient_name).run_process()
+
+
+@shared_task(
+    name="Image Download",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def image_download(transient_name):
+    ImageDownload(transient_name).run_process()
+
+
+@shared_task(
+    name="Local Aperture Photometry",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def local_aperture_photometry(transient_name):
+    LocalAperturePhotometry(transient_name).run_process()
+
+
+@shared_task(
+    name="Local Host SED Fitting",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def local_host_sed_fitting(transient_name):
+    LocalHostSEDFitting(transient_name).run_process()
+
+
+@shared_task(
+    name="MWEBV Host", time_limit=task_time_limit, soft_time_limit=task_soft_time_limit
+)
+def mwebv_host(transient_name):
+    MWEBV_Host(transient_name).run_process()
+
+
+@shared_task(
+    name="MWEBV Transient",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def mwebv_transient(transient_name):
+    MWEBV_Transient(transient_name).run_process()
+
+
+@shared_task(
+    name="Validate Global Photometry",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def validate_global_photometry(transient_name):
+    ValidateGlobalPhotometry(transient_name).run_process()
+
+
+@shared_task(
+    name="Validate Local Photometry",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def validate_local_photometry(transient_name):
+    ValidateLocalPhotometry(transient_name).run_process()

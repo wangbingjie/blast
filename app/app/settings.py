@@ -180,7 +180,11 @@ CUTOUT_OVERWRITE = os.environ.get("CUTOUT_OVERWRITE", "False")
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_TIMEZONE = "UTC"
 
-CELERY_IMPORTS = ["host.tasks"]
+CELERY_IMPORTS = [
+    "host.tasks",
+    "host.system_tasks",
+    "host.transient_tasks",
+]
 
 rabbitmq_user = os.environ.get("RABBITMQ_USERNAME", "guest")
 rabbitmq_password = os.environ.get("RABBITMQ_PASSWORD", "guest")
