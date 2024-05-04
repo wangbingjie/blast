@@ -16,13 +16,13 @@ from sedpy import observate
 from .managers import ApertureManager
 from .managers import CatalogManager
 from .managers import CutoutManager
+from .managers import ExternalRequestManager
 from .managers import FilterManager
 from .managers import HostManager
 from .managers import StatusManager
 from .managers import SurveyManager
 from .managers import TaskManager
 from .managers import TransientManager
-from .managers import ExternalRequestManager
 
 # from django_celery_beat.models import PeriodicTask
 
@@ -162,15 +162,17 @@ class Transient(SkyObject):
             z = None
         return z
 
+
 class ExternalRequest(models.Model):
     """
     Keeps track of the frequency of requests to rate-limited external services
     """
-    
+
     name = models.CharField(max_length=20)
-    last_query = models.DateTimeField(null=True,blank=True)
+    last_query = models.DateTimeField(null=True, blank=True)
     objects = ExternalRequestManager()
-    
+
+
 class Status(models.Model):
     """
     Status of a given processing task

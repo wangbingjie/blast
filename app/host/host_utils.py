@@ -1,6 +1,6 @@
+import datetime
 import math
 import time
-import datetime
 import warnings
 from collections import namedtuple
 from xml.parsers.expat import ExpatError
@@ -44,6 +44,7 @@ from .photometric_calibration import fluxerr_to_mJy_fluxerr
 from .models import Cutout
 from .models import Aperture
 from .models import ExternalRequest
+
 
 def survey_list(survey_metadata_path):
     """
@@ -530,18 +531,24 @@ def construct_aperture(image, position):
 def query_ned(position):
     """Get a Galaxy's redshift from ned if it is available."""
 
-    
-    qs = ExternalRequest.objects.filter(name='NED')
+    qs = ExternalRequest.objects.filter(name="NED")
     if not len(qs):
-        ExternalRequest.objects.create(name='NED',last_query=datetime.datetime.utcnow())
+        ExternalRequest.objects.create(
+            name="NED", last_query=datetime.datetime.utcnow()
+        )
         try:
             result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
         except ExpatError:
             raise RuntimeError("too many requests to NED")
     else:
-        count = 0; TIME_SLEEP = 3
-        while datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - qs[0].last_query < \
-              datetime.timedelta(seconds=TIME_SLEEP) and count < TIME_SLEEP*100:
+        count = 0
+        TIME_SLEEP = 3
+        while (
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
+            - qs[0].last_query
+            < datetime.timedelta(seconds=TIME_SLEEP)
+            and count < TIME_SLEEP * 100
+        ):
             time.sleep(TIME_SLEEP)
             count += 1
         else:
@@ -549,10 +556,9 @@ def query_ned(position):
                 result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
             except ExpatError:
                 raise RuntimeError("too many requests to NED")
-            er = ExternalRequest.objects.get(name='NED')
+            er = ExternalRequest.objects.get(name="NED")
             er.last_query = datetime.datetime.utcnow()
             er.save()
-           
 
     result_table = result_table[result_table["Redshift"].mask == False]  # noqa: E712
 
