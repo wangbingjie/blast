@@ -299,3 +299,19 @@ def snapshot_task_register():
 )
 def log_transient_processing_status():
     LogTransientProgress().run_process()
+
+
+@shared_task(
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def delete_ghost_files():
+    DeleteGHOSTFiles().run_process()
+
+
+@shared_task(
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def ingest_missed_tns_transients():
+    IngestMissedTNSTransients().run_process()

@@ -19,8 +19,8 @@ periodic_tasks = [
     InitializeTransientTasks(),
     SnapshotTaskRegister(),
     LogTransientProgress(),
-    # DeleteGHOSTFiles(),
-    # IngestMissedTNSTransients(),
+    DeleteGHOSTFiles(),
+    IngestMissedTNSTransients(),
 ]
 
 
