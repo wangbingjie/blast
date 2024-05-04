@@ -1,8 +1,5 @@
-import time
-
 import django_filters
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q
 from django.http import HttpResponse
@@ -13,7 +10,6 @@ from django.urls import re_path
 from django.urls import reverse_lazy
 from django_tables2 import RequestConfig
 from host.forms import ImageGetForm
-from host.forms import TransientSearchForm
 from host.forms import TransientUploadForm
 from host.host_utils import select_aperture
 from host.host_utils import select_cutout_aperture
@@ -29,11 +25,10 @@ from host.models import TaskRegisterSnapshot
 from host.models import Transient
 from host.plotting_utils import plot_bar_chart
 from host.plotting_utils import plot_cutout_image
-from host.plotting_utils import plot_pie_chart
 from host.plotting_utils import plot_sed
 from host.plotting_utils import plot_timeseries
 from host.tables import TransientTable
-from host.transient_name_server import get_transients_from_tns_by_name
+from host.tasks import import_transient_list
 from revproxy.views import ProxyView
 from silk.profiling.profiler import silk_profile
 
@@ -140,7 +135,7 @@ def transient_uploads(request):
     errors = []
     uploaded_transient_names = []
 
-    ### add transients -- either from TNS or from RA/Dec/redshift
+    # add transients -- either from TNS or from RA/Dec/redshift
     if request.method == "POST":
         form = TransientUploadForm(request.POST)
 
@@ -148,21 +143,16 @@ def transient_uploads(request):
             info = form.cleaned_data["tns_names"]
             if info:
                 transient_names = info.split("\n")
-                blast_transients = get_transients_from_tns_by_name(transient_names)
-
-                saved_transients = Transient.objects.all()
-                for transient in blast_transients:
-                    try:
-                        saved_transients.get(name__exact=transient.name)
-                    except Transient.DoesNotExist:
-                        transient.added_by = request.user
-                        transient.save()
-                    uploaded_transient_names += [transient.name]
+                # Since the async import task may take a long time, the returned list
+                # of uploaded transients will not necessarily match the transients
+                # successfully imported from TNS.
+                uploaded_transient_names = transient_names
+                import_transient_list.delay(transient_names)
 
             info = form.cleaned_data["full_info"]
             if info:
                 for line in info.split("\n"):
-                    ### name, ra, dec, redshift, type
+                    # name, ra, dec, redshift, type
                     name, ra, dec, redshift, specclass = line.split(",")
                     redshift = None if redshift.lower() == "none" else redshift
                     specclass = None if specclass.lower() == "none" else specclass
@@ -176,12 +166,11 @@ def transient_uploads(request):
                         "tns_prefix": "",
                         "added_by": request.user,
                     }
-                    ### check if exists
-                    ### if not, add it
+                    # check if exists; if not, add it
                     try:
                         Transient.objects.get(name=name)
                         errors += [f"Transient {name} already exists in the database"]
-                    except:
+                    except Transient.DoesNotExist:
                         Transient.objects.create(**info_dict)
                         uploaded_transient_names += [name]
     else:
@@ -209,9 +198,9 @@ def analytics(request):
         else:
             transients_current = None
 
-        analytics_results[
-            f"{aggregate}_transients_current".replace(" ", "_")
-        ] = transients_current
+        analytics_results[f"{aggregate}_transients_current".replace(" ", "_")] = (
+            transients_current
+        )
         bokeh_processing_context = plot_timeseries()
 
     return render(
@@ -295,7 +284,7 @@ def results(request, slug):
         form = ImageGetForm(filter_choices=filters)
 
         cutouts = Cutout.objects.filter(transient__name__exact=slug).filter(~Q(fits=""))
-        ## choose a cutout, if possible
+        # choose a cutout, if possible
         cutout = None
         choice = 0
         try:
