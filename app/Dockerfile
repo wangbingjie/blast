@@ -19,6 +19,14 @@ COPY ./debug/debug_ipython.py /root/.ipython/profile_default/startup/
 COPY --from=deps /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 COPY --from=deps /usr/local/bin/ /usr/local/bin/
 
+
 RUN mkdir /app
+
+COPY astro_ghost/ /app/astro_ghost
+WORKDIR /app/astro_ghost
+RUN pip uninstall --yes astro_ghost && pip install --no-cache-dir .
+
 COPY . /app
+WORKDIR /app
+
 WORKDIR /app
