@@ -142,14 +142,14 @@ def transient_uploads(request):
 
         if form.is_valid():
             info = form.cleaned_data["tns_names"]
-            reprocess = form.cleaned_data["reprocess"]
+            retrigger = form.cleaned_data["retrigger"]
             if info:
                 transient_names = info.split("\n")
                 # Since the async import task may take a long time, the returned list
                 # of uploaded transients will not necessarily match the transients
                 # successfully imported from TNS.
                 uploaded_transient_names = transient_names
-                import_transient_list.delay(transient_names, reprocess=reprocess)
+                import_transient_list.delay(transient_names, retrigger=retrigger)
 
             info = form.cleaned_data["full_info"]
             if info:

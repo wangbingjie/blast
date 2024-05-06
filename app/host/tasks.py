@@ -30,7 +30,7 @@ periodic_tasks = [
     time_limit=task_time_limit,
     soft_time_limit=task_soft_time_limit,
 )
-def import_transient_list(transient_names, reprocess=False):
+def import_transient_list(transient_names, retrigger=False):
     def process_transient(transient):
         transient_workflow.delay(transient.name)
     uploaded_transient_names = []
@@ -39,7 +39,7 @@ def import_transient_list(transient_names, reprocess=False):
     for transient in blast_transients:
         try:
             saved_transients.get(name__exact=transient.name)
-            if reprocess:
+            if retrigger:
                 process_transient(transient)
         except Transient.DoesNotExist:
             transient.save()
