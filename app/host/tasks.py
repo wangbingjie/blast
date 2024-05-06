@@ -14,6 +14,7 @@ from host.system_tasks import SnapshotTaskRegister
 from host.system_tasks import TNSDataIngestion
 from .transient_name_server import get_transients_from_tns_by_name
 
+
 periodic_tasks = [
     TNSDataIngestion(),
     InitializeTransientTasks(),
@@ -29,17 +30,19 @@ periodic_tasks = [
     time_limit=task_time_limit,
     soft_time_limit=task_soft_time_limit,
 )
-def import_transient_list(transient_names):
+def import_transient_list(transient_names, reprocess=False):
+    def process_transient(transient):
+        transient_workflow.delay(transient.name)
     uploaded_transient_names = []
     blast_transients = get_transients_from_tns_by_name(transient_names)
     saved_transients = Transient.objects.all()
     for transient in blast_transients:
         try:
             saved_transients.get(name__exact=transient.name)
+            if reprocess:
+                process_transient(transient)
         except Transient.DoesNotExist:
-            # transient.added_by = request.User
             transient.save()
-            transient_workflow.delay(transient.name)
-
+            process_transient(transient)
         uploaded_transient_names += [transient.name]
     return uploaded_transient_names

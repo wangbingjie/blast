@@ -33,6 +33,10 @@ class TransientUploadForm(forms.Form):
         label="Transients by Name, using TNS to gather additional information",
         required=False,
     )
+    reprocess = forms.BooleanField(
+        widget = forms.CheckboxInput,
+        required=False,
+    )
     full_info = forms.CharField(
         widget=forms.Textarea,
         label='Comma-separated: Name, RA, Dec, Redshift, Classification.  RA/Dec must be decimal degrees and use "None" to indicate missing redshift or classification.',
