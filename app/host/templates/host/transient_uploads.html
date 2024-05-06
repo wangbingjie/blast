@@ -9,7 +9,9 @@
 {% load render_table from django_tables2 %}
 
 {% load bootstrap4 %}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+
+<div class="container">
+
 <div class="p-5 text-left bg-light">
   <h1 class="mb-3">Upload Transients</h1>
   <h4 class="mb-3">Upload custom transients by name or RA/Dec</h4>
@@ -33,14 +35,22 @@
 <form class="form", method="POST">
     {% csrf_token %}
     <div class="input-group mb-10">
-      <div style:'margin-bottom:0em'>
-	{{ form.tns_names | as_crispy_field }}
-	{{ form.full_info | as_crispy_field }}
-	</div>
-    <div class="input-group-append">
-    <button type="submit", class="btn btn-outline-success" type="button">Submit</button>
+      <div style='margin-bottom:0em'>
+        <div class="input-group-text" >
+          {{ form.tns_names | as_crispy_field }}
+        </div>
+        <div class="form-check" >
+          {{ form.reprocess | as_crispy_field }}
+        </div>
+        <div class="input-group-text" >
+          {{ form.full_info | as_crispy_field }}
+        </div>
+      </div>
+      <div class="input-group">
+        <button type="submit", class="btn btn-outline-success" type="button">Submit</button>
      </div>
   </div>
 </form>
 
+</div>
 {% endblock %}
