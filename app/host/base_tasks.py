@@ -1,6 +1,6 @@
+import os
 from abc import ABC
 from abc import abstractmethod
-from abc import abstractproperty
 from time import process_time
 
 from billiard.exceptions import SoftTimeLimitExceeded
@@ -11,6 +11,9 @@ from .models import Status
 from .models import Task
 from .models import TaskRegister
 from .models import Transient
+
+task_time_limit = int(os.environ.get("TASK_TIME_LIMIT", "3800"))
+task_soft_time_limit = int(os.environ.get("TASK_SOFT_TIME_LIMIT", "3600"))
 
 """This module contains the base classes for TaskRunner in blast."""
 
@@ -171,12 +174,14 @@ class TransientTaskRunner(TaskRunner):
             runner to process.
     """
 
-    def __init__(self):
+    def __init__(self, transient_name=None):
         """
         Initialized method which sets up the task runner.
         """
 
         self.prerequisites = self._prerequisites()
+        assert transient_name
+        self.transient_name = transient_name
 
     def find_register_items_meeting_prerequisites(self):
         """
@@ -186,8 +191,13 @@ class TransientTaskRunner(TaskRunner):
             (QuerySet): Task register items meeting prerequisites.
         """
         task = Task.objects.get(name__exact=self.task_name)
-        current_transients = Transient.objects.all()
         task_register = TaskRegister.objects.all()
+        if self.transient_name:
+            current_transients = Transient.objects.filter(
+                name__exact=self.transient_name
+            )
+        else:
+            current_transients = Transient.objects.all()
 
         for task_name, status_message in self.prerequisites.items():
             task_prereq = Task.objects.get(name__exact=task_name)
@@ -231,7 +241,7 @@ class TransientTaskRunner(TaskRunner):
         Selects register item to be processed by task runner.
 
         Returns:
-            register item (models.TaskRegister): returns item is one exists,
+            register item (models.TaskRegister): returns item if one exists,
                 returns None otherwise.
         """
         register = self.find_register_items_meeting_prerequisites()
@@ -242,12 +252,12 @@ class TransientTaskRunner(TaskRunner):
         Runs task runner process.
         """
         # self.task = Task.objects.get(name__exact=self.task_name)
-
         if task_register_item is None:
             task_register_item = self.select_register_item()
         processing_status = Status.objects.get(message__exact="processing")
 
         if task_register_item is not None:
+            print(f'''task_register_item: {task_register_item}''')
             self._update_status(task_register_item, processing_status)
             transient = task_register_item.transient
 
@@ -257,7 +267,7 @@ class TransientTaskRunner(TaskRunner):
             except SoftTimeLimitExceeded:
                 status_message = "time limit exceeded"
                 raise
-            except:
+            except Exception:
                 status_message = self._failed_status_message()
                 raise
             finally:
@@ -311,6 +321,13 @@ class TransientTaskRunner(TaskRunner):
     def task_type(self):
         return "transient"
 
+    @property
+    def task_function_name(self) -> str:
+        """
+        TaskRunner function name to be registered by celery.
+        """
+        return "host.transient_tasks." + self.task_name.replace(" ", "_").lower()
+
 
 class SystemTaskRunner(TaskRunner):
     """
@@ -331,6 +348,14 @@ class SystemTaskRunner(TaskRunner):
     @property
     def task_type(self):
         return "system"
+
+    @property
+    def task_function_name(self) -> str:
+        """
+        TaskRunner function name to be registered by celery.
+        """
+        return "host.system_tasks." + self.task_name.replace(" ", "_").lower()
+
 
 
 def update_status(task_status, updated_status):
@@ -366,8 +391,8 @@ def initialise_all_tasks_status(transient):
         task_status = TaskRegister.objects.filter(task=task, transient=transient)
         if not len(task_status):
             task_status = TaskRegister(task=task, transient=transient)
-            ### if the task already exists, let's not change it
-            ### because bad things seem to happen....
+            # if the task already exists, let's not change it
+            # because bad things seem to happen....
             update_status(task_status, not_processed)
         else:
             task_status = task_status[0]

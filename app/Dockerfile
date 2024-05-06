@@ -1,4 +1,4 @@
-FROM hub.ncsa.illinois.edu/blast/deps@sha256:c402391fa2490e6c56518084c4469f9dc23bb4a6691645bd0a1cc491e05d2f94 as deps
+FROM hub.ncsa.illinois.edu/blast/deps@sha256:06380e323b68bb2670fbfbda089f3d3637b6cea40e750af68b962fd220941a11 as deps
 
 FROM python:3.11
 ENV PYTHONUNBUFFERED 1
@@ -18,6 +18,12 @@ COPY ./debug/debug_ipython.py /root/.ipython/profile_default/startup/
 
 COPY --from=deps /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 COPY --from=deps /usr/local/bin/ /usr/local/bin/
+
+# Temporary solution to install modified astro_ghost package until changes are merged upstream
+RUN git clone https://github.com/manning-ncsa/astro_ghost.git /tmp/blast && cd /tmp/blast && \
+    git checkout c3e9baf7e537a2b2294fbb9763017438e86ee8ef && \
+    pip uninstall --yes astro_ghost && pip install --no-cache-dir . && \
+    cd / && rm -rf /tmp/blast
 
 RUN mkdir /app
 COPY . /app

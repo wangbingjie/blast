@@ -12,7 +12,12 @@ urlpatterns = [
     path(
         f"""{base_path}transient/get/<str:transient_name>""",
         views.get_transient_science_payload,
-    )
+    ),
+    # TO DO: Secure this endpoint with Django REST Framework permission_classes
+    # path(
+    #     f"""{base_path}workflow/<str:transient_name>""",
+    #     views.launch_workflow,
+    # ),
 ]
 
 if os.environ.get("ALLOW_API_POST") == "YES":

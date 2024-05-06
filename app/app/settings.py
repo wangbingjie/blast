@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "users",
     "django_cron",
     "django_filters",
+    'django_celery_results',
     "silk",  # Django Silk profiler (https://github.com/jazzband/django-silk)
 ]
 
@@ -179,7 +180,11 @@ CUTOUT_OVERWRITE = os.environ.get("CUTOUT_OVERWRITE", "False")
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_TIMEZONE = "UTC"
 
-CELERY_IMPORTS = ["host.tasks"]
+CELERY_IMPORTS = [
+    "host.tasks",
+    "host.system_tasks",
+    "host.transient_tasks",
+]
 
 rabbitmq_user = os.environ.get("RABBITMQ_USERNAME", "guest")
 rabbitmq_password = os.environ.get("RABBITMQ_PASSWORD", "guest")
@@ -189,6 +194,10 @@ rabbitmq_port = os.environ.get("MESSAGE_BROKER_PORT", "5672")
 CELERY_BROKER_URL = (
     f"amqp://{rabbitmq_user}:{rabbitmq_password}@{rabbitmq_host}:{rabbitmq_port}//"
 )
+
+# ref: https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'default'
 
 CELERYD_REDIRECT_STDOUTS_LEVEL = "INFO"
 CRISPY_TEMPLATE_PACK = "bootstrap4"

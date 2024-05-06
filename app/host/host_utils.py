@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone, timedelta
 import math
 import time
 import warnings
@@ -529,12 +529,12 @@ def construct_aperture(image, position):
 
 
 def query_ned(position):
-    """Get a Galaxy's redshift from ned if it is available."""
+    """Get a Galaxy's redshift from NED if it is available."""
 
     qs = ExternalRequest.objects.filter(name="NED")
     if not len(qs):
         ExternalRequest.objects.create(
-            name="NED", last_query=datetime.datetime.utcnow()
+            name="NED", last_query=datetime.now(timezone.utc)
         )
         try:
             result_table = Ned.query_region(position, radius=1.0 * u.arcsec)
@@ -542,14 +542,16 @@ def query_ned(position):
             raise RuntimeError("too many requests to NED")
     else:
         count = 0
-        TIME_SLEEP = 3
+        NED_TIME_SLEEP = 2
+        current_time = datetime.now(timezone.utc)
+        last_query = qs[0].last_query
         while (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
-            - qs[0].last_query
-            < datetime.timedelta(seconds=TIME_SLEEP)
-            and count < TIME_SLEEP * 100
+            current_time - last_query < timedelta(seconds=NED_TIME_SLEEP)
+            and count < NED_TIME_SLEEP * 100
         ):
-            time.sleep(TIME_SLEEP)
+            print(f"NED rate limit avoidance ({last_query}: sleeping iteration #{count})")
+            time.sleep(NED_TIME_SLEEP)
+            current_time = datetime.now(timezone.utc)
             count += 1
         else:
             try:
@@ -557,7 +559,7 @@ def query_ned(position):
             except ExpatError:
                 raise RuntimeError("too many requests to NED")
             er = ExternalRequest.objects.get(name="NED")
-            er.last_query = datetime.datetime.utcnow()
+            er.last_query = datetime.now(timezone.utc)
             er.save()
 
     result_table = result_table[result_table["Redshift"].mask == False]  # noqa: E712

@@ -33,6 +33,11 @@ class TransientUploadForm(forms.Form):
         label="Transients by Name, using TNS to gather additional information",
         required=False,
     )
+    retrigger = forms.BooleanField(
+        widget = forms.CheckboxInput,
+        label="Check this box to retrigger workflows of existing transients in the list instead of ignoring them. This is useful for resuming workflows that have been prematurely aborted; completed tasks in the workflows will not be reprocessed.",
+        required=False,
+    )
     full_info = forms.CharField(
         widget=forms.Textarea,
         label='Comma-separated: Name, RA, Dec, Redshift, Classification.  RA/Dec must be decimal degrees and use "None" to indicate missing redshift or classification.',

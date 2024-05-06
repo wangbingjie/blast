@@ -2,13 +2,17 @@ import datetime
 import glob
 import shutil
 
+from celery import shared_task
 from dateutil import parser
 from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
+from host.base_tasks import initialise_all_tasks_status
+from host.base_tasks import SystemTaskRunner
+from host.base_tasks import task_soft_time_limit
+from host.base_tasks import task_time_limit
+from host.workflow import transient_workflow
 
-from .base_tasks import initialise_all_tasks_status
-from .base_tasks import SystemTaskRunner
 from .models import Status
 from .models import TaskRegister
 from .models import TaskRegisterSnapshot
@@ -16,7 +20,6 @@ from .models import Transient
 from .transient_name_server import get_daily_tns_staging_csv
 from .transient_name_server import get_tns_credentials
 from .transient_name_server import get_transients_from_tns
-from .transient_name_server import get_transients_from_tns_by_name
 from .transient_name_server import tns_staging_blast_transient
 from .transient_name_server import tns_staging_file_date_name
 from .transient_name_server import update_blast_transient
@@ -38,7 +41,8 @@ class TNSDataIngestion(SystemTaskRunner):
         for transient in recent_transients:
             print(transient.name)
             try:
-                saved_transient = saved_transients.get(name__exact=transient.name)
+                saved_transient = saved_transients.get(
+                    name__exact=transient.name)
                 if saved_transient.public_timestamp.replace(tzinfo=None) - parser.parse(
                     transient.public_timestamp
                 ) == datetime.timedelta(0):
@@ -47,12 +51,13 @@ class TNSDataIngestion(SystemTaskRunner):
                 # if there was *not* a redshift before and there *is* one now
                 # then it would be safest to reprocess everything
                 if not saved_transient.redshift and transient.redshift:
-                    tasks = TaskRegister.objects.filter(transient=saved_transient)
+                    tasks = TaskRegister.objects.filter(
+                        transient=saved_transient)
                     for t in tasks:
                         t.status = Status.objects.get(message="not processed")
                         t.save()
 
-                ### update info
+                # update info
                 new_transient_dict = transient.__dict__
                 if "host_id" in new_transient_dict.keys():
                     if saved_transient.host_id is not None:
@@ -107,6 +112,7 @@ class InitializeTransientTasks(SystemTaskRunner):
             initialise_all_tasks_status(transient)
             transient.tasks_initialized = "True"
             transient.save()
+            transient_workflow.delay(transient.name)
 
     @property
     def task_name(self):
@@ -130,12 +136,14 @@ class IngestMissedTNSTransients(SystemTaskRunner):
         for _, transient in data.iterrows():
             # if transient exists update it
             try:
-                blast_transient = saved_transients.get(name__exact=transient["name"])
+                blast_transient = saved_transients.get(
+                    name__exact=transient["name"])
                 update_blast_transient(blast_transient, transient)
             # if transient does not exist add it
             except Transient.DoesNotExist:
                 blast_transient = tns_staging_blast_transient(transient)
                 blast_transient.save()
+                transient_workflow.delay(transient.name)
 
     @property
     def task_name(self):
@@ -213,7 +221,8 @@ class LogTransientProgress(SystemTaskRunner):
 
         for transient in transients:
             tasks = TaskRegister.objects.filter(
-                Q(transient__name__exact=transient.name) & ~Q(task__name=self.task_name)
+                Q(transient__name__exact=transient.name) & ~Q(
+                    task__name=self.task_name)
             )
             processing_task_qs = TaskRegister.objects.filter(
                 transient__name__exact=transient.name, task__name=self.task_name
@@ -223,7 +232,8 @@ class LogTransientProgress(SystemTaskRunner):
             completed_tasks = len(
                 [task for task in tasks if task.status.message == "processed"]
             )
-            blocked = len([task for task in tasks if task.status.type == "error"])
+            blocked = len(
+                [task for task in tasks if task.status.type == "error"])
 
             progress = "processing"
 
@@ -255,3 +265,53 @@ class LogTransientProgress(SystemTaskRunner):
     @property
     def task_initially_enabled(self):
         return False
+
+
+# Periodic tasks
+
+@shared_task(
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def tns_data_ingestion():
+    TNSDataIngestion().run_process()
+
+
+@shared_task(
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def initialize_transient_task():
+    InitializeTransientTasks().run_process()
+
+
+@shared_task(
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def snapshot_task_register():
+    SnapshotTaskRegister().run_process()
+
+
+@shared_task(
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def log_transient_processing_status():
+    LogTransientProgress().run_process()
+
+
+@shared_task(
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def delete_ghost_files():
+    DeleteGHOSTFiles().run_process()
+
+
+@shared_task(
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def ingest_missed_tns_transients():
+    IngestMissedTNSTransients().run_process()
