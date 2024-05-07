@@ -20,7 +20,7 @@ Starting from scratch, the typical development workflow would be the following.
 
 .. code:: none
 
-    git clone https://github.com/astrophpeter/blast.git
+    git clone https://github.com/scimma/blast.git
 
 2. Create your own branch with the following naming convention.
 

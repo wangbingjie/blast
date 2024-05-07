@@ -6,7 +6,7 @@ exist without them. If you use Blast, you must acknowledge and cite all
 of the following projects which Blast uses.
 
 If you see your software being used in Blast and we have not cited you properly,
-please raise an `issue on GitHub <https://github.com/astrophpeter/blast/issues>`_.
+please raise an `issue on GitHub <https://github.com/scimma/blast/issues>`_.
 
 .. list-table::
    :widths: 22 25 25

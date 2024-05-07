@@ -3,7 +3,7 @@ What to work on?
 
 So you've read the Blast developer guide, now you want to know what exactly to
 work on. The best place to start is the
-`issues <https://github.com/astrophpeter/blast/issues>`_ tab on the Blast GitHub
+`issues <https://github.com/scimma/blast/issues>`_ tab on the Blast GitHub
 page. Here you will find a list of develop tasks that need to be worked on for
 Blast. They are tagged by level of difficulty:
 

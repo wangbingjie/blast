@@ -7,12 +7,12 @@ Welcome to Blast's documentation!
 =================================
 
 .. image:: https://readthedocs.org/projects/blast/badge/?version=latest
-.. image:: https://github.com/astrophpeter/blast/actions/workflows/continuous-integration.yml/badge.svg
+.. image:: https://github.com/scimma/blast/actions/workflows/continuous-integration.yml/badge.svg
 .. image:: https://results.pre-commit.ci/badge/github/astrophpeter/blast/main.svg
 .. image:: https://codecov.io/gh/astrophpeter/blast/branch/main/graph/badge.svg?token=Y9JPAF8HVD
 .. image:: https://www.codefactor.io/repository/github/astrophpeter/blast/badge
 
-Blast is developed on `GitHub <https://github.com/astrophpeter/blast>`_.
+Blast is developed on `GitHub <https://github.com/scimma/blast>`_.
 
 Blast is a public web application built to find a transient's host
 galaxy, identify the available archival data, and measure the resulting
