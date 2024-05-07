@@ -4,7 +4,7 @@ Data sources
 Blast requires a set of initial data files that we compile from original sources and serve independently for the sake of efficiency in bootstrapping a Blast deployment.
 
 If you see your data being used in Blast and we have not cited the source properly,
-please raise an `issue on GitHub <https://github.com/astrophpeter/blast/issues>`_.
+please raise an `issue on GitHub <https://github.com/scimma/blast/issues>`_.
 
 Simulated Training Data for the Blast Transient Host Galaxies Web Application
 -----------------------------------------------------------------------------

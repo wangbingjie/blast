@@ -453,7 +453,7 @@ def plot_bar_chart(data_dict):
         text_align="center",
     )
 
-    graph.vbar(source=source, x="processing", top="transients", bottom=0, width=0.7)
+    graph.vbar(source=source, x="processing", top="transients", bottom=0, width=0.7, color='#d15e00')
     graph.add_layout(labels)
 
     # displaying the model

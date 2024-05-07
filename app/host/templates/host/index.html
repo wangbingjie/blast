@@ -5,28 +5,37 @@
 {% block body %}
 
 {% load crispy_forms_tags %}
-
+{% load static %}
 
 <div class="container">
-<div class="p-5 text-left bg-light">
-  <h1 class="mb-3">Welcome to Blast!</h1>
-  <h4 class="mb-3">
-    A web app for the automatic real-time characterization of transient
-    host galaxies
-  </h4>
-  <a href="transients/" role="button" class="btn btn-success">
-    Search the Blast database <i class="bi bi-search"></i>
-  </a>
-  <a
-    href="https://blast.readthedocs.io/en/latest/index.html"
-    role="button"
-    class="btn btn-primary"
-    >Read the docs <i class="bi bi-book-half"></i><i class="bi bi-book-half"></i>
-  </a>
+<div class="text-left bg-light">
+  
+<div class="row align-items-end">
+  <div class="col-lg-3">
+    <img src="{% static 'images/blast_logo_transparent.png' %}" style="max-height: 150px;" />
+  </div>
+  <div class="col-lg-6">
+    <h4 class="slogan">
+      A web service for the automatic, real-time characterization of transient
+      host galaxies
+    </h4>
+  </div>
+</div>
 </div>
 
-  <div class="row">
-    <div class="col-lg-5">
+<div class="row pt-3">
+  <div class="col-lg-5">
+      <div class="pb-3">
+        <a href="transients/" role="button" class="btn btn-primary" style="margin-right: 1rem;">
+          Search the Blast database <i class="bi bi-search"></i>
+        </a>
+        <a
+        href="https://blast.readthedocs.io/en/latest/index.html"
+        role="button"
+        class="btn btn-primary"
+        >Read the docs <i class="bi bi-book-half"></i><i class="bi bi-book-half"></i>
+      </a>
+    </div>
       <p>
         The host galaxies of astrophysical transients play a key role in our
         understanding of their progenitor systems and the use of Type Ia

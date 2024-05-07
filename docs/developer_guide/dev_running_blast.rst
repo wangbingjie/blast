@@ -23,7 +23,7 @@ Clone the Blast repository.
 
 .. code:: none
 
-    git clone https://github.com/astrophpeter/blast.git
+    git clone https://github.com/scimma/blast.git
 
 Setup environment file
 ----------------------
