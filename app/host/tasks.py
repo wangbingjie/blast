@@ -31,18 +31,31 @@ periodic_tasks = [
     soft_time_limit=task_soft_time_limit,
 )
 def import_transient_list(transient_names, retrigger=False):
-    def process_transient(transient):
-        transient_workflow.delay(transient.name)
+    def process_transient(transient_name):
+        transient_workflow.delay(transient_name)
+    existing_transients = []
+    new_transient_names = []
+    for transient_name in transient_names:
+        transient = Transient.objects.filter(name__exact=transient_name)
+        print(f'Querying transient "{transient_name}"...')
+        if transient:
+            print(f'Transient already saved: "{transient_name}"')
+            existing_transients.append(transient[0])
+        else:
+            print(f'New transient detected: "{transient_name}"')
+            new_transient_names.append(transient_name)
+    # Re-trigger workflows for existing transients
+    for transient in existing_transients:
+        if retrigger:
+            print(f'Retriggering workflow for transient "{transient.name}"')
+            process_transient(transient.name)
+        else:
+            print(f'Skipping existing transient "{transient.name}"')
+    # Process new transients
     uploaded_transient_names = []
-    blast_transients = get_transients_from_tns_by_name(transient_names)
-    saved_transients = Transient.objects.all()
-    for transient in blast_transients:
-        try:
-            saved_transients.get(name__exact=transient.name)
-            if retrigger:
-                process_transient(transient)
-        except Transient.DoesNotExist:
-            transient.save()
-            process_transient(transient)
-        uploaded_transient_names += [transient.name]
+    if new_transient_names:
+        for transient_name in new_transient_names:
+            print(f'Triggering workflow for new transient "{transient_name}"...')
+            process_transient(transient_name)
+            uploaded_transient_names += [transient_name]
     return uploaded_transient_names
