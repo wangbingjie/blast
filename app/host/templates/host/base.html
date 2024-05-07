@@ -36,6 +36,9 @@
     padding: 0.1em;
     border-radius:10px;
   }
+  .progress-bar {
+    background-color: #d15e00;
+  }
   .btn-success {
     background-color: #ff7300;
     border-color: #ff7300;
@@ -44,10 +47,22 @@
     background-color: #d15e00;
     border-color: #d15e00;
   }
+  .btn-success:hover,
+  .btn-primary:hover {
+    background-color: #914100;
+    border-color: #914100;
+  }
   a {
     color:#d15e00;
   }
-  a.hover {
+  .slogan {
+    color:#d15e00;
+    font-style: italic;
+  }
+  /* .navbar-dark .navbar-nav .nav-link:focus, */
+  .navbar-dark .navbar-nav .nav-link:hover,
+  /* .navbar-dark .navbar-nav .nav-link:active, */
+  a:hover {
     color:#ff7300;
   }
   .form-control.is-valid, .form-control:focus {
@@ -61,7 +76,7 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-      <a class="navbar-brand" href="#">
+      <a class="navbar-brand" href="/">
         Blast <span>Beta</span>
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -70,9 +85,9 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav align-items-center">
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="/"><i class="bi bi-house-door-fill"></i> Home</a>
-          </li>
+          </li> -->
           <li class="nav-item">
             <a class="nav-link" href="/transients"><i class="bi bi-search"></i> Transients</a>
           </li>
@@ -90,7 +105,7 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="https://github.com/astrophpeter/blast">
-              <i class="bi-github" role="img" aria-label="GitHub"></i>
+              <i class="bi-github" role="img" aria-label="GitHub"></i> Source Code
             </a>
           </li>
           {% if user.is_authenticated %}
@@ -125,8 +140,7 @@
   <footer class="footer py-3 bg-light">
     <div class="container">
       <span class="text-muted">Report bugs and issues on Github
-        <a href="https://github.com/astrophpeter/blast/issues">here</a>
-
+        <a href="https://github.com/astrophpeter/blast/issues"><i class="bi-github" role="img" aria-label="GitHub"></i> here</a>
         <span style="margin-left:2px">
           <span class="text-muted">| UCSC Transient team web pages
             <a href="https://transients.ucsc.edu/">here</a>
