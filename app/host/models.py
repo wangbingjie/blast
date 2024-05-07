@@ -108,7 +108,7 @@ class Transient(SkyObject):
             Delete is set to cascade.
     """
 
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20, unique=True)
     tns_id = models.IntegerField()
     tns_prefix = models.CharField(max_length=20)
     public_timestamp = models.DateTimeField(null=True, blank=True)
