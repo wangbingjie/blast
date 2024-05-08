@@ -202,6 +202,10 @@ CELERY_CACHE_BACKEND = 'default'
 CELERYD_REDIRECT_STDOUTS_LEVEL = "INFO"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
+CELERY_TASK_ROUTES = {
+    'host.transient_tasks.*_host_sed_fitting': {'queue': 'sed'}
+}
+
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         f'rest_framework.permissions.{os.environ.get("API_AUTHENTICATION")}',
