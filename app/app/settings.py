@@ -203,7 +203,8 @@ CELERYD_REDIRECT_STDOUTS_LEVEL = "INFO"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 CELERY_TASK_ROUTES = {
-    'host.transient_tasks.*_host_sed_fitting': {'queue': 'sed'}
+    'Global Host SED Fitting': {'queue': 'sed'},
+    'Local Host SED Fitting': {'queue': 'sed'},
 }
 
 REST_FRAMEWORK = {
