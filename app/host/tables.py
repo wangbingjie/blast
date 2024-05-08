@@ -69,7 +69,7 @@ class TransientTable(tables.Table):
         model = Transient
         fields = ()
 
-        template_name = "django_tables2/bootstrap.html"
+        template_name = "django_tables2/bootstrap4.html"
         attrs = {
             "th": {
                 "_ordering": {
