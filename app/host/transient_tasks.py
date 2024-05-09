@@ -287,8 +287,6 @@ class LocalAperturePhotometry(TransientTaskRunner):
         return {
             "Cutout download": "processed",
             "Local aperture photometry": "not processed",
-            "Host match": "processed",
-            "Host information": "processed",
         }
 
     @property
