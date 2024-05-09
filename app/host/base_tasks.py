@@ -30,7 +30,7 @@ def get_progress(transient_name):
         [task for task in tasks if task.status.message == "processed"]
     )
     if not len(failed_tasks):
-        progress = 100 * (1 - incomplete_tasks / total_tasks) if total_tasks > 0 else 0
+        progress = 100 * (1 - len(incomplete_tasks) / total_tasks) if total_tasks > 0 else 0
     else:
         remaining_tasks = len(incomplete_tasks)
         for task_name in [
