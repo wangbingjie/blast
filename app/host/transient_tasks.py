@@ -993,3 +993,13 @@ def validate_global_photometry(transient_name):
 )
 def validate_local_photometry(transient_name):
     ValidateLocalPhotometry(transient_name).run_process()
+
+@shared_task(
+    name="Get Final Progress",
+    time_limit=task_time_limit,
+    soft_time_limit=task_soft_time_limit,
+)
+def final_progress(transient_name):
+    transient = Transient.objects.get(name=transient_name)
+    transient.progress = 100
+    transient.save()
