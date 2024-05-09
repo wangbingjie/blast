@@ -39,17 +39,20 @@ def get_progress(transient_name):
             if failed_tasks.filter(task__name=task_name).exists():
                 remaining_tasks = 0
                 break
-        # local chain
-        if failed_tasks.filter(task__name='Local aperture photometry'): remaining_tasks -= 2
-        elif failed_tasks.filter(task__name='Validate local photometry'): remaining_tasks -= 1
+        if remaining_tasks == 0:
+            progress = 100
+        else:
+            # local chain
+            if failed_tasks.filter(task__name='Local aperture photometry'): remaining_tasks -= 2
+            elif failed_tasks.filter(task__name='Validate local photometry'): remaining_tasks -= 1
 
-        # global chain
-        if failed_tasks.filter(task__name='MWEBV host').exists() or \
-           failed_tasks.filter(task__name='Validate global photometry').exists(): remaining_tasks -= 1
-        elif failed_tasks.filter(task__name='Global aperture photometry'): remaining_tasks -= 2
-        elif failed_tasks.filter(task__name='Global aperture construction'): remaining_tasks -= 3
+            # global chain
+            if failed_tasks.filter(task__name='MWEBV host').exists() or \
+               failed_tasks.filter(task__name='Validate global photometry').exists(): remaining_tasks -= 1
+            elif failed_tasks.filter(task__name='Global aperture photometry'): remaining_tasks -= 2
+            elif failed_tasks.filter(task__name='Global aperture construction'): remaining_tasks -= 3
 
-        progress = 100 * (1 - remaining_tasks / total_tasks)
+            progress = 100 * (1 - remaining_tasks / total_tasks)
         
     return int(round(progress, 0))
 
