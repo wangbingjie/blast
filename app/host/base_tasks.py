@@ -19,12 +19,41 @@ task_soft_time_limit = int(os.environ.get("TASK_SOFT_TIME_LIMIT", "3600"))
 
 
 def get_progress(transient_name):
-    tasks = TaskRegister.objects.filter(transient__name__exact=transient_name)
+    tasks = TaskRegister.objects.filter(Q(transient__name__exact=transient_name) &
+                                        ~Q(task__name="Log transient processing status"))
+    failed_tasks = tasks.filter(status__type='error')
+    completed_tasks = tasks.filter(status__type='success')
+    incomplete_tasks = tasks.filter(status__type='blank')
+    
     total_tasks = len(tasks)
     completed_tasks = len(
         [task for task in tasks if task.status.message == "processed"]
     )
-    progress = 100 * (completed_tasks / total_tasks) if total_tasks > 0 else 0
+    if not len(failed_tasks):
+        progress = 100 * (1 - len(incomplete_tasks) / total_tasks) if total_tasks > 0 else 0
+    else:
+        remaining_tasks = len(incomplete_tasks)
+        for task_name in [
+                'Cutout download','Transient information','MWEBV transient',
+                'Host match','Host information']:
+            if failed_tasks.filter(task__name=task_name).exists():
+                remaining_tasks = 0
+                break
+        if remaining_tasks == 0:
+            progress = 100
+        else:
+            # local chain
+            if failed_tasks.filter(task__name='Local aperture photometry'): remaining_tasks -= 2
+            elif failed_tasks.filter(task__name='Validate local photometry'): remaining_tasks -= 1
+
+            # global chain
+            if failed_tasks.filter(task__name='MWEBV host').exists() or \
+               failed_tasks.filter(task__name='Validate global photometry').exists(): remaining_tasks -= 1
+            elif failed_tasks.filter(task__name='Global aperture photometry'): remaining_tasks -= 2
+            elif failed_tasks.filter(task__name='Global aperture construction'): remaining_tasks -= 3
+
+            progress = 100 * (1 - remaining_tasks / total_tasks)
+        
     return int(round(progress, 0))
 
 
