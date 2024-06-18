@@ -2,7 +2,7 @@ from host import tasks
 from host.base_tasks import TransientTaskRunner
 from host.models import *
 from host.transient_tasks import *
-
+from host.system_tasks import *
 
 def _overwrite_or_create_object(model, unique_object_query, object_data):
     """
@@ -36,8 +36,31 @@ def get_failed_tasks(transient_name=None):
 
 
 def rerun_failed_task(task_register):
+
+    periodic_tasks = [
+        MWEBV_Transient(task_register.transient.name),
+        Ghost(task_register.transient.name),
+        MWEBV_Host(task_register.transient.name),
+        ImageDownload(task_register.transient.name),
+        GlobalApertureConstruction(task_register.transient.name),
+        LocalAperturePhotometry(task_register.transient.name),
+        GlobalAperturePhotometry(task_register.transient.name),
+        ValidateLocalPhotometry(task_register.transient.name),
+        ValidateGlobalPhotometry(task_register.transient.name),
+        TransientInformation(task_register.transient.name),
+        HostInformation(task_register.transient.name),
+        GlobalHostSEDFitting(task_register.transient.name),
+        LocalHostSEDFitting(task_register.transient.name),
+        TNSDataIngestion(),
+        InitializeTransientTasks(),
+        IngestMissedTNSTransients(),
+        DeleteGHOSTFiles(),
+        SnapshotTaskRegister()
+    ]
+
+    
     task = task_register.task
-    for ptask in tasks.periodic_tasks:
+    for ptask in periodic_tasks:
         if ptask.task_name == task.name:
             print(f"Running {task.name}")
             status = ptask._run_process(task_register.transient)
