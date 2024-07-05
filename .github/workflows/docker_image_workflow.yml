@@ -9,17 +9,15 @@ name: Publish Docker image
 on:
   push:
     branches: [main]
-    paths:
-      - "app"
     tags:
       - "*"
-  pull_request:
-    branches: [main]
     paths:
       - "docker/**"
       - "app/**"
       - "run/**"
       - ".github/**"
+  # pull_request:
+  #   branches: [main]
 
 jobs:
   docker:
