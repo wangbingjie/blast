@@ -1,7 +1,7 @@
 FROM hub.ncsa.illinois.edu/blast/deps@sha256:06380e323b68bb2670fbfbda089f3d3637b6cea40e750af68b962fd220941a11 AS deps
 
 FROM python:3.11
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive && apt-get install -y --no-install-recommends \
     ffmpeg \
