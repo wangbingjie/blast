@@ -13,11 +13,13 @@ on:
       - "app"
     tags:
       - "*"
-  # pull_request:
-  #   branches: [main]
-  #   paths:
-  #     - "app/Dockerfile"
-  #     - "app/requirements.txt"
+  pull_request:
+    branches: [main]
+    paths:
+      - "docker/**"
+      - "app/**"
+      - "run/**"
+      - ".github/**"
 
 jobs:
   docker:
