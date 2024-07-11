@@ -40,7 +40,7 @@ class TaskRunnerTest(TestCase):
             def _failed_status_message(self):
                 return "failed"
 
-        self.processed_runner = TestRunnerProcessed()
+        self.processed_runner = TestRunnerProcessed(transient_name="dummy")
 
         class TestRunnerFailed(TransientTaskRunner):
             def _run_process(self, transient):
@@ -56,7 +56,7 @@ class TaskRunnerTest(TestCase):
             def _failed_status_message(self):
                 return "failed"
 
-        self.failed_runner = TestRunnerFailed()
+        self.failed_runner = TestRunnerFailed(transient_name="dummy")
 
         class TestRunnerNotProcessed(TransientTaskRunner):
             def _run_process(self, transient):
@@ -72,7 +72,7 @@ class TaskRunnerTest(TestCase):
             def _failed_status_message(self):
                 return "failed"
 
-        self.not_processed_runner = TestRunnerNotProcessed()
+        self.not_processed_runner = TestRunnerNotProcessed(transient_name="dummy")
 
         class TestRunnerTwoPrereqs(TransientTaskRunner):
             def _run_process(self, transient):
@@ -88,7 +88,7 @@ class TaskRunnerTest(TestCase):
             def _failed_status_message(self):
                 return "failed"
 
-        self.two_prereqs_runner = TestRunnerTwoPrereqs()
+        self.two_prereqs_runner = TestRunnerTwoPrereqs(transient_name="dummy")
 
         class TestRunnerTwoPrereqsSuc(TransientTaskRunner):
             def _run_process(self, transient):
@@ -107,7 +107,7 @@ class TaskRunnerTest(TestCase):
             def _failed_status_message(self):
                 return "failed"
 
-        self.two_prereqs_suc_runner = TestRunnerTwoPrereqsSuc()
+        self.two_prereqs_suc_runner = TestRunnerTwoPrereqsSuc(transient_name="dummy")
 
     def test_run_process(self):
         self.processed_runner.run_process()
@@ -280,7 +280,7 @@ class GHOSTRunnerTest(TestCase):
     ]
 
     def setUp(self):
-        self.ghost_runner = Ghost()
+        self.ghost_runner = Ghost(transient_name="dummy")
 
     def test_prereqs(self):
         self.assertTrue(
@@ -324,7 +324,7 @@ class ImageDownloadTest(TestCase):
             def _run_process(self, transient):
                 return "processed"
 
-        self.image_runner = DummyImageDownloadRunner()
+        self.image_runner = DummyImageDownloadRunner(transient_name="2022testone")
 
     def test_prereqs(self):
         self.assertTrue(

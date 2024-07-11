@@ -21,7 +21,7 @@ class TestHostMatch(TestCase):
     def test_aperture_construction(self):
         transient = Transient.objects.get(name="2010H")
 
-        host_cls = Ghost()
+        host_cls = Ghost(transient_name=transient.name)
 
         status_message = host_cls._run_process(transient)
 
