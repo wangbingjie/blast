@@ -21,7 +21,7 @@ Clone the Blast repository
 
 Clone the Blast repository.
 
-.. code:: none
+.. code:: bash
 
     git clone https://github.com/scimma/blast.git
 
@@ -36,25 +36,25 @@ If you need to ingest real transient data from the Transient Name Server (TNS), 
 Run the Blast app
 -----------------
 
-You are encouraged to use the helper scripts to start (:code:`run/blast.run.sh`)
-and stop (:code:`run/blast.stop.sh`) the application. These scripts use a
+You are encouraged to use the helper scripts to start (:code:`run/blast.up.sh`)
+and stop (:code:`run/blast.down.sh`) the application. These scripts use a
 combination of :code:`docker compose` and :code:`docker` commands to properly
 manage the container lifecycles.
 
-To launch the full Blast stack, invoke the :code:`run/blast.run.sh` script with
+To launch the full Blast stack, invoke the :code:`run/blast.up.sh` script with
 the :code:`full_dev` Docker Compose profile:
 
-.. code:: none
+.. code:: bash
 
-    bash run/blast.run.sh full_dev
+    bash run/blast.up.sh full_dev
 
 Alternatively, if you are only interested in running the web server and database, which is
 usually sufficient for front end web development, you can use the :code:`slim_dev` Docker Compose
 profile:
 
-.. code:: none
+.. code:: bash
 
-    bash run/blast.run.sh slim_dev
+    bash run/blast.up.sh slim_dev
 
 Then go to `http://0.0.0.0:8000/ <http://0.0.0.0:8000/>`_  in your web browser
 after all the containers have started, and Blast should be running.
@@ -64,9 +64,9 @@ the resulting live changes in the web interface.
 
 To terminate Blast and remove the containers, open a new terminal window and run:
 
-.. code:: none
+.. code:: bash
 
-    bash run/blast.stop.sh $PROFILE
+    bash run/blast.down.sh $PROFILE
 
 where :code:`$PROFILE` is the active Docker Compose profile as described above
 (for example, :code:`slim_dev`).
@@ -90,11 +90,11 @@ To restart the application with a clean Django database, add the :code:`--purge-
 .. code:: bash
 
     # Stop and remove services and internal networks
-    bash run/blast.stop.sh $PROFILE --purge-db
+    bash run/blast.down.sh $PROFILE --purge-db
 
 The initialization process is idempotent, meaning that it is safe to repeatedly restart the services with or without existing application data.
 
-The initialization process generates temporary files on the astro data volume (:code:`/mnt/data/.initializing_db` and :code:`/mnt/data/.initializing_data`) to support the scenario where multiple replicas of service containers are running concurrently. These files are automatically removed by the :code:`run/blast.start.sh` script.
+The initialization process generates temporary files on the astro data volume (:code:`/mnt/data/.initializing_db` and :code:`/mnt/data/.initializing_data`) to support the scenario where multiple replicas of service containers are running concurrently. These files are automatically removed by the :code:`run/blast.up.sh` script.
 
 
 Testing the Blast app
@@ -103,13 +103,13 @@ Testing the Blast app
 To run tests with the Blast app, while the :code:`full_dev` or :code:`slim_dev` containers are
 up, in a separate terminal run
 
-.. code:: none
+.. code:: bash
 
     bash run/blast.test.up.sh
 
 This allows you to run the tests without stopping the containers. If you would
 like to run the tests from scratch, (when the Blast app is not up) run,
 
-.. code:: none
+.. code:: bash
 
-    bash run/blast.run.sh test
+    bash run/blast.up.sh test
