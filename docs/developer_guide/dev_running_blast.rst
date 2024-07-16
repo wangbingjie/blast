@@ -127,10 +127,11 @@ up, in a separate terminal run
 
 .. code:: bash
 
-    bash run/blast.test.sh
+    bash run/blast.test.sh slim_dev
 
-This allows you to run the tests without stopping the containers. If you would
-like to run the tests from scratch, (when the Blast app is not up) run,
+This allows you to run the tests without stopping the containers. *Some of the tests are excluded in this mode* because the assumption is that you are iterating on the unit tests themselves and probably do not want a slow iteration cycle, for example when cutout data is downloaded.
+
+If you would like to run all tests from scratch in an dedicated container, run
 
 .. code:: bash
 
