@@ -1,7 +1,7 @@
 New dependencies
 ================
 
-Blast and all it's associated services are run in `Docker <https://www.docker.com/>`_
+Blast and all its associated services are run in `Docker <https://www.docker.com/>`_
 containers. This allows the application to be portable. You may be working on
 some code that requires you to add a new Python package. To add this
 dependency, you have to do two things.
@@ -20,5 +20,5 @@ build and install your package.
     is downloaded and used when running Blast locally. This is faster than building
     the image from scratch every time. :code:`BLAST_IMAGE=blast_base` forces the
     image to be built from scratch which is required when you have added a new
-    dependency. Eventually, when a new dependency is accepted into main it
+    dependency. Eventually, when a new dependency is accepted into the main branch it
     will become part of the Blast latest image.
