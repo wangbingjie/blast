@@ -1,0 +1,4 @@
+astro_ghost==2.1.4
+astro-prospector==1.3.0
+torch==2.2.2
+sbi==0.22.0

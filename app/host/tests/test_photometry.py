@@ -22,7 +22,7 @@ class TestValidatePhotometry(TestCase):
 
     def test_validate_local_photometry(self):
         transient = Transient.objects.get(name="2010H")
-        vlp_cls = ValidateLocalPhotometry()
+        vlp_cls = ValidateLocalPhotometry(transient_name=transient.name)
 
         status_message = vlp_cls._run_process(transient)
 
@@ -41,7 +41,7 @@ class TestValidatePhotometry(TestCase):
 
     def test_validate_global_photometry(self):
         transient = Transient.objects.get(name="2010H")
-        vgp_cls = ValidateGlobalPhotometry()
+        vgp_cls = ValidateGlobalPhotometry(transient_name=transient.name)
 
         status_message = vgp_cls._run_process(transient)
 
@@ -53,7 +53,7 @@ class TestValidatePhotometry(TestCase):
 
     def test_global_aperture_photometry(self):
         transient = Transient.objects.get(name="2010H")
-        apphot_cls = GlobalAperturePhotometry()
+        apphot_cls = GlobalAperturePhotometry(transient_name=transient.name)
 
         status_message = apphot_cls._run_process(transient)
 
@@ -65,7 +65,7 @@ class TestValidatePhotometry(TestCase):
         transient.host.redshift = None
         transient.host.photometric_redshift = None
         transient.save()
-        apphot_cls = LocalAperturePhotometry()
+        apphot_cls = LocalAperturePhotometry(transient_name=transient.name)
 
         status_message = apphot_cls._run_process(transient)
 

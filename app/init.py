@@ -45,8 +45,9 @@ def main():
                 "/app/host/fixtures/initial/setup_survey_data.yaml",
             ]
         )
-    except Exception as e:
-        print(str(e))
+    except Exception as err:
+        print(str(err))
+
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_survey_data.yaml"."""
         )
@@ -63,8 +64,8 @@ def main():
                 "/app/host/fixtures/initial/setup_filter_data.yaml",
             ]
         )
-    except Exception as e:
-        print(str(e))
+    except Exception as err:
+        print(str(err))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_filter_data.yaml"."""
         )
@@ -81,8 +82,8 @@ def main():
                 "/app/host/fixtures/initial/setup_catalog_data.yaml",
             ]
         )
-    except Exception as e:
-        print(str(e))
+    except Exception as err:
+        print(str(err))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_catalog_data.yaml"."""
         )
@@ -93,8 +94,8 @@ def main():
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/initial/setup_tasks.yaml"]
         )
-    except Exception as e:
-        print(str(e))
+    except Exception as err:
+        print(str(err))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_tasks.yaml"."""
         )
@@ -105,8 +106,8 @@ def main():
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/initial/setup_status.yaml"]
         )
-    except Exception as e:
-        print(str(e))
+    except Exception as err:
+        print(str(err))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_status.yaml"."""
         )
@@ -123,8 +124,8 @@ def main():
                 "/app/host/fixtures/initial/setup_acknowledgements.yaml",
             ]
         )
-    except Exception as e:
-        print(str(e))
+    except Exception as err:
+        print(str(err))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/initial/setup_acknowledgements.yaml"."""
         )
@@ -135,8 +136,8 @@ def main():
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/example/2010ag.yaml"]
         )
-    except Exception as e:
-        print(str(e))
+    except Exception as err:
+        print(str(err))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/example/2010ag.yaml"."""
         )
@@ -147,8 +148,8 @@ def main():
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/example/2010ai.yaml"]
         )
-    except Exception as e:
-        print(str(e))
+    except Exception as err:
+        print(str(err))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/example/2010ai.yaml"."""
         )
@@ -159,10 +160,34 @@ def main():
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/example/2010H.yaml"]
         )
-    except Exception as e:
-        print(str(e))
+    except Exception as err:
+        print(str(err))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/example/2010H.yaml"."""
+        )
+        pass
+
+    try:
+        print("""Loading fixture "/app/host/fixtures/test/setup_test_transient.yaml"...""")
+        execute_from_command_line(
+            ["__main__.py", "loaddata", "/app/host/fixtures/test/setup_test_transient.yaml"]
+        )
+    except Exception as err:
+        print(str(err))
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/test/setup_test_transient.yaml"."""
+        )
+        pass
+
+    try:
+        print("""Loading fixture "/app/host/fixtures/test/setup_test_task_register.yaml"...""")
+        execute_from_command_line(
+            ["__main__.py", "loaddata", "/app/host/fixtures/test/setup_test_task_register.yaml"]
+        )
+    except Exception as err:
+        print(str(err))
+        print(
+            """Ignoring loaddata error for "/app/host/fixtures/test/setup_test_task_register.yaml"."""
         )
         pass
 
@@ -171,8 +196,8 @@ def main():
         execute_from_command_line(
             ["__main__.py", "loaddata", "/app/host/fixtures/example/snapshot.yaml"]
         )
-    except Exception as e:
-        print(str(e))
+    except Exception as err:
+        print(str(err))
         print(
             """Ignoring loaddata error for "/app/host/fixtures/example/snapshot.yaml"."""
         )

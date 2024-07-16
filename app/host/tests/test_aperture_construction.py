@@ -25,7 +25,7 @@ class TestApertureConstruction(TestCase):
     def test_aperture_construction(self):
         transient = Transient.objects.get(name="2010H")
 
-        gac_cls = GlobalApertureConstruction()
+        gac_cls = GlobalApertureConstruction(transient_name=transient.name)
 
         status_message = gac_cls._run_process(transient)
 
