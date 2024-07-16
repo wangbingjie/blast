@@ -20,13 +20,13 @@ class EBVTest(TestCase):
 
     def test_mwebv_transient(self):
         transient = Transient.objects.get(name="2010H")
-        mwebv_cls = MWEBV_Transient()
+        mwebv_cls = MWEBV_Transient(transient_name=transient.name)
         status_message = mwebv_cls._run_process(transient)
 
         assert np.isclose(transient.milkyway_dust_reddening, 0.0264890836, 1e-5)
         assert status_message == "processed"
 
-        mwebv_host_cls = MWEBV_Host()
+        mwebv_host_cls = MWEBV_Host(transient_name=transient.name)
         status_message = mwebv_host_cls._run_process(transient)
 
         assert np.isclose(

@@ -14,7 +14,7 @@ have made changes to the documentation you can preview those changes by running,
 
 .. code:: none
 
-    bash run/blast.run.sh docs
+    bash run/blast.up.sh docs
 
 Then open :code:`blast/docs/build/index.html` in your web browser to see the
 changes. Every time you make changes to the documentation code you have to re-run

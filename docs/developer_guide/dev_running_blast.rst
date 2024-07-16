@@ -21,7 +21,7 @@ Clone the Blast repository
 
 Clone the Blast repository.
 
-.. code:: none
+.. code:: bash
 
     git clone https://github.com/scimma/blast.git
 
@@ -31,30 +31,34 @@ Setup environment file
 Blast needs some environment variables to run. All of
 these are defined with their default values in the :code:`env/.env.default` file. If you want to override any of the default values or add additional environment variables, define these in a file named :code:`env/.env.dev` following the same format as :code:`env/.env.default`.
 
+You will likely want to change the :code:`BLAST_IMAGE` variable in your :code:`env/.env.dev` to be
+:code:`blast_base` instead of :code:`blast_latest`. This will force Docker to build the image locally **AND** the :code:`app` source code
+directory will be mounted in the container to facilitate live code editing. Otherwise the static published image will be downloaded and used, and local code changes will be ignored.
+
 If you need to ingest real transient data from the Transient Name Server (TNS), you will need to populate the TNS variables with TNS API bot credentials (see `<https://www.wis-tns.org/bots>`_).
 
 Run the Blast app
 -----------------
 
-You are encouraged to use the helper scripts to start (:code:`run/blast.run.sh`)
-and stop (:code:`run/blast.stop.sh`) the application. These scripts use a
+You are encouraged to use the helper scripts to start (:code:`run/blast.up.sh`)
+and stop (:code:`run/blast.down.sh`) the application. These scripts use a
 combination of :code:`docker compose` and :code:`docker` commands to properly
 manage the container lifecycles.
 
-To launch the full Blast stack, invoke the :code:`run/blast.run.sh` script with
+To launch the full Blast stack, invoke the :code:`run/blast.up.sh` script with
 the :code:`full_dev` Docker Compose profile:
 
-.. code:: none
+.. code:: bash
 
-    bash run/blast.run.sh full_dev
+    bash run/blast.up.sh full_dev
 
 Alternatively, if you are only interested in running the web server and database, which is
 usually sufficient for front end web development, you can use the :code:`slim_dev` Docker Compose
 profile:
 
-.. code:: none
+.. code:: bash
 
-    bash run/blast.run.sh slim_dev
+    bash run/blast.up.sh slim_dev
 
 Then go to `http://0.0.0.0:8000/ <http://0.0.0.0:8000/>`_  in your web browser
 after all the containers have started, and Blast should be running.
@@ -62,11 +66,18 @@ after all the containers have started, and Blast should be running.
 Running Blast in these two modes means you can edit most code and you will see
 the resulting live changes in the web interface.
 
+.. tip::
+    If you want to run multiple independent instances of Blast (unusual) or you want 
+    to customize the default Docker Compose project name ``blast``, set the 
+    ``COMPOSE_PROJECT_NAME`` prior to running the up/down scripts; for example: 
+    ``export COMPOSE_PROJECT_NAME=dev-blast``.
+
+
 To terminate Blast and remove the containers, open a new terminal window and run:
 
-.. code:: none
+.. code:: bash
 
-    bash run/blast.stop.sh $PROFILE
+    bash run/blast.down.sh $PROFILE
 
 where :code:`$PROFILE` is the active Docker Compose profile as described above
 (for example, :code:`slim_dev`).
@@ -74,7 +85,8 @@ where :code:`$PROFILE` is the active Docker Compose profile as described above
 .. warning::
 
     When you stop the Blast container make sure all services are stopped. You can see which
-    services are running in the Docker Desktop app and stop services manually there.
+    services are running in the Docker Desktop app and stop services manually there (or run
+    ``docker ps --all``).
 
 Persistent data volumes
 -----------------------
@@ -85,16 +97,26 @@ The :code:`blast-db` volume stores the Django SQL database, and it is provisione
 
 The :code:`blast-data` volume stores astronomical data. During initialization, all required data files are downloaded and installed.
 
-To restart the application with a clean Django database, add the :code:`--purge-db` option to the stopping command as shown below. Alternative options include :code:`--purge-data` (delete only astro data) and :code:`--purge-all` (delete only ALL astro data and Django database). These options are mutually exclusive, and only one can be used.
+The Docker volume names are prepended by the Docker Compose project name (default ``blast``) and joined with an underscore. You can list them like so:
+
+.. code:: bash
+
+    $ docker volume ls
+    ...
+    local     blast_blast-data
+    local     blast_blast-db
+    local     blast_django-static
+
+To restart the application with a clean Django database, add the :code:`--purge-db` option to the stopping command as shown below. Alternative options include :code:`--purge-data` (delete only astro data) and :code:`--purge-all` (delete astro data AND Django database). These options are mutually exclusive, and only one can be used.
 
 .. code:: bash
 
     # Stop and remove services and internal networks
-    bash run/blast.stop.sh $PROFILE --purge-db
+    bash run/blast.down.sh $PROFILE --purge-db
 
 The initialization process is idempotent, meaning that it is safe to repeatedly restart the services with or without existing application data.
 
-The initialization process generates temporary files on the astro data volume (:code:`/mnt/data/.initializing_db` and :code:`/mnt/data/.initializing_data`) to support the scenario where multiple replicas of service containers are running concurrently. These files are automatically removed by the :code:`run/blast.start.sh` script.
+The initialization process generates temporary files on the astro data volume (:code:`/mnt/data/.initializing_db` and :code:`/mnt/data/.initializing_data`) to support the scenario where multiple replicas of service containers are running concurrently. These files are automatically removed by the :code:`run/blast.up.sh` script.
 
 
 Testing the Blast app
@@ -103,13 +125,14 @@ Testing the Blast app
 To run tests with the Blast app, while the :code:`full_dev` or :code:`slim_dev` containers are
 up, in a separate terminal run
 
-.. code:: none
+.. code:: bash
 
-    bash run/blast.test.up.sh
+    bash run/blast.test.sh slim_dev
 
-This allows you to run the tests without stopping the containers. If you would
-like to run the tests from scratch, (when the Blast app is not up) run,
+This allows you to run the tests without stopping the containers. *Some of the tests are excluded in this mode* because the assumption is that you are iterating on the unit tests themselves and probably do not want a slow iteration cycle, for example when cutout data is downloaded.
 
-.. code:: none
+If you would like to run all tests from scratch in an dedicated container, run
 
-    bash run/blast.run.sh test
+.. code:: bash
+
+    bash run/blast.up.sh test

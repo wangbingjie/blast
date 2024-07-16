@@ -28,7 +28,7 @@ services:
       - ../env/.env.default
       - ../env/.env.dev
   blast_ci:
-    image: blast:ci
+    image: hub.ncsa.illinois.edu/blast/blast:latest
     build:
       context: ../app/
     volumes:
