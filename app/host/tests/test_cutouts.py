@@ -3,6 +3,7 @@ import os
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from django.test import TestCase
+from django.test import tag
 
 from ..cutouts import cutout
 from ..models import Filter
@@ -21,6 +22,7 @@ class CutoutDownloadTest(TestCase):
         self.transient_ra = 355.53628555
         self.transient_dec = 48.70907059166666
 
+    @tag('download')
     def test_cutout_download(self):
         """ "
         Test that cutout data can be downloaded.
