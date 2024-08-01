@@ -828,7 +828,7 @@ def prospector_result_to_blast(
     # dynesty
     #        theta_max = resultpars["chain"][imax, :].copy()
 
-    model_init = model_components["model"] ##copy.deepcopy(model_components["model"])
+    model_init = copy.deepcopy(model_components["model"])
     tstart = time.time()
     ### take the mean of 50 random samples to get the "best fit" model
     # best_phot_store = np.array([])
