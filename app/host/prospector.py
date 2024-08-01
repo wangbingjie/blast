@@ -881,7 +881,7 @@ def prospector_result_to_blast(
             hdf5_file_name,
             hdf5_file_name.replace(".h5", "_chain.npz"),
             hdf5_file_name.replace(".h5", "_perc.npz"),
-            model_components["model"].init_config["zred"]["init"],
+            model_components["model"]._zred[0],
             prior="p-alpha",
             mod_fsps=model_components["model"],
             sps=model_components["sps"],
