@@ -16,7 +16,6 @@ def main():
         ) from exc
 
     # The database migrations must be executed first to establish the db schema
-    execute_from_command_line(["__main__.py", "makemigrations"])
     execute_from_command_line(["__main__.py", "migrate"])
 
     # Create the Django admin account if it does not exist
