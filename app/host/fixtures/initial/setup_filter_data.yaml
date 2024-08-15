@@ -124,7 +124,7 @@
     magnitude_zero_point: 13.0
     image_pixel_units: 'counts/sec'
     kcorrect_name: 'wise_w4'
-- model: host.filter
+- model: host.Filter
   fields:
     name: GALEX_NUV
     survey: [GALEX]
