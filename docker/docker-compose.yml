@@ -158,14 +158,6 @@ services:
       default:
         aliases:
           - ${WEB_APP_HOST}
-  docs:
-    extends:
-      file: docker-compose.blast_base.yml
-      service: ${BLAST_IMAGE}
-    command: bash entrypoints/docker-entrypoint.docs.sh
-    volumes:
-      - ../docs:/docs
-    profiles: ["docs"]
   batch:
     image: python:3.9-buster
     volumes:
