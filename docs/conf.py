@@ -11,7 +11,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../app/"))
+sys.path.insert(0, os.path.abspath("/app/"))
 
 # Specify settings module
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
@@ -24,8 +24,8 @@ django.setup()
 # -- Project information -----------------------------------------------------
 
 project = "Blast"
-copyright = "2021, Peter McGill, David Jones"
-author = "Peter McGill, David Jones"
+copyright = "2024, Peter McGill, David Jones, T. Andrew Manning"
+author = "Peter McGill, David Jones, T. Andrew Manning"
 
 
 # -- General configuration ---------------------------------------------------

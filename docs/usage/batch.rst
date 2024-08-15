@@ -5,7 +5,7 @@ This pages explains how to use Blast in offline batch mode. This mode
 processes a batch of user inputted transients with the Blast pipeline and outputs
 a serialized science payload.
 
-First, read and follow the instructions on how to run Blast locally :doc:`here <dev_running_blast>`
+First, read and follow the instructions on how to run Blast locally :doc:`here </developer_guide/dev_running_blast>`
 up to and including the Setup environment file section.
 
 Input transient file
@@ -14,7 +14,7 @@ Input transient file
 First, create an input file with a batch of transients to be processed. This file
 must be a csv following the the format with the transient name and sky position.
 
-.. code:: None
+.. code::
 
     name,ra,dec
     2022example1,123.453454644,-30.34324332353
@@ -35,13 +35,13 @@ Environment setup
 In addition to all the environment variables default setup you must specify the
 path to you input batch file, absolute or relative to the docker-compose.yml file,
 
-.. code:: None
+.. code::
 
     BATCH_CSV=<path_to_your_transient_input_file>
 
 You must also specify the path to the empty results file
 
-.. code:: None
+.. code::
 
     OUTPUT_CSV=<path_to_your_results_file>
 
@@ -51,7 +51,7 @@ Running in batch mode
 With the environment variables set, you can run Blast in batch mode from the base
 Blast directory,
 
-.. code:: None
+.. code::
 
     bash run/blast.up.sh batch
 
