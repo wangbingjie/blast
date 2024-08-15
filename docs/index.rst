@@ -3,16 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Blast's documentation!
-=================================
-
-.. image:: https://readthedocs.org/projects/blast/badge/?version=latest
-.. image:: https://github.com/scimma/blast/actions/workflows/continuous-integration.yml/badge.svg
-.. image:: https://results.pre-commit.ci/badge/github/astrophpeter/blast/main.svg
-.. image:: https://codecov.io/gh/astrophpeter/blast/branch/main/graph/badge.svg?token=Y9JPAF8HVD
-.. image:: https://www.codefactor.io/repository/github/astrophpeter/blast/badge
-
-Blast is developed on `GitHub <https://github.com/scimma/blast>`_.
+.. image:: ../_static/blast_logo_transparent.png
+   :alt: Blast logo
 
 Blast is a public web application built to find a transient's host
 galaxy, identify the available archival data, and measure the resulting
@@ -21,7 +13,7 @@ new transient reported to the IAU in real-time after the transient is
 announced. This information is not provided by any existing transient
 broker service.
 
-Blast is currently developed by the `UCSC Transients Team <https://transients.ucsc.edu/>`_.
+Blast is developed on `GitHub <https://github.com/scimma/blast>`_.
 
 Usage
 -----
