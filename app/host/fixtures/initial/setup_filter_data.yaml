@@ -1,133 +1,149 @@
 - model: host.Filter
+  pk: 1
   fields:
     name: 2MASS_H
-    survey: [2MASS]
+    survey:
+    - 2MASS
     sedpy_id: twomass_H
     hips_id: CDS/P/2MASS/H
     pixel_size_arcsec: 1.0
     image_fwhm_arcsec: 2.8
     vosa_id: 2MASS/2MASS.H
     image_download_method: custom
-    wavelength_eff_angstrom: 16620.00
+    wavelength_eff_angstrom: 16620.0
     wavelength_min_angstrom: 14787.38
     wavelength_max_angstrom: 18231.02
-    vega_zero_point_jansky: 1024.00
+    vega_zero_point_jansky: 1024.0
     ab_offset: 1.3676
     magnitude_zero_point_keyword: MAGZP
-    image_pixel_units: 'counts'
-    kcorrect_name: 'twomass_H'
+    image_pixel_units: counts
+    kcorrect_name: twomass_H
 - model: host.Filter
+  pk: 2
   fields:
     name: 2MASS_J
-    survey: [2MASS]
+    survey:
+    - 2MASS
     sedpy_id: twomass_j
     hips_id: CDS/P/2MASS/J
     pixel_size_arcsec: 1.0
     image_fwhm_arcsec: 2.9
     vosa_id: 2MASS/2MASS.J
     image_download_method: custom
-    wavelength_eff_angstrom: 12350.00
+    wavelength_eff_angstrom: 12350.0
     wavelength_min_angstrom: 10806.47
     wavelength_max_angstrom: 14067.97
-    vega_zero_point_jansky: 1594.00
+    vega_zero_point_jansky: 1594.0
     ab_offset: 0.8949
     magnitude_zero_point_keyword: MAGZP
-    image_pixel_units: 'counts'
-    kcorrect_name: 'twomass_J'
+    image_pixel_units: counts
+    kcorrect_name: twomass_J
 - model: host.Filter
+  pk: 3
   fields:
     name: 2MASS_K
-    survey: [2MASS]
+    survey:
+    - 2MASS
     sedpy_id: twomass_k
     hips_id: CDS/P/2MASS/K
     pixel_size_arcsec: 1.0
     image_fwhm_arcsec: 2.9
     vosa_id: 2MASS/2MASS.Ks
     image_download_method: custom
-    wavelength_eff_angstrom: 21590.00
+    wavelength_eff_angstrom: 21590.0
     wavelength_min_angstrom: 19543.69
-    wavelength_max_angstrom: 23552.40
-    vega_zero_point_jansky: 666.80
+    wavelength_max_angstrom: 23552.4
+    vega_zero_point_jansky: 666.8
     ab_offset: 1.8378
     magnitude_zero_point_keyword: MAGZP
-    image_pixel_units: 'counts'
-    kcorrect_name: 'twomass_Ks'
+    image_pixel_units: counts
+    kcorrect_name: twomass_Ks
 - model: host.Filter
+  pk: 4
   fields:
     name: WISE_W1
-    survey: [WISE]
+    survey:
+    - WISE
     sedpy_id: wise_w1
     hips_id: CDS/P/allWISE/W1
     pixel_size_arcsec: 1.375
     image_fwhm_arcsec: 5.84
     vosa_id: WISE/WISE.W1
     image_download_method: custom
-    wavelength_eff_angstrom: 33526.00
+    wavelength_eff_angstrom: 33526.0
     wavelength_min_angstrom: 27540.97
     wavelength_max_angstrom: 38723.88
     vega_zero_point_jansky: 309.54
     ab_offset: 2.699
     magnitude_zero_point: 20.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'wise_w1'
+    image_pixel_units: counts/sec
+    kcorrect_name: wise_w1
 - model: host.Filter
+  pk: 5
   fields:
     name: WISE_W2
-    survey: [WISE]
+    survey:
+    - WISE
     sedpy_id: wise_w2
     hips_id: CDS/P/allWISE/W2
     pixel_size_arcsec: 1.375
     image_fwhm_arcsec: 6.48
     vosa_id: WISE/WISE.W2
     image_download_method: custom
-    wavelength_eff_angstrom: 46028.00
+    wavelength_eff_angstrom: 46028.0
     wavelength_min_angstrom: 39633.26
-    wavelength_max_angstrom: 53413.60
+    wavelength_max_angstrom: 53413.6
     vega_zero_point_jansky: 171.79
     ab_offset: 3.339
     magnitude_zero_point: 19.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'wise_w2'
+    image_pixel_units: counts/sec
+    kcorrect_name: wise_w2
 - model: host.Filter
+  pk: 6
   fields:
     name: WISE_W3
-    survey: [WISE]
+    survey:
+    - WISE
     sedpy_id: wise_w3
     hips_id: CDS/P/allWISE/W3
     pixel_size_arcsec: 1.375
     image_fwhm_arcsec: 6.72
     vosa_id: WISE/WISE.W3
     image_download_method: custom
-    wavelength_eff_angstrom: 115608.00
+    wavelength_eff_angstrom: 115608.0
     wavelength_min_angstrom: 74430.44
     wavelength_max_angstrom: 172613.43
     vega_zero_point_jansky: 31.67
     ab_offset: 5.174
     magnitude_zero_point: 18.0
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'wise_w3'
+    image_pixel_units: counts/sec
+    kcorrect_name: wise_w3
 - model: host.Filter
+  pk: 7
   fields:
     name: WISE_W4
-    survey: [WISE]
+    survey:
+    - WISE
     sedpy_id: wise_w4
     hips_id: CDS/P/allWISE/W4
     pixel_size_arcsec: 1.375
     image_fwhm_arcsec: 11.82
     vosa_id: WISE/WISE.W4
     image_download_method: custom
-    wavelength_eff_angstrom: 220883.00
+    wavelength_eff_angstrom: 220883.0
     wavelength_min_angstrom: 195200.83
     wavelength_max_angstrom: 279107.24
     vega_zero_point_jansky: 8.36
-    ab_offset: 6.620
+    ab_offset: 6.62
     magnitude_zero_point: 13.0
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'wise_w4'
+    image_pixel_units: counts/sec
+    kcorrect_name: wise_w4
 - model: host.Filter
+  pk: 8
   fields:
     name: GALEX_NUV
-    survey: [GALEX]
+    survey:
+    - GALEX
     sedpy_id: galex_nuv
     hips_id: CDS/P/GALEXGR6/AIS/NUV
     pixel_size_arcsec: 1.5
@@ -140,12 +156,14 @@
     vega_zero_point_jansky: 788.55
     ab_offset: 0
     magnitude_zero_point: 20.08
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'galex_NUV'
+    image_pixel_units: counts/sec
+    kcorrect_name: galex_NUV
 - model: host.Filter
+  pk: 9
   fields:
     name: GALEX_FUV
-    survey: [GALEX]
+    survey:
+    - GALEX
     sedpy_id: galex_fuv
     hips_id: CDS/P/GALEXGR6/AIS/FUV
     pixel_size_arcsec: 1.5
@@ -158,12 +176,14 @@
     vega_zero_point_jansky: 520.73
     ab_offset: 0
     magnitude_zero_point: 18.82
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'galex_FUV'
+    image_pixel_units: counts/sec
+    kcorrect_name: galex_FUV
 - model: host.Filter
+  pk: 10
   fields:
     name: PanSTARRS_g
-    survey: [PanSTARRS]
+    survey:
+    - PanSTARRS
     sedpy_id: panstarrs_g
     hips_id: CDS/P/PanSTARRS/DR1/g
     pixel_size_arcsec: 0.25
@@ -171,17 +191,19 @@
     vosa_id: PAN-STARRS/PS1.g
     image_download_method: custom
     wavelength_eff_angstrom: 4810.88
-    wavelength_min_angstrom: 3943.40
+    wavelength_min_angstrom: 3943.4
     wavelength_max_angstrom: 5593.27
-    vega_zero_point_jansky: 3893.00
+    vega_zero_point_jansky: 3893.0
     ab_offset: 0
     magnitude_zero_point: 25.0
-    image_pixel_units: 'counts'
-    kcorrect_name: 'none'
+    image_pixel_units: counts
+    kcorrect_name: none
 - model: host.Filter
+  pk: 11
   fields:
     name: PanSTARRS_r
-    survey: [PanSTARRS]
+    survey:
+    - PanSTARRS
     sedpy_id: panstarrs_r
     hips_id: CDS/P/PanSTARRS/DR1/r
     pixel_size_arcsec: 0.25
@@ -191,15 +213,17 @@
     wavelength_eff_angstrom: 6156.36
     wavelength_min_angstrom: 5386.23
     wavelength_max_angstrom: 7035.65
-    vega_zero_point_jansky: 3135.50
+    vega_zero_point_jansky: 3135.5
     ab_offset: 0
     magnitude_zero_point: 25.0
-    image_pixel_units: 'counts'
-    kcorrect_name: 'none'
+    image_pixel_units: counts
+    kcorrect_name: none
 - model: host.Filter
+  pk: 12
   fields:
     name: PanSTARRS_i
-    survey: [PanSTARRS]
+    survey:
+    - PanSTARRS
     sedpy_id: panstarrs_i
     hips_id: CDS/P/PanSTARRS/DR1/i
     pixel_size_arcsec: 0.25
@@ -212,12 +236,14 @@
     vega_zero_point_jansky: 2577.03
     ab_offset: 0
     magnitude_zero_point: 25.0
-    image_pixel_units: 'counts'
-    kcorrect_name: 'none'
+    image_pixel_units: counts
+    kcorrect_name: none
 - model: host.Filter
+  pk: 13
   fields:
     name: PanSTARRS_z
-    survey: [PanSTARRS]
+    survey:
+    - PanSTARRS
     sedpy_id: panstarrs_z
     hips_id: CDS/P/PanSTARRS/DR1/z
     pixel_size_arcsec: 0.25
@@ -225,17 +251,19 @@
     vosa_id: PAN-STARRS/PS1.z
     image_download_method: custom
     wavelength_eff_angstrom: 8668.56
-    wavelength_min_angstrom: 8028.00
-    wavelength_max_angstrom: 9346.00
+    wavelength_min_angstrom: 8028.0
+    wavelength_max_angstrom: 9346.0
     vega_zero_point_jansky: 2273.05
     ab_offset: 0
     magnitude_zero_point: 25.0
-    image_pixel_units: 'counts'
-    kcorrect_name: 'none'
+    image_pixel_units: counts
+    kcorrect_name: none
 - model: host.Filter
+  pk: 14
   fields:
     name: PanSTARRS_y
-    survey: [PanSTARRS]
+    survey:
+    - PanSTARRS
     sedpy_id: panstarrs_y
     hips_id: CDS/P/PanSTARRS/DR1/y
     pixel_size_arcsec: 0.25
@@ -243,35 +271,39 @@
     vosa_id: PAN-STARRS/PS1.y
     image_download_method: custom
     wavelength_eff_angstrom: 9613.45
-    wavelength_min_angstrom: 9100.50
-    wavelength_max_angstrom: 10838.50
+    wavelength_min_angstrom: 9100.5
+    wavelength_max_angstrom: 10838.5
     vega_zero_point_jansky: 2203.66
     ab_offset: 0
     magnitude_zero_point: 25.0
-    image_pixel_units: 'counts'
-    kcorrect_name: 'none'
+    image_pixel_units: counts
+    kcorrect_name: none
 - model: host.Filter
+  pk: 15
   fields:
     name: SDSS_i
-    survey: [SDSS]
+    survey:
+    - SDSS
     sedpy_id: sdss_i
     hips_id: CDS/P/SDSS9/i
     pixel_size_arcsec: 0.4
     image_fwhm_arcsec: 1.26
     vosa_id: SLOAN/SDSS.i
     image_download_method: custom
-    wavelength_eff_angstrom: 7470.60
-    wavelength_min_angstrom: 6430.00
-    wavelength_max_angstrom: 8630.00
+    wavelength_eff_angstrom: 7470.6
+    wavelength_min_angstrom: 6430.0
+    wavelength_max_angstrom: 8630.0
     vega_zero_point_jansky: 3971.19
     ab_offset: 0
     magnitude_zero_point: 22.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'sdss_i0'
+    image_pixel_units: counts/sec
+    kcorrect_name: sdss_i0
 - model: host.Filter
+  pk: 16
   fields:
     name: SDSS_r
-    survey: [SDSS]
+    survey:
+    - SDSS
     sedpy_id: sdss_r
     hips_id: CDS/P/SDSS9/r
     pixel_size_arcsec: 0.4
@@ -284,12 +316,14 @@
     vega_zero_point_jansky: 3142.02
     ab_offset: 0
     magnitude_zero_point: 22.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'sdss_r0'
+    image_pixel_units: counts/sec
+    kcorrect_name: sdss_r0
 - model: host.Filter
+  pk: 17
   fields:
     name: SDSS_u
-    survey: [SDSS]
+    survey:
+    - SDSS
     sedpy_id: sdss_u
     hips_id: CDS/P/SDSS9/u
     pixel_size_arcsec: 0.4
@@ -302,12 +336,14 @@
     vega_zero_point_jansky: 1628.72
     ab_offset: 0
     magnitude_zero_point: 22.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'sdss_u0'
+    image_pixel_units: counts/sec
+    kcorrect_name: sdss_u0
 - model: host.Filter
+  pk: 18
   fields:
     name: SDSS_z
-    survey: [SDSS]
+    survey:
+    - SDSS
     sedpy_id: sdss_z
     hips_id: CDS/P/SDSS9/z
     pixel_size_arcsec: 0.4
@@ -320,12 +356,14 @@
     vega_zero_point_jansky: 2227.03
     ab_offset: 0
     magnitude_zero_point: 22.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'sdss_z0'
+    image_pixel_units: counts/sec
+    kcorrect_name: sdss_z0
 - model: host.Filter
+  pk: 19
   fields:
     name: SDSS_g
-    survey: [SDSS]
+    survey:
+    - SDSS
     sedpy_id: sdss_g
     hips_id: CDS/P/SDSS9/g
     pixel_size_arcsec: 0.4
@@ -338,12 +376,14 @@
     vega_zero_point_jansky: 4023.57
     ab_offset: 0
     magnitude_zero_point: 22.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'sdss_g0'
+    image_pixel_units: counts/sec
+    kcorrect_name: sdss_g0
 - model: host.Filter
+  pk: 20
   fields:
     name: DES_g
-    survey: [DES]
+    survey:
+    - DES
     sedpy_id: des_g
     hips_id: CDS/P/DES-DR1/g
     pixel_size_arcsec: 0.2637
@@ -356,12 +396,14 @@
     vega_zero_point_jansky: 3905.01
     ab_offset: 0
     magnitude_zero_point: 22.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'decam_g'
+    image_pixel_units: counts/sec
+    kcorrect_name: decam_g
 - model: host.Filter
+  pk: 21
   fields:
     name: DES_r
-    survey: [DES]
+    survey:
+    - DES
     sedpy_id: des_r
     hips_id: CDS/P/DES-DR1/r
     pixel_size_arcsec: 0.2637
@@ -374,12 +416,14 @@
     vega_zero_point_jansky: 3027.32
     ab_offset: 0
     magnitude_zero_point: 22.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'decam_r'
+    image_pixel_units: counts/sec
+    kcorrect_name: decam_r
 - model: host.Filter
+  pk: 22
   fields:
     name: DES_i
-    survey: [DES]
+    survey:
+    - DES
     sedpy_id: des_i
     hips_id: CDS/P/DES-DR1/i
     pixel_size_arcsec: 0.2637
@@ -392,30 +436,34 @@
     vega_zero_point_jansky: 2467.82
     ab_offset: 0
     magnitude_zero_point: 22.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'decam_i'
+    image_pixel_units: counts/sec
+    kcorrect_name: decam_i
 - model: host.Filter
+  pk: 23
   fields:
     name: DES_z
-    survey: [DES]
+    survey:
+    - DES
     sedpy_id: des_z
     hips_id: CDS/P/DES-DR1/z
     pixel_size_arcsec: 0.2637
     image_fwhm_arcsec: 0.93
     vosa_id: CTIO/DECam.z
     image_download_method: custom
-    wavelength_eff_angstrom: 9157.90
-    wavelength_min_angstrom: 8341.20
+    wavelength_eff_angstrom: 9157.9
+    wavelength_min_angstrom: 8341.2
     wavelength_max_angstrom: 10074.26
     vega_zero_point_jansky: 2247.33
     ab_offset: 0
     magnitude_zero_point: 22.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'decam_z'
+    image_pixel_units: counts/sec
+    kcorrect_name: decam_z
 - model: host.Filter
+  pk: 24
   fields:
     name: DES_Y
-    survey: [DES]
+    survey:
+    - DES
     sedpy_id: des_y
     hips_id: CDS/P/DES-DR1/Y
     pixel_size_arcsec: 0.2637
@@ -428,5 +476,5 @@
     vega_zero_point_jansky: 2146.18
     ab_offset: 0
     magnitude_zero_point: 22.5
-    image_pixel_units: 'counts/sec'
-    kcorrect_name: 'decam_Y'
+    image_pixel_units: counts/sec
+    kcorrect_name: decam_Y
