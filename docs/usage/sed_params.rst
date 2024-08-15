@@ -3,7 +3,7 @@ Spectral Energy Distribution Parameters
 
 Blast currently uses the Prospector-:math:`\alpha` model to model
 galaxy SEDs.  To add your own model, please get in touch
-and consult the :ref:`Developer Guide <dev_guide>`!  Via the webpages, we
+and consult the :doc:`Developer Guide </developer_guide/dev_getting_started>`!  Via the webpages, we
 report full posterior chains for the following parameters.
 
 Prospector-:math:`\alpha` Parameters
