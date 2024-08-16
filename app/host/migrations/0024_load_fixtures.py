@@ -10,8 +10,6 @@ def load_fixtures(apps, schema_editor):
         '/app/host/fixtures/initial/setup_status.yaml',
         '/app/host/fixtures/initial/setup_acknowledgements.yaml',
         '/app/host/fixtures/initial/setup_catalog_data.yaml',
-        '/app/host/fixtures/test/setup_test_transient.yaml',
-        '/app/host/fixtures/test/setup_test_task_register.yaml',
         '/app/host/fixtures/example/snapshot.yaml',
         '/app/host/fixtures/example/2010H.yaml',
         '/app/host/fixtures/example/2010ai.yaml',
