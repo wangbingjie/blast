@@ -1,22 +1,12 @@
 import numpy as np
 from django.test import TestCase
 
-from ..models import TaskRegister
 from ..models import Transient
 from ..transient_tasks import MWEBV_Host
 from ..transient_tasks import MWEBV_Transient
 
 
 class EBVTest(TestCase):
-    fixtures = [
-        "../fixtures/initial/setup_survey_data.yaml",
-        "../fixtures/initial/setup_filter_data.yaml",
-        "../fixtures/initial/setup_catalog_data.yaml",
-        "../fixtures/initial/setup_status.yaml",
-        "../fixtures/initial/setup_tasks.yaml",
-        "../fixtures/initial/setup_acknowledgements.yaml",
-        "../fixtures/test/test_2010H.yaml",
-    ]
 
     def test_mwebv_transient(self):
         transient = Transient.objects.get(name="2010H")

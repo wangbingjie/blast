@@ -17,11 +17,7 @@ from ..transient_tasks import ImageDownload
 class TaskRunnerTest(TestCase):
     fixtures = [
         "../fixtures/test/setup_test_transient.yaml",
-        "../fixtures/initial/setup_tasks.yaml",
-        "../fixtures/initial/setup_status.yaml",
         "../fixtures/test/setup_test_task_register.yaml",
-        "../fixtures/initial/setup_survey_data.yaml",
-        "../fixtures/initial/setup_filter_data.yaml",
         "../fixtures/test/test_cutout.yaml",
     ]
 
@@ -274,10 +270,6 @@ class TaskRunnerTest(TestCase):
 
 
 class GHOSTRunnerTest(TestCase):
-    fixtures = [
-        "../fixtures/initial/setup_tasks.yaml",
-        "../fixtures/initial/setup_status.yaml",
-    ]
 
     def setUp(self):
         self.ghost_runner = Ghost(transient_name="dummy")
@@ -299,8 +291,6 @@ class GHOSTRunnerTest(TestCase):
 class InitializeTaskRegisterTest(TestCase):
     fixtures = [
         "../fixtures/test/setup_test_transient.yaml",
-        "../fixtures/initial/setup_status.yaml",
-        "../fixtures/initial/setup_tasks.yaml",
     ]
 
     def test_task_register_init(self):
@@ -313,8 +303,6 @@ class InitializeTaskRegisterTest(TestCase):
 
 class ImageDownloadTest(TestCase):
     fixtures = [
-        "../fixtures/initial/setup_tasks.yaml",
-        "../fixtures/initial/setup_status.yaml",
         "../fixtures/test/setup_test_transient.yaml",
         "../fixtures/test/setup_test_task_register.yaml",
     ]
@@ -343,10 +331,6 @@ class ImageDownloadTest(TestCase):
 
 
 class TestAllRegisteredTaskRunners(TestCase):
-    fixtures = [
-        "../fixtures/initial/setup_tasks.yaml",
-        "../fixtures/initial/setup_status.yaml",
-    ]
 
     def test_task_type(self):
         for task_runner in periodic_tasks:

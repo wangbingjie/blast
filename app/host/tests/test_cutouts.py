@@ -12,10 +12,6 @@ sn = ["2010ag", "2010ai", "2010y", "2010H", ""]
 
 
 class CutoutDownloadTest(TestCase):
-    fixtures = [
-        "../fixtures/initial/setup_survey_data.yaml",
-        "../fixtures/initial/setup_filter_data.yaml",
-    ]
 
     def setUp(self):
         self.transient_name = "2010ag"
