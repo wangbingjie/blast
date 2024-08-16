@@ -294,11 +294,14 @@ class InitializeTaskRegisterTest(TestCase):
     ]
 
     def test_task_register_init(self):
-        transient = Transient.objects.get(name__exact="2022testone")
+        transient_name = "2022testone"
+        transient = Transient.objects.get(name__exact=transient_name)
         # should be no tasks register first
-        self.assertTrue(TaskRegister.objects.all().exists() is False)
+        registered_tasks = TaskRegister.objects.filter(transient__name__exact=transient_name)
+        self.assertTrue(not registered_tasks)
         initialise_all_tasks_status(transient)
-        self.assertTrue(TaskRegister.objects.all().exists() is True)
+        registered_tasks = TaskRegister.objects.filter(transient__name__exact=transient_name)
+        self.assertTrue(registered_tasks)
 
 
 class ImageDownloadTest(TestCase):
