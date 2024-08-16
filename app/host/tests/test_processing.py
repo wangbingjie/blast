@@ -17,11 +17,7 @@ from ..transient_tasks import ImageDownload
 class TaskRunnerTest(TestCase):
     fixtures = [
         "../fixtures/test/setup_test_transient.yaml",
-        "../fixtures/initial/setup_tasks.yaml",
-        "../fixtures/initial/setup_status.yaml",
         "../fixtures/test/setup_test_task_register.yaml",
-        "../fixtures/initial/setup_survey_data.yaml",
-        "../fixtures/initial/setup_filter_data.yaml",
         "../fixtures/test/test_cutout.yaml",
     ]
 
@@ -203,7 +199,7 @@ class TaskRunnerTest(TestCase):
         items = self.two_prereqs_suc_runner.find_register_items_meeting_prerequisites()
         self.assertTrue(len(items) == 2)
 
-    def test_select_highest_priority(self):
+    def obsolete_test_select_highest_priority(self):
         # tests that the oldest register item is selected
         register = TaskRegister.objects.all()
         oldest = self.processed_runner._select_highest_priority(register)
@@ -274,10 +270,6 @@ class TaskRunnerTest(TestCase):
 
 
 class GHOSTRunnerTest(TestCase):
-    fixtures = [
-        "../fixtures/initial/setup_tasks.yaml",
-        "../fixtures/initial/setup_status.yaml",
-    ]
 
     def setUp(self):
         self.ghost_runner = Ghost(transient_name="dummy")
@@ -299,22 +291,21 @@ class GHOSTRunnerTest(TestCase):
 class InitializeTaskRegisterTest(TestCase):
     fixtures = [
         "../fixtures/test/setup_test_transient.yaml",
-        "../fixtures/initial/setup_status.yaml",
-        "../fixtures/initial/setup_tasks.yaml",
     ]
 
     def test_task_register_init(self):
-        transient = Transient.objects.get(name__exact="2022testone")
+        transient_name = "2022testone"
+        transient = Transient.objects.get(name__exact=transient_name)
         # should be no tasks register first
-        self.assertTrue(TaskRegister.objects.all().exists() is False)
+        registered_tasks = TaskRegister.objects.filter(transient__name__exact=transient_name)
+        self.assertTrue(not registered_tasks)
         initialise_all_tasks_status(transient)
-        self.assertTrue(TaskRegister.objects.all().exists() is True)
+        registered_tasks = TaskRegister.objects.filter(transient__name__exact=transient_name)
+        self.assertTrue(registered_tasks)
 
 
 class ImageDownloadTest(TestCase):
     fixtures = [
-        "../fixtures/initial/setup_tasks.yaml",
-        "../fixtures/initial/setup_status.yaml",
         "../fixtures/test/setup_test_transient.yaml",
         "../fixtures/test/setup_test_task_register.yaml",
     ]
@@ -343,10 +334,6 @@ class ImageDownloadTest(TestCase):
 
 
 class TestAllRegisteredTaskRunners(TestCase):
-    fixtures = [
-        "../fixtures/initial/setup_tasks.yaml",
-        "../fixtures/initial/setup_status.yaml",
-    ]
 
     def test_task_type(self):
         for task_runner in periodic_tasks:

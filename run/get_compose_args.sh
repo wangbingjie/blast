@@ -58,9 +58,13 @@ esac
 
 COMPOSE_CONFIG=" --profile $PROFILE"
 COMPOSE_CONFIG="${COMPOSE_CONFIG} --project-name ${COMPOSE_PROJECT_NAME:-blast}"
-COMPOSE_CONFIG="${COMPOSE_CONFIG} -f docker/docker-compose.yml"
-COMPOSE_CONFIG="${COMPOSE_CONFIG} --env-file env/.env.default"
-COMPOSE_CONFIG="${COMPOSE_CONFIG} --env-file ${ENV_FILE}"
+if [[ $PROFILE == "docs" ]]; then
+  COMPOSE_CONFIG="${COMPOSE_CONFIG} -f docker/docker-compose.docs.yaml"
+else
+  COMPOSE_CONFIG="${COMPOSE_CONFIG} -f docker/docker-compose.yml"
+  COMPOSE_CONFIG="${COMPOSE_CONFIG} --env-file env/.env.default"
+  COMPOSE_CONFIG="${COMPOSE_CONFIG} --env-file ${ENV_FILE}"
+fi
 
 export COMPOSE_CONFIG
 export COMPOSE_ARGS

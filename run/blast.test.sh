@@ -1,4 +1,3 @@
-docker exec -it blast-app_dev-1 
 #!/bin/env bash
 set -e
 

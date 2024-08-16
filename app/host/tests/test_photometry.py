@@ -1,7 +1,6 @@
 from django.test import TestCase
 
 from ..models import AperturePhotometry
-from ..models import TaskRegister
 from ..models import Transient
 from ..transient_tasks import GlobalAperturePhotometry
 from ..transient_tasks import LocalAperturePhotometry
@@ -11,12 +10,6 @@ from ..transient_tasks import ValidateLocalPhotometry
 
 class TestValidatePhotometry(TestCase):
     fixtures = [
-        "../fixtures/initial/setup_survey_data.yaml",
-        "../fixtures/initial/setup_filter_data.yaml",
-        "../fixtures/initial/setup_catalog_data.yaml",
-        "../fixtures/initial/setup_status.yaml",
-        "../fixtures/initial/setup_tasks.yaml",
-        "../fixtures/initial/setup_acknowledgements.yaml",
         "../fixtures/test/test_2010H_onefilter.yaml",
     ]
 

@@ -27,6 +27,14 @@ services:
     env_file:
       - ../env/.env.default
       - ../env/.env.dev
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.25'
+          memory: 1G
+        limits:
+          cpus: "${CELERY_WORKER_LIMIT_CPUS:-4.0}"
+          memory: ${CELERY_WORKER_LIMIT_MEMORY:-4G}
   celery_beat:
     extends:
       file: docker-compose.blast_base.yml
@@ -86,34 +94,6 @@ services:
       - ../env/.env.default
       - ../env/.env.dev
     profiles: ["full_prod", "full_dev", "batch"]
-  app_test:
-    extends:
-      file: docker-compose.blast_base.yml
-      service: ${BLAST_IMAGE}
-    ports:
-      - 127.0.0.1:8000:${WEB_APP_PORT}
-    networks:
-      default:
-        aliases:
-          - ${WEB_APP_HOST}
-    environment:
-      - "TEST_MODE=1"
-    env_file:
-      - ../env/.env.default
-      - ../env/.env.dev
-    profiles: ["test"]
-  database_test:
-    extends:
-      file: docker-compose.blast_base.yml
-      service: database_base
-    networks:
-      default:
-        aliases:
-          - ${DATABASE_HOST}
-    environment:
-      - "MYSQL_ROOT_PASSWORD=password"
-      - "MYSQL_DATABASE=blast_db"
-    profiles: ["test"]
   app_ci:
     extends:
       file: docker-compose.blast_base.yml
@@ -158,14 +138,6 @@ services:
       default:
         aliases:
           - ${WEB_APP_HOST}
-  docs:
-    extends:
-      file: docker-compose.blast_base.yml
-      service: ${BLAST_IMAGE}
-    command: bash entrypoints/docker-entrypoint.docs.sh
-    volumes:
-      - ../docs:/docs
-    profiles: ["docs"]
   batch:
     image: python:3.9-buster
     volumes:

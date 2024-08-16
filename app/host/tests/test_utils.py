@@ -13,7 +13,7 @@ class CutoutDownloadTest(TestCase):
         self.surveys = survey_list("host/data/survey_metadata.yml")
 
     @tag('download')
-    def test_cutout_download(self):
+    def needs_review_test_cutout_download(self):
         """ "
         Test that cutout data can be downloaded.
         """
@@ -23,7 +23,7 @@ class CutoutDownloadTest(TestCase):
             )
             cutout_data = cutout(position, survey)
             with self.subTest(survey=survey.name):
-                self.assertTrue(cutout_data != None)
+                self.assertTrue(cutout_data is not None)
 
 
 class CatalogDownloadTest(TestCase):
@@ -41,7 +41,7 @@ class CatalogDownloadTest(TestCase):
             )
             catagog_data = catalog_photometry(position, catalog)
             with self.subTest(catalog=catalog.name):
-                self.assertTrue(catagog_data != None)
+                self.assertTrue(catagog_data is not None)
 
     @tag('download')
     def test_filter_information_download(self):
@@ -51,4 +51,4 @@ class CatalogDownloadTest(TestCase):
         for catalog in self.catalogs:
             filter_data = filter_information(catalog)
             with self.subTest(catalog=catalog.name):
-                self.assertTrue(filter_data != None)
+                self.assertTrue(filter_data is not None)

@@ -115,8 +115,8 @@ def sed_fit_component(transient_name: str) -> List[DataModelComponent]:
     """
     SED fit component which defines what is in the blast science payload.
 
-    parameter:
-        transient_name (str): name of the transient
+    parameters:
+        transient_name (str): name of the transient.
     returns:
         component (List[DataModelComponent]): data model component to be added
             to the blast science payload.
