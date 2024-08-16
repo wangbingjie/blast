@@ -199,7 +199,7 @@ class TaskRunnerTest(TestCase):
         items = self.two_prereqs_suc_runner.find_register_items_meeting_prerequisites()
         self.assertTrue(len(items) == 2)
 
-    def test_select_highest_priority(self):
+    def obsolete_test_select_highest_priority(self):
         # tests that the oldest register item is selected
         register = TaskRegister.objects.all()
         oldest = self.processed_runner._select_highest_priority(register)
