@@ -131,8 +131,8 @@ up, in a separate terminal run
 
 This allows you to run the tests without stopping the containers. *Some of the tests are excluded in this mode* because the assumption is that you are iterating on the unit tests themselves and probably do not want a slow iteration cycle, for example when cutout data is downloaded.
 
-If you would like to run all tests from scratch in an dedicated container, run
+To run all tests from scratch in an dedicated container that does not mount any host paths, run
 
 .. code:: bash
 
-    bash run/blast.up.sh test
+    bash run/blast.up.sh ci
