@@ -1,5 +1,4 @@
 - model: host.TaskRegister
-  pk: 34
   fields:
     transient:
     - 2022testone
@@ -9,7 +8,6 @@
     - not processed
     last_modified: 2000-01-23 01:23:45.678000+00:00
 - model: host.TaskRegister
-  pk: 35
   fields:
     transient:
     - 2022testtwo
@@ -19,7 +17,6 @@
     - not processed
     last_modified: 2000-01-23 01:23:45.678000+00:00
 - model: host.TaskRegister
-  pk: 36
   fields:
     transient:
     - 2022testtwo
@@ -29,7 +26,6 @@
     - not processed
     last_modified: 2000-01-23 01:23:45.678000+00:00
 - model: host.TaskRegister
-  pk: 37
   fields:
     transient:
     - 2022testone

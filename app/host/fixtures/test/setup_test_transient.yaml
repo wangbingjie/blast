@@ -1,5 +1,4 @@
 - model: host.Transient
-  pk: 4
   fields:
     name: 2022testone
     tns_id: 9999
@@ -8,7 +7,6 @@
     ra_deg: 120.027325
     dec_deg: 2.1707639
 - model: host.Transient
-  pk: 5
   fields:
     name: 2022testtwo
     tns_id: 9998
