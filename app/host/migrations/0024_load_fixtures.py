@@ -17,7 +17,7 @@ def load_fixtures(apps, schema_editor):
         '/app/host/fixtures/example/2010ai.yaml',
         '/app/host/fixtures/example/2010ag.yaml',
     ]:
-        print(f'''  Loading fixture "{fixture_file}"...''')
+        # print(f'''  Loading fixture "{fixture_file}"...''')
         with open(fixture_file) as fp:
             # Inspired by https://stackoverflow.com/a/25981899
             objects = serializers.deserialize('yaml', fp, ignorenonexistent=True)
