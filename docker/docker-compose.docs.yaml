@@ -32,4 +32,4 @@ services:
       - sphinx-build -a /opt/docs /opt/docs/build/
     volumes:
       - ../docs:/opt/docs
-      - ../app:/app
+      - ../app:/opt/app

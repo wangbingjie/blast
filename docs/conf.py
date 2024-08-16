@@ -11,7 +11,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("/app/"))
+sys.path.insert(0, os.path.abspath("../app/"))
 
 # Specify settings module
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
