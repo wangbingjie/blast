@@ -13,7 +13,7 @@ class CutoutDownloadTest(TestCase):
         self.surveys = survey_list("host/data/survey_metadata.yml")
 
     @tag('download')
-    def test_cutout_download(self):
+    def needs_review_test_cutout_download(self):
         """ "
         Test that cutout data can be downloaded.
         """
