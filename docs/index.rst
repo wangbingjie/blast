@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. image:: ../_static/blast_logo_transparent.png
+.. image:: ./_static/blast_logo_transparent.png
    :alt: Blast logo
 
 Blast is a public web application built to find a transient's host
