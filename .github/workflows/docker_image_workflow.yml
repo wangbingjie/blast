@@ -1,11 +1,5 @@
 name: Publish Docker image
 
-# This workflow manages the testing, building, and publishing of docker images
-# On a pull request to main:
-#   If docker related files are changed, the image is test built and not published
-# On a push to main (or a new tag is created on master):
-#   The docker image is built and tagged with latest and and / or new tag version
-
 on:
   push:
     branches: [dev]
@@ -13,12 +7,13 @@ on:
       - "*"
     paths:
       - "docker/**"
+      - "env/**"
       - "app/**"
       - "run/**"
       - ".github/**"
 
 jobs:
-  docker:
+  build_test_push:
     runs-on: ubuntu-latest
     steps:
       - name: Free Disk Space (Ubuntu)
@@ -40,8 +35,8 @@ jobs:
           else
             TAGS="${DOCKER_IMAGE}:dev"
           fi
-
           echo ::set-output name=tags::${TAGS}
+
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
@@ -54,14 +49,30 @@ jobs:
           username: "${{ secrets.GITLAB_REGISTRY_USERNAME }}"
           password: "${{ secrets.GITLAB_REGISTRY_TOKEN }}"
 
-      - name: Build and push
+      - name: Build and export to Docker
         id: docker_build
         uses: docker/build-push-action@v6
         with:
+          load: true
+          push: false
           builder: ${{ steps.buildx.outputs.name }}
           context: ./app
           file: ./app/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.prep.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      
+      - name: Run tests
+        run: bash run/blast.up.sh ci
+
+      - uses: codecov/codecov-action@v3
+        with:
+          directory: app/
+      
+      - name: Push image
+        id: docker_push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.prep.outputs.tags }}
