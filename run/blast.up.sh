@@ -16,4 +16,4 @@ PROFILE=$1
 source run/get_compose_args.sh $PROFILE
 
 set -x
-docker compose ${COMPOSE_CONFIG} up --build ${COMPOSE_ARGS}
+docker compose ${COMPOSE_CONFIG} up ${COMPOSE_ARGS}
