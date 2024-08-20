@@ -8,7 +8,7 @@ name: Publish Docker image
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
     tags:
       - "*"
     paths:
@@ -16,13 +16,16 @@ on:
       - "app/**"
       - "run/**"
       - ".github/**"
-  # pull_request:
-  #   branches: [main]
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          docker-images: false
       - name: Checkout
         uses: actions/checkout@v4
       - name: Prepare
@@ -31,9 +34,9 @@ jobs:
           DOCKER_IMAGE=hub.ncsa.illinois.edu/blast/blast
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
-            TAGS="${DOCKER_IMAGE}:${VERSION},${DOCKER_IMAGE}:latest"
+            TAGS="${DOCKER_IMAGE}:${VERSION},${DOCKER_IMAGE}:dev"
           else
-            TAGS="${DOCKER_IMAGE}:latest"
+            TAGS="${DOCKER_IMAGE}:dev"
           fi
 
           echo ::set-output name=tags::${TAGS}
