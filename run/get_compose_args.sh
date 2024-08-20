@@ -13,9 +13,9 @@ case "$PROFILE" in
     exit 1
     ;;
   ci)
-    COMPOSE_ARGS="--build --exit-code-from app_ci"
-    ENV_FILE="env/.env.ci"
     TARGET_SERVICE="app_ci"
+    ENV_FILE="env/.env.ci"
+    COMPOSE_ARGS="--build --exit-code-from app_ci"
     ;;
   slim_dev)
     COMPOSE_ARGS="--build --abort-on-container-exit"
@@ -28,7 +28,6 @@ case "$PROFILE" in
     ;;
 esac
 
-COMPOSE_ARGS=""
 PURGE_VOLUMES=""
 case "${PURGE_OPTION}" in
   "")
@@ -39,10 +38,12 @@ case "${PURGE_OPTION}" in
     echo "Purging all data volumes..."
   ;;
   "--purge-db")
+    COMPOSE_ARGS=""
     PURGE_VOLUMES="${COMPOSE_PROJECT_NAME:-blast}_blast-db ${COMPOSE_PROJECT_NAME:-blast}_django-static"
     echo "Purging Django database and static file volumes..."
   ;;
   "--purge-data")
+    COMPOSE_ARGS=""
     PURGE_VOLUMES="${COMPOSE_PROJECT_NAME:-blast}_blast-data"
     echo "Purging astro data volume..."
   ;;
