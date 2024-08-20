@@ -4,7 +4,7 @@ volumes:
 
 services:
   blast_latest:
-    image: hub.ncsa.illinois.edu/blast/blast:latest
+    image: registry.gitlab.com/ncsa-blast/kubernetes/blast:dev
     command: bash entrypoints/docker-entrypoint.app.sh
     env_file:
       - ../env/.env.default
