@@ -14,7 +14,7 @@ services:
       - blast-data:/mnt/data
       - django-static:/app/static
   blast_base:
-    image: blast:dev
+    image: registry.gitlab.com/ncsa-blast/kubernetes/blast:dev
     build:
       context: ../app/
     command: bash entrypoints/docker-entrypoint.app.sh
@@ -28,9 +28,7 @@ services:
       - ../env/.env.default
       - ../env/.env.dev
   blast_ci:
-    image: hub.ncsa.illinois.edu/blast/blast:latest
-    build:
-      context: ../app/
+    image: registry.gitlab.com/ncsa-blast/kubernetes/blast:dev
     volumes:
       - ./dustmapsrc:/tmp/.dustmapsrc:ro
       - blast-data:/mnt/data
