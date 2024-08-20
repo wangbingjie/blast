@@ -1,4 +1,4 @@
-FROM hub.ncsa.illinois.edu/blast/deps:20240815 AS deps
+FROM registry.gitlab.com/ncsa-blast/kubernetes/blast/deps:20240815 AS deps
 
 FROM python:3.11
 ENV PYTHONUNBUFFERED=1
