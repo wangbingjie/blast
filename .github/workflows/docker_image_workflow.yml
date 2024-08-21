@@ -65,10 +65,10 @@ jobs:
       - name: Run tests
         run: bash run/blast.up.sh ci
 
-      - uses: codecov/codecov-action@v3
-        with:
-          directory: app/
-      
+      # - uses: codecov/codecov-action@v4
+      #   with:
+      #     directory: app/
+
       - name: Push image
         id: docker_push
         uses: docker/build-push-action@v6
