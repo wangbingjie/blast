@@ -53,15 +53,15 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v6
         with:
-          load: true
-          push: false
           builder: ${{ steps.buildx.outputs.name }}
           context: ./app
           file: ./app/Dockerfile
           tags: ${{ steps.prep.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      
+          push: false
+          load: true
+
       - name: Run tests
         run: bash run/blast.up.sh ci
 
@@ -73,6 +73,11 @@ jobs:
         id: docker_push
         uses: docker/build-push-action@v6
         with:
-          push: true
-          platforms: linux/amd64
+          builder: ${{ steps.buildx.outputs.name }}
+          context: ./app
+          file: ./app/Dockerfile
           tags: ${{ steps.prep.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+          push: true
