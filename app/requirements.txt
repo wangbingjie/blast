@@ -15,6 +15,7 @@ django-latexify
 mysqlclient==2.2.4
 dustmaps==1.0.13
 astro-sedpy==0.3.2
+astro_ghost==2.2.2.dev19
 extinction==0.4.6
 bokeh==3.4.1
 dynesty==2.1.3
