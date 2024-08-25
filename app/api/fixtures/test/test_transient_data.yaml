@@ -173,6 +173,36 @@
     log_tau_16: 1.0
     log_tau_50: 5.0
     log_tau_84: 60
+    logzsol_16: 0
+    logzsol_50: 0
+    logzsol_84: 0
+    dust2_16: 0
+    dust2_50: 0
+    dust2_84: 0
+    dust_index_16: 0
+    dust_index_50: 0
+    dust_index_84: 0
+    dust1_fraction_16: 0
+    dust1_fraction_50: 0
+    dust1_fraction_84: 0
+    log_fagn_16: 0
+    log_fagn_50: 0
+    log_fagn_84: 0
+    log_agn_tau_16: 0
+    log_agn_tau_50: 0
+    log_agn_tau_84: 0
+    gas_logz_16: 0
+    gas_logz_50: 0
+    gas_logz_84: 0
+    duste_qpah_16: 0
+    duste_qpah_50: 0
+    duste_qpah_84: 0
+    duste_umin_16: 0
+    duste_umin_50: 0
+    duste_umin_84: 0
+    log_duste_gamma_16: 0
+    log_duste_gamma_50: 0
+    log_duste_gamma_84: 0
 - model: host.SEDFittingResult
   pk: 6
   fields:
@@ -195,3 +225,33 @@
     log_tau_16: 1.0
     log_tau_50: 5.0
     log_tau_84: 60
+    logzsol_16: 0
+    logzsol_50: 0
+    logzsol_84: 0
+    dust2_16: 0
+    dust2_50: 0
+    dust2_84: 0
+    dust_index_16: 0
+    dust_index_50: 0
+    dust_index_84: 0
+    dust1_fraction_16: 0
+    dust1_fraction_50: 0
+    dust1_fraction_84: 0
+    log_fagn_16: 0
+    log_fagn_50: 0
+    log_fagn_84: 0
+    log_agn_tau_16: 0
+    log_agn_tau_50: 0
+    log_agn_tau_84: 0
+    gas_logz_16: 0
+    gas_logz_50: 0
+    gas_logz_84: 0
+    duste_qpah_16: 0
+    duste_qpah_50: 0
+    duste_qpah_84: 0
+    duste_umin_16: 0
+    duste_umin_50: 0
+    duste_umin_84: 0
+    log_duste_gamma_16: 0
+    log_duste_gamma_50: 0
+    log_duste_gamma_84: 0
