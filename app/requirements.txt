@@ -1,5 +1,5 @@
 celery==5.4.0
-Django==5.0.7
+Django==5.0.8
 django-silk==5.1.0
 django-crispy-forms==2.1
 django-tables2==2.7.0
