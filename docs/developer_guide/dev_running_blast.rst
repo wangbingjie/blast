@@ -136,3 +136,26 @@ To run all tests from scratch in an dedicated container that does not mount any 
 .. code:: bash
 
     bash run/blast.up.sh ci
+    bash run/blast.down.sh ci --purge-db
+
+
+Building the Blast app image
+----------------------------
+
+The Blast app image is a multi-stage build, where the base image is built separately because it is so large and does not often need to change, and it minimizes the duration of the CI pipeline that automatically builds and pushes the official image. To build the base image, use the following pattern, where :code:`$YYYYMMDD` is some immutable tag:
+
+.. code:: bash
+
+    docker build app/ \
+        -f app/Dockerfile.deps \
+        -t registry.gitlab.com/ncsa-blast/kubernetes/blast/deps:latest \
+        -t registry.gitlab.com/ncsa-blast/kubernetes/blast/deps:$YYYYMMDD
+
+Update :code:`app/Dockerfile` with the new tag :code:`$YYYYMMDD`. Then rebuild the app image -- incorporating the updated dependencies -- by launching the :code:`slim_dev` Compose profile:
+
+.. code:: bash
+
+    bash run/blast.up.sh slim_dev
+    bash run/blast.down.sh slim_dev --purge-db
+
+And, finally, run the unit tests as described in the previous section before opening a pull request.
